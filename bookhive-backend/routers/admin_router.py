@@ -1,0 +1,1 @@
+"""Provides Admin endpoints."""

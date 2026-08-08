@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  - package-ecosystem: pip
+    directory: "/bookhive-backend"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: "Asia/Colombo"
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+
+  # Enable this after the Angular package.json file is created.
+  # - package-ecosystem: npm
+  #   directory: "/bookhive-frontend"
+  #   schedule:
+  #     interval: weekly
+  #     day: monday
+  #     time: "03:30"
+  #     timezone: "Asia/Colombo"

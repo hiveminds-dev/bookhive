@@ -1,0 +1,1 @@
+"""Provides authentication endpoints."""

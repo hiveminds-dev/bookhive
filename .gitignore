@@ -1,0 +1,40 @@
+# macOS files
+.DS_Store
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Angular and Node.js files
+node_modules/
+dist/
+.angular/
+coverage/
+.cache/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Uploaded books and cover images
+bookhive-backend/storage/books/*
+bookhive-backend/storage/covers/*
+!bookhive-backend/storage/books/.gitkeep
+!bookhive-backend/storage/covers/.gitkeep

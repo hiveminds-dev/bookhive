@@ -1,0 +1,58 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "bookhive-frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "bookhive-frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project files
+        uses: actions/checkout@v4
+
+      - name: Check for Angular project
+        id: frontend
+        shell: bash
+        run: |
+          if test -f bookhive-frontend/package.json; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "The Angular project has not been created yet."
+          fi
+
+      - name: Set up Node.js
+        if: steps.frontend.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: bookhive-frontend/package-lock.json
+
+      - name: Install packages
+        if: steps.frontend.outputs.ready == 'true'
+        working-directory: bookhive-frontend
+        run: npm ci
+
+      - name: Build Angular application
+        if: steps.frontend.outputs.ready == 'true'
+        working-directory: bookhive-frontend
+        run: npm run build
+
+      - name: Run frontend tests
+        if: steps.frontend.outputs.ready == 'true'
+        working-directory: bookhive-frontend
+        run: npm test -- --watch=false

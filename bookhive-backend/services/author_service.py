@@ -1,0 +1,1 @@
+"""Handles Author rules."""

@@ -1,0 +1,56 @@
+# Builds the API.
+fastapi
+
+# Runs the API server.
+uvicorn
+
+# Works with database tables.
+sqlalchemy
+
+# Connects Python to PostgreSQL.
+asyncpg
+
+# Helps SQLAlchemy run async work.
+greenlet
+
+# Loads settings from the .env file.
+python-dotenv
+
+# Manages application settings.
+pydantic-settings
+
+# Checks email addresses.
+email-validator
+
+# Hashes passwords securely.
+pwdlib[argon2]
+
+# Creates and checks login tokens.
+PyJWT[crypto]
+
+# Accepts forms and uploaded files.
+python-multipart
+
+# Reads and saves files asynchronously.
+aiofiles
+
+# Checks and processes cover images.
+pillow
+
+# Reads and checks PDF files.
+pypdf
+
+# Limits repeated API requests.
+slowapi
+
+# Runs backend tests.
+pytest
+
+# Runs async backend tests.
+pytest-asyncio
+
+# Tests API requests.
+httpx
+
+# Checks code quality and formatting.
+ruff
