@@ -17,7 +17,7 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
 app = FastAPI(
     title=f"{settings.app_name} API",
     description="Backend API for the BookHive platform.",
-    version="1.0.0",
+    version=settings.app_version,
     lifespan=lifespan,
 )
 
@@ -36,6 +36,7 @@ app.include_router(health_router, prefix=settings.api_prefix)
 async def root() -> dict[str, str]:
     return {
         "name": f"{settings.app_name} API",
+        "version": settings.app_version,
         "environment": settings.app_env,
         "docs": "/docs",
     }

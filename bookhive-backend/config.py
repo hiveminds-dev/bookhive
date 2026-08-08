@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
 
     app_name: str = "BookHive"
+    app_version: str = "1.0.0"
     app_env: str = "development"
     api_prefix: str = "/api"
     frontend_url: str = "http://localhost:4200"
