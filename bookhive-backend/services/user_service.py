@@ -6,24 +6,33 @@ from schemas.user import UserCreate
 
 
 class UserService:
-
     def __init__(self):
         self.user_repository = UserRepository()
 
-    async def create_user(self, session: AsyncSession, user_data: UserCreate) -> User:
-
-        user = await session.get(User, user_data.id)
-
-        if user:
-            raise ValueError("User not found")
-
-        existing_user = await self.user_repository.get_user_by_id(session, user_data.id)
+    async def create_user(
+        self,
+        session: AsyncSession,
+        user_data: UserCreate,
+    ) -> User:
+        existing_user = await self.user_repository.get_by_email(
+            session,
+            user_data.email,
+        )
 
         if existing_user:
-            raise ValueError("This user already has a profile" )
+            raise ValueError("Email address is already registered")
 
-        new_user = await self.user_repository.user_create(session, user_data)
+        try:
+            user = await self.user_repository.create_reader(
+                session,
+                user_data,
+            )
 
-        await session.commit()
+            await session.commit()
+            await session.refresh(user)
 
-        return new_user
+            return user
+
+        except Exception:
+            await session.rollback()
+            raise

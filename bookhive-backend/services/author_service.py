@@ -1,34 +1,54 @@
-"""Handles Author rules."""
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from orm_models.user import User, UserRole
+from orm_models.user import AuthorProfile
 from repositories.author_repository import AuthorRepository
-from schemas.author import AuthorCreate
+from repositories.user_repository import UserRepository
+from schemas.author import AuthorRegistrationRequest
 
 
 class AuthorService:
-
     def __init__(self):
         self.author_repository = AuthorRepository()
+        self.user_repository = UserRepository()
 
-    async def create_author(self, session: AsyncSession, author_data: AuthorCreate):
+    async def create_author(
+        self,
+        session: AsyncSession,
+        author_data: AuthorRegistrationRequest,
+    ) -> AuthorProfile:
+        existing_email = await self.user_repository.get_by_email(
+            session,
+            author_data.email,
+        )
 
-        user = await session.get(User, author_data.user_id)
+        if existing_email:
+            raise ValueError("Email address is already registered")
 
-        if not user:
-            raise ValueError("User not found")
+        existing_username = await self.author_repository.get_by_username(
+            session,
+            author_data.username,
+        )
 
-        if user.role != UserRole.AUTHOR:
-            raise ValueError("Only users with AUTHOR role can create an author profile")
+        if existing_username:
+            raise ValueError("Username is already registered")
 
-        existing_author = await (self.author_repository.
-                                 get_author_by_user_id(session, author_data.user_id))
+        try:
+            user = await self.user_repository.create_author_user(
+                session,
+                author_data,
+            )
 
-        if existing_author:
-            raise ValueError("This user already has an author profile" )
+            author = await self.author_repository.create(
+                session,
+                user.id,
+                author_data,
+            )
 
-        author = await self.author_repository.author_create(session, author_data)
+            await session.commit()
+            await session.refresh(author)
 
-        await session.commit()
+            return author
 
-        return author
+        except Exception:
+            await session.rollback()
+            raise
