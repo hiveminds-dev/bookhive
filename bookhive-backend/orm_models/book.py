@@ -34,7 +34,7 @@ class Book(Base):
         nullable=False,
     )
 
-    category: Mapped["Category"] = relationship(
+    category: Mapped[Category] = relationship(
         "Category",
         back_populates="books",
     )
