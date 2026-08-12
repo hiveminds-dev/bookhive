@@ -5,12 +5,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from database import close_database_connection
+from database import close_database_connection, init_db
 from routers import health_router
-
+from routers.author_router import router as author_router
+from routers.user_router import router as user_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
+    await init_db()
     yield
     await close_database_connection()
 
@@ -30,7 +32,8 @@ app.add_middleware(
 )
 
 app.include_router(health_router, prefix=settings.api_prefix)
-
+app.include_router(author_router, prefix=settings.api_prefix)
+app.include_router(user_router, prefix=settings.api_prefix)
 
 @app.get("/", tags=["Root"])
 async def root() -> dict[str, str]:
