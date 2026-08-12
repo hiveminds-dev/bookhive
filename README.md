@@ -5,8 +5,7 @@
 BookHive is a web platform where approved authors can publish PDF books and
 readers can search, read, download, rate, and review published books.
 
-This project is developed by **Team Nexora** for the **Advanced AI and Software
-Engineering** course at **C-Clarke Institute**.
+BookHive is developed by the HiveMinds team.
 
 ## Main Workflow
 
@@ -206,6 +205,6 @@ git checkout -b feature/author-registration
 
 ## Team
 
-**Team Nexora**  
+**Team HiveMinds**  
 C-Clarke Institute  
 Advanced AI and Software Engineering
