@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from orm_models.user import UserRole, AccountStatus
+from orm_models.user import AccountStatus, UserRole
 
 
 class UserCreate(BaseModel):

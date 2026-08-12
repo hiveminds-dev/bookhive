@@ -1,13 +1,13 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from schemas.author import AuthorCreate
 from orm_models.user import AuthorProfile
+from schemas.author import AuthorCreate
 
 
 class AuthorRepository:
 
-    async def author_create(self, session: AsyncSession, author_data: AuthorCreate) -> AuthorProfile:
+    async def author_create(self, session: AsyncSession, author_data: AuthorCreate):
         try:
             author = AuthorProfile(
                 user_id=author_data.user_id,

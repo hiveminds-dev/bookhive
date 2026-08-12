@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from orm_models.user import  User
-from repositories.user_repository import  UserRepository
+from orm_models.user import User
+from repositories.user_repository import UserRepository
 from schemas.user import UserCreate
 
 
