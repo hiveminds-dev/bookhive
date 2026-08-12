@@ -9,12 +9,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
 
-class UserRole(str, enum.StrEnum):
+class UserRole(enum.StrEnum):
     READER = "reader"
     AUTHOR = "author"
     ADMIN = "admin"
 
-class AccountStatus(str, enum.StrEnum):
+class AccountStatus(enum.StrEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
 
