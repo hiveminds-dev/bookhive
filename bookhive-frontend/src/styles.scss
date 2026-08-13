@@ -1,1 +1,225 @@
-/* You can add global styles to this file, and also import other style files */
+/* Theme Variables */
+:root {
+  --primary-gold: #b58e1a;
+  --primary-gold-rgb: 181, 142, 26;
+  --primary-gold-hover: #967412;
+  --primary-gold-light: rgba(181, 142, 26, 0.08);
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --border-color-focus: #b58e1a;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Global Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--primary-gold);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  font-weight: 500;
+}
+
+a:hover {
+  color: var(--primary-gold-hover);
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Generic Form Layouts & Inputs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.45rem;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #ffffff;
+    transition: var(--transition-smooth);
+    outline: none;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+
+    &:focus {
+      border-color: var(--border-color-focus);
+      box-shadow: 0 0 0 3px rgba(181, 142, 26, 0.15);
+    }
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #ffffff;
+    transition: var(--transition-smooth);
+    outline: none;
+    resize: vertical;
+    min-height: 110px;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+
+    &:focus {
+      border-color: var(--border-color-focus);
+      box-shadow: 0 0 0 3px rgba(181, 142, 26, 0.15);
+    }
+  }
+}
+
+/* Checkboxes & Agreements */
+.agreement-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+
+  input[type="checkbox"] {
+    margin-top: 0.25rem;
+    accent-color: var(--primary-gold);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  label {
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.4;
+    user-select: none;
+    cursor: pointer;
+
+    a {
+      color: var(--primary-gold);
+      font-weight: 600;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* Buttons */
+.submit-btn {
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 30px;
+  background-color: var(--primary-gold);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(181, 142, 26, 0.35);
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary-gold-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(181, 142, 26, 0.45);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background-color: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+/* Validation Cues */
+.error-msg {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+  font-weight: 500;
+  padding-left: 0.75rem;
+  animation: slideInDown 0.2s ease-out;
+}
+
+.input-invalid {
+  border-color: #f87171 !important;
+  background-color: #fffafb !important;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
