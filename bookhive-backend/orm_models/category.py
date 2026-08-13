@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Index, String, Text, func
+from sqlalchemy import Boolean, DateTime, String, Text, func, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -15,7 +15,10 @@ if TYPE_CHECKING:
 class Category(Base):
     __tablename__ = "categories"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        index=True,
+    )
 
     name: Mapped[str] = mapped_column(
         String(100),
@@ -30,7 +33,9 @@ class Category(Base):
     )
 
     is_active: Mapped[bool] = mapped_column(
+        Boolean,
         default=True,
+        server_default=true(),
         nullable=False,
     )
 
@@ -50,8 +55,4 @@ class Category(Base):
     books: Mapped[list["Book"]] = relationship(
         "Book",
         back_populates="category",
-    )
-
-    __table_args__ = (
-        Index("ix_categories_name", "name"),
     )
