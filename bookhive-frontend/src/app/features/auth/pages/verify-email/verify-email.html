@@ -1,0 +1,42 @@
+<main class="verify-page">
+
+  <div class="brand">
+    <span class="brand-line"></span>
+    <h1>BookHive</h1>
+  </div>
+
+  <section class="verify-card">
+
+    <div class="email-icon">
+      ✉
+      <span>✓</span>
+    </div>
+
+    <h2>Verify your email address</h2>
+
+    <p class="description">
+      Welcome to BookHive! Please confirm your email address
+      to activate your account and start exploring books.
+    </p>
+
+    <div class="email-box">
+      {{ email }}
+    </div>
+
+    <div class="actions">
+
+      <button type="button" (click)="resendEmail()">
+        Resend Email
+      </button>
+
+      <span class="divider"></span>
+
+      <a routerLink="/login">
+        ← Back to Sign In
+      </a>
+
+    </div>
+
+  </section>
+
+</main>
