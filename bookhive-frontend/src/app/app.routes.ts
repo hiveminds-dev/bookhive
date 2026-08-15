@@ -1,14 +1,18 @@
 import { Routes } from '@angular/router';
+
 import { VerifyEmail } from './features/auth/pages/verify-email/verify-email';
+import { VerificationSuccess } from './features/auth/pages/verification-success/verification-success';
 
 export const routes: Routes = [
 
+  // Default
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
   },
 
+  // Login
   {
     path: 'login',
     loadComponent: () =>
@@ -16,6 +20,7 @@ export const routes: Routes = [
         .then(m => m.Login)
   },
 
+  // Register
   {
     path: 'register',
     loadComponent: () =>
@@ -23,6 +28,7 @@ export const routes: Routes = [
         .then(m => m.Register)
   },
 
+  // Forgot Password
   {
     path: 'forgot-password',
     loadComponent: () =>
@@ -30,11 +36,19 @@ export const routes: Routes = [
         .then(m => m.ForgotPassword)
   },
 
+  // Verify Email
   {
     path: 'auth/verify-email',
     component: VerifyEmail
   },
 
+  // Verification Success
+  {
+    path: 'auth/verification-success',
+    component: VerificationSuccess
+  },
+
+  // Unknown URL
   {
     path: '**',
     redirectTo: 'login'
