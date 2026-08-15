@@ -1,1 +1,10 @@
-<p>recent-requests works!</p>
+<section class="panel">
+  <h2>Author Requests</h2>
+  <a class="request" href="#" *ngFor="let request of requests">
+    <span class="marker"></span>
+    <span class="avatar">{{ request.initials }}</span>
+    <span class="details"><strong>{{ request.name }}</strong><small>{{ request.meta }}</small></span>
+    <span class="badge" *ngIf="request.badge">{{ request.badge }}</span>
+    <span class="arrow">›</span>
+  </a>
+</section>

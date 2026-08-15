@@ -30,6 +30,26 @@ export const routes: Routes = [
   },
 
   {
+    path: 'admin',
+    loadComponent: () =>
+      import('./layouts/admin-layout/admin-layout')
+        .then(m => m.AdminLayout),
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard')
+            .then(m => m.Dashboard)
+      }
+    ]
+  },
+
+  {
     path: '**',
     redirectTo: 'login'
   }

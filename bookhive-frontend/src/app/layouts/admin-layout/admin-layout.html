@@ -1,1 +1,57 @@
-<p>admin-layout works!</p>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/admin/dashboard">
+      <img src="assets/bookhive-logo.png" alt="BookHive logo">
+      <span>BookHive</span>
+    </a>
+
+    <div class="admin-profile">
+      <img src="images/auth/sign_in_1.png" alt="Administrator profile">
+      <div>
+        <strong>Curator Space</strong>
+        <span>Administrator</span>
+      </div>
+    </div>
+
+    <nav class="side-nav" aria-label="Admin navigation">
+      <a routerLink="/admin/dashboard" routerLinkActive="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Dashboard</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg> Books</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> Readers</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/><circle cx="8" cy="7" r="3"/></svg> Authors</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4M9 14 6.5 16M15 14l2.5 2"/></svg> Community</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 16 4-5 4 3 5-7"/></svg> Statistics</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06-2.83 2.83-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.4 1V21h-4v-.09A1.65 1.65 0 0 0 8.6 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06-2.83-2.83.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.4H3v-4h.09A1.65 1.65 0 0 0 4.6 8.6a1.65 1.65 0 0 0-.33-1.82l-.06-.06 2.83-2.83.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .4-1V3h4v.09A1.65 1.65 0 0 0 15.4 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06 2.83 2.83-.06.06A1.65 1.65 0 0 0 19.4 9c.14.36.35.68.6 1 .29.31.64.52 1 .6h.09v4H21a1.65 1.65 0 0 0-1.6.4Z"/></svg> Settings</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4M12 18h.01"/></svg> Support</a>
+      <a class="logout" routerLink="/login"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg> Logout</a>
+    </nav>
+
+    <div class="sidebar-action">
+      <button type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg> Publish New Work</button>
+    </div>
+  </aside>
+
+  <section class="workspace">
+    <header class="topbar">
+      <label class="global-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" placeholder="Search authors, books, or records..." aria-label="Global search">
+      </label>
+
+      <div class="topbar-actions">
+        <a href="#">Guidelines</a>
+        <a href="#">Review Board</a>
+        <span class="separator"></span>
+        <button type="button" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+        <button type="button" aria-label="Applications"><svg viewBox="0 0 24 24"><circle cx="5" cy="5" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="19" cy="5" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="19" r="1"/><circle cx="12" cy="19" r="1"/><circle cx="19" cy="19" r="1"/></svg></button>
+        <img src="images/auth/sign_in_1.png" alt="Admin">
+      </div>
+    </header>
+
+    <main class="content"><router-outlet /></main>
+
+    <footer class="admin-footer">
+      <div><strong>BookHive</strong><span>© 2026 BookHive. All rights reserved.</span></div>
+      <nav><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Intellectual Property</a><a href="#">Contact Support</a></nav>
+    </footer>
+  </section>
+</div>
