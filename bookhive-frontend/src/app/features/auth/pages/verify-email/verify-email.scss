@@ -1,0 +1,298 @@
+:host {
+  --gold: #c99a24;
+  --gold-dark: #896611;
+  --cream: #f7f0df;
+  --paper: #fffdf8;
+  --ink: #201d18;
+  --muted: #766f62;
+}
+
+.verify-page {
+  min-height: 100vh;
+  background: #fafafa;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.brand-line {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--gold);
+  margin: 0 auto 38px;
+}
+
+.brand h1 {
+  margin: 0;
+  color: #806500;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.verify-card {
+  width: min(100%, 430px);
+
+  background: #ffffff;
+  border-radius: 14px;
+
+  padding: 38px 45px;
+
+  text-align: center;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.email-icon {
+  position: relative;
+
+  width: 76px;
+  height: 76px;
+
+  margin: 0 auto 25px;
+
+  border-radius: 50%;
+  background: #f3f3f3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--gold-dark);
+  font-size: 30px;
+}
+
+.email-icon span {
+  position: absolute;
+
+  right: 8px;
+  bottom: 8px;
+
+  width: 22px;
+  height: 22px;
+
+  border-radius: 50%;
+
+  background: #d5ae2d;
+  color: white;
+
+  font-size: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verify-card h2 {
+  margin: 0 0 12px;
+
+  color: var(--ink);
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.description {
+  max-width: 330px;
+
+  margin: 0 auto 22px;
+
+  color: #625b50;
+
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.email-box {
+  display: inline-block;
+
+  padding: 12px 20px;
+
+  margin-bottom: 60px;
+
+  background: #eeeeee;
+  border-radius: 6px;
+
+  color: #806500;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+
+  font-size: 13px;
+}
+
+.actions button,
+.actions a {
+  border: none;
+  background: transparent;
+
+  color: #806500;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.actions button:hover,
+.actions a:hover {
+  color: var(--gold-dark);
+}
+
+.divider {
+  width: 4px;
+  height: 4px;
+
+  background: #dddddd;
+  border-radius: 50%;
+}
+
+@media (max-width: 500px) {
+
+  .verify-page {
+    padding: 25px 15px;
+  }
+
+  .verify-card {
+    padding: 35px 25px;
+  }
+
+  .email-box {
+    margin-bottom: 40px;
+  }
+
+  .actions {
+    gap: 12px;
+  }
+
+}
+
+/* ================================
+   Email Verification Animations
+   ================================ */
+
+.verification-card {
+  animation: cardFadeUp 0.7s ease-out both;
+}
+
+/* Email icon gentle floating animation */
+.email-icon {
+  animation: emailFloat 3s ease-in-out infinite;
+}
+
+/* Check badge pop animation */
+.email-icon .check-badge {
+  animation: checkPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+  transform-origin: center;
+}
+
+/* Heading */
+.verification-card h1,
+.verification-card h2 {
+  animation: fadeUp 0.6s ease-out 0.15s both;
+}
+
+/* Description */
+.verification-card p {
+  animation: fadeUp 0.6s ease-out 0.25s both;
+}
+
+/* Email box */
+.email-box {
+  animation: fadeUp 0.6s ease-out 0.35s both;
+}
+
+/* Bottom actions */
+.verification-actions {
+  animation: fadeUp 0.6s ease-out 0.45s both;
+}
+
+
+/* ================================
+   Keyframes
+   ================================ */
+
+@keyframes emailFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes checkPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .verification-card,
+  .email-icon,
+  .email-icon .check-badge,
+  .verification-card h1,
+  .verification-card h2,
+  .verification-card p,
+  .email-box,
+  .verification-actions {
+    animation: none;
+  }
+}

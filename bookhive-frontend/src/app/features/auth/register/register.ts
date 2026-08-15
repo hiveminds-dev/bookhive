@@ -7,7 +7,7 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -35,6 +35,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 export class Register {
 
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   readonly appName = 'BookHive';
   readonly logoPath = 'assets/bookhive-logo.png';
@@ -438,14 +439,14 @@ export class Register {
 
     setTimeout(() => {
 
+      const email = this.activeForm.get('email')?.value;
+
       if (this.accountType === 'reader') {
 
         console.log('Reader registration:', {
           ...this.readerForm.value,
           accountType: 'reader'
         });
-
-        alert('Reader account form is valid!');
 
       } else {
 
@@ -455,10 +456,19 @@ export class Register {
           profileImage: this.selectedImage
         });
 
-        alert('Author account form is valid!');
       }
 
       this.isSubmitting = false;
+
+      // Navigate to email verification page
+      this.router.navigate(
+        ['/auth/verify-email'],
+        {
+          queryParams: {
+            email: email
+          }
+        }
+      );
 
     }, 800);
   }
