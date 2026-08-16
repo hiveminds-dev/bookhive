@@ -21,6 +21,12 @@ import {
   LucideShieldCheck,
   LucideSparkles,
 } from '@lucide/angular';
+import {
+  AuthorRegistrationRequest,
+  ReaderRegistrationRequest,
+} from '../../models/registration';
+
+const USERNAME_PATTERN = /^[A-Za-z][A-Za-z0-9_]{2,49}$/;
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -94,7 +100,15 @@ export class Register {
     {
       fullName: ['', [Validators.required, Validators.minLength(2)]],
 
-      username: ['', [Validators.required, Validators.minLength(3)]],
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+          Validators.pattern(USERNAME_PATTERN),
+        ],
+      ],
 
       email: ['', [Validators.required, Validators.email]],
 
@@ -119,7 +133,15 @@ export class Register {
 
       penName: ['', [Validators.required, Validators.minLength(2)]],
 
-      username: ['', [Validators.required, Validators.minLength(3)]],
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+          Validators.pattern(USERNAME_PATTERN),
+        ],
+      ],
 
       email: ['', [Validators.required, Validators.email]],
 
@@ -377,6 +399,32 @@ export class Register {
   // REGISTER
   // =========================
 
+  private buildReaderRequest(): ReaderRegistrationRequest {
+    const value = this.readerForm.getRawValue();
+
+    return {
+      full_name: value.fullName!.trim(),
+      username: value.username!.trim().toLowerCase(),
+      email: value.email!.trim().toLowerCase(),
+      password: value.password!,
+    };
+  }
+
+  private buildAuthorRequest(): AuthorRegistrationRequest {
+    const value = this.authorForm.getRawValue();
+
+    return {
+      full_name: value.fullName!.trim(),
+      username: value.username!.trim().toLowerCase(),
+      email: value.email!.trim().toLowerCase(),
+      password: value.password!,
+      pen_name: value.penName!.trim(),
+      country: value.country!.trim(),
+      preferred_language: value.language!.trim(),
+      short_bio: value.bio!.trim(),
+    };
+  }
+
   register(): void {
     if (this.isSubmitting) {
       return;
@@ -397,16 +445,9 @@ export class Register {
       const email = this.activeForm.get('email')?.value;
 
       if (this.accountType === 'reader') {
-        console.log('Reader registration:', {
-          ...this.readerForm.value,
-          accountType: 'reader',
-        });
+        console.log('Reader registration:', this.buildReaderRequest());
       } else {
-        console.log('Author registration:', {
-          ...this.authorForm.value,
-          accountType: 'author',
-          profileImage: this.selectedImage,
-        });
+        console.log('Author registration:', this.buildAuthorRequest());
       }
 
       this.isSubmitting = false;

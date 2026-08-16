@@ -36,6 +36,7 @@ def db_session():
 def create_author(db_session: Session) -> User:
     author = User(
         full_name="Test Author",
+        username="test_author",
         email="author@example.com",
         password_hash="hashed-password",
         email_verified=True,

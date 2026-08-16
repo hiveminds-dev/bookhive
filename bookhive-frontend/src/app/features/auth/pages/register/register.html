@@ -273,6 +273,20 @@
               @if (hasFieldError(activeForm, 'username', 'required')) {
                 <small> Username is required. </small>
               }
+
+              @if (hasFieldError(activeForm, 'username', 'pattern')) {
+                <small>
+                  Username must start with a letter and contain only letters, numbers, or
+                  underscores.
+                </small>
+              }
+
+              @if (
+                hasFieldError(activeForm, 'username', 'minlength') ||
+                hasFieldError(activeForm, 'username', 'maxlength')
+              ) {
+                <small> Username must contain between 3 and 50 characters. </small>
+              }
             </div>
           </div>
         </form>

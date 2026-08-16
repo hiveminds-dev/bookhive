@@ -22,6 +22,14 @@ class UserService:
         if existing_user:
             raise ValueError("Email address is already registered")
 
+        existing_username = await self.user_repository.get_by_username(
+            session,
+            user_data.username,
+        )
+
+        if existing_username:
+            raise ValueError("Username is already registered")
+
         try:
             user = await self.user_repository.create_reader(
                 session,
