@@ -59,9 +59,6 @@ not part of the MVP.
 - Manage books, authors, categories, ratings, and reviews
 - View dashboard summaries
 
-Detailed reader and author registration rules are documented in
-[`docs/registration-requirements.md`](docs/registration-requirements.md).
-
 ## Technologies
 
 | Area | Technology |
@@ -82,7 +79,6 @@ bookhive/
 ├── .github/                 # GitHub workflows and templates
 ├── bookhive-backend/        # FastAPI backend
 ├── bookhive-frontend/       # Angular frontend
-├── docs/                    # Project requirements and decisions
 └── README.md                # Project guide
 ```
 
