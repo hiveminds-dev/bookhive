@@ -7,6 +7,7 @@ import {
   ActivatedRoute,
   provideRouter
 } from '@angular/router';
+import { vi } from 'vitest';
 
 import { BookReaderComponent } from './book-reader';
 
@@ -15,6 +16,7 @@ describe('BookReaderComponent', () => {
   let fixture: ComponentFixture<BookReaderComponent>;
 
   beforeEach(async () => {
+    vi.useFakeTimers();
     localStorage.clear();
 
     await TestBed.configureTestingModule({
@@ -44,6 +46,8 @@ describe('BookReaderComponent', () => {
 
   afterEach(() => {
     fixture.destroy();
+    vi.clearAllTimers();
+    vi.useRealTimers();
     localStorage.clear();
   });
 
@@ -71,6 +75,7 @@ describe('BookReaderComponent', () => {
 
   it('should save reading progress', () => {
     component.changePage(25);
+    vi.advanceTimersByTime(30_000);
 
     expect(
       localStorage.getItem(component.progressStorageKey)

@@ -1,16 +1,21 @@
 import { Component } from '@angular/core';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  LucideArrowLeft,
+  LucideCheck,
+  LucideInfo,
+  LucideMail,
+  LucideRefreshCw,
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-verify-email',
   templateUrl: './verify-email.html',
-  imports: [
-    RouterLink
-  ],
-  styleUrl: './verify-email.scss'
+  imports: [RouterLink, LucideArrowLeft, LucideCheck, LucideInfo, LucideMail, LucideRefreshCw],
+  styleUrl: './verify-email.scss',
 })
 export class VerifyEmail {
-
+  readonly logoPath = 'assets/bookhive-logo.png';
   email = '';
 
   constructor(private route: ActivatedRoute) {}

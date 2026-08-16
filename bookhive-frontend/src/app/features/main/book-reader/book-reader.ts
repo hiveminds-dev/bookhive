@@ -471,12 +471,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   }
 
   private scrollReaderToTop(): void {
-    const readerCenter =
-      document.querySelector('.reader-center');
+    const readerCenter = document.querySelector<HTMLElement>('.reader-center');
 
-    readerCenter?.scrollIntoView({
+    if (typeof readerCenter?.scrollIntoView !== 'function') {
+      return;
+    }
+
+    readerCenter.scrollIntoView({
       behavior: 'smooth',
-      block: 'start'
+      block: 'start',
     });
   }
 }

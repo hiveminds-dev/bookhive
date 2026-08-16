@@ -5,37 +5,42 @@
 BookHive is a web platform where approved authors can publish PDF books and
 readers can search, read, download, rate, and review published books.
 
-This project is developed by **Team Nexora** for the **Advanced AI and Software
-Engineering** course at **C-Clarke Institute**.
+BookHive is developed by the HiveMinds team.
 
 ## Main Workflow
 
-1. An author creates an account.
-2. An admin approves or rejects the author account.
-3. An approved author submits a PDF book.
-4. An admin approves or rejects the submitted book.
-5. An approved book becomes available to the public.
-6. Readers can search, read, download, rate, and review the book.
+1. A reader or author creates an account and verifies the registered email
+   address.
+2. A verified reader account becomes active and can sign in.
+3. A verified author account remains pending until an admin approves or rejects
+   the application.
+4. An approved author submits a PDF book.
+5. An admin approves or rejects the submitted book.
+6. An approved book becomes available to readers.
+7. Signed-in readers can search, read, download, rate, and review published
+   books.
 
 ## MVP Features
 
-### Public Reader
+### Reader
 
+- Register, verify an email address, sign in, and sign out
+- Reset a forgotten password
 - View published books
 - Search and filter books
 - View book information
 - Read PDF books in the browser
 - Download PDF books
-- Add an anonymous rating or review
+- Add or update a rating and review while signed in
 - View paginated book results
 
-Anonymous ratings and reviews will use a generated device identifier stored in
-the browser. It is intended to reduce duplicate submissions without requiring a
-reader account.
+Each reader can have only one active rating and review per book. A reader may
+update that review later. Anonymous reviews and device-based identification are
+not part of the MVP.
 
 ### Author
 
-- Register and sign in
+- Register, verify an email address, sign in, and sign out
 - Reset a forgotten password
 - View account approval status
 - Manage the author profile
@@ -53,8 +58,6 @@ reader account.
 - Add a rejection reason
 - Manage books, authors, categories, ratings, and reviews
 - View dashboard summaries
-
-Email verification and reader accounts are not included in the current MVP.
 
 ## Technologies
 
@@ -196,8 +199,6 @@ git checkout -b feature/author-registration
 
 ## Future Features
 
-- Reader accounts
-- Email verification
 - Bookmarks and reading history
 - Subscription plans and payments
 - Book recommendations
@@ -206,6 +207,6 @@ git checkout -b feature/author-registration
 
 ## Team
 
-**Team Nexora**  
+**Team HiveMinds**  
 C-Clarke Institute  
 Advanced AI and Software Engineering

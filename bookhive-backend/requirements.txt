@@ -54,3 +54,5 @@ httpx
 
 # Checks code quality and formatting.
 ruff
+
+pydantic

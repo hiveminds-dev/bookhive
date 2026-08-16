@@ -92,6 +92,12 @@ describe('ExploreComponent', () => {
   });
 
   it('should sort books by title', () => {
+    component.onFiltersChanged({
+      search: '',
+      categories: [],
+      language: '',
+      minimumRating: 1
+    });
     component.sortOption = 'title';
 
     const sortedBooks = component.filteredBooks;
