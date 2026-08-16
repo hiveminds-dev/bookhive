@@ -1,0 +1,98 @@
+<aside class="filter-panel">
+
+  <div class="filter-header">
+    <h2>Filters</h2>
+
+    <button
+      type="button"
+      class="reset-button"
+      (click)="resetFilters()">
+      Reset Filters
+    </button>
+  </div>
+
+  <div class="filter-section">
+    <label class="section-label" for="book-search">
+      Search within results
+    </label>
+
+    <div class="search-field">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+
+      <input
+        id="book-search"
+        type="search"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onFilterChange()"
+        placeholder="e.g. Clean Code"
+        autocomplete="off">
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <p class="section-label">Categories</p>
+
+    <div class="category-list">
+      @for (category of categories; track category.name) {
+        <label class="checkbox-option">
+          <input
+            type="checkbox"
+            [(ngModel)]="category.selected"
+            (ngModelChange)="onFilterChange()">
+
+          <span class="custom-checkbox"></span>
+          <span>{{ category.name }}</span>
+        </label>
+      }
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <label class="section-label" for="language">
+      Language
+    </label>
+
+    <div class="select-wrapper">
+      <select
+        id="language"
+        [(ngModel)]="selectedLanguage"
+        (ngModelChange)="onFilterChange()">
+
+        <option value="">e.g. English</option>
+
+        @for (language of languages; track language) {
+          <option [value]="language">
+            {{ language }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-section rating-section">
+    <label class="section-label" for="minimum-rating">
+      Minimum rating
+    </label>
+
+    <input
+      id="minimum-rating"
+      class="rating-range"
+      type="range"
+      min="1"
+      max="5"
+      step="1"
+      [(ngModel)]="minimumRating"
+      (ngModelChange)="onFilterChange()">
+
+    <div class="rating-value">
+      <span class="stars" aria-hidden="true">
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+          <span [class.inactive]="star > minimumRating">★</span>
+        }
+      </span>
+
+      <span>{{ minimumRating }}.0 &amp; up</span>
+    </div>
+  </div>
+
+</aside>

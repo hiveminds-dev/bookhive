@@ -1,1 +1,22 @@
-<p>book-cover works!</p>
+<div class="cover-container">
+
+  @if (badge) {
+    <span class="cover-badge">
+      {{ badge }}
+    </span>
+  }
+
+  @if (!imageLoadFailed && cover) {
+    <img
+      class="book-cover"
+      [src]="cover"
+      [alt]="title + ' book cover'"
+      (error)="onImageError()">
+  } @else {
+    <div class="cover-placeholder">
+      <span class="book-icon">📖</span>
+      <p>{{ title || 'Book cover' }}</p>
+    </div>
+  }
+
+</div>

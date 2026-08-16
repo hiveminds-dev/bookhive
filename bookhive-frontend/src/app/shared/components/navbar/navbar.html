@@ -1,1 +1,122 @@
-<p>navbar works!</p>
+<nav class="navbar">
+
+  <div class="navbar-container">
+
+    <!-- =========================
+         LOGO
+    ========================== -->
+
+    <a
+      routerLink="/home"
+      class="brand"
+    >
+
+      <div class="brand-icon">
+        <span class="material-symbols-outlined">
+          menu_book
+        </span>
+      </div>
+
+      <span class="brand-name">
+        BookHive
+      </span>
+
+    </a>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <div class="nav-links">
+
+      <a
+        routerLink="/home"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Home
+      </a>
+
+      <a
+        routerLink="/explore"
+        routerLinkActive="active"
+      >
+        Explore
+      </a>
+
+      <a
+        routerLink="/community"
+        routerLinkActive="active"
+      >
+        Community
+      </a>
+
+      <a
+        routerLink="/about"
+        routerLinkActive="active"
+      >
+        About
+      </a>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH
+    ========================== -->
+
+    <div class="navbar-search">
+
+      <span class="material-symbols-outlined">
+        search
+      </span>
+
+      <input
+        type="text"
+        placeholder="Search books, authors, categories..."
+      />
+
+    </div>
+
+
+    <!-- =========================
+         RIGHT ACTIONS
+    ========================== -->
+
+    <div class="navbar-actions">
+
+      <button
+        type="button"
+        class="language-btn"
+      >
+
+        <span class="material-symbols-outlined">
+          language
+        </span>
+
+        <span>EN</span>
+
+      </button>
+
+
+      <a
+        routerLink="/login"
+        class="sign-in-btn"
+      >
+        Sign In
+      </a>
+
+
+      <a
+        routerLink="/register"
+        class="sign-up-btn"
+      >
+        Sign Up
+      </a>
+
+    </div>
+
+  </div>
+
+</nav>

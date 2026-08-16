@@ -1,1 +1,15 @@
-<p>book-description works!</p>
+<section class="description-section">
+
+  <h2>{{ title }}</h2>
+
+  <div class="title-line" aria-hidden="true"></div>
+
+  <div class="description-content">
+    @for (paragraph of paragraphs; track $index) {
+      <p>{{ paragraph }}</p>
+    } @empty {
+      <p>No description is available for this book.</p>
+    }
+  </div>
+
+</section>

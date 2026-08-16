@@ -1,0 +1,45 @@
+:host {
+  display: block;
+  font-family: Inter, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.description-section {
+  width: 100%;
+  padding: 0 0 23px;
+}
+
+h2 {
+  margin: 0;
+  color: #292621;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.title-line {
+  width: 34px;
+  height: 2px;
+  margin: 8px 0 15px;
+  border-radius: 5px;
+  background: #a3831c;
+}
+
+.description-content {
+  max-width: 850px;
+
+  p {
+    margin: 0 0 12px;
+    color: #686258;
+    font-size: 11px;
+    line-height: 1.75;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

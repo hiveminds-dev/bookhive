@@ -1,1 +1,42 @@
-<p>reader-sidebar works!</p>
+<aside class="reader-sidebar">
+
+  <section class="book-summary">
+
+    <div class="cover-wrapper">
+
+      @if (!imageLoadFailed && cover) {
+        <img
+          [src]="cover"
+          [alt]="bookTitle + ' book cover'"
+          (error)="onImageError()">
+      } @else {
+        <div class="cover-placeholder">
+          <span>📖</span>
+          <p>{{ bookTitle }}</p>
+        </div>
+      }
+
+    </div>
+
+    <div class="book-statistics">
+
+      <div class="stat">
+        <span>Pages</span>
+        <strong>{{ totalPages }}</strong>
+      </div>
+
+      <span
+        class="stat-divider"
+        aria-hidden="true">
+      </span>
+
+      <div class="stat">
+        <span>Rating</span>
+        <strong>{{ rating.toFixed(1) }}/5</strong>
+      </div>
+
+    </div>
+
+  </section>
+
+</aside>

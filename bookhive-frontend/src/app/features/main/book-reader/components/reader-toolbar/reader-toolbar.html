@@ -1,1 +1,90 @@
-<p>reader-toolbar works!</p>
+<div class="reader-toolbar">
+
+  <div class="toolbar-group zoom-controls">
+
+    <button
+      type="button"
+      aria-label="Zoom out"
+      title="Zoom out"
+      [disabled]="zoomLevel <= 50"
+      (click)="onZoomOut()">
+      <span class="search-symbol" aria-hidden="true"></span>
+      <span class="zoom-mark">−</span>
+    </button>
+
+    <span class="zoom-value">
+      {{ zoomLevel }}%
+    </span>
+
+    <button
+      type="button"
+      aria-label="Zoom in"
+      title="Zoom in"
+      [disabled]="zoomLevel >= 150"
+      (click)="onZoomIn()">
+      <span class="search-symbol" aria-hidden="true"></span>
+      <span class="zoom-mark">+</span>
+    </button>
+
+  </div>
+
+  <div class="toolbar-group page-controls">
+
+    <button
+      type="button"
+      aria-label="Previous page"
+      title="Previous page"
+      [disabled]="currentPage <= 1"
+      (click)="onPreviousPage()">
+      ‹
+    </button>
+
+    <span class="page-count">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      aria-label="Next page"
+      title="Next page"
+      [disabled]="currentPage >= totalPages"
+      (click)="onNextPage()">
+      ›
+    </button>
+
+  </div>
+
+  <div class="toolbar-group action-controls">
+
+    <button
+      type="button"
+      aria-label="Bookmark page"
+      title="Bookmark"
+      [class.active]="bookmarked"
+      (click)="toggleBookmark()">
+      <span aria-hidden="true">
+        {{ bookmarked ? '▰' : '▯' }}
+      </span>
+    </button>
+
+    <button
+      type="button"
+      aria-label="Download book"
+      title="Download"
+      (click)="onDownload()">
+      <span class="download-symbol" aria-hidden="true">⇩</span>
+    </button>
+
+    <button
+      type="button"
+      aria-label="Open fullscreen"
+      title="Fullscreen"
+      (click)="onFullscreen()">
+      <span class="fullscreen-symbol" aria-hidden="true">
+        ⛶
+      </span>
+    </button>
+
+  </div>
+
+</div>

@@ -1,1 +1,104 @@
-<p>book-preview works!</p>
+<main class="preview-page">
+
+  <div class="preview-container">
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span>›</span>
+
+      <a routerLink="/explore">Explore Library</a>
+      <span>›</span>
+
+      <span class="current">{{ book.title }}</span>
+    </nav>
+
+    @if (isLoading) {
+
+      <div class="loading-state">
+        <div class="loading-cover shimmer"></div>
+
+        <div class="loading-details">
+          <span class="loading-line short shimmer"></span>
+          <span class="loading-line title shimmer"></span>
+          <span class="loading-line medium shimmer"></span>
+          <span class="loading-line long shimmer"></span>
+        </div>
+      </div>
+
+    } @else {
+
+      <section class="book-hero">
+
+        <div class="cover-column">
+          <app-book-cover
+            [title]="book.title"
+            [cover]="book.cover"
+            [badge]="book.badge">
+          </app-book-cover>
+        </div>
+
+        <div class="hero-content">
+
+          <app-book-header
+            [category]="book.category"
+            [title]="book.title"
+            [author]="book.author"
+            [language]="book.language">
+          </app-book-header>
+
+          <app-book-info
+            [rating]="book.rating"
+            [reviews]="book.reviewsCount"
+            [pages]="book.pages"
+            [readingTime]="book.readingTime">
+          </app-book-info>
+
+          <app-book-actions
+            [canDownload]="book.canDownload"
+            (readBook)="onReadBook()"
+            (downloadBook)="onDownloadBook()">
+          </app-book-actions>
+
+        </div>
+
+      </section>
+
+      <section class="details-layout">
+
+        <div class="main-details">
+
+          <app-book-description
+            title="Abstract"
+            [paragraphs]="book.description">
+          </app-book-description>
+
+          <app-reviews
+            [reviews]="readerReviews"
+            (writeReview)="onWriteReview()">
+          </app-reviews>
+
+        </div>
+
+        <div class="author-column">
+          <app-author-info
+            [name]="book.authorInfo.name"
+            [role]="book.authorInfo.role"
+            [image]="book.authorInfo.image"
+            [biography]="book.authorInfo.biography">
+          </app-author-info>
+        </div>
+
+      </section>
+
+      <section class="related-wrapper">
+        <app-related-books
+          [books]="relatedBooks"
+          (bookSelected)="onRelatedBookSelected($event)">
+        </app-related-books>
+      </section>
+
+    }
+
+  </div>
+
+</main>

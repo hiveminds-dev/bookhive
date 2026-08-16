@@ -1,1 +1,122 @@
-<p>explore works!</p>
+<main class="explore-page">
+
+  <div class="explore-container">
+
+    <aside class="filters-column">
+      <app-explore-filters
+        (filtersChanged)="onFiltersChanged($event)">
+      </app-explore-filters>
+    </aside>
+
+    <section class="library-section">
+
+      <header class="library-header">
+
+        <div class="heading-content">
+          <h1>Explore Library</h1>
+
+          <p>
+            32,587 high-quality books found across all categories
+          </p>
+        </div>
+
+        <div class="library-controls">
+
+          <div class="view-controls" aria-label="Select book view">
+
+            <button
+              type="button"
+              aria-label="Grid view"
+              [class.active]="viewMode === 'grid'"
+              (click)="setViewMode('grid')">
+              <span class="grid-icon" aria-hidden="true">
+                <i></i><i></i><i></i><i></i>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              aria-label="List view"
+              [class.active]="viewMode === 'list'"
+              (click)="setViewMode('list')">
+              <span class="list-icon" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+            </button>
+
+          </div>
+
+          <div class="sort-wrapper">
+            <select
+              aria-label="Sort books"
+              [(ngModel)]="sortOption"
+              (ngModelChange)="onSortChanged()">
+
+              <option value="popular">Most Popular</option>
+              <option value="rating">Highest Rated</option>
+              <option value="title">Book Title</option>
+            </select>
+          </div>
+
+        </div>
+
+      </header>
+
+      @if (filteredBooks.length > 0) {
+
+        <div
+          class="books-container"
+          [class.grid-view]="viewMode === 'grid'"
+          [class.list-view]="viewMode === 'list'">
+
+          @for (book of filteredBooks; track book.id) {
+            <app-book-card
+              [book]="book"
+              (readBook)="onReadBook($event)"
+              (previewBook)="onPreviewBook($event)">
+            </app-book-card>
+          }
+
+          @if (viewMode === 'grid') {
+            @for (skeleton of skeletonCards; track skeleton) {
+              <article class="skeleton-card" aria-hidden="true">
+
+                <div class="skeleton-cover shimmer"></div>
+
+                <div class="skeleton-content">
+                  <span class="skeleton-line line-small shimmer"></span>
+                  <span class="skeleton-line line-large shimmer"></span>
+                  <span class="skeleton-line line-medium shimmer"></span>
+                  <span class="skeleton-line line-large shimmer"></span>
+                  <span class="skeleton-line line-description shimmer"></span>
+                </div>
+
+              </article>
+            }
+          }
+
+        </div>
+
+      } @else {
+
+        <div class="empty-state">
+          <div class="empty-icon">📚</div>
+          <h2>No books found</h2>
+          <p>Try changing your search or filter options.</p>
+        </div>
+
+      }
+
+      <div class="pagination-wrapper">
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          (pageChanged)="onPageChanged($event)">
+        </app-pagination>
+      </div>
+
+    </section>
+
+  </div>
+
+</main>

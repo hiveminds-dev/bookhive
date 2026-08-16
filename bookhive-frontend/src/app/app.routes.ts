@@ -1,54 +1,168 @@
 import { Routes } from '@angular/router';
 
-import { VerifyEmail } from './features/auth/pages/verify-email/verify-email';
-import { VerificationSuccess } from './features/auth/pages/verification-success/verification-success';
+import {
+  VerifyEmail
+} from './features/auth/pages/verify-email/verify-email';
+
+import {
+  VerificationSuccess
+} from './features/auth/pages/verification-success/verification-success';
+
+import {
+  MainLayoutComponent
+} from './layouts/main-layout/main-layout';
 
 export const routes: Routes = [
 
-  // Default
+  // ==========================================
+  // DEFAULT
+  // ==========================================
+
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
   },
 
-  // Login
+  // ==========================================
+  // AUTHENTICATION PAGES
+  // Navbar එක පෙන්වන්නේ නැහැ
+  // ==========================================
+
   {
     path: 'login',
+
     loadComponent: () =>
       import('./features/auth/login/login')
-        .then(m => m.Login)
+        .then(module => module.Login)
   },
 
-  // Register
   {
     path: 'register',
+
     loadComponent: () =>
       import('./features/auth/register/register')
-        .then(m => m.Register)
+        .then(module => module.Register)
   },
 
-  // Forgot Password
   {
     path: 'forgot-password',
+
     loadComponent: () =>
       import('./features/auth/forgot-password/forgot-password')
-        .then(m => m.ForgotPassword)
+        .then(module => module.ForgotPassword)
   },
 
-  // Verify Email
   {
     path: 'auth/verify-email',
     component: VerifyEmail
   },
 
-  // Verification Success
   {
     path: 'auth/verification-success',
     component: VerificationSuccess
   },
 
-  // Unknown URL
+  // ==========================================
+  // MAIN WEBSITE
+  // Shared Navbar එක පෙන්වන pages
+  // ==========================================
+
+  {
+    path: '',
+    component: MainLayoutComponent,
+
+    children: [
+
+      // ---------------------------------------
+      // Home
+      // URL: /home
+      // ---------------------------------------
+
+      {
+        path: 'home',
+
+        loadComponent: () =>
+          import('./features/main/home/home')
+            .then(module => module.Home)
+      },
+
+      // ---------------------------------------
+      // Explore Library
+      // URL: /explore
+      // ---------------------------------------
+
+      {
+        path: 'explore',
+
+        loadComponent: () =>
+          import('./features/main/explore/explore')
+            .then(module => module.ExploreComponent)
+      },
+
+      // ---------------------------------------
+      // Book Preview
+      // URL: /explore/1/preview
+      // ---------------------------------------
+
+      {
+        path: 'explore/:id/preview',
+
+        loadComponent: () =>
+          import(
+            './features/main/book-preview/book-preview'
+            )
+            .then(module => module.BookPreviewComponent)
+      },
+
+      // ---------------------------------------
+      // Book Reader
+      // URL: /book-reader/1
+      // ---------------------------------------
+
+      {
+        path: 'book-reader/:id',
+
+        loadComponent: () =>
+          import(
+            './features/main/book-reader/book-reader'
+            )
+            .then(module => module.BookReaderComponent)
+      },
+
+      // ---------------------------------------
+      // Community
+      // URL: /community
+      // ---------------------------------------
+
+      {
+        path: 'community',
+
+        loadComponent: () =>
+          import('./features/main/community/community')
+            .then(module => module.Community)
+      },
+
+      // ---------------------------------------
+      // About
+      // URL: /about
+      // ---------------------------------------
+
+      {
+        path: 'about',
+
+        loadComponent: () =>
+          import('./features/main/about/about')
+            .then(module => module.About)
+      }
+
+    ]
+  },
+
+  // ==========================================
+  // UNKNOWN URL
+  // ==========================================
+
   {
     path: '**',
     redirectTo: 'login'
