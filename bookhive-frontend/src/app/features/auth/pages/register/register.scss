@@ -22,7 +22,6 @@
   font-family: Inter, Arial, sans-serif;
 }
 
-
 /* =========================================
 GLOBAL
 ========================================= */
@@ -30,7 +29,6 @@ GLOBAL
 * {
   box-sizing: border-box;
 }
-
 
 /* =========================================
 REGISTER PAGE
@@ -50,7 +48,6 @@ REGISTER PAGE
   background: var(--right-bg);
 }
 
-
 /* =========================================
 LEFT HERO
 ========================================= */
@@ -63,28 +60,18 @@ LEFT HERO
   padding: clamp(34px, 4vw, 70px);
 
   background:
-    radial-gradient(
-      circle at 15% 18%,
-      rgba(255, 255, 255, 0.9),
-      transparent 26%
-    ),
-    linear-gradient(
-      140deg,
-      var(--cream) 0%,
-      #fbf4e6 54%,
-      var(--cream-deep) 100%
-    );
+    radial-gradient(circle at 15% 18%, rgba(255, 255, 255, 0.9), transparent 26%),
+    linear-gradient(140deg, var(--cream) 0%, #fbf4e6 54%, var(--cream-deep) 100%);
 
   overflow: hidden;
 }
-
 
 /* =========================================
 HERO GLOW
 ========================================= */
 
 .hero-section::before {
-  content: "";
+  content: '';
 
   position: absolute;
 
@@ -102,7 +89,6 @@ HERO GLOW
 
   pointer-events: none;
 }
-
 
 /* =========================================
 BRAND
@@ -129,7 +115,6 @@ BRAND
   text-decoration: none;
 }
 
-
 .brand-logo {
   width: 58px;
   height: 58px;
@@ -138,7 +123,6 @@ BRAND
 
   margin-right: -8px;
 }
-
 
 /* =========================================
 HERO CONTENT
@@ -152,7 +136,6 @@ HERO CONTENT
 
   margin-top: clamp(76px, 13vh, 150px);
 }
-
 
 .hero-label {
   margin: 0 0 16px;
@@ -168,7 +151,6 @@ HERO CONTENT
   text-transform: uppercase;
 }
 
-
 .hero-content h1 {
   margin: 0;
 
@@ -183,13 +165,11 @@ HERO CONTENT
   font-weight: 800;
 }
 
-
 .hero-content h1 span {
   display: block;
 
   color: var(--gold);
 }
-
 
 .hero-content p {
   max-width: 440px;
@@ -203,7 +183,6 @@ HERO CONTENT
   line-height: 1.7;
 }
 
-
 /* =========================================
 FLOATING BOOKS
 ========================================= */
@@ -215,7 +194,6 @@ FLOATING BOOKS
 
   pointer-events: none;
 }
-
 
 /* =========================================
 BOOK CARD
@@ -235,8 +213,7 @@ BOOK CARD
 
   border-radius: 24px;
 
-  box-shadow:
-    0 22px 60px rgba(79, 58, 20, 0.18);
+  box-shadow: 0 22px 60px rgba(79, 58, 20, 0.18);
 
   overflow: hidden;
 
@@ -244,7 +221,6 @@ BOOK CARD
 
   will-change: transform;
 }
-
 
 /* =========================================
 BOOK 1
@@ -260,13 +236,8 @@ BOOK 1
 
   transform: rotate(5deg);
 
-  animation:
-    floatRegisterLarge
-    6s
-    ease-in-out
-    infinite;
+  animation: floatRegisterLarge 6s ease-in-out infinite;
 }
-
 
 /* =========================================
 BOOK 2
@@ -282,15 +253,10 @@ BOOK 2
 
   transform: rotate(-9deg);
 
-  animation:
-    floatRegisterTop
-    5s
-    ease-in-out
-    infinite;
+  animation: floatRegisterTop 5s ease-in-out infinite;
 
   animation-delay: -1.5s;
 }
-
 
 /* =========================================
 BOOK 3
@@ -306,15 +272,10 @@ BOOK 3
 
   transform: rotate(-7deg);
 
-  animation:
-    floatRegisterBottom
-    5.8s
-    ease-in-out
-    infinite;
+  animation: floatRegisterBottom 5.8s ease-in-out infinite;
 
   animation-delay: -2.5s;
 }
-
 
 /* =========================================
 BOOK COVER
@@ -331,12 +292,7 @@ BOOK COVER
 
   border-radius: 6px;
 
-  background:
-    linear-gradient(
-      145deg,
-      #a47708,
-      #d6aa26
-    );
+  background: linear-gradient(145deg, #a47708, #d6aa26);
 
   color: #fff;
 
@@ -346,22 +302,14 @@ BOOK COVER
 
   letter-spacing: 2px;
 
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
-
 .book-cover.light {
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 250, 238, 0.96),
-      rgba(238, 218, 167, 0.78)
-    );
+  background: linear-gradient(145deg, rgba(255, 250, 238, 0.96), rgba(238, 218, 167, 0.78));
 
   color: var(--gold-dark);
 }
-
 
 /* =========================================
 MINI BOOK
@@ -378,12 +326,7 @@ MINI BOOK
 
   border-radius: 6px;
 
-  background:
-    linear-gradient(
-      145deg,
-      #fffaf0,
-      #ecd59c
-    );
+  background: linear-gradient(145deg, #fffaf0, #ecd59c);
 
   color: var(--gold-dark);
 
@@ -396,7 +339,6 @@ MINI BOOK
   letter-spacing: 1px;
 }
 
-
 /* =========================================
 SPARKS
 ========================================= */
@@ -408,25 +350,26 @@ SPARKS
 
   color: #d6a929;
 
-  font-size: 22px;
+  width: 22px;
+  height: 22px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
 
   opacity: 0.9;
 
   pointer-events: none;
 
-  animation:
-    sparkle
-    3s
-    ease-in-out
-    infinite;
+  animation: sparkle 3s ease-in-out infinite;
 }
-
 
 .spark-one {
   top: 35%;
   right: 8%;
 }
-
 
 .spark-two {
   bottom: 22%;
@@ -435,14 +378,12 @@ SPARKS
   animation-delay: -1s;
 }
 
-
 .spark-three {
   bottom: 11%;
   left: 17%;
 
   animation-delay: -2s;
 }
-
 
 /* =========================================
 RIGHT FORM SECTION
@@ -460,14 +401,8 @@ RIGHT FORM SECTION
   padding: clamp(28px, 5vw, 74px);
 
   background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.78),
-      rgba(248, 247, 243, 0.94)
-    ),
-    var(--right-bg);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(248, 247, 243, 0.94)), var(--right-bg);
 }
-
 
 /* =========================================
 TOP LOGIN
@@ -490,7 +425,6 @@ TOP LOGIN
   font-size: 13px;
 }
 
-
 .top-login a {
   color: var(--gold-dark);
 
@@ -498,17 +432,14 @@ TOP LOGIN
 
   text-decoration: none;
 
-  transition:
-    color 160ms ease;
+  transition: color 160ms ease;
 }
-
 
 .top-login a:hover {
   color: var(--gold);
 
   text-decoration: underline;
 }
-
 
 /* =========================================
 REGISTER CARD
@@ -525,12 +456,10 @@ REGISTER CARD
 
   background: rgba(255, 253, 248, 0.95);
 
-  box-shadow:
-    0 28px 80px rgba(65, 52, 29, 0.11);
+  box-shadow: 0 28px 80px rgba(65, 52, 29, 0.11);
 
   backdrop-filter: blur(8px);
 }
-
 
 /* =========================================
 HEADER
@@ -541,7 +470,6 @@ HEADER
 
   text-align: center;
 }
-
 
 .step-small {
   margin: 0 0 12px;
@@ -557,7 +485,6 @@ HEADER
   text-transform: uppercase;
 }
 
-
 .card-header h2 {
   margin: 0;
 
@@ -572,7 +499,6 @@ HEADER
   font-weight: 800;
 }
 
-
 .card-header p {
   margin: 13px 0 0;
 
@@ -583,7 +509,6 @@ HEADER
   line-height: 1.55;
 }
 
-
 /* =========================================
 PROGRESS
 CENTERED LINE
@@ -592,14 +517,12 @@ CENTERED LINE
 .progress-wrapper {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   width: 100%;
 
   margin-bottom: 30px;
 }
-
 
 .progress-item {
   position: relative;
@@ -610,7 +533,6 @@ CENTERED LINE
 
   color: #b2ada2;
 }
-
 
 .progress-line {
   position: relative;
@@ -623,7 +545,6 @@ CENTERED LINE
   align-items: center;
   justify-content: center;
 }
-
 
 /* =========================================
 PROGRESS LINE
@@ -645,16 +566,13 @@ PROGRESS LINE
   background: #e1d9ca;
 }
 
-
 .progress-item.completed .line {
   background: var(--gold);
 }
 
-
 .progress-item:last-child .line {
   display: none;
 }
-
 
 /* =========================================
 STEP CIRCLE
@@ -694,11 +612,9 @@ STEP CIRCLE
     transform 160ms ease;
 }
 
-
 .step-circle:hover {
   transform: scale(1.05);
 }
-
 
 .progress-item.active .step-circle,
 .progress-item.completed .step-circle {
@@ -709,6 +625,15 @@ STEP CIRCLE
   color: #fff;
 }
 
+.step-check-icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
 
 .progress-item span {
   display: block;
@@ -722,12 +647,10 @@ STEP CIRCLE
   font-weight: 700;
 }
 
-
 .progress-item.active span,
 .progress-item.completed span {
   color: var(--gold-dark);
 }
-
 
 /* =========================================
 STEP CONTENT
@@ -736,15 +659,10 @@ STEP CONTENT
 .step-content {
   min-height: 270px;
 
-  animation:
-    stepIn
-    0.28s
-    ease;
+  animation: stepIn 0.28s ease;
 }
 
-
 @keyframes stepIn {
-
   from {
     opacity: 0;
 
@@ -756,9 +674,7 @@ STEP CONTENT
 
     transform: translateX(0);
   }
-
 }
-
 
 /* =========================================
 ACCOUNT TYPE
@@ -780,13 +696,11 @@ ACCOUNT TYPE
   text-transform: uppercase;
 }
 
-
 .account-options {
   display: grid;
 
   gap: 12px;
 }
-
 
 .account-card {
   width: 100%;
@@ -818,26 +732,21 @@ ACCOUNT TYPE
     background 160ms ease;
 }
 
-
 .account-card:hover {
   transform: translateY(-2px);
 
   border-color: rgba(201, 154, 36, 0.55);
 
-  box-shadow:
-    0 10px 25px rgba(126, 93, 20, 0.08);
+  box-shadow: 0 10px 25px rgba(126, 93, 20, 0.08);
 }
-
 
 .account-card.selected {
   border-color: var(--gold);
 
   background: #fffaf0;
 
-  box-shadow:
-    0 10px 25px rgba(168, 124, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(168, 124, 0, 0.1);
 }
-
 
 .account-icon {
   width: 48px;
@@ -858,11 +767,19 @@ ACCOUNT TYPE
   font-size: 21px;
 }
 
+.account-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
 
 .account-info {
   flex: 1;
 }
-
 
 .account-info strong {
   display: block;
@@ -876,7 +793,6 @@ ACCOUNT TYPE
   font-weight: 800;
 }
 
-
 .account-info span {
   display: block;
 
@@ -886,7 +802,6 @@ ACCOUNT TYPE
 
   line-height: 1.45;
 }
-
 
 .radio-circle {
   width: 20px;
@@ -905,7 +820,6 @@ ACCOUNT TYPE
   background: #fff;
 }
 
-
 .radio-circle span {
   width: 10px;
   height: 10px;
@@ -915,7 +829,6 @@ ACCOUNT TYPE
   background: var(--gold);
 }
 
-
 /* =========================================
 FORM GRID
 ========================================= */
@@ -923,12 +836,10 @@ FORM GRID
 .form-grid {
   display: grid;
 
-  grid-template-columns:
-    1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 
   gap: 0 14px;
 }
-
 
 /* =========================================
 STEP 2 PERSONAL FORM
@@ -945,7 +856,6 @@ FULL WIDTH / ONE BELOW ANOTHER
   gap: 0;
 }
 
-
 /*
 IMPORTANT:
 
@@ -959,7 +869,6 @@ vertical using this selector.
 .step-content .form-grid {
   width: 100%;
 }
-
 
 /* Step 2 has only personal fields.
 The first form-grid inside step 2
@@ -975,7 +884,6 @@ will become vertical. */
   gap: 0;
 }
 
-
 /* =========================================
 FIELD
 ========================================= */
@@ -986,11 +894,9 @@ FIELD
   margin-bottom: 16px;
 }
 
-
 .field.full-width {
   grid-column: 1 / -1;
 }
-
 
 .field label {
   display: block;
@@ -1007,7 +913,6 @@ FIELD
 
   text-transform: uppercase;
 }
-
 
 /* =========================================
 INPUT WRAPPER
@@ -1037,22 +942,18 @@ INPUT WRAPPER
     background 160ms ease;
 }
 
-
 .input-wrapper:focus-within,
 .textarea-wrapper:focus-within {
   border-color: rgba(201, 154, 36, 0.76);
 
   background: #fffdfa;
 
-  box-shadow:
-    0 0 0 4px rgba(201, 154, 36, 0.14);
+  box-shadow: 0 0 0 4px rgba(201, 154, 36, 0.14);
 }
-
 
 .input-wrapper.invalid {
   border-color: #b84d3c;
 }
-
 
 /* =========================================
 INPUT ICON
@@ -1072,6 +973,16 @@ INPUT ICON
   font-size: 16px;
 }
 
+.input-icon svg,
+.visibility-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
 
 /* =========================================
 INPUT
@@ -1100,16 +1011,13 @@ INPUT
   font-size: 14px;
 }
 
-
 .input-wrapper input::placeholder {
   color: #b5aa99;
 }
 
-
 .input-wrapper select {
   cursor: pointer;
 }
-
 
 /* =========================================
 TEXTAREA
@@ -1118,7 +1026,6 @@ TEXTAREA
 .textarea-wrapper {
   align-items: stretch;
 }
-
 
 .textarea-wrapper textarea {
   width: 100%;
@@ -1144,11 +1051,9 @@ TEXTAREA
   line-height: 1.55;
 }
 
-
 .textarea-wrapper textarea::placeholder {
   color: #b5aa99;
 }
-
 
 /* =========================================
 PASSWORD VISIBILITY
@@ -1181,13 +1086,11 @@ PASSWORD VISIBILITY
     color 160ms ease;
 }
 
-
 .visibility-button:hover {
   background: rgba(201, 154, 36, 0.1);
 
   color: var(--gold-dark);
 }
-
 
 /* =========================================
 ERRORS
@@ -1202,7 +1105,6 @@ ERRORS
 
   font-size: 12px;
 }
-
 
 /* =========================================
 UPLOAD
@@ -1236,7 +1138,6 @@ UPLOAD
     transform 160ms ease;
 }
 
-
 .upload-box:hover {
   border-color: var(--gold);
 
@@ -1245,13 +1146,11 @@ UPLOAD
   transform: translateY(-1px);
 }
 
-
 .upload-icon {
   color: var(--gold);
 
   font-size: 22px;
 }
-
 
 .upload-box strong {
   color: #3e3932;
@@ -1261,13 +1160,11 @@ UPLOAD
   font-weight: 800;
 }
 
-
 .upload-box span {
   color: #918a7e;
 
   font-size: 10px;
 }
-
 
 /* =========================================
 IMAGE PREVIEW
@@ -1289,7 +1186,6 @@ IMAGE PREVIEW
   background: #fffaf1;
 }
 
-
 .image-preview img {
   width: 58px;
   height: 58px;
@@ -1298,7 +1194,6 @@ IMAGE PREVIEW
 
   border-radius: 12px;
 }
-
 
 .image-preview button {
   padding: 8px 13px;
@@ -1319,7 +1214,6 @@ IMAGE PREVIEW
 
   font-weight: 700;
 }
-
 
 /* =========================================
 AGREEMENT
@@ -1343,7 +1237,6 @@ AGREEMENT
   cursor: pointer;
 }
 
-
 .agreement input {
   width: 16px;
   height: 16px;
@@ -1357,13 +1250,11 @@ AGREEMENT
   cursor: pointer;
 }
 
-
 .agreement a {
   color: var(--gold-dark);
 
   font-weight: 800;
 }
-
 
 /* =========================================
 ACTION BUTTONS
@@ -1385,7 +1276,6 @@ ACTION BUTTONS
   border-top: 1px solid var(--line);
 }
 
-
 .back-button,
 .next-button {
   min-width: 105px;
@@ -1404,12 +1294,26 @@ ACTION BUTTONS
 
   cursor: pointer;
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
     background 160ms ease;
 }
 
+.button-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
 
 .back-button {
   border: 1px solid var(--line);
@@ -1419,39 +1323,27 @@ ACTION BUTTONS
   color: #756f65;
 }
 
-
 .back-button:hover {
   border-color: rgba(201, 154, 36, 0.46);
 
   background: #fffdf8;
 }
 
-
 .next-button {
   border: 0;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--gold-soft) 0%,
-      var(--gold) 46%,
-      #a77b18 100%
-    );
+  background: linear-gradient(135deg, var(--gold-soft) 0%, var(--gold) 46%, #a77b18 100%);
 
-  box-shadow:
-    0 16px 34px rgba(166, 118, 24, 0.24);
+  box-shadow: 0 16px 34px rgba(166, 118, 24, 0.24);
 
   color: #2d2108;
 }
 
-
 .next-button:hover {
   transform: translateY(-1px);
 
-  box-shadow:
-    0 18px 38px rgba(166, 118, 24, 0.28);
+  box-shadow: 0 18px 38px rgba(166, 118, 24, 0.28);
 }
-
 
 .next-button:disabled {
   opacity: 0.65;
@@ -1461,11 +1353,9 @@ ACTION BUTTONS
   transform: none;
 }
 
-
 .create-button {
   min-width: 145px;
 }
-
 
 /* =========================================
 SECURITY NOTE
@@ -1487,144 +1377,106 @@ SECURITY NOTE
   font-size: 9px;
 }
 
+.security-note-icon {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
 
 /* =========================================
 ANIMATIONS
 ========================================= */
 
 @keyframes floatRegisterLarge {
-
   0% {
-    transform:
-      translate3d(0, 0, 0)
-      rotate(5deg);
+    transform: translate3d(0, 0, 0) rotate(5deg);
   }
 
   25% {
-    transform:
-      translate3d(-5px, -10px, 0)
-      rotate(4deg);
+    transform: translate3d(-5px, -10px, 0) rotate(4deg);
   }
 
   50% {
-    transform:
-      translate3d(2px, -16px, 0)
-      rotate(6deg);
+    transform: translate3d(2px, -16px, 0) rotate(6deg);
   }
 
   75% {
-    transform:
-      translate3d(6px, -8px, 0)
-      rotate(5deg);
+    transform: translate3d(6px, -8px, 0) rotate(5deg);
   }
 
   100% {
-    transform:
-      translate3d(0, 0, 0)
-      rotate(5deg);
+    transform: translate3d(0, 0, 0) rotate(5deg);
   }
-
 }
-
 
 @keyframes floatRegisterTop {
-
   0% {
-    transform:
-      translate3d(0, 0, 0)
-      rotate(-9deg);
+    transform: translate3d(0, 0, 0) rotate(-9deg);
   }
 
   25% {
-    transform:
-      translate3d(5px, -7px, 0)
-      rotate(-10deg);
+    transform: translate3d(5px, -7px, 0) rotate(-10deg);
   }
 
   50% {
-    transform:
-      translate3d(9px, -13px, 0)
-      rotate(-8deg);
+    transform: translate3d(9px, -13px, 0) rotate(-8deg);
   }
 
   75% {
-    transform:
-      translate3d(3px, -6px, 0)
-      rotate(-7deg);
+    transform: translate3d(3px, -6px, 0) rotate(-7deg);
   }
 
   100% {
-    transform:
-      translate3d(0, 0, 0)
-      rotate(-9deg);
+    transform: translate3d(0, 0, 0) rotate(-9deg);
   }
-
 }
-
 
 @keyframes floatRegisterBottom {
-
   0% {
-    transform:
-      translate3d(0, 0, 0)
-      rotate(-7deg);
+    transform: translate3d(0, 0, 0) rotate(-7deg);
   }
 
   25% {
-    transform:
-      translate3d(-6px, -8px, 0)
-      rotate(-8deg);
+    transform: translate3d(-6px, -8px, 0) rotate(-8deg);
   }
 
   50% {
-    transform:
-      translate3d(-3px, -14px, 0)
-      rotate(-6deg);
+    transform: translate3d(-3px, -14px, 0) rotate(-6deg);
   }
 
   75% {
-    transform:
-      translate3d(5px, -7px, 0)
-      rotate(-7deg);
+    transform: translate3d(5px, -7px, 0) rotate(-7deg);
   }
 
   100% {
-    transform:
-      translate3d(0, 0, 0)
-      rotate(-7deg);
+    transform: translate3d(0, 0, 0) rotate(-7deg);
   }
-
 }
 
-
 @keyframes sparkle {
-
   0%,
   100% {
     opacity: 0.45;
 
-    transform:
-      scale(0.9)
-      rotate(0deg);
+    transform: scale(0.9) rotate(0deg);
   }
 
   50% {
     opacity: 1;
 
-    transform:
-      scale(1.15)
-      rotate(12deg);
+    transform: scale(1.15) rotate(12deg);
   }
-
 }
-
 
 /* =========================================
 RESPONSIVE
 ========================================= */
 
 @media (max-width: 1180px) {
-
   .hero-section {
     padding: 38px;
   }
@@ -1636,22 +1488,18 @@ RESPONSIVE
   .book-card-one {
     right: 4%;
   }
-
 }
-
 
 /* =========================================
 TABLET
 ========================================= */
 
 @media (max-width: 900px) {
-
   .register-page {
     grid-template-columns: 1fr;
 
     overflow: visible;
   }
-
 
   .hero-section {
     min-height: 390px;
@@ -1659,18 +1507,15 @@ TABLET
     padding: 28px;
   }
 
-
   .hero-content {
     width: min(560px, 82%);
 
     margin-top: 46px;
   }
 
-
   .hero-content h1 {
     font-size: clamp(42px, 9vw, 66px);
   }
-
 
   .form-section {
     min-height: auto;
@@ -1678,38 +1523,31 @@ TABLET
     padding: 36px 22px 46px;
   }
 
-
   .book-card-three {
     display: none;
   }
-
 
   .security-note {
     position: static;
 
     margin-top: 20px;
   }
-
 }
-
 
 /* =========================================
 MOBILE
 ========================================= */
 
 @media (max-width: 620px) {
-
   .hero-section {
     min-height: 310px;
 
     padding: 22px;
   }
 
-
   .brand {
     font-size: 22px;
   }
-
 
   .brand-logo {
     width: 46px;
@@ -1718,18 +1556,15 @@ MOBILE
     margin-right: -6px;
   }
 
-
   .hero-content {
     width: 100%;
 
     margin-top: 30px;
   }
 
-
   .hero-content h1 {
     font-size: clamp(42px, 10vw, 58px);
   }
-
 
   .hero-content p {
     max-width: 310px;
@@ -1741,11 +1576,9 @@ MOBILE
     line-height: 1.55;
   }
 
-
   .floating-books {
     opacity: 0.65;
   }
-
 
   .book-card-one {
     width: 126px;
@@ -1755,24 +1588,20 @@ MOBILE
     top: 82px;
   }
 
-
   .book-card-two,
   .book-card-three {
     display: none;
   }
 
-
   .form-section {
     padding: 24px 15px 34px;
   }
-
 
   .register-card {
     padding: 26px 18px;
 
     border-radius: 24px;
   }
-
 
   .top-login {
     top: 16px;
@@ -1782,16 +1611,13 @@ MOBILE
     font-size: 11px;
   }
 
-
   .card-header {
     margin-bottom: 24px;
   }
 
-
   .card-header h2 {
     font-size: 32px;
   }
-
 
   /* =====================================
   ALL FORM FIELDS ONE BELOW ANOTHER
@@ -1805,7 +1631,6 @@ MOBILE
     gap: 0;
   }
 
-
   .author-form-grid {
     display: flex;
 
@@ -1814,11 +1639,9 @@ MOBILE
     gap: 0;
   }
 
-
   .field.full-width {
     width: 100%;
   }
-
 
   /* =====================================
   PROGRESS
@@ -1828,16 +1651,13 @@ MOBILE
     margin-bottom: 24px;
   }
 
-
   .progress-line {
     height: 26px;
   }
 
-
   .progress-item span {
     font-size: 8px;
   }
-
 
   .step-circle {
     width: 26px;
@@ -1846,11 +1666,9 @@ MOBILE
     font-size: 10px;
   }
 
-
   .card-actions {
     margin-top: 12px;
   }
-
 
   .back-button,
   .next-button {
@@ -1858,32 +1676,26 @@ MOBILE
 
     min-width: 95px;
   }
-
 }
-
 
 /* =========================================
 SMALL MOBILE
 ========================================= */
 
 @media (max-width: 390px) {
-
   .hero-section {
     min-height: 300px;
 
     padding: 22px;
   }
 
-
   .hero-content h1 {
     font-size: 40px;
   }
 
-
   .register-card {
     padding: 22px 15px;
   }
-
 
   .top-login {
     right: 16px;
@@ -1891,24 +1703,19 @@ SMALL MOBILE
     font-size: 10px;
   }
 
-
   .social-logins {
     gap: 8px;
   }
-
 }
-
 
 /* =========================================
 REDUCED MOTION
 ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   .book-card,
   .spark,
   .step-content {
     animation: none !important;
   }
-
 }

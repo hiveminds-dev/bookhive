@@ -1,42 +1,45 @@
 <main class="verify-page">
+  <a class="brand" routerLink="/" aria-label="BookHive home">
+    <img class="brand-icon" [src]="logoPath" alt="" />
+    <span>BookHive</span>
+  </a>
 
-  <div class="brand">
-    <span class="brand-line"></span>
-    <h1>BookHive</h1>
-  </div>
-
-  <section class="verify-card">
-
-    <div class="email-icon">
-      ✉
-      <span>✓</span>
+  <section class="verify-card" aria-labelledby="verify-title">
+    <div class="email-icon" aria-hidden="true">
+      <svg lucideMail class="mail-icon" aria-hidden="true"></svg>
+      <span class="check-badge">
+        <svg lucideCheck aria-hidden="true"></svg>
+      </span>
     </div>
 
-    <h2>Verify your email address</h2>
+    <p class="eyebrow">One more step</p>
+    <h1 id="verify-title">Verify your email address</h1>
 
     <p class="description">
-      Welcome to BookHive! Please confirm your email address
-      to activate your account and start exploring books.
+      We sent a verification link to the email address below. Open the link to activate your
+      BookHive account.
     </p>
 
-    <div class="email-box">
+    <div class="email-box" aria-label="Verification email address">
+      <svg lucideMail aria-hidden="true"></svg>
       {{ email }}
     </div>
 
-    <div class="actions">
-
-      <button type="button" (click)="resendEmail()">
-        Resend Email
-      </button>
-
-      <span class="divider"></span>
-
-      <a routerLink="/login">
-        ← Back to Sign In
-      </a>
-
+    <div class="helper-copy">
+      <svg lucideInfo aria-hidden="true"></svg>
+      <p>Didn’t receive it? Check your spam folder or request a new email.</p>
     </div>
 
-  </section>
+    <div class="actions">
+      <button class="resend-button" type="button" (click)="resendEmail()">
+        <svg lucideRefreshCw aria-hidden="true"></svg>
+        <span>Resend verification email</span>
+      </button>
 
+      <a class="back-link" routerLink="/login">
+        <svg lucideArrowLeft aria-hidden="true"></svg>
+        <span>Back to sign in</span>
+      </a>
+    </div>
+  </section>
 </main>
