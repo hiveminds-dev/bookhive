@@ -5,9 +5,22 @@ import {
   FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import {
+  LucideArrowLeft,
+  LucideArrowRight,
+  LucideBookOpen,
+  LucideCheck,
+  LucideEye,
+  LucideEyeOff,
+  LucideLockKeyhole,
+  LucideMail,
+  LucidePenLine,
+  LucideShieldCheck,
+  LucideSparkles,
+} from '@lucide/angular';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -17,9 +30,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
     return null;
   }
 
-  return password === confirmPassword
-    ? null
-    : { passwordMismatch: true };
+  return password === confirmPassword ? null : { passwordMismatch: true };
 }
 
 @Component({
@@ -27,13 +38,23 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
+    LucideArrowLeft,
+    LucideArrowRight,
+    LucideBookOpen,
+    LucideCheck,
+    LucideEye,
+    LucideEyeOff,
+    LucideLockKeyhole,
+    LucideMail,
+    LucidePenLine,
+    LucideShieldCheck,
+    LucideSparkles,
   ],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrl: './register.scss',
 })
 export class Register {
-
   private fb = inject(FormBuilder);
   private router = inject(Router);
 
@@ -71,33 +92,21 @@ export class Register {
 
   readerForm = this.fb.group(
     {
-      fullName: ['', [
-        Validators.required,
-        Validators.minLength(2)
-      ]],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
 
-      username: ['', [
-        Validators.required,
-        Validators.minLength(3)
-      ]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
 
-      email: ['', [
-        Validators.required,
-        Validators.email
-      ]],
+      email: ['', [Validators.required, Validators.email]],
 
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8)
-      ]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
 
       confirmPassword: ['', Validators.required],
 
-      terms: [false, Validators.requiredTrue]
+      terms: [false, Validators.requiredTrue],
     },
     {
-      validators: passwordsMatchValidator
-    }
+      validators: passwordsMatchValidator,
+    },
   );
 
   // =========================
@@ -106,47 +115,29 @@ export class Register {
 
   authorForm = this.fb.group(
     {
-      fullName: ['', [
-        Validators.required,
-        Validators.minLength(2)
-      ]],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
 
-      penName: ['', [
-        Validators.required,
-        Validators.minLength(2)
-      ]],
+      penName: ['', [Validators.required, Validators.minLength(2)]],
 
-      username: ['', [
-        Validators.required,
-        Validators.minLength(3)
-      ]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
 
-      email: ['', [
-        Validators.required,
-        Validators.email
-      ]],
+      email: ['', [Validators.required, Validators.email]],
 
       country: ['', Validators.required],
 
       language: ['', Validators.required],
 
-      bio: ['', [
-        Validators.required,
-        Validators.minLength(10)
-      ]],
+      bio: ['', [Validators.required, Validators.minLength(10)]],
 
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8)
-      ]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
 
       confirmPassword: ['', Validators.required],
 
-      agreement: [false, Validators.requiredTrue]
+      agreement: [false, Validators.requiredTrue],
     },
     {
-      validators: passwordsMatchValidator
-    }
+      validators: passwordsMatchValidator,
+    },
   );
 
   // =========================
@@ -154,9 +145,7 @@ export class Register {
   // =========================
 
   get activeForm(): FormGroup {
-    return this.accountType === 'reader'
-      ? this.readerForm
-      : this.authorForm;
+    return this.accountType === 'reader' ? this.readerForm : this.authorForm;
   }
 
   // =========================
@@ -246,44 +235,26 @@ export class Register {
   // =========================
 
   private validateCurrentStep(): boolean {
-
     const form: FormGroup = this.activeForm;
 
     let fields: string[] = [];
 
     if (this.currentStep === 2) {
-      fields = this.accountType === 'reader'
-        ? [
-          'fullName',
-          'username'
-        ]
-        : [
-          'fullName',
-          'penName',
-          'username'
-        ];
+      fields =
+        this.accountType === 'reader'
+          ? ['fullName', 'username']
+          : ['fullName', 'penName', 'username'];
     }
 
     if (this.currentStep === 3) {
-      fields = this.accountType === 'reader'
-        ? [
-          'email'
-        ]
-        : [
-          'email',
-          'country',
-          'language',
-          'bio'
-        ];
+      fields = this.accountType === 'reader' ? ['email'] : ['email', 'country', 'language', 'bio'];
     }
 
     if (this.currentStep === 4) {
       fields = [
         'password',
         'confirmPassword',
-        this.accountType === 'reader'
-          ? 'terms'
-          : 'agreement'
+        this.accountType === 'reader' ? 'terms' : 'agreement',
       ];
     }
 
@@ -304,40 +275,29 @@ export class Register {
       }
     }
 
-    if (
-      this.currentStep === 4 &&
-      form.hasError('passwordMismatch')
-    ) {
+    if (this.currentStep === 4 && form.hasError('passwordMismatch')) {
       valid = false;
 
-      form
-        .get('confirmPassword')
-        ?.markAsTouched();
+      form.get('confirmPassword')?.markAsTouched();
     }
 
     return valid;
   }
 
-  hasFieldError(
-    form: AbstractControl,
-    fieldName: string,
-    errorName: string
-  ): boolean {
-
+  hasFieldError(form: AbstractControl, fieldName: string, errorName: string): boolean {
     const field = form.get(fieldName);
 
-    return !!field &&
-      (field.touched || field.dirty) &&
-      field.hasError(errorName);
+    return !!field && (field.touched || field.dirty) && field.hasError(errorName);
   }
 
   hasPasswordMismatch(form: AbstractControl): boolean {
-
     const confirmPassword = form.get('confirmPassword');
 
-    return !!confirmPassword &&
+    return (
+      !!confirmPassword &&
       (confirmPassword.touched || confirmPassword.dirty) &&
-      form.hasError('passwordMismatch');
+      form.hasError('passwordMismatch')
+    );
   }
 
   // =========================
@@ -357,7 +317,6 @@ export class Register {
   // =========================
 
   onImageSelected(event: Event): void {
-
     const input = event.target as HTMLInputElement;
 
     if (!input.files || input.files.length === 0) {
@@ -379,7 +338,6 @@ export class Register {
   }
 
   onDrop(event: DragEvent): void {
-
     event.preventDefault();
 
     const files = event.dataTransfer?.files;
@@ -399,7 +357,6 @@ export class Register {
   }
 
   private setSelectedImage(file: File): void {
-
     this.selectedImage = file;
 
     const reader = new FileReader();
@@ -421,7 +378,6 @@ export class Register {
   // =========================
 
   register(): void {
-
     if (this.isSubmitting) {
       return;
     }
@@ -438,38 +394,29 @@ export class Register {
     this.isSubmitting = true;
 
     setTimeout(() => {
-
       const email = this.activeForm.get('email')?.value;
 
       if (this.accountType === 'reader') {
-
         console.log('Reader registration:', {
           ...this.readerForm.value,
-          accountType: 'reader'
+          accountType: 'reader',
         });
-
       } else {
-
         console.log('Author registration:', {
           ...this.authorForm.value,
           accountType: 'author',
-          profileImage: this.selectedImage
+          profileImage: this.selectedImage,
         });
-
       }
 
       this.isSubmitting = false;
 
       // Navigate to email verification page
-      this.router.navigate(
-        ['/auth/verify-email'],
-        {
-          queryParams: {
-            email: email
-          }
-        }
-      );
-
+      this.router.navigate(['/auth/verify-email'], {
+        queryParams: {
+          email: email,
+        },
+      });
     }, 800);
   }
 }

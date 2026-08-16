@@ -1,33 +1,18 @@
 <div class="success-page">
-
   <!-- BookHive Logo -->
-  <div class="brand">
+  <a class="brand" routerLink="/" aria-label="BookHive home">
+    <img class="brand-icon" [src]="logoPath" alt="" />
     <span>BookHive</span>
-  </div>
+  </a>
 
   <!-- Success Card -->
   <main class="success-card">
-
     <!-- Animated Success Icon -->
     <div class="success-icon-wrapper">
-
       <div class="success-glow"></div>
 
       <div class="success-icon">
-        <svg
-          class="check-icon"
-          viewBox="0 0 52 52"
-          aria-hidden="true"
-        >
-          <path
-            d="M14 27L22 35L39 17"
-            fill="none"
-            stroke="white"
-            stroke-width="4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <svg lucideCheck class="check-icon" aria-hidden="true"></svg>
       </div>
 
       <!-- Decorative particles -->
@@ -37,56 +22,32 @@
       <span class="particle particle-4"></span>
       <span class="particle particle-5"></span>
       <span class="particle particle-6"></span>
-
     </div>
 
     <!-- Success Content -->
     <div class="success-content">
-
-      <h1>Verification Successful!</h1>
+      <p class="eyebrow">Email verified</p>
+      <h1>Verification successful</h1>
 
       <p class="description">
-        Your email has been successfully verified.<br />
-        Your BookHive account is now ready.
+        Your email address has been confirmed and your BookHive account is ready to use.
       </p>
 
       <!-- Welcome Badge -->
       <div class="welcome-badge">
-        <span class="celebration">🎉</span>
+        <svg lucideSparkles class="celebration-icon" aria-hidden="true"></svg>
         <span>Welcome to BookHive!</span>
       </div>
 
       <!-- Continue Button -->
-      <button
-        type="button"
-        class="continue-button"
-        (click)="goToLogin()"
-      >
-        <span>Continue to BookHive</span>
+      <button type="button" class="continue-button" (click)="goToLogin()">
+        <span>Continue to sign in</span>
 
-        <svg
-          class="arrow-icon"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            d="M5 12H19M13 6L19 12L13 18"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <svg lucideArrowRight class="arrow-icon" aria-hidden="true"></svg>
       </button>
 
       <!-- No Auto  Redirect -->
-      <p class="redirect-message">
-        Click continue to sign in to your BookHive account.
-      </p>
-
+      <p class="redirect-message">Click continue to sign in to your BookHive account.</p>
     </div>
-
   </main>
-
 </div>

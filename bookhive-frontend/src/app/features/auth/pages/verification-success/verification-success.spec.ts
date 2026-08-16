@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { vi } from 'vitest';
 
 import { VerificationSuccess } from './verification-success';
 
@@ -11,9 +12,7 @@ describe('VerificationSuccess', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [VerificationSuccess],
-      providers: [
-        provideRouter([])
-      ]
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(VerificationSuccess);
@@ -33,12 +32,8 @@ describe('VerificationSuccess', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should start with a countdown of 3', () => {
-    expect(component.countdown).toBe(3);
-  });
-
   it('should navigate to login when continue is clicked', () => {
-    const navigateSpy = spyOn(router, 'navigate');
+    const navigateSpy = vi.spyOn(router, 'navigate');
 
     component.goToLogin();
 
@@ -48,20 +43,21 @@ describe('VerificationSuccess', () => {
   it('should display the success message', () => {
     const element: HTMLElement = fixture.nativeElement;
 
-    expect(element.textContent).toContain(
-      'Verification Successful!'
-    );
+    expect(element.textContent).toContain('Verification successful');
 
-    expect(element.textContent).toContain(
-      'Your BookHive account is now ready.'
-    );
+    expect(element.textContent).toContain('your BookHive account is ready to use.');
   });
 
   it('should display the welcome message', () => {
     const element: HTMLElement = fixture.nativeElement;
 
-    expect(element.textContent).toContain(
-      'Welcome to BookHive!'
-    );
+    expect(element.textContent).toContain('Welcome to BookHive!');
+  });
+
+  it('should use an icon instead of a celebration emoji', () => {
+    const element: HTMLElement = fixture.nativeElement;
+
+    expect(element.querySelector('.celebration-icon')).toBeTruthy();
+    expect(element.textContent).not.toContain('🎉');
   });
 });
