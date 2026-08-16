@@ -1,1 +1,49 @@
-<p>book-content works!</p>
+<div class="reader-canvas">
+
+  <article
+    class="book-page"
+    [style.--reader-zoom]="zoomScale">
+
+    <div class="page-inner">
+
+      <header class="chapter-header">
+        <h1>
+          Chapter {{ chapterNumber }}:
+          {{ chapterTitle }}
+        </h1>
+
+        <span class="heading-line" aria-hidden="true"></span>
+      </header>
+
+      <div class="chapter-content">
+
+        @for (paragraph of paragraphs; track $index) {
+
+          @if ($index === imagePosition && image) {
+            @if (!imageLoadFailed) {
+              <figure class="chapter-image">
+                <img
+                  [src]="image"
+                  [alt]="imageAlt || chapterTitle"
+                  (error)="onImageError()">
+              </figure>
+            } @else {
+              <div class="image-placeholder">
+                <span>▧</span>
+                <p>Chapter image</p>
+              </div>
+            }
+          }
+
+          <p [class.first-paragraph]="$first">
+            {{ paragraph }}
+          </p>
+        }
+
+      </div>
+
+    </div>
+
+  </article>
+
+</div>

@@ -1,9 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-book-description',
+  standalone: true,
   imports: [],
   templateUrl: './book-description.html',
-  styleUrl: './book-description.css',
+  styleUrl: './book-description.scss'
 })
-export class BookDescription {}
+export class BookDescriptionComponent {
+
+  @Input() title = 'Abstract';
+  @Input() paragraphs: string[] = [];
+}

@@ -1,1 +1,33 @@
-<p>page-navigation works!</p>
+<footer class="page-navigation">
+
+  <div class="page-position">
+    Page {{ currentPage }} of {{ totalPages }}
+  </div>
+
+  <div
+    class="progress-track"
+    role="progressbar"
+    [attr.aria-valuenow]="readingPercentage"
+    aria-valuemin="0"
+    aria-valuemax="100">
+
+    <span
+      class="progress-value"
+      [style.width]="progressWidth">
+    </span>
+
+  </div>
+
+  <div class="reading-status">
+    <span>{{ readingPercentage }}% Read</span>
+
+    @if (currentPage < totalPages) {
+      <small>
+        Next page in {{ secondsRemaining }}s
+      </small>
+    } @else {
+      <small>Completed</small>
+    }
+  </div>
+
+</footer>

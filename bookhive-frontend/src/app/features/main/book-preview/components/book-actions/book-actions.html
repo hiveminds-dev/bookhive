@@ -1,1 +1,22 @@
-<p>book-actions works!</p>
+<div class="book-actions">
+
+  <button
+    type="button"
+    class="read-button"
+    (click)="onReadBook()">
+
+    <span class="button-icon" aria-hidden="true">▣</span>
+    <span>Read Book Now</span>
+  </button>
+
+  <button
+    type="button"
+    class="download-button"
+    [disabled]="!canDownload"
+    (click)="onDownloadBook()">
+
+    <span class="download-icon" aria-hidden="true">⇩</span>
+    <span>Download</span>
+  </button>
+
+</div>

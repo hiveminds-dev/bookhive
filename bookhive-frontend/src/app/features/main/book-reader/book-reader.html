@@ -1,1 +1,123 @@
-<p>book-reader works!</p>
+<main class="book-reader-page">
+
+  <header class="reader-book-header">
+
+    <div class="header-container">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToLibrary()">
+
+        <span aria-hidden="true">‹</span>
+        Back to Library
+      </button>
+
+      <div
+        class="header-book-cover"
+        aria-hidden="true">
+        <span>▤</span>
+      </div>
+
+      <div class="header-book-details">
+        <h1>{{ book.title }}</h1>
+        <p>By {{ book.author }}</p>
+      </div>
+
+      <div class="header-tags">
+        <span>{{ book.category }}</span>
+        <span>{{ book.language }}</span>
+      </div>
+
+    </div>
+
+  </header>
+
+  @if (isLoading) {
+
+    <div class="reader-loading">
+      <div class="loading-spinner"></div>
+      <p>Loading your book...</p>
+    </div>
+
+  } @else {
+
+    <section class="reader-workspace">
+
+      <div class="reader-grid">
+
+        <!-- LEFT: Book cover and details -->
+
+        <div class="reader-left">
+
+          <app-reader-sidebar
+            [bookTitle]="book.title"
+            [cover]="book.cover"
+            [totalPages]="book.totalPages"
+            [rating]="book.rating"
+            [currentPage]="currentPage"
+            [chapters]="chapters"
+            (chapterSelected)="selectChapter($event)">
+          </app-reader-sidebar>
+
+        </div>
+
+        <!-- CENTER: Reader toolbar and content -->
+
+        <div class="reader-center">
+
+          <app-reader-toolbar
+            [zoomLevel]="zoomLevel"
+            [currentPage]="currentPage"
+            [totalPages]="book.totalPages"
+            [bookmarked]="bookmarked"
+            (zoomIn)="zoomIn()"
+            (zoomOut)="zoomOut()"
+            (previousPage)="previousPage()"
+            (nextPage)="nextPage()"
+            (bookmarkChanged)="onBookmarkChanged($event)"
+            (download)="downloadBook()"
+            (fullscreen)="openFullscreen()">
+          </app-reader-toolbar>
+
+          <app-book-content
+            [chapterNumber]="currentContent.chapterNumber"
+            [chapterTitle]="currentContent.chapterTitle"
+            [paragraphs]="currentContent.paragraphs"
+            [image]="currentContent.image"
+            [imageAlt]="currentContent.imageAlt"
+            [imagePosition]="currentContent.imagePosition"
+            [zoomLevel]="zoomLevel">
+          </app-book-content>
+
+        </div>
+
+        <!-- RIGHT: Quick actions and saved page number -->
+
+        <div class="reader-right">
+
+          <app-reader-settings
+            [currentPage]="lastReadPage"
+            [totalPages]="book.totalPages"
+            (pageSelected)="goToPage($event)"
+            (shareExcerpt)="shareExcerpt()"
+            (reportIssue)="reportIssue()">
+          </app-reader-settings>
+
+        </div>
+
+      </div>
+
+      <!-- Reading progress -->
+
+      <app-page-navigation
+        [currentPage]="lastReadPage"
+        [totalPages]="book.totalPages"
+        [secondsRemaining]="secondsRemaining">
+      </app-page-navigation>
+
+    </section>
+
+  }
+
+</main>

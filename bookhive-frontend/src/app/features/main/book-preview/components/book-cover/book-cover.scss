@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.cover-container {
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: #eee9df;
+  box-shadow: 0 13px 28px rgba(43, 35, 18, 0.16);
+}
+
+.book-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 0.7;
+  object-fit: cover;
+}
+
+.cover-badge {
+  position: absolute;
+  z-index: 2;
+  top: 13px;
+  left: 13px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f2e4a2;
+  color: #695200;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(47, 36, 6, 0.15);
+}
+
+.cover-placeholder {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 0.7;
+  padding: 24px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: linear-gradient(145deg, #eee6d7, #cfc1a5);
+  color: #6d5b35;
+  text-align: center;
+
+  .book-icon {
+    font-size: 54px;
+  }
+
+  p {
+    margin: 15px 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.4;
+  }
+}
