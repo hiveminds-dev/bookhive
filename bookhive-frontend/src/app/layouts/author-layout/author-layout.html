@@ -1,1 +1,287 @@
-<p>author-layout works!</p>
+<div class="author-shell">
+
+  <aside
+    class="author-sidebar"
+    [class.mobile-open]="mobileSidebarOpen">
+
+    <div class="sidebar-brand">
+
+      <a
+        class="brand-link"
+        routerLink="/author/dashboard"
+        (click)="closeSidebar()">
+
+        <span class="brand-logo" aria-hidden="true">
+          <span class="logo-spark">✦</span>
+          <span class="logo-book">▤</span>
+        </span>
+
+        <span class="brand-copy">
+          <strong>Author Studio</strong>
+          <small>Premium Library</small>
+        </span>
+
+      </a>
+
+      <button
+        type="button"
+        class="sidebar-close"
+        aria-label="Close sidebar"
+        (click)="closeSidebar()">
+        ×
+      </button>
+
+    </div>
+
+    <nav
+      class="sidebar-navigation"
+      aria-label="Author navigation">
+
+      <a
+        routerLink="/author/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeSidebar()">
+
+        <span
+          class="nav-icon dashboard-icon"
+          aria-hidden="true">
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+        </span>
+
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        routerLink="/author/books"
+        routerLinkActive="active"
+        (click)="closeSidebar()">
+
+        <span
+          class="nav-icon book-icon"
+          aria-hidden="true">
+          ▣
+        </span>
+
+        <span>My Books</span>
+      </a>
+
+      <a
+        routerLink="/author/analytics"
+        routerLinkActive="active"
+        (click)="closeSidebar()">
+
+        <span
+          class="nav-icon analytics-icon"
+          aria-hidden="true">
+          <i></i>
+          <i></i>
+          <i></i>
+        </span>
+
+        <span>Analytics</span>
+      </a>
+
+      <a
+        routerLink="/author/profile"
+        routerLinkActive="active"
+        (click)="closeSidebar()">
+
+        <span
+          class="nav-icon profile-icon"
+          aria-hidden="true">
+
+          <i class="profile-head"></i>
+          <i class="profile-body"></i>
+        </span>
+
+        <span>Profile</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <a
+        class="author-summary"
+        routerLink="/author/profile"
+        (click)="closeSidebar()">
+
+        <div class="summary-avatar">
+
+          @if (!avatarLoadFailed) {
+            <img
+              [src]="avatarPath"
+              [alt]="authorName"
+              (error)="onAvatarError()">
+          } @else {
+            <span>MA</span>
+          }
+
+        </div>
+
+        <div>
+          <strong>{{ authorName }}</strong>
+          <small>{{ authorRole }}</small>
+        </div>
+
+      </a>
+
+      <button
+        type="button"
+        class="logout-button"
+        (click)="logout()">
+
+        <span
+          class="logout-icon"
+          aria-hidden="true">
+          ⇥
+        </span>
+
+        <span>Log Out</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+  <button
+    type="button"
+    class="sidebar-overlay"
+    [class.visible]="mobileSidebarOpen"
+    aria-label="Close sidebar"
+    (click)="closeSidebar()">
+  </button>
+
+  <div class="author-main">
+
+    <header class="author-header">
+
+      <button
+        type="button"
+        class="menu-button"
+        aria-label="Open author navigation"
+        (click)="toggleSidebar()">
+
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <form
+        class="author-search"
+        role="search"
+        (submit)="$event.preventDefault(); searchLibrary()">
+
+        <span
+          class="search-icon"
+          aria-hidden="true">
+        </span>
+
+        <input
+          type="search"
+          name="authorSearch"
+          [(ngModel)]="searchTerm"
+          placeholder="Search your library..."
+          aria-label="Search your library">
+
+      </form>
+
+      <div class="header-profile">
+
+        <button
+          type="button"
+          class="profile-menu-button"
+          aria-label="Open profile menu"
+          [attr.aria-expanded]="profileMenuOpen"
+          (click)="toggleProfileMenu()">
+
+          <span class="header-avatar">
+
+            @if (!avatarLoadFailed) {
+              <img
+                [src]="avatarPath"
+                [alt]="authorName"
+                (error)="onAvatarError()">
+            } @else {
+              <span>MA</span>
+            }
+
+          </span>
+
+          <span
+            class="profile-arrow"
+            [class.open]="profileMenuOpen"
+            aria-hidden="true">
+            ⌄
+          </span>
+
+        </button>
+
+        @if (profileMenuOpen) {
+          <div class="profile-dropdown">
+
+            <div class="dropdown-user">
+              <strong>{{ authorName }}</strong>
+              <small>{{ authorRole }}</small>
+            </div>
+
+            <a
+              routerLink="/author/profile"
+              (click)="closeProfileMenu()">
+              View Profile
+            </a>
+
+            <button
+              type="button"
+              (click)="logout()">
+              Log Out
+            </button>
+
+          </div>
+        }
+
+      </div>
+
+    </header>
+
+    <main class="author-page-content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <footer class="author-footer">
+
+      <div class="footer-container">
+
+        <div class="footer-brand">
+          <strong>
+            <span>Book</span>Hive
+          </strong>
+
+          <p>
+            © 2026 BookHive Research Systems.
+            All rights reserved.
+          </p>
+        </div>
+
+        <nav
+          class="footer-links"
+          aria-label="Footer navigation">
+
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Intellectual Property</a>
+          <a href="#">Contact Support</a>
+
+        </nav>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+</div>

@@ -1,1 +1,54 @@
-<p>recent-activity works!</p>
+<section class="activity-card">
+
+  <header>
+    <h2>Recent Activity Timeline</h2>
+  </header>
+
+  <div class="activity-list">
+
+    @for (
+      activity of activities;
+      track activity.id;
+      let last = $last
+      ) {
+
+      <article class="activity-item">
+
+        <div class="timeline-column">
+
+          <span
+            class="timeline-point"
+            [class]="getActivityClass(activity.type)">
+          </span>
+
+          @if (!last) {
+            <span class="timeline-line"></span>
+          }
+
+        </div>
+
+        <div class="activity-content">
+
+          <div class="activity-text">
+            <h3>{{ activity.title }}</h3>
+            <p>{{ activity.description }}</p>
+          </div>
+
+          <time>{{ activity.time }}</time>
+
+        </div>
+
+      </article>
+
+    } @empty {
+
+      <div class="empty-state">
+        <span>◷</span>
+        <p>No recent activity is available.</p>
+      </div>
+
+    }
+
+  </div>
+
+</section>
