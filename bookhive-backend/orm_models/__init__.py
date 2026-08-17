@@ -2,7 +2,13 @@
 
 from orm_models.book import Book, BookStatus
 from orm_models.category import Category
-from orm_models.user import AccountStatus, AuthorProfile, User, UserRole
+from orm_models.user import (
+    AccountStatus,
+    AuthorProfile,
+    EmailVerificationToken,
+    User,
+    UserRole,
+)
 
 __all__ = [
     "AccountStatus",
@@ -10,6 +16,7 @@ __all__ = [
     "Book",
     "BookStatus",
     "Category",
+    "EmailVerificationToken",
     "User",
     "UserRole",
 ]

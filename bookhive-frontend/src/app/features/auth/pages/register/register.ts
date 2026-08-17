@@ -8,7 +8,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize, Observable } from 'rxjs';
 import {
   LucideArrowLeft,
@@ -67,6 +67,7 @@ export class Register {
   private fb = inject(FormBuilder);
   private changeDetector = inject(ChangeDetectorRef);
   private registrationService = inject(RegistrationService);
+  private router = inject(Router);
 
   readonly appName = 'BookHive';
   readonly logoPath = 'assets/bookhive-logo.png';
@@ -393,11 +394,8 @@ export class Register {
       )
       .subscribe({
       next: () => {
-        this.registrationSuccess =
-          this.accountType === 'reader'
-            ? 'Reader account created successfully. Email verification will be available soon.'
-            : 'Author registration submitted successfully. Your account is waiting for admin approval.';
-        this.changeDetector.markForCheck();
+        const email = this.activeForm.get('email')?.value?.trim().toLowerCase() ?? '';
+        void this.router.navigate(['/auth/verify-email'], { queryParams: { email } });
       },
       error: (error: HttpErrorResponse) => {
         this.registrationError = this.getRegistrationError(error);
