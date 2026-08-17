@@ -40,7 +40,11 @@ async def check_database_connection() -> None:
 async def close_database_connection() -> None:
     await engine.dispose()
 
+
 async def init_db() -> None:
+    # Import the model package before using metadata. This registers every
+    # mapped class, including string-based relationships such as User.books.
+    import orm_models  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
