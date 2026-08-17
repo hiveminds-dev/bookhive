@@ -1,1 +1,42 @@
-<p>book-filters works!</p>
+<section class="filters-row">
+
+  <div
+    class="status-filters"
+    aria-label="Filter books by status">
+
+    @for (status of statuses; track status) {
+
+      <button
+        type="button"
+        [class.active]="selectedStatus === status"
+        (click)="selectStatus(status)">
+
+        {{ status }}
+      </button>
+
+    }
+
+  </div>
+
+  <div class="search-wrapper">
+
+    <input
+      type="search"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+      placeholder="Search by title..."
+      aria-label="Search books by title">
+
+    @if (searchTerm) {
+      <button
+        type="button"
+        class="clear-button"
+        aria-label="Clear search"
+        (click)="clearSearch()">
+        ×
+      </button>
+    }
+
+  </div>
+
+</section>

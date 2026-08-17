@@ -1,1 +1,94 @@
-<p>book-card works!</p>
+<article class="book-card">
+
+  <div class="book-image-area">
+
+    <span
+      class="status-badge"
+      [class]="statusClass">
+      {{ book.status }}
+    </span>
+
+    @if (!imageLoadFailed) {
+      <img
+        [src]="book.bannerImage || book.cover"
+        [alt]="book.title"
+        (error)="onImageError()">
+    } @else {
+      <div class="image-placeholder">
+
+        <span aria-hidden="true">📖</span>
+
+        <strong>{{ book.title }}</strong>
+
+      </div>
+    }
+
+  </div>
+
+  <div class="book-content">
+
+    <h2>{{ book.title }}</h2>
+
+    <p class="book-meta">
+      <span>{{ book.category }}</span>
+      <i aria-hidden="true">•</i>
+      <span>{{ book.language }}</span>
+    </p>
+
+    <div class="book-statistics">
+
+      <span>
+        <i class="eye-icon" aria-hidden="true"></i>
+        {{ formatCount(book.views) }}
+      </span>
+
+      <span>
+        <i class="download-icon" aria-hidden="true">
+          ⇩
+        </i>
+        {{ formatCount(book.downloads) }}
+      </span>
+
+    </div>
+
+    <footer class="book-footer">
+
+      <time>{{ book.uploadedDate }}</time>
+
+      <div class="book-actions">
+
+        <button
+          type="button"
+          class="view-button"
+          aria-label="View book"
+          title="View book"
+          (click)="onViewBook()">
+
+          <i class="eye-icon" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="edit-button"
+          aria-label="Edit book"
+          title="Edit book"
+          (click)="onEditBook()">
+          ✎
+        </button>
+
+        <button
+          type="button"
+          class="delete-button"
+          aria-label="Delete book"
+          title="Delete book"
+          (click)="onDeleteBook()">
+          ♜
+        </button>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+</article>

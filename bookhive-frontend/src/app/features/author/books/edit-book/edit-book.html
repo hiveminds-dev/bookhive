@@ -1,1 +1,138 @@
-<p>edit-book works!</p>
+<section class="edit-book-page">
+
+  <div class="edit-book-container">
+
+    <!-- PAGE HEADER -->
+
+    <header class="upload-page-header">
+
+      <div class="header-copy">
+        <h1>{{ pageTitle }}</h1>
+        <p>{{ pageDescription }}</p>
+      </div>
+
+      <nav
+        class="management-tabs"
+        aria-label="Book management navigation">
+
+        <a
+          routerLink="/author/books"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{
+            exact: true
+          }">
+          My Books
+        </a>
+
+        <a
+          routerLink="/author/books/upload"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{
+            exact: true
+          }">
+          Upload Book
+        </a>
+
+        <a
+          routerLink="/author/requests"
+          routerLinkActive="active">
+          Requests
+        </a>
+
+      </nav>
+
+    </header>
+
+    <!-- STATUS MESSAGE -->
+
+    @if (successMessage) {
+      <div class="message success-message">
+        <span aria-hidden="true">✓</span>
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="message error-message">
+        <span aria-hidden="true">!</span>
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- BASIC DETAILS -->
+
+    <div class="basic-details-wrapper">
+
+      <app-author-book-form
+        [form]="bookForm">
+      </app-author-book-form>
+
+      <app-author-category-select
+        [form]="bookForm">
+      </app-author-category-select>
+
+    </div>
+
+    <!-- FILE UPLOAD -->
+
+    <div class="file-upload-wrapper">
+
+      <app-author-book-cover-upload
+        (bookFileSelected)="
+          onBookFileSelected($event)
+        "
+        (coverSelected)="
+          onCoverSelected($event)
+        ">
+      </app-author-book-cover-upload>
+
+      @if (
+        bookFileRequiredError ||
+        coverRequiredError
+        ) {
+        <div class="file-errors">
+
+          @if (bookFileRequiredError) {
+            <small>
+              Book file is required.
+            </small>
+          }
+
+          @if (coverRequiredError) {
+            <small>
+              Book cover is required.
+            </small>
+          }
+
+        </div>
+      }
+
+    </div>
+
+    <!-- EXTRA DETAILS -->
+
+    <div class="details-wrapper">
+
+      <app-author-book-details
+        [form]="bookForm">
+      </app-author-book-details>
+
+    </div>
+
+    <!-- SAVE BUTTONS -->
+
+    <div class="actions-wrapper">
+
+      <app-author-save-actions
+        [isSavingDraft]="isSavingDraft"
+        [isSubmitting]="isSubmitting"
+        [submitDisabled]="false"
+        (saveDraft)="saveDraft()"
+        (submitForReview)="submitForReview()">
+      </app-author-save-actions>
+
+    </div>
+
+  </div>
+
+</section>

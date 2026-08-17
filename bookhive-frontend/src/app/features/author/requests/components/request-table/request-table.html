@@ -1,1 +1,78 @@
-<p>request-table works!</p>
+<section class="request-table">
+
+  <div class="table-header">
+    <span>Book Cover</span>
+    <span>Book Title</span>
+    <span>Submission Date</span>
+    <span>Status</span>
+    <span>Admin Feedback</span>
+    <span>Actions</span>
+  </div>
+
+  <div class="table-body">
+    @for (
+      request of requests;
+      track request.id
+      ) {
+      <app-author-request-row
+        [request]="request"
+        (actionSelected)="onRequestAction($event)"
+      />
+    } @empty {
+      <div class="empty-state">
+        <div class="empty-icon">📚</div>
+
+        <h3>No book requests found</h3>
+
+        <p>
+          No submissions match the selected filter.
+        </p>
+      </div>
+    }
+  </div>
+
+  @if (requests.length > 0) {
+    <div class="pagination">
+
+      <button
+        type="button"
+        class="page-arrow"
+        aria-label="Previous page"
+        [disabled]="currentPage === 1"
+        (click)="previousPage()"
+      >
+        ‹
+      </button>
+
+      <div class="page-numbers">
+        @for (page of visiblePages; track page) {
+          <button
+            type="button"
+            class="page-button"
+            [class.active]="page === currentPage"
+            [attr.aria-current]="
+              page === currentPage
+                ? 'page'
+                : null
+            "
+            (click)="changePage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="page-arrow"
+        aria-label="Next page"
+        [disabled]="currentPage === totalPages"
+        (click)="nextPage()"
+      >
+        ›
+      </button>
+
+    </div>
+  }
+
+</section>

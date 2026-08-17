@@ -1,1 +1,44 @@
-<p>book-management works!</p>
+<section class="book-management-page">
+
+  <div class="management-container">
+
+    <app-book-management-page-header
+      title="Book Management"
+      sectionTitle="My Books"
+      description="View, edit, and organize all the books you've uploaded.">
+    </app-book-management-page-header>
+
+    <div class="filters-wrapper">
+
+      <app-author-book-filters
+        (statusChanged)="onStatusChanged($event)"
+        (searchChanged)="onSearchChanged($event)">
+      </app-author-book-filters>
+
+    </div>
+
+    <div class="books-wrapper">
+
+      <app-author-book-grid
+        [books]="paginatedBooks"
+        (uploadBook)="goToUploadBook()"
+        (viewBook)="viewBook($event)"
+        (editBook)="editBook($event)"
+        (deleteBook)="deleteBook($event)">
+      </app-author-book-grid>
+
+    </div>
+
+    <div class="pagination-wrapper">
+
+      <app-author-books-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChanged)="onPageChanged($event)">
+      </app-author-books-pagination>
+
+    </div>
+
+  </div>
+
+</section>

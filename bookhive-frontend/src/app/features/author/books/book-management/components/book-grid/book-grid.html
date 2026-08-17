@@ -1,1 +1,27 @@
-<p>book-grid works!</p>
+<section class="books-grid">
+
+  @for (book of books; track book.id) {
+
+    <app-author-book-card
+      [book]="book"
+      (viewBook)="onViewBook($event)"
+      (editBook)="onEditBook($event)"
+      (deleteBook)="onDeleteBook($event)">
+    </app-author-book-card>
+
+  }
+
+  <button
+    type="button"
+    class="upload-card"
+    (click)="onUploadBook()">
+
+    <span class="add-circle" aria-hidden="true">
+      +
+    </span>
+
+    <strong>Upload New Book</strong>
+
+  </button>
+
+</section>
