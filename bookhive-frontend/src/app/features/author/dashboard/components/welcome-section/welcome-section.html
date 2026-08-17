@@ -1,1 +1,41 @@
-<p>welcome-section works!</p>
+<section class="welcome-card">
+
+  <div class="welcome-content">
+
+    <h1>
+      Welcome back, {{ authorName }}
+    </h1>
+
+    <p>
+      Your creative journey continues. You have
+      <strong>{{ newReviewCount }}</strong>
+      new reviews since your last login and
+
+      @if (readyManuscriptCount === 1) {
+        one manuscript is ready for final approval.
+      } @else {
+        {{ readyManuscriptCount }} manuscripts are ready
+          for final approval.
+      }
+    </p>
+
+  </div>
+
+  <button
+    type="button"
+    class="upload-button"
+    (click)="onUploadBook()">
+
+    <span class="upload-icon" aria-hidden="true">
+      <span class="file-shape"></span>
+      <span class="upload-arrow">↑</span>
+    </span>
+
+    <span>
+      Upload
+      <strong>New Book</strong>
+    </span>
+
+  </button>
+
+</section>

@@ -1,0 +1,53 @@
+<div class="success-page">
+  <!-- BookHive Logo -->
+  <a class="brand" routerLink="/" aria-label="BookHive home">
+    <img class="brand-icon" [src]="logoPath" alt="" />
+    <span>BookHive</span>
+  </a>
+
+  <!-- Success Card -->
+  <main class="success-card">
+    <!-- Animated Success Icon -->
+    <div class="success-icon-wrapper">
+      <div class="success-glow"></div>
+
+      <div class="success-icon">
+        <svg lucideCheck class="check-icon" aria-hidden="true"></svg>
+      </div>
+
+      <!-- Decorative particles -->
+      <span class="particle particle-1"></span>
+      <span class="particle particle-2"></span>
+      <span class="particle particle-3"></span>
+      <span class="particle particle-4"></span>
+      <span class="particle particle-5"></span>
+      <span class="particle particle-6"></span>
+    </div>
+
+    <!-- Success Content -->
+    <div class="success-content">
+      <p class="eyebrow">Email verified</p>
+      <h1>Verification successful</h1>
+
+      <p class="description">
+        Your email address has been confirmed and your BookHive account is ready to use.
+      </p>
+
+      <!-- Welcome Badge -->
+      <div class="welcome-badge">
+        <svg lucideSparkles class="celebration-icon" aria-hidden="true"></svg>
+        <span>Welcome to BookHive!</span>
+      </div>
+
+      <!-- Continue Button -->
+      <button type="button" class="continue-button" (click)="goToLogin()">
+        <span>Continue to sign in</span>
+
+        <svg lucideArrowRight class="arrow-icon" aria-hidden="true"></svg>
+      </button>
+
+      <!-- No Auto  Redirect -->
+      <p class="redirect-message">Click continue to sign in to your BookHive account.</p>
+    </div>
+  </main>
+</div>

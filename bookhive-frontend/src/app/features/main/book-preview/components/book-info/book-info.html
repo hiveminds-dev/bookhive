@@ -1,1 +1,36 @@
-<p>book-info works!</p>
+<div class="book-information">
+
+  <div class="info-item rating-item">
+    <span class="info-icon star-icon" aria-hidden="true">★</span>
+
+    <div class="info-text">
+      <strong>{{ rating.toFixed(1) }}</strong>
+      <span>({{ reviews }} reviews)</span>
+    </div>
+  </div>
+
+  <span class="divider" aria-hidden="true"></span>
+
+  <div class="info-item">
+    <span class="info-icon pages-icon" aria-hidden="true">▣</span>
+
+    <div class="info-text">
+      <strong>{{ pages }}</strong>
+      <span>Pages</span>
+    </div>
+  </div>
+
+  @if (readingTime) {
+    <span class="divider" aria-hidden="true"></span>
+
+    <div class="info-item">
+      <span class="info-icon clock-icon" aria-hidden="true">◷</span>
+
+      <div class="info-text">
+        <strong>{{ readingTime }}</strong>
+        <span>Reading time</span>
+      </div>
+    </div>
+  }
+
+</div>

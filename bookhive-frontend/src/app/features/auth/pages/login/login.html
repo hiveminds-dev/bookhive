@@ -1,0 +1,114 @@
+<main class="login-page">
+  <section class="brand-panel" aria-label="BookHive welcome">
+    <a class="brand" routerLink="/">
+      <img class="brand-logo" [src]="logoPath" [alt]="appName + ' logo'" />
+      <span>{{ appName }}</span>
+    </a>
+
+    <div class="brand-copy">
+      <p class="eyebrow">Personal Library</p>
+      <h1>Welcome Back!</h1>
+      <p>Continue your reading journey with BookHive and discover your next great read.</p>
+    </div>
+
+    <div class="floating-gallery" aria-hidden="true">
+      <figure class="book-card card-large">
+        <img class="library-image" src="/images/auth/sign_in_3.png" alt="" />
+      </figure>
+      <figure class="book-card card-small card-top">
+        <img class="library-image" src="/images/auth/sign_in_2.png" alt="" />
+      </figure>
+      <figure class="book-card card-small card-bottom">
+        <img class="book-logo-image" src="/images/auth/sign_in_1.png" alt="" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="form-panel" aria-label="Sign in">
+    <div class="login-card">
+      <header class="card-header">
+        <h2>Sign In</h2>
+        <p>Sign in to access your personal library.</p>
+      </header>
+
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="signIn()" novalidate>
+        <label class="field">
+          <span>EMAIL ADDRESS</span>
+          <input
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="reader@bookhive.com"
+            [class.invalid]="hasFieldError('email')"
+          />
+        </label>
+        @if (hasFieldError('email')) {
+          <p class="field-error">Enter a valid email address.</p>
+        }
+
+        <label class="field password-field">
+          <span>PASSWORD</span>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Enter your password"
+            [class.invalid]="hasFieldError('password')"
+          />
+          <button
+            type="button"
+            class="icon-button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            @if (showPassword) {
+              <svg lucideEyeOff aria-hidden="true"></svg>
+            } @else {
+              <svg lucideEye aria-hidden="true"></svg>
+            }
+          </button>
+        </label>
+        @if (hasFieldError('password')) {
+          <p class="field-error">Password is required.</p>
+        }
+
+        <div class="form-options">
+          <label class="remember">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span>Remember Me</span>
+          </label>
+
+          <button type="button" class="text-link" (click)="forgotPassword()">
+            Forgot Password?
+          </button>
+        </div>
+
+        <button class="submit-button" type="submit">Sign In</button>
+      </form>
+
+      <div class="divider">
+        <span>OR CONTINUE WITH</span>
+      </div>
+
+      <div class="social-logins" aria-label="Social sign in options">
+        <button type="button" aria-label="Continue with Google" title="Continue with Google">
+          <fa-icon [icon]="socialIcons.google" aria-hidden="true"></fa-icon>
+        </button>
+        <button type="button" aria-label="Continue with Facebook" title="Continue with Facebook">
+          <fa-icon [icon]="socialIcons.facebook" aria-hidden="true"></fa-icon>
+        </button>
+        <button type="button" aria-label="Continue with Apple" title="Continue with Apple">
+          <fa-icon [icon]="socialIcons.apple" aria-hidden="true"></fa-icon>
+        </button>
+        <button type="button" aria-label="Continue with X" title="Continue with X">
+          <fa-icon [icon]="socialIcons.x" aria-hidden="true"></fa-icon>
+        </button>
+      </div>
+
+      <p class="register-link">
+        Don't have an account?
+        <a routerLink="/register">Create Account</a>
+      </p>
+    </div>
+  </section>
+</main>

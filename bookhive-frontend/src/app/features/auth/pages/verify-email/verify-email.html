@@ -1,0 +1,45 @@
+<main class="verify-page">
+  <a class="brand" routerLink="/" aria-label="BookHive home">
+    <img class="brand-icon" [src]="logoPath" alt="" />
+    <span>BookHive</span>
+  </a>
+
+  <section class="verify-card" aria-labelledby="verify-title">
+    <div class="email-icon" aria-hidden="true">
+      <svg lucideMail class="mail-icon" aria-hidden="true"></svg>
+      <span class="check-badge">
+        <svg lucideCheck aria-hidden="true"></svg>
+      </span>
+    </div>
+
+    <p class="eyebrow">One more step</p>
+    <h1 id="verify-title">Verify your email address</h1>
+
+    <p class="description">
+      We sent a verification link to the email address below. Open the link to activate your
+      BookHive account.
+    </p>
+
+    <div class="email-box" aria-label="Verification email address">
+      <svg lucideMail aria-hidden="true"></svg>
+      {{ email }}
+    </div>
+
+    <div class="helper-copy">
+      <svg lucideInfo aria-hidden="true"></svg>
+      <p>Didn’t receive it? Check your spam folder or request a new email.</p>
+    </div>
+
+    <div class="actions">
+      <button class="resend-button" type="button" (click)="resendEmail()">
+        <svg lucideRefreshCw aria-hidden="true"></svg>
+        <span>Resend verification email</span>
+      </button>
+
+      <a class="back-link" routerLink="/login">
+        <svg lucideArrowLeft aria-hidden="true"></svg>
+        <span>Back to sign in</span>
+      </a>
+    </div>
+  </section>
+</main>

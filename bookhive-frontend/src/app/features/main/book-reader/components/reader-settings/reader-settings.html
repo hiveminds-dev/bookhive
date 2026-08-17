@@ -1,1 +1,62 @@
-<p>reader-settings works!</p>
+<aside class="reader-settings">
+
+  <section class="quick-actions">
+
+    <h2>Quick Actions</h2>
+
+    <button
+      type="button"
+      class="action-button"
+      (click)="onShareExcerpt()">
+
+      <span class="action-icon share-icon" aria-hidden="true">
+        ⤴
+      </span>
+
+      <span>
+        Share
+        <small>Excerpt</small>
+      </span>
+    </button>
+
+    <span class="action-divider" aria-hidden="true"></span>
+
+    <button
+      type="button"
+      class="action-button report-button"
+      (click)="onReportIssue()">
+
+      <span class="action-icon" aria-hidden="true">
+        ⓘ
+      </span>
+
+      <span>
+        Report
+        <small>Issue</small>
+      </span>
+    </button>
+
+  </section>
+
+  <section class="page-number-card">
+
+    <label for="reader-page-number">
+      Page Number
+    </label>
+
+    <input
+      id="reader-page-number"
+      type="number"
+      min="1"
+      [max]="totalPages"
+      [(ngModel)]="pageInput"
+      (keyup.enter)="goToPage()"
+      (blur)="goToPage()">
+
+    <small>
+      of {{ totalPages }}
+    </small>
+
+  </section>
+
+</aside>

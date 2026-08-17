@@ -1,1 +1,137 @@
-<p>main-layout works!</p>
+<header class="site-header">
+
+  <nav class="navbar">
+
+    <a
+      class="brand"
+      routerLink="/home"
+      aria-label="BookHive home"
+      (click)="closeMobileMenu()">
+
+      <span class="brand-logo" aria-hidden="true">
+        <span class="logo-rays">✦</span>
+        <span class="logo-book">▤</span>
+      </span>
+
+      <span class="brand-name">
+        <strong>Book</strong>Hive
+      </span>
+    </a>
+
+    <button
+      type="button"
+      class="mobile-toggle"
+      [class.open]="mobileMenuOpen"
+      aria-label="Toggle navigation menu"
+      [attr.aria-expanded]="mobileMenuOpen"
+      (click)="toggleMobileMenu()">
+
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div
+      class="navigation-content"
+      [class.mobile-open]="mobileMenuOpen">
+
+      <div class="nav-links">
+
+        <a
+          routerLink="/home"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()">
+          Home
+        </a>
+
+        <a
+          routerLink="/explore"
+          routerLinkActive="active"
+          (click)="closeMobileMenu()">
+          Explore
+        </a>
+
+        <a
+          routerLink="/community"
+          routerLinkActive="active"
+          (click)="closeMobileMenu()">
+          Community
+        </a>
+
+        <a
+          routerLink="/about"
+          routerLinkActive="active"
+          (click)="closeMobileMenu()">
+          About
+        </a>
+
+      </div>
+
+      <form
+        class="navbar-search"
+        role="search"
+        (submit)="$event.preventDefault(); searchBooks()">
+
+        <span class="search-icon" aria-hidden="true"></span>
+
+        <input
+          type="search"
+          name="navbarSearch"
+          [(ngModel)]="searchTerm"
+          placeholder="Search books, authors, categories..."
+          aria-label="Search books">
+
+      </form>
+
+      <div class="navbar-actions">
+
+        <button
+          type="button"
+          class="icon-button"
+          aria-label="Change language"
+          title="Language">
+          ◎
+        </button>
+
+        <button
+          type="button"
+          class="icon-button filter-icon"
+          aria-label="Open filters"
+          title="Filters">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <a
+          class="sign-in"
+          routerLink="/login"
+          (click)="closeMobileMenu()">
+          Sign In
+        </a>
+
+        <a
+          class="sign-up"
+          routerLink="/register"
+          (click)="closeMobileMenu()">
+          Sign Up
+        </a>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+</header>
+
+<div
+  class="mobile-overlay"
+  [class.visible]="mobileMenuOpen"
+  (click)="closeMobileMenu()">
+</div>
+
+<div class="page-content">
+  <router-outlet></router-outlet>
+</div>

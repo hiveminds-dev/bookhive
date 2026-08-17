@@ -1,0 +1,173 @@
+:host {
+  display: block;
+  font-family: Inter, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.reviews-section {
+  width: 100%;
+}
+
+.reviews-header {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+h2 {
+  margin: 0;
+  color: #292621;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.title-line {
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 8px;
+  border-radius: 5px;
+  background: #a3831c;
+}
+
+.write-review-button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #8a6d0d;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: #5f4a00;
+    text-decoration: underline;
+  }
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card {
+  padding: 15px 17px;
+  border: 1px solid #e9e4da;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.review-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+
+  time {
+    color: #999288;
+    font-size: 9px;
+  }
+}
+
+.reader-details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  h3 {
+    margin: 0 0 3px;
+    color: #3b3730;
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+.reader-image,
+.reader-placeholder {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
+}
+
+.reader-placeholder {
+  background: #e3d6b5;
+  color: #765f16;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.review-rating {
+  display: flex;
+  gap: 1px;
+  color: #a6820b;
+  font-size: 9px;
+
+  .inactive {
+    color: #d7d2c8;
+  }
+}
+
+.review-comment {
+  margin: 11px 0 9px;
+  color: #6f695f;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.helpful-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #918a7e;
+  font-family: inherit;
+  font-size: 9px;
+  cursor: pointer;
+
+  &:hover {
+    color: #8a6d0d;
+  }
+}
+
+.no-reviews {
+  padding: 25px;
+  border: 1px dashed #d9d1be;
+  border-radius: 7px;
+  background: #fbfaf7;
+  text-align: center;
+
+  p {
+    margin: 0 0 10px;
+    color: #777168;
+    font-size: 11px;
+  }
+
+  button {
+    border: 0;
+    background: transparent;
+    color: #896b08;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 500px) {
+  .reviews-header {
+    flex-direction: column;
+    gap: 9px;
+  }
+}
