@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     # Initial administrator
     initial_admin_full_name: str = "BookHive Administrator"
+    initial_admin_username: str = "bookhive_admin"
     initial_admin_email: str = "admin@bookhive.com"
     initial_admin_password: str = "change_me"
 

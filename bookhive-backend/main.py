@@ -12,7 +12,6 @@ from database import (
     initialize_database,
     session_factory,
 )
-
 from routers import health_router
 from routers.author_router import router as author_router
 from routers.user_router import router as user_router

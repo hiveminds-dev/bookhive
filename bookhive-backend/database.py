@@ -41,8 +41,6 @@ async def check_database_connection() -> None:
 
 
 async def initialize_database() -> None:
-   
-
     # The import is intentionally placed here.
     # It registers every ORM model in Base.metadata.
     import orm_models  # noqa: F401
