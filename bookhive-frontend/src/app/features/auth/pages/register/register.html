@@ -560,6 +560,18 @@
       <!-- ACTION BUTTONS -->
       <!-- ========================================= -->
 
+      @if (registrationError) {
+        <div class="registration-message registration-message--error" role="alert">
+          {{ registrationError }}
+        </div>
+      }
+
+      @if (registrationSuccess) {
+        <div class="registration-message registration-message--success" role="status">
+          {{ registrationSuccess }}
+        </div>
+      }
+
       <div class="card-actions">
         <!-- BACK -->
 
@@ -585,7 +597,7 @@
           <button
             type="button"
             class="next-button create-button"
-            [disabled]="isSubmitting"
+            [disabled]="isSubmitting || !!registrationSuccess"
             (click)="register()"
           >
             @if (isSubmitting) {

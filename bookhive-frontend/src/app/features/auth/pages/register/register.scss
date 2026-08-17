@@ -1719,3 +1719,22 @@ REDUCED MOTION
     animation: none !important;
   }
 }
+.registration-message {
+  margin-top: 1.25rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+.registration-message--error {
+  border: 1px solid #efb4b4;
+  background: #fff3f3;
+  color: #9f2525;
+}
+
+.registration-message--success {
+  border: 1px solid #a8d5b5;
+  background: #f1fbf4;
+  color: #216e39;
+}
