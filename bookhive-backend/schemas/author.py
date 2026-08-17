@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -40,3 +41,34 @@ class AuthorRegistrationResponse(BaseModel):
 class AuthorRegistrationResult(BaseModel):
     message: str
     data: AuthorRegistrationResponse
+
+# New Dashboard Schemas
+
+class RecentBookSchema(BaseModel):
+    id: int
+    title: str
+    status: str
+    uploaded_at:datetime
+
+class RecentReviewSchema(BaseModel):
+    reviewer_name: str
+    rating: int
+    review_text: str
+    created_at: datetime
+
+class DashboardStatsSchema(BaseModel):
+    total_books: int
+    published_books: int
+    pending_approval: int
+    total_downloads: int
+
+class AuthorDashboardResponse(BaseModel):
+    author_name: str
+    stats: DashboardStatsSchema
+    recent_uploads: List[RecentBookSchema]
+    recent_reviews: List[RecentReviewSchema]
+
+class AuthorDashboardResult(BaseModel):
+    message: str
+    data: AuthorDashboardResponse
+

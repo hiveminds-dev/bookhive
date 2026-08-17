@@ -11,6 +11,7 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+from orm_models.review import BookReview
 
 if TYPE_CHECKING:
     from orm_models.category import Category
@@ -114,4 +115,10 @@ class Book(Base):
     category: Mapped["Category"] = relationship(
         "Category",
         back_populates="books",
+    )
+
+    reviews: Mapped[list["BookReview"]] = relationship(
+        "BookReview",
+        back_populates="book",
+        cascade="all, delete-orphan",
     )
