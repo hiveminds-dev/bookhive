@@ -1,3 +1,4 @@
+import logging
 from collections.abc import AsyncGenerator
 
 from sqlalchemy import text
@@ -9,6 +10,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import DeclarativeBase
 
 from config import settings
+
+logger = logging.getLogger(__name__)
 
 engine = create_async_engine(
     settings.database_url,
@@ -37,14 +40,36 @@ async def check_database_connection() -> None:
         await connection.execute(text("SELECT 1"))
 
 
-async def close_database_connection() -> None:
-    await engine.dispose()
-
-
-async def init_db() -> None:
-    # Import the model package before using metadata. This registers every
-    # mapped class, including string-based relationships such as User.books.
+async def initialize_database() -> None:
+    # The import is intentionally placed here.
+    # It registers every ORM model in Base.metadata.
     import orm_models  # noqa: F401
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    if (
+        settings.reset_database_on_startup
+        and not settings.is_database_reset_allowed
+    ):
+        raise RuntimeError(
+            "Database reset is only allowed in development or test "
+            "environments. Set RESET_DATABASE_ON_STARTUP=false."
+        )
+
+    async with engine.begin() as connection:
+        if settings.reset_database_on_startup:
+            logger.warning(
+                "RESET_DATABASE_ON_STARTUP is enabled. "
+                "All BookHive tables and their data will be deleted."
+            )
+
+            await connection.run_sync(Base.metadata.drop_all)
+
+            logger.info("Existing BookHive database tables were dropped.")
+
+        await connection.run_sync(Base.metadata.create_all)
+
+    logger.info("BookHive database tables are ready.")
+
+
+async def close_database_connection() -> None:
+    await engine.dispose()
+    logger.info("BookHive database connection pool was closed.")
