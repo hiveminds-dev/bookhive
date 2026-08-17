@@ -1,1 +1,34 @@
-<p>statistics works!</p>
+<section class="statistics-grid">
+
+  @for (statistic of statistics; track statistic.id) {
+
+    <article
+      class="statistic-card"
+      [class.gold]="statistic.tone === 'gold'"
+      [class.green]="statistic.tone === 'green'"
+      [class.red]="statistic.tone === 'red'"
+      [class.neutral]="statistic.tone === 'neutral'">
+
+      <div class="statistic-top">
+
+        <span class="statistic-icon" aria-hidden="true">
+          {{ statistic.icon }}
+        </span>
+
+        <span class="statistic-indicator">
+          {{ statistic.indicator }}
+        </span>
+
+      </div>
+
+      <p>{{ statistic.label }}</p>
+
+      <strong class="statistic-value">
+        {{ statistic.value }}
+      </strong>
+
+    </article>
+
+  }
+
+</section>
