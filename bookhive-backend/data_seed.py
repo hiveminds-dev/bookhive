@@ -1,4 +1,5 @@
 import logging
+import re
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -69,6 +70,19 @@ async def get_user_by_email(
     return result.scalar_one_or_none()
 
 
+async def get_user_by_username(
+    session: AsyncSession,
+    username: str,
+) -> User | None:
+    result = await session.execute(
+        select(User).where(
+            func.lower(User.username) == username.strip().lower(),
+        )
+    )
+
+    return result.scalar_one_or_none()
+
+
 async def get_category_by_name(
     session: AsyncSession,
     name: str,
@@ -83,8 +97,21 @@ async def get_category_by_name(
 
 
 def validate_initial_admin_settings() -> None:
+    full_name = settings.initial_admin_full_name.strip()
+    username = settings.initial_admin_username.strip()
     email = settings.initial_admin_email.strip()
     password = settings.initial_admin_password
+
+    if len(full_name) < 2:
+        raise RuntimeError(
+            "INITIAL_ADMIN_FULL_NAME must contain at least 2 characters."
+        )
+
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{2,49}", username):
+        raise RuntimeError(
+            "INITIAL_ADMIN_USERNAME must start with a letter and contain "
+            "3 to 50 letters, numbers, or underscores."
+        )
 
     if not email:
         raise RuntimeError(
@@ -92,7 +119,11 @@ def validate_initial_admin_settings() -> None:
             "seeding is enabled."
         )
 
-    if not password or password == "change_me":
+    if not password or password in {
+        "change_me",
+        "password",
+        "replace_with_a_secure_password",
+    }:
         raise RuntimeError(
             "Set a secure INITIAL_ADMIN_PASSWORD in the .env file "
             "before starting the application."
@@ -108,6 +139,7 @@ async def seed_initial_admin(session: AsyncSession) -> None:
     validate_initial_admin_settings()
 
     email = settings.initial_admin_email.strip().lower()
+    username = settings.initial_admin_username.strip().lower()
 
     existing_user = await get_user_by_email(
         session=session,
@@ -115,15 +147,30 @@ async def seed_initial_admin(session: AsyncSession) -> None:
     )
 
     if existing_user is not None:
+        if existing_user.role != UserRole.ADMIN:
+            raise RuntimeError(
+                "INITIAL_ADMIN_EMAIL already belongs to a non-admin user."
+            )
+
         logger.info(
-            "Initial administrator was not created because the email "
-            "%s already exists.",
+            "Initial administrator already exists for %s.",
             email,
         )
         return
 
+    existing_username = await get_user_by_username(
+        session=session,
+        username=username,
+    )
+
+    if existing_username is not None:
+        raise RuntimeError(
+            "INITIAL_ADMIN_USERNAME already belongs to another user."
+        )
+
     admin = User(
         full_name=settings.initial_admin_full_name.strip(),
+        username=username,
         email=email,
         password_hash=hash_password(
             settings.initial_admin_password,
