@@ -1,4 +1,4 @@
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_models.user import AuthorProfile
@@ -15,7 +15,6 @@ class AuthorRepository:
         author = AuthorProfile(
             user_id=user_id,
             pen_name=author_data.pen_name.strip(),
-            username=author_data.username.strip().lower(),
             country=author_data.country.strip() if author_data.country else None,
             preferred_language=(
                 author_data.preferred_language.strip()
@@ -39,19 +38,6 @@ class AuthorRepository:
     ) -> AuthorProfile | None:
         result = await session.execute(
             select(AuthorProfile).where(AuthorProfile.user_id == user_id)
-        )
-
-        return result.scalar_one_or_none()
-
-    async def get_by_username(
-        self,
-        session: AsyncSession,
-        username: str,
-    ) -> AuthorProfile | None:
-        result = await session.execute(
-            select(AuthorProfile).where(
-                func.lower(AuthorProfile.username) == username.strip().lower()
-            )
         )
 
         return result.scalar_one_or_none()

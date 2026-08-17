@@ -34,6 +34,12 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     full_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    username: Mapped[str] = mapped_column(
+        String(50),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -83,12 +89,6 @@ class AuthorProfile(Base):
         nullable=False,
     )
     pen_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    username: Mapped[str] = mapped_column(
-        String(50),
-        unique=True,
-        nullable=False,
-        index=True,
-    )
     country: Mapped[str | None] = mapped_column(String(100), nullable=True)
     preferred_language: Mapped[str | None] = mapped_column(String(50), nullable=True)
     short_bio: Mapped[str | None] = mapped_column(String(500), nullable=True)
