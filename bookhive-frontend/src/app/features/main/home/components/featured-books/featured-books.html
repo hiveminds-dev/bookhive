@@ -1,1 +1,57 @@
-<p>featured-books works!</p>
+//<p>featured-books works!</p>
+
+<section class="featured-container">
+  <div class="featured-grid">
+
+    <!-- Top Row - Left Card: Book of the Month -->
+    <div class="card book-month-card">
+      <div class="book-image-wrapper">
+        <img [src]="bookOfTheMonth.image" [alt]="bookOfTheMonth.title" class="book-image" />
+      </div>
+      <div class="book-month-content">
+        <span class="section-label">{{ bookOfTheMonth.category }}</span>
+        <h2 class="card-title">{{ bookOfTheMonth.title }}</h2>
+        <p class="card-description">{{ bookOfTheMonth.description }}</p>
+        <a href="#" class="arrow-link">
+          Read Overview <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Top Row - Right Card: Philosophy Collection -->
+    <div class="card philosophy-card">
+      <div class="philosophy-icon">
+        <!-- Bulb / Idea Icon -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path>
+          <path d="M9 21h6"></path>
+        </svg>
+      </div>
+      <h3 class="card-title-sm">{{ philosophyCard.title }}</h3>
+      <p class="card-description-sm">{{ philosophyCard.description }}</p>
+      <a href="#" class="underline-link">{{ philosophyCard.linkText }}</a>
+    </div>
+
+    <!-- Bottom Row - Left Card: Authors Metric -->
+    <div class="card stat-card">
+      <div class="stat-number">{{ authorsCount }}</div>
+      <div class="stat-label-text">PREMIUM AUTHORS</div>
+    </div>
+
+    <!-- Bottom Row - Right Card: Author Spotlight -->
+    <div class="card author-card">
+      <div class="author-avatar-wrapper">
+        <img [src]="authorSpotlight.avatar" [alt]="authorSpotlight.name" class="author-avatar" />
+      </div>
+      <div class="author-content">
+        <span class="spotlight-label">Author Spotlight</span>
+        <h4 class="author-name">{{ authorSpotlight.name }}</h4>
+        <blockquote class="author-quote">{{ authorSpotlight.quote }}</blockquote>
+        <div class="tag-group">
+          <span *ngFor="let tag of authorSpotlight.tags" class="tag">{{ tag }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

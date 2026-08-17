@@ -1,0 +1,229 @@
+/* Container & Grid Setup */
+.featured-container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Base Card Styles */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f0f0f0;
+}
+
+/* 1. Book of the Month Card */
+.book-month-card {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  align-items: center;
+  background-color: #ffffff;
+}
+
+.book-image-wrapper {
+  height: 100%;
+  min-height: 280px;
+}
+
+.book-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.book-month-content {
+  padding: 2rem;
+}
+
+.section-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #a38127;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1a1a1a;
+  margin: 0 0 0.85rem 0;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #666666;
+  margin-bottom: 1.5rem;
+}
+
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #a38127;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: gap 0.2s ease;
+}
+
+.arrow-link:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* 2. Philosophy Highlight Card */
+.philosophy-card {
+  background-color: #fceea7;
+  border: none;
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.philosophy-icon {
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.card-title-sm {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem 0;
+}
+
+.card-description-sm {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+}
+
+.underline-link {
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 3. Stat Card */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem;
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #a38127;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #666666;
+}
+
+/* 4. Author Spotlight Card */
+.author-card {
+  background-color: #f5f5f7;
+  border: none;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.author-avatar-wrapper {
+  flex-shrink: 0;
+}
+
+.author-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.spotlight-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a38127;
+  margin-bottom: 0.25rem;
+}
+
+.author-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.author-quote {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #555555;
+  margin: 0 0 1rem 0;
+  font-style: italic;
+}
+
+.tag-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: #ffffff;
+  color: #666666;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Responsive Handling */
+@media (max-width: 900px) {
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-month-card {
+    grid-template-columns: 1fr;
+  }
+
+  .author-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .tag-group {
+    justify-content: center;
+  }
+}
