@@ -955,6 +955,10 @@ INPUT WRAPPER
   border-color: #b84d3c;
 }
 
+.textarea-wrapper.invalid {
+  border-color: #a64233;
+}
+
 /* =========================================
 INPUT ICON
 ========================================= */
@@ -1106,113 +1110,25 @@ ERRORS
   font-size: 12px;
 }
 
-/* =========================================
-UPLOAD
-========================================= */
-
-.upload-box {
-  min-height: 105px;
-
+.profile-image-notice {
   display: flex;
-
   flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
   gap: 5px;
-
-  padding: 15px;
-
-  border: 1px dashed #d7c8ac;
-
+  padding: 14px 16px;
+  border: 1px solid #e2d3b8;
   border-radius: 15px;
-
   background: #fffaf1;
-
-  cursor: pointer;
-
-  transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    transform 160ms ease;
 }
 
-.upload-box:hover {
-  border-color: var(--gold);
-
-  background: #fffdf8;
-
-  transform: translateY(-1px);
-}
-
-.upload-icon {
-  color: var(--gold);
-
-  font-size: 22px;
-}
-
-.upload-box strong {
-  color: #3e3932;
-
+.profile-image-notice strong {
+  color: #5f4a19;
   font-size: 12px;
-
-  font-weight: 800;
 }
 
-.upload-box span {
-  color: #918a7e;
-
-  font-size: 10px;
-}
-
-/* =========================================
-IMAGE PREVIEW
-========================================= */
-
-.image-preview {
-  display: flex;
-
-  align-items: center;
-
-  gap: 14px;
-
-  padding: 10px;
-
-  border: 1px solid var(--line);
-
-  border-radius: 15px;
-
-  background: #fffaf1;
-}
-
-.image-preview img {
-  width: 58px;
-  height: 58px;
-
-  object-fit: cover;
-
-  border-radius: 12px;
-}
-
-.image-preview button {
-  padding: 8px 13px;
-
-  border: 1px solid #ddcdb0;
-
-  border-radius: 10px;
-
-  background: #fff;
-
-  color: var(--gold-dark);
-
-  cursor: pointer;
-
-  font: inherit;
-
+.profile-image-notice span {
+  color: #756e63;
   font-size: 11px;
-
-  font-weight: 700;
+  line-height: 1.5;
 }
 
 /* =========================================

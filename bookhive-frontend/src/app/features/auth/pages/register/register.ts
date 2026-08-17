@@ -92,13 +92,6 @@ export class Register {
   showConfirmPassword = false;
 
   // =========================
-  // PROFILE IMAGE
-  // =========================
-
-  selectedImage: File | null = null;
-  imagePreview: string | null = null;
-
-  // =========================
   // READER FORM
   // =========================
 
@@ -219,10 +212,6 @@ export class Register {
     this.registrationError = null;
     this.registrationSuccess = null;
 
-    if (type === 'reader') {
-      this.selectedImage = null;
-      this.imagePreview = null;
-    }
   }
 
   // =========================
@@ -340,67 +329,6 @@ export class Register {
 
   toggleConfirmPassword(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
-  }
-
-  // =========================
-  // IMAGE UPLOAD
-  // =========================
-
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files || input.files.length === 0) {
-      return;
-    }
-
-    const file = input.files[0];
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file.');
-      return;
-    }
-
-    this.setSelectedImage(file);
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-
-    const files = event.dataTransfer?.files;
-
-    if (!files || files.length === 0) {
-      return;
-    }
-
-    const file = files[0];
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please drop an image file.');
-      return;
-    }
-
-    this.setSelectedImage(file);
-  }
-
-  private setSelectedImage(file: File): void {
-    this.selectedImage = file;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      this.imagePreview = reader.result as string;
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  removeImage(): void {
-    this.selectedImage = null;
-    this.imagePreview = null;
   }
 
   // =========================

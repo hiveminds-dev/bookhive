@@ -400,7 +400,13 @@
             <div class="field">
               <label> AUTHOR BIO </label>
 
-              <div class="textarea-wrapper">
+              <div
+                class="textarea-wrapper"
+                [class.invalid]="
+                  hasFieldError(activeForm, 'bio', 'required') ||
+                  hasFieldError(activeForm, 'bio', 'minlength')
+                "
+              >
                 <textarea
                   formControlName="bio"
                   rows="3"
@@ -411,6 +417,10 @@
               @if (hasFieldError(activeForm, 'bio', 'required')) {
                 <small> Bio is required. </small>
               }
+
+              @if (hasFieldError(activeForm, 'bio', 'minlength')) {
+                <small> Author bio must contain at least 10 characters. </small>
+              }
             </div>
 
             <!-- ================================= -->
@@ -420,23 +430,12 @@
             <div class="field">
               <label> PROFILE IMAGE </label>
 
-              @if (!imagePreview) {
-                <label class="upload-box" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-                  <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden />
-
-                  <div class="upload-icon">↑</div>
-
-                  <strong> Upload profile image </strong>
-
-                  <span> Drag & drop or click to browse </span>
-                </label>
-              } @else {
-                <div class="image-preview">
-                  <img [src]="imagePreview" alt="Profile preview" />
-
-                  <button type="button" (click)="removeImage()">Remove</button>
-                </div>
-              }
+              <div class="profile-image-notice">
+                <strong>Available after account approval</strong>
+                <span>
+                  You can add a profile image from your Author profile after your account is approved.
+                </span>
+              </div>
             </div>
           }
         </form>
