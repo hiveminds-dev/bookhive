@@ -1,4 +1,5 @@
 import hashlib
+import logging
 import secrets
 from datetime import UTC, datetime, timedelta
 
@@ -14,7 +15,9 @@ from orm_models.user import (
     UserRole,
 )
 from repositories.user_repository import UserRepository
-from services.email_sender import EmailSender
+from services.email_sender import EmailDeliveryError, EmailSender
+
+logger = logging.getLogger(__name__)
 
 
 class EmailVerificationError(ValueError):
@@ -56,6 +59,17 @@ class EmailVerificationService:
 
     async def send_token(self, email: str, token: str) -> None:
         await self.email_sender.send_verification_email(email, token)
+
+    async def send_token_after_registration(self, email: str, token: str) -> None:
+        try:
+            await self.send_token(email, token)
+        except EmailDeliveryError:
+            # The account and token have already been committed. Keep registration
+            # successful so the user can retry from the resend screen.
+            logger.exception(
+                "Registration completed, but verification email delivery failed for %s",
+                email,
+            )
 
     async def verify(self, session: AsyncSession, raw_token: str) -> User:
         result = await session.execute(

@@ -13,6 +13,7 @@ from services.email_verification_service import (
     EmailVerificationError,
     EmailVerificationService,
 )
+from services.email_sender import EmailDeliveryError
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 service = EmailVerificationService()
@@ -44,7 +45,13 @@ async def resend_verification(
     request: ResendVerificationRequest,
     session: DbSession,
 ):
-    await service.resend(session, request.email)
+    try:
+        await service.resend(session, request.email)
+    except EmailDeliveryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(exc),
+        ) from exc
     return MessageResponse(
         message="If the account exists and is unverified, a new link has been sent."
     )

@@ -53,7 +53,7 @@ class AuthorService:
             await session.commit()
             await session.refresh(author)
 
-            await self.email_verification_service.send_token(
+            await self.email_verification_service.send_token_after_registration(
                 user.email,
                 verification_token,
             )
