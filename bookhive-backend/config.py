@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     app_env: str = "development"
     api_prefix: str = "/api"
     frontend_url: str = "http://localhost:4200"
+    secret_key: str = "change_me"
+    access_token_expire_minutes: int = 30
+    jwt_algorithm: str = "HS256"
 
     database_host: str = "localhost"
     database_port: int = 5432
