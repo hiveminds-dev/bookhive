@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import {
+  Routes
+} from '@angular/router';
 
 import {
   VerificationSuccess
@@ -33,24 +35,29 @@ export const routes: Routes = [
   },
 
   // ==========================================
-  // AUTHENTICATION PAGES
-  // Shared navbar නැහැ
+  // AUTHENTICATION
   // ==========================================
 
   {
     path: 'login',
 
     loadComponent: () =>
-      import('./features/auth/pages/login/login')
-        .then(module => module.Login)
+      import(
+        './features/auth/pages/login/login'
+        ).then(
+        module => module.Login
+      )
   },
 
   {
     path: 'register',
 
     loadComponent: () =>
-      import('./features/auth/pages/register/register')
-        .then(module => module.Register)
+      import(
+        './features/auth/pages/register/register'
+        ).then(
+        module => module.Register
+      )
   },
 
   {
@@ -59,8 +66,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import(
         './features/auth/pages/forgot-password/forgot-password'
-        )
-        .then(module => module.ForgotPassword)
+        ).then(
+        module =>
+          module.ForgotPassword
+      )
   },
 
   {
@@ -75,7 +84,6 @@ export const routes: Routes = [
 
   // ==========================================
   // AUTHOR STUDIO
-  // Author sidebar සහ header එක සමඟ
   // ==========================================
 
   {
@@ -84,43 +92,96 @@ export const routes: Routes = [
 
     children: [
 
-      // /author open කළාම Dashboard එකට යනවා
+      // /author
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
 
-      // Author Dashboard
-      // URL: /author/dashboard
+      // /author/dashboard
       {
         path: 'dashboard',
 
         loadComponent: () =>
           import(
             './features/author/dashboard/dashboard'
-            )
-            .then(
-              module => module.AuthorDashboardComponent
-            )
+            ).then(
+            module =>
+              module.AuthorDashboardComponent
+          )
+      },
+
+      // /author/books
+      {
+        path: 'books',
+
+        loadComponent: () =>
+          import(
+            './features/author/books/book-management/book-management'
+            ).then(
+            module =>
+              module.BookManagement
+          )
+      },
+
+      // /author/books/upload
+      {
+        path: 'books/upload',
+
+        loadComponent: () =>
+          import(
+            './features/author/books/edit-book/edit-book'
+            ).then(
+            module =>
+              module.EditBook
+          )
+      },
+
+      // /author/books/edit/1
+      {
+        path: 'books/edit/:id',
+
+        loadComponent: () =>
+          import(
+            './features/author/books/edit-book/edit-book'
+            ).then(
+            module =>
+              module.EditBook
+          )
+      },
+
+      // /author/requests
+      {
+        path: 'requests',
+
+        loadComponent: () =>
+          import(
+            './features/author/requests/requests'
+            ).then(
+            module =>
+              module.Requests
+          )
+      },
+
+      // /author/analytics
+      {
+        path: 'analytics',
+
+        loadComponent: () =>
+          import(
+            './features/author/analytics/analytics'
+            ).then(
+            module =>
+              module.AnalyticsComponent
+          )
       }
 
-      /*
-       * අනෙක් Author pages හදන විට
-       * මෙතැනට routes එකතු කරනවා:
-       *
-       * /author/books
-       * /author/books/upload
-       * /author/requests
-       * /author/analytics
-       * /author/profile
-       */
     ]
   },
 
   // ==========================================
   // ADMIN DASHBOARD
-  // Admin sidebar සහ header එක සමඟ
   // ==========================================
 
   {
@@ -128,24 +189,32 @@ export const routes: Routes = [
     component: AdminLayout,
 
     children: [
+
+      // /admin
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
+
+      // /admin/dashboard
       {
         path: 'dashboard',
 
         loadComponent: () =>
-          import('./features/admin/dashboard/dashboard')
-            .then(module => module.Dashboard)
+          import(
+            './features/admin/dashboard/dashboard'
+            ).then(
+            module =>
+              module.Dashboard
+          )
       }
+
     ]
   },
 
   // ==========================================
   // MAIN WEBSITE
-  // Shared main navbar එක සමඟ
   // ==========================================
 
   {
@@ -154,66 +223,82 @@ export const routes: Routes = [
 
     children: [
 
-      // Home
+      // /home
       {
         path: 'home',
 
         loadComponent: () =>
-          import('./features/main/home/home')
-            .then(module => module.Home)
+          import(
+            './features/main/home/home'
+            ).then(
+            module =>
+              module.Home
+          )
       },
 
-      // Explore Library
+      // /explore
       {
         path: 'explore',
 
         loadComponent: () =>
-          import('./features/main/explore/explore')
-            .then(module => module.ExploreComponent)
+          import(
+            './features/main/explore/explore'
+            ).then(
+            module =>
+              module.ExploreComponent
+          )
       },
 
-      // Book Preview
+      // /explore/1/preview
       {
         path: 'explore/:id/preview',
 
         loadComponent: () =>
           import(
             './features/main/book-preview/book-preview'
-            )
-            .then(
-              module => module.BookPreviewComponent
-            )
+            ).then(
+            module =>
+              module.BookPreviewComponent
+          )
       },
 
-      // Book Reader
+      // /book-reader/1
       {
         path: 'book-reader/:id',
 
         loadComponent: () =>
           import(
             './features/main/book-reader/book-reader'
-            )
-            .then(
-              module => module.BookReaderComponent
-            )
+            ).then(
+            module =>
+              module.BookReaderComponent
+          )
       },
 
-      // Community
+      // /community
       {
         path: 'community',
 
         loadComponent: () =>
-          import('./features/main/community/community')
-            .then(module => module.Community)
+          import(
+            './features/main/community/community'
+            ).then(
+            module =>
+              module.Community
+          )
       },
 
-      // About
+      // /about
       {
         path: 'about',
 
         loadComponent: () =>
-          import('./features/main/about/about')
-            .then(module => module.About)
+          import(
+            './features/main/about/about'
+            ).then(
+            module =>
+              module.About
+          )
       }
 
     ]
@@ -227,4 +312,5 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'login'
   }
+
 ];
