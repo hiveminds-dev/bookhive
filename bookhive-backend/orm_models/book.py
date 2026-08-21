@@ -11,7 +11,6 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-
 if TYPE_CHECKING:
     from orm_models.category import Category
     from orm_models.user import User
