@@ -1,1 +1,91 @@
-<p>top-books works!</p>
+<section class="top-books-grid">
+
+  <article class="books-card">
+
+    <header class="card-header">
+      <h2>Top Views</h2>
+    </header>
+
+    <div class="book-list">
+      @for (
+        book of topViewedBooks;
+        track book.id
+        ) {
+        <div class="book-item">
+          <img
+            class="book-cover"
+            [src]="book.cover"
+            [alt]="book.title + ' cover'"
+            (error)="handleImageError($event)"
+          >
+
+          <div class="book-information">
+            <h3>
+              {{ book.title }}
+            </h3>
+
+            <p>
+              {{ book.category }}
+              <span aria-hidden="true">•</span>
+              {{ book.amount }}
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="outline-button"
+      (click)="viewAllWorks()"
+    >
+      View All Works
+    </button>
+
+  </article>
+
+  <article class="books-card">
+
+    <header class="card-header">
+      <h2>Most Downloaded</h2>
+    </header>
+
+    <div class="book-list">
+      @for (
+        book of mostDownloadedBooks;
+        track book.id
+        ) {
+        <div class="book-item">
+          <img
+            class="book-cover"
+            [src]="book.cover"
+            [alt]="book.title + ' cover'"
+            (error)="handleImageError($event)"
+          >
+
+          <div class="book-information">
+            <h3>
+              {{ book.title }}
+            </h3>
+
+            <p>
+              {{ book.category }}
+              <span aria-hidden="true">•</span>
+              {{ book.amount }}
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="outline-button"
+      (click)="downloadReports()"
+    >
+      Download Reports
+    </button>
+
+  </article>
+
+</section>
