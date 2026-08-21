@@ -26,28 +26,34 @@
 
     <!-- Success Content -->
     <div class="success-content">
-      <p class="eyebrow">Email verified</p>
-      <h1>Verification successful</h1>
+      <p class="eyebrow">{{ isVerifying ? 'Please wait' : (verificationSucceeded ? 'Email verified' : 'Verification failed') }}</p>
+      <h1>{{ isVerifying ? 'Verifying your email' : (verificationSucceeded ? 'Verification successful' : 'Unable to verify email') }}</h1>
 
-      <p class="description">
-        Your email address has been confirmed and your BookHive account is ready to use.
-      </p>
+      <p class="description" [attr.role]="verificationSucceeded ? 'status' : 'alert'">{{ message }}</p>
 
       <!-- Welcome Badge -->
+      @if (verificationSucceeded) {
       <div class="welcome-badge">
         <svg lucideSparkles class="celebration-icon" aria-hidden="true"></svg>
         <span>Welcome to BookHive!</span>
       </div>
+      }
 
       <!-- Continue Button -->
+      @if (verificationSucceeded) {
       <button type="button" class="continue-button" (click)="goToLogin()">
         <span>Continue to sign in</span>
 
         <svg lucideArrowRight class="arrow-icon" aria-hidden="true"></svg>
       </button>
+      }
 
       <!-- No Auto  Redirect -->
-      <p class="redirect-message">Click continue to sign in to your BookHive account.</p>
+      @if (verificationSucceeded) {
+        <p class="redirect-message">Click continue to sign in to your BookHive account.</p>
+      } @else if (!isVerifying) {
+        <a class="redirect-message" routerLink="/register">Return to registration</a>
+      }
     </div>
   </main>
 </div>
