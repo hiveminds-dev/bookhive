@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import {
+  Routes
+} from '@angular/router';
 
 import {
   VerificationSuccess
@@ -15,6 +17,12 @@ import {
 import {
   AuthorLayoutComponent
 } from './layouts/author-layout/author-layout';
+
+import {
+  AdminLayout
+} from './layouts/admin-layout/admin-layout';
+import { adminGuard } from './core/guards/admin-guard';
+import { authorGuard } from './core/guards/author-guard';
 
 export const routes: Routes = [
 
@@ -61,7 +69,8 @@ export const routes: Routes = [
       import(
         './features/auth/pages/forgot-password/forgot-password'
         ).then(
-        module => module.ForgotPassword
+        module =>
+          module.ForgotPassword
       )
   },
 
@@ -82,6 +91,7 @@ export const routes: Routes = [
   {
     path: 'author',
     component: AuthorLayoutComponent,
+    canActivate: [authorGuard],
 
     children: [
 
@@ -155,6 +165,53 @@ export const routes: Routes = [
             module =>
               module.RequestsComponent
           )
+      },
+
+      // /author/analytics
+      {
+        path: 'analytics',
+
+        loadComponent: () =>
+          import(
+            './features/author/analytics/analytics'
+            ).then(
+            module =>
+              module.AnalyticsComponent
+          )
+      }
+
+    ]
+  },
+
+  // ==========================================
+  // ADMIN DASHBOARD
+  // ==========================================
+
+  {
+    path: 'admin',
+    component: AdminLayout,
+    canActivate: [adminGuard],
+
+    children: [
+
+      // /admin
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+
+      // /admin/dashboard
+      {
+        path: 'dashboard',
+
+        loadComponent: () =>
+          import(
+            './features/admin/dashboard/dashboard'
+            ).then(
+            module =>
+              module.Dashboard
+          )
       }
 
     ]
@@ -178,7 +235,8 @@ export const routes: Routes = [
           import(
             './features/main/home/home'
             ).then(
-            module => module.Home
+            module =>
+              module.Home
           )
       },
 
@@ -229,7 +287,8 @@ export const routes: Routes = [
           import(
             './features/main/community/community'
             ).then(
-            module => module.Community
+            module =>
+              module.Community
           )
       },
 
@@ -241,7 +300,8 @@ export const routes: Routes = [
           import(
             './features/main/about/about'
             ).then(
-            module => module.About
+            module =>
+              module.About
           )
       }
 

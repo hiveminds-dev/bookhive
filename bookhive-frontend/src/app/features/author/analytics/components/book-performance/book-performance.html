@@ -1,1 +1,183 @@
-<p>book-performance works!</p>
+<section class="location-card">
+
+  <header class="card-header">
+    <h2>Reader Locations</h2>
+
+    <p>
+      Countries where your readers are located.
+    </p>
+  </header>
+
+  <div
+    class="map-preview"
+    role="img"
+    aria-label="World map showing reader locations"
+  >
+    <svg
+      class="world-map"
+      viewBox="0 0 640 300"
+      aria-hidden="true"
+    >
+      <path
+        class="continent"
+        d="
+          M70 72
+          L118 46
+          L172 58
+          L202 92
+          L182 124
+          L145 131
+          L119 164
+          L88 143
+          L56 107
+          Z
+        "
+      />
+
+      <path
+        class="continent"
+        d="
+          M181 153
+          L218 171
+          L232 212
+          L214 268
+          L184 245
+          L166 196
+          Z
+        "
+      />
+
+      <path
+        class="continent"
+        d="
+          M283 64
+          L326 45
+          L370 60
+          L381 91
+          L348 105
+          L316 94
+          Z
+        "
+      />
+
+      <path
+        class="continent"
+        d="
+          M325 107
+          L371 115
+          L401 158
+          L381 229
+          L345 255
+          L316 206
+          L304 152
+          Z
+        "
+      />
+
+      <path
+        class="continent"
+        d="
+          M380 63
+          L455 48
+          L544 69
+          L584 111
+          L550 145
+          L489 139
+          L455 170
+          L412 140
+          L381 108
+          Z
+        "
+      />
+
+      <path
+        class="continent"
+        d="
+          M518 205
+          L570 194
+          L605 222
+          L580 257
+          L530 249
+          Z
+        "
+      />
+
+      <circle
+        class="map-point primary"
+        cx="120"
+        cy="105"
+        r="8"
+      />
+
+      <circle
+        class="map-point secondary"
+        cx="315"
+        cy="78"
+        r="6"
+      />
+
+      <circle
+        class="map-point tertiary"
+        cx="102"
+        cy="76"
+        r="5"
+      />
+    </svg>
+  </div>
+
+  <div class="locations-list">
+    @for (
+      location of readerLocations;
+      track location.id
+      ) {
+      <div class="location-item">
+
+        <div class="location-heading">
+          <div class="country">
+            <span
+              class="country-dot"
+              [style.background-color]="
+                location.color
+              "
+              aria-hidden="true"
+            ></span>
+
+            <span>
+              {{ location.country }}
+            </span>
+          </div>
+
+          <strong>
+            {{ location.percentage }}%
+          </strong>
+        </div>
+
+        <div
+          class="progress-track"
+          role="progressbar"
+          [attr.aria-label]="
+            location.country +
+            ' reader percentage'
+          "
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="
+            location.percentage
+          "
+        >
+          <span
+            class="progress-value"
+            [style.width.%]="
+              location.percentage
+            "
+            [style.background-color]="
+              location.color
+            "
+          ></span>
+        </div>
+
+      </div>
+    }
+  </div>
+
+</section>

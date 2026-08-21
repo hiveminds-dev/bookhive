@@ -1,1 +1,61 @@
-<p>statistics works!</p>
+<section
+  class="statistics-grid"
+  aria-label="Author analytics statistics"
+>
+  @for (
+    statistic of statistics;
+    track statistic.id
+    ) {
+    <article class="statistic-card">
+
+      <div class="card-header">
+        <span
+          class="statistic-icon"
+          [class.gold]="
+            statistic.iconType === 'gold'
+          "
+          [class.gray]="
+            statistic.iconType === 'gray'
+          "
+          [class.yellow]="
+            statistic.iconType === 'yellow'
+          "
+          aria-hidden="true"
+        >
+          {{ statistic.icon }}
+        </span>
+
+        @if (statistic.badge) {
+          <span
+            class="statistic-badge"
+            [class.positive]="
+              statistic.badgeType === 'positive'
+            "
+            [class.neutral]="
+              statistic.badgeType === 'neutral'
+            "
+          >
+            {{ statistic.badge }}
+          </span>
+        }
+      </div>
+
+      <p class="statistic-title">
+        {{ statistic.title }}
+      </p>
+
+      <div class="statistic-value">
+        <strong>
+          {{ statistic.value }}
+        </strong>
+
+        @if (statistic.secondaryValue) {
+          <span>
+            {{ statistic.secondaryValue }}
+          </span>
+        }
+      </div>
+
+    </article>
+  }
+</section>

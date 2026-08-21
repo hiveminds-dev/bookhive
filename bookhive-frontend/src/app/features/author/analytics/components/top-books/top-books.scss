@@ -1,0 +1,138 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.top-books-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.books-card {
+  display: flex;
+  min-height: 520px;
+  padding: 32px;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #f0ede5;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+}
+
+.card-header {
+  margin-bottom: 28px;
+}
+
+.card-header h2 {
+  margin: 0;
+  color: #28251f;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.book-list {
+  display: grid;
+  gap: 26px;
+}
+
+.book-item {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 18px;
+}
+
+.book-cover {
+  width: 58px;
+  height: 78px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: #f0eee8;
+  border-radius: 7px;
+  box-shadow: 0 5px 13px rgba(45, 39, 24, 0.13);
+}
+
+.book-information {
+  min-width: 0;
+}
+
+.book-information h3 {
+  margin: 0 0 6px;
+  overflow: hidden;
+  color: #292620;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+}
+
+.book-information p {
+  margin: 0;
+  color: #958e82;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.book-information p span {
+  padding: 0 4px;
+  color: #b6ad9d;
+}
+
+.outline-button {
+  min-height: 45px;
+  margin-top: auto;
+  padding: 10px 20px;
+  color: #866a00;
+  background: #ffffff;
+  border: 1px solid #daceac;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.outline-button:hover {
+  color: #ffffff;
+  background: #967700;
+  border-color: #967700;
+}
+
+@media (max-width: 760px) {
+  .top-books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .books-card {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .books-card {
+    min-height: 470px;
+    padding: 24px 20px;
+  }
+
+  .book-list {
+    gap: 20px;
+  }
+
+  .book-item {
+    gap: 14px;
+  }
+
+  .book-cover {
+    width: 50px;
+    height: 70px;
+  }
+}

@@ -1,1 +1,25 @@
-<p>analytics-header works!</p>
+<header class="analytics-header">
+
+  <div class="heading">
+    <p class="eyebrow">
+      Author Studio
+    </p>
+
+    <h1>Analytics</h1>
+
+    <p class="description">
+      Track your books, readers, views and
+      download performance.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    class="export-button"
+    (click)="exportReport()"
+  >
+    <span aria-hidden="true">⇩</span>
+    Export Report
+  </button>
+
+</header>

@@ -1,18 +1,32 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { vi } from 'vitest';
 
+import { EmailVerificationService } from '../../services/email-verification';
 import { VerificationSuccess } from './verification-success';
 
 describe('VerificationSuccess', () => {
   let component: VerificationSuccess;
   let fixture: ComponentFixture<VerificationSuccess>;
   let router: Router;
+  const emailVerificationService = {
+    verifyEmail: vi.fn(() =>
+      of({ message: 'Email verified successfully', role: 'reader', account_status: 'active' }),
+    ),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [VerificationSuccess],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        { provide: EmailVerificationService, useValue: emailVerificationService },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ token: 'secure-token' }) } },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(VerificationSuccess);
