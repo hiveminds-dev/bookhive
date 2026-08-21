@@ -83,27 +83,14 @@
           </button>
         </div>
 
-        <button class="submit-button" type="submit">Sign In</button>
+        @if (loginError) {
+          <p class="field-error" role="alert">{{ loginError }}</p>
+        }
+
+        <button class="submit-button" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Signing In…' : 'Sign In' }}
+        </button>
       </form>
-
-      <div class="divider">
-        <span>OR CONTINUE WITH</span>
-      </div>
-
-      <div class="social-logins" aria-label="Social sign in options">
-        <button type="button" aria-label="Continue with Google" title="Continue with Google">
-          <fa-icon [icon]="socialIcons.google" aria-hidden="true"></fa-icon>
-        </button>
-        <button type="button" aria-label="Continue with Facebook" title="Continue with Facebook">
-          <fa-icon [icon]="socialIcons.facebook" aria-hidden="true"></fa-icon>
-        </button>
-        <button type="button" aria-label="Continue with Apple" title="Continue with Apple">
-          <fa-icon [icon]="socialIcons.apple" aria-hidden="true"></fa-icon>
-        </button>
-        <button type="button" aria-label="Continue with X" title="Continue with X">
-          <fa-icon [icon]="socialIcons.x" aria-hidden="true"></fa-icon>
-        </button>
-      </div>
 
       <p class="register-link">
         Don't have an account?

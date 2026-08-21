@@ -13,8 +13,10 @@ from database import (
     session_factory,
 )
 from routers import health_router
+from routers.auth_router import router as auth_router
 from routers.author_router import router as author_router
 from routers.user_router import router as user_router
+from routers.book_router import router as book_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,6 +24,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+import orm_models
 
 
 @asynccontextmanager
@@ -68,12 +72,22 @@ app.include_router(
 )
 
 app.include_router(
+    auth_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
     author_router,
     prefix=settings.api_prefix,
 )
 
 app.include_router(
     user_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    book_router,
     prefix=settings.api_prefix,
 )
 

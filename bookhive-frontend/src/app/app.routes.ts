@@ -21,6 +21,8 @@ import {
 import {
   AdminLayout
 } from './layouts/admin-layout/admin-layout';
+import { adminGuard } from './core/guards/admin-guard';
+import { authorGuard } from './core/guards/author-guard';
 
 export const routes: Routes = [
 
@@ -89,6 +91,7 @@ export const routes: Routes = [
   {
     path: 'author',
     component: AuthorLayoutComponent,
+    canActivate: [authorGuard],
 
     children: [
 
@@ -187,6 +190,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayout,
+    canActivate: [adminGuard],
 
     children: [
 
