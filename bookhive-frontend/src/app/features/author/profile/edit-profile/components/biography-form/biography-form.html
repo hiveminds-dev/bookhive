@@ -1,0 +1,59 @@
+<section class="biography-section">
+
+  <div class="section-heading">
+    <h2>Biography</h2>
+
+    <p>
+      Tell your readers about yourself,
+      your experience and your writing.
+    </p>
+  </div>
+
+  <form [formGroup]="biographyForm">
+
+    <div class="form-group">
+
+      <label for="biography">
+        Author Biography
+        <span>*</span>
+      </label>
+
+      <textarea
+        id="biography"
+        formControlName="biography"
+        placeholder="Write your author biography..."
+        [class.invalid]="isInvalid"
+        [attr.maxlength]="maximumCharacters"
+      ></textarea>
+
+      <div class="textarea-footer">
+
+        <div>
+          @if (isInvalid) {
+            <small class="error-message">
+              Biography must contain between
+              50 and {{ maximumCharacters }}
+              characters.
+            </small>
+          }
+        </div>
+
+        <span
+          class="character-counter"
+          [class.limit-reached]="
+            characterCount >=
+            maximumCharacters
+          "
+        >
+          {{ characterCount }}
+          /
+          {{ maximumCharacters }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </form>
+
+</section>

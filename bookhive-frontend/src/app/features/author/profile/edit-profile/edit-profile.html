@@ -1,0 +1,79 @@
+<main class="edit-profile-page">
+
+  <header class="page-header">
+
+    <button
+      type="button"
+      class="back-button"
+      aria-label="Back to profile"
+      (click)="cancelEditing()"
+    >
+      ←
+    </button>
+
+    <div>
+      <p class="eyebrow">
+        Author Profile
+      </p>
+
+      <h1>Edit Profile</h1>
+
+      <p class="description">
+        Update your personal information,
+        biography and social links.
+      </p>
+    </div>
+
+  </header>
+
+  @if (saveMessage) {
+    <div
+      class="success-message"
+      role="status"
+    >
+      <span aria-hidden="true">✓</span>
+
+      {{ saveMessage }}
+    </div>
+  }
+
+  <div class="edit-form-sections">
+
+    <app-profile-image-upload
+      [imageUrl]="profileImageUrl"
+      (imageChanged)="
+        onImageChanged($event)
+      "
+    />
+
+    <app-personal-details
+      (detailsChanged)="
+        onPersonalDetailsChanged($event)
+      "
+    />
+
+    <app-biography-form
+      (biographyChanged)="
+        onBiographyChanged($event)
+      "
+    />
+
+    <app-social-links-form
+      (socialLinksChanged)="
+        onSocialLinksChanged($event)
+      "
+    />
+
+    <app-profile-save-actions
+      [isSaving]="isSaving"
+      (cancelSelected)="
+        cancelEditing()
+      "
+      (saveSelected)="
+        saveProfile()
+      "
+    />
+
+  </div>
+
+</main>

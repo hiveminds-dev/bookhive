@@ -1,1 +1,53 @@
-<p>profile-header works!</p>
+<section class="profile-header">
+
+  <div class="profile-photo-wrapper">
+
+    <img
+      class="profile-photo"
+      [src]="profileImage"
+      [alt]="authorName + ' profile photo'"
+      (error)="handleImageError($event)"
+    >
+
+    <label
+      class="camera-button"
+      for="profile-image-input"
+      aria-label="Change profile photo"
+    >
+      <span aria-hidden="true">▣</span>
+    </label>
+
+    <input
+      id="profile-image-input"
+      class="file-input"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      (change)="onImageSelected($event)"
+    >
+
+  </div>
+
+  <div class="author-details">
+
+    <h1>
+      {{ authorName }}
+    </h1>
+
+    <p class="pen-name">
+      {{ penName }}
+    </p>
+
+    <div class="badges">
+      @for (
+        badge of badges;
+        track badge
+        ) {
+        <span class="badge">
+          {{ badge }}
+        </span>
+      }
+    </div>
+
+  </div>
+
+</section>

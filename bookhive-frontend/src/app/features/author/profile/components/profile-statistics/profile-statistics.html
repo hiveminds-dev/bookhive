@@ -1,1 +1,21 @@
-<p>profile-statistics works!</p>
+<section
+  class="statistics-grid"
+  aria-label="Author profile statistics"
+>
+  @for (
+    statistic of statistics;
+    track statistic.id
+    ) {
+    <article class="statistic-card">
+
+      <p class="statistic-label">
+        {{ statistic.label }}
+      </p>
+
+      <strong class="statistic-value">
+        {{ statistic.value }}
+      </strong>
+
+    </article>
+  }
+</section>

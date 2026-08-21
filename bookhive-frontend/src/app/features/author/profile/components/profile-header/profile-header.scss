@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.profile-photo-wrapper {
+  position: relative;
+  width: 154px;
+  height: 154px;
+  flex-shrink: 0;
+}
+
+.profile-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  object-fit: cover;
+  background: #ffffff;
+  border: 3px solid #e8e5df;
+  border-radius: 50%;
+  box-shadow: 0 9px 25px rgba(46, 40, 26, 0.15);
+}
+
+.camera-button {
+  position: absolute;
+  right: 2px;
+  bottom: 10px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #8a6d00;
+  background: #ffffff;
+  border: 1px solid #e2ddd1;
+  border-radius: 50%;
+  box-shadow: 0 5px 13px rgba(44, 39, 27, 0.17);
+  font-size: 17px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.camera-button:hover {
+  color: #ffffff;
+  background: #9c7d00;
+  transform: translateY(-2px);
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.author-details {
+  min-width: 0;
+}
+
+.author-details h1 {
+  margin: 0;
+  color: #20201e;
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 750;
+  line-height: 1.08;
+}
+
+.pen-name {
+  margin: 8px 0 18px;
+  color: #967600;
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge {
+  display: inline-flex;
+  min-height: 29px;
+  padding: 5px 14px;
+  align-items: center;
+  justify-content: center;
+  color: #755e00;
+  background: #fbf7e7;
+  border: 1px solid #ded5b6;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .profile-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .profile-photo-wrapper {
+    width: 130px;
+    height: 130px;
+  }
+
+  .camera-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .author-details h1 {
+    font-size: 36px;
+  }
+}

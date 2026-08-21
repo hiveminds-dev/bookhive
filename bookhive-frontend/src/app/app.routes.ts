@@ -21,8 +21,14 @@ import {
 import {
   AdminLayout
 } from './layouts/admin-layout/admin-layout';
-import { adminGuard } from './core/guards/admin-guard';
-import { authorGuard } from './core/guards/author-guard';
+
+import {
+  adminGuard
+} from './core/guards/admin-guard';
+
+import {
+  authorGuard
+} from './core/guards/author-guard';
 
 export const routes: Routes = [
 
@@ -47,7 +53,8 @@ export const routes: Routes = [
       import(
         './features/auth/pages/login/login'
         ).then(
-        module => module.Login
+        module =>
+          module.Login
       )
   },
 
@@ -58,7 +65,8 @@ export const routes: Routes = [
       import(
         './features/auth/pages/register/register'
         ).then(
-        module => module.Register
+        module =>
+          module.Register
       )
   },
 
@@ -91,7 +99,9 @@ export const routes: Routes = [
   {
     path: 'author',
     component: AuthorLayoutComponent,
-    canActivate: [authorGuard],
+    canActivate: [
+      authorGuard
+    ],
 
     children: [
 
@@ -178,6 +188,45 @@ export const routes: Routes = [
             module =>
               module.AnalyticsComponent
           )
+      },
+
+      // /author/profile/edit
+      {
+        path: 'profile/edit',
+
+        loadComponent: () =>
+          import(
+            './features/author/profile/edit-profile/edit-profile'
+            ).then(
+            module =>
+              module.EditProfile
+          )
+      },
+
+      // /author/profile/change-password
+      {
+        path: 'profile/change-password',
+
+        loadComponent: () =>
+          import(
+            './features/author/profile/change-password/change-password'
+            ).then(
+            module =>
+              module.ChangePassword
+          )
+      },
+
+      // /author/profile
+      {
+        path: 'profile',
+
+        loadComponent: () =>
+          import(
+            './features/author/profile/profile'
+            ).then(
+            module =>
+              module.Profile
+          )
       }
 
     ]
@@ -190,18 +239,16 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayout,
-    canActivate: [adminGuard],
+    canActivate: [
+      adminGuard
+    ],
 
     children: [
-
-      // /admin
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
-
-      // /admin/dashboard
       {
         path: 'dashboard',
 
@@ -213,7 +260,6 @@ export const routes: Routes = [
               module.Dashboard
           )
       }
-
     ]
   },
 
@@ -226,8 +272,6 @@ export const routes: Routes = [
     component: MainLayoutComponent,
 
     children: [
-
-      // /home
       {
         path: 'home',
 
@@ -239,8 +283,6 @@ export const routes: Routes = [
               module.Home
           )
       },
-
-      // /explore
       {
         path: 'explore',
 
@@ -252,8 +294,6 @@ export const routes: Routes = [
               module.ExploreComponent
           )
       },
-
-      // /explore/1/preview
       {
         path: 'explore/:id/preview',
 
@@ -265,8 +305,6 @@ export const routes: Routes = [
               module.BookPreviewComponent
           )
       },
-
-      // /book-reader/1
       {
         path: 'book-reader/:id',
 
@@ -278,8 +316,6 @@ export const routes: Routes = [
               module.BookReaderComponent
           )
       },
-
-      // /community
       {
         path: 'community',
 
@@ -291,8 +327,6 @@ export const routes: Routes = [
               module.Community
           )
       },
-
-      // /about
       {
         path: 'about',
 
@@ -304,7 +338,6 @@ export const routes: Routes = [
               module.About
           )
       }
-
     ]
   },
 
