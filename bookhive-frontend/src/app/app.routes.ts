@@ -16,6 +16,12 @@ import {
   AuthorLayoutComponent
 } from './layouts/author-layout/author-layout';
 
+import {
+  AdminLayout
+} from './layouts/admin-layout/admin-layout';
+import { adminGuard } from './core/guards/admin-guard';
+import { authorGuard } from './core/guards/author-guard';
+
 export const routes: Routes = [
 
   // ==========================================
@@ -77,6 +83,7 @@ export const routes: Routes = [
   {
     path: 'author',
     component: AuthorLayoutComponent,
+    canActivate: [authorGuard],
 
     children: [
 
@@ -111,6 +118,32 @@ export const routes: Routes = [
        * /author/analytics
        * /author/profile
        */
+    ]
+  },
+
+  // ==========================================
+  // ADMIN DASHBOARD
+  // Admin sidebar සහ header එක සමඟ
+  // ==========================================
+
+  {
+    path: 'admin',
+    component: AdminLayout,
+    canActivate: [adminGuard],
+
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard')
+            .then(module => module.Dashboard)
+      }
     ]
   },
 

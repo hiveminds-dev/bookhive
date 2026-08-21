@@ -1,8 +1,7 @@
 from datetime import datetime
-from typing import List
-
 from pydantic import BaseModel, EmailStr, Field
 
+from orm_models.book import BookStatus
 from orm_models.user import AccountStatus, UserRole
 
 
@@ -42,33 +41,34 @@ class AuthorRegistrationResult(BaseModel):
     message: str
     data: AuthorRegistrationResponse
 
-# New Dashboard Schemas
-
 class RecentBookSchema(BaseModel):
     id: int
     title: str
-    status: str
-    uploaded_at:datetime
+    status: BookStatus
+    updated_at: datetime
 
-class RecentReviewSchema(BaseModel):
-    reviewer_name: str
-    rating: int
-    review_text: str
-    created_at: datetime
+
+class AuthorSummarySchema(BaseModel):
+    id: int
+    full_name: str
+    pen_name: str | None
+    account_status: AccountStatus
+
 
 class DashboardStatsSchema(BaseModel):
     total_books: int
+    draft_books: int
+    pending_review_books: int
     published_books: int
-    pending_approval: int
-    total_downloads: int
+    rejected_books: int
+
 
 class AuthorDashboardResponse(BaseModel):
-    author_name: str
+    author: AuthorSummarySchema
     stats: DashboardStatsSchema
-    recent_uploads: List[RecentBookSchema]
-    recent_reviews: List[RecentReviewSchema]
+    recent_submissions: list[RecentBookSchema]
+
 
 class AuthorDashboardResult(BaseModel):
     message: str
     data: AuthorDashboardResponse
-
