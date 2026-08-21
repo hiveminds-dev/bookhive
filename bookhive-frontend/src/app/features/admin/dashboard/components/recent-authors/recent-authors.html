@@ -1,1 +1,8 @@
-<p>recent-authors works!</p>
+<section class="panel">
+  <h2>New Readers</h2>
+  <a class="person" href="#" *ngFor="let reader of readers">
+    <span class="avatar">{{ reader.initials }}</span>
+    <span class="details"><strong>{{ reader.name }}</strong><small>{{ reader.meta }}</small></span>
+    <span class="arrow">›</span>
+  </a>
+</section>

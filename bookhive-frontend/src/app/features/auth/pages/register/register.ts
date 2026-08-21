@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   AbstractControl,
   FormBuilder,
@@ -8,6 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize, Observable } from 'rxjs';
 import {
   LucideArrowLeft,
   LucideArrowRight,
@@ -25,6 +27,7 @@ import {
   AuthorRegistrationRequest,
   ReaderRegistrationRequest,
 } from '../../models/registration';
+import { RegistrationService } from '../../services/registration';
 
 const USERNAME_PATTERN = /^[A-Za-z][A-Za-z0-9_]{2,49}$/;
 
@@ -62,6 +65,8 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 })
 export class Register {
   private fb = inject(FormBuilder);
+  private changeDetector = inject(ChangeDetectorRef);
+  private registrationService = inject(RegistrationService);
   private router = inject(Router);
 
   readonly appName = 'BookHive';
@@ -77,6 +82,8 @@ export class Register {
   readonly totalSteps = 4;
 
   isSubmitting = false;
+  registrationError: string | null = null;
+  registrationSuccess: string | null = null;
 
   // =========================
   // PASSWORD
@@ -84,13 +91,6 @@ export class Register {
 
   showPassword = false;
   showConfirmPassword = false;
-
-  // =========================
-  // PROFILE IMAGE
-  // =========================
-
-  selectedImage: File | null = null;
-  imagePreview: string | null = null;
 
   // =========================
   // READER FORM
@@ -210,11 +210,9 @@ export class Register {
 
   selectAccountType(type: 'reader' | 'author'): void {
     this.accountType = type;
+    this.registrationError = null;
+    this.registrationSuccess = null;
 
-    if (type === 'reader') {
-      this.selectedImage = null;
-      this.imagePreview = null;
-    }
   }
 
   // =========================
@@ -335,67 +333,6 @@ export class Register {
   }
 
   // =========================
-  // IMAGE UPLOAD
-  // =========================
-
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files || input.files.length === 0) {
-      return;
-    }
-
-    const file = input.files[0];
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file.');
-      return;
-    }
-
-    this.setSelectedImage(file);
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-
-    const files = event.dataTransfer?.files;
-
-    if (!files || files.length === 0) {
-      return;
-    }
-
-    const file = files[0];
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please drop an image file.');
-      return;
-    }
-
-    this.setSelectedImage(file);
-  }
-
-  private setSelectedImage(file: File): void {
-    this.selectedImage = file;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      this.imagePreview = reader.result as string;
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  removeImage(): void {
-    this.selectedImage = null;
-    this.imagePreview = null;
-  }
-
-  // =========================
   // REGISTER
   // =========================
 
@@ -426,7 +363,7 @@ export class Register {
   }
 
   register(): void {
-    if (this.isSubmitting) {
+    if (this.isSubmitting || this.registrationSuccess) {
       return;
     }
 
@@ -440,24 +377,55 @@ export class Register {
     }
 
     this.isSubmitting = true;
+    this.registrationError = null;
+    this.registrationSuccess = null;
 
-    setTimeout(() => {
-      const email = this.activeForm.get('email')?.value;
+    const request$: Observable<unknown> =
+      this.accountType === 'reader'
+        ? this.registrationService.registerReader(this.buildReaderRequest())
+        : this.registrationService.registerAuthor(this.buildAuthorRequest());
 
-      if (this.accountType === 'reader') {
-        console.log('Reader registration:', this.buildReaderRequest());
-      } else {
-        console.log('Author registration:', this.buildAuthorRequest());
-      }
-
-      this.isSubmitting = false;
-
-      // Navigate to email verification page
-      this.router.navigate(['/auth/verify-email'], {
-        queryParams: {
-          email: email,
-        },
+    request$
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.changeDetector.markForCheck();
+        }),
+      )
+      .subscribe({
+      next: () => {
+        const email = this.activeForm.get('email')?.value?.trim().toLowerCase() ?? '';
+        void this.router.navigate(['/auth/verify-email'], { queryParams: { email } });
+      },
+      error: (error: HttpErrorResponse) => {
+        this.registrationError = this.getRegistrationError(error);
+        this.changeDetector.markForCheck();
+      },
       });
-    }, 800);
+  }
+
+  private getRegistrationError(error: HttpErrorResponse): string {
+    if (error.status === 0) {
+      return 'Unable to connect to the BookHive server. Please try again.';
+    }
+
+    const detail = error.error?.detail;
+
+    if (typeof detail === 'string' && detail.trim()) {
+      return detail;
+    }
+
+    if (Array.isArray(detail) && detail.length > 0) {
+      const validationMessage = detail
+        .map((item) => item?.msg)
+        .filter((message): message is string => typeof message === 'string')
+        .join(' ');
+
+      if (validationMessage) {
+        return validationMessage;
+      }
+    }
+
+    return 'Registration failed. Please check your details and try again.';
   }
 }

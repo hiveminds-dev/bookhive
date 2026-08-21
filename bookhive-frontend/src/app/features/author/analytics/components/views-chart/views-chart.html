@@ -1,1 +1,123 @@
-<p>views-chart works!</p>
+<section class="chart-card">
+
+  <header class="chart-header">
+    <div>
+      <h2>Monthly Views</h2>
+
+      <p>
+        Views received during the last
+        six months.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="export-button"
+      (click)="exportCsv()"
+    >
+      Export CSV
+    </button>
+  </header>
+
+  <div class="chart-container">
+
+    <svg
+      class="chart"
+      [attr.viewBox]="
+        '0 0 ' +
+        chartWidth +
+        ' ' +
+        chartHeight
+      "
+      role="img"
+      aria-label="Monthly book views line chart"
+    >
+      <defs>
+        <linearGradient
+          id="viewsAreaGradient"
+          x1="0"
+          y1="0"
+          x2="0"
+          y2="1"
+        >
+          <stop
+            offset="0%"
+            stop-color="#d3a91c"
+            stop-opacity="0.28"
+          />
+
+          <stop
+            offset="100%"
+            stop-color="#d3a91c"
+            stop-opacity="0.02"
+          />
+        </linearGradient>
+      </defs>
+
+      <line
+        class="grid-line"
+        x1="30"
+        y1="55"
+        x2="470"
+        y2="55"
+      />
+
+      <line
+        class="grid-line"
+        x1="30"
+        y1="120"
+        x2="470"
+        y2="120"
+      />
+
+      <line
+        class="grid-line"
+        x1="30"
+        y1="185"
+        x2="470"
+        y2="185"
+      />
+
+      <polygon
+        class="chart-area"
+        [attr.points]="areaPoints"
+      />
+
+      <polyline
+        class="chart-line"
+        [attr.points]="chartPoints"
+      />
+
+      @for (
+        item of monthlyViews;
+        track item.month;
+        let index = $index
+        ) {
+        <circle
+          class="chart-point"
+          [attr.cx]="getPointX(index)"
+          [attr.cy]="getPointY(item.value)"
+          r="5"
+        >
+          <title>
+            {{ item.month }}:
+            {{ item.value }}K views
+          </title>
+        </circle>
+      }
+    </svg>
+
+    <div class="month-labels">
+      @for (
+        item of monthlyViews;
+        track item.month
+        ) {
+        <span>
+          {{ item.month }}
+        </span>
+      }
+    </div>
+
+  </div>
+
+</section>

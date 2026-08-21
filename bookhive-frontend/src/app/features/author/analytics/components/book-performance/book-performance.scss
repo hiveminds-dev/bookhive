@@ -1,0 +1,169 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.location-card {
+  min-height: 520px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #f0ede5;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+}
+
+.card-header h2 {
+  margin: 0;
+  color: #28251f;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.card-header p {
+  margin: 7px 0 0;
+  color: #928b80;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.map-preview {
+  display: flex;
+  min-height: 245px;
+  margin: 22px 0 28px;
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #faf9f6;
+  border: 1px solid #efede7;
+  border-radius: 14px;
+}
+
+.world-map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.continent {
+  fill: #d9d8d3;
+  stroke: #c8c6bf;
+  stroke-width: 2;
+  transition: fill 0.2s ease;
+}
+
+.continent:hover {
+  fill: #c9c5b8;
+}
+
+.map-point {
+  stroke: #ffffff;
+  stroke-width: 3;
+  animation: map-pulse 2s infinite;
+}
+
+.map-point.primary {
+  fill: #806900;
+}
+
+.map-point.secondary {
+  fill: #d4a91f;
+  animation-delay: 0.4s;
+}
+
+.map-point.tertiary {
+  fill: #dfc458;
+  animation-delay: 0.8s;
+}
+
+.locations-list {
+  display: grid;
+  gap: 20px;
+}
+
+.location-item {
+  display: grid;
+  gap: 10px;
+}
+
+.location-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  color: #514b40;
+  font-size: 14px;
+}
+
+.country {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.country-dot {
+  display: block;
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.location-heading strong {
+  color: #615a4e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.progress-track {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  background: #ececea;
+  border-radius: 999px;
+}
+
+.progress-value {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  animation: progress-enter 0.8s ease-out;
+  transform-origin: left;
+}
+
+@keyframes map-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes progress-enter {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .location-card {
+    min-height: auto;
+    padding: 24px 20px;
+  }
+
+  .map-preview {
+    min-height: 190px;
+    margin-bottom: 24px;
+    padding: 8px;
+  }
+}

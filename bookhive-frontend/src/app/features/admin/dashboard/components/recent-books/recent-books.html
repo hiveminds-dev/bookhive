@@ -1,1 +1,10 @@
-<p>recent-books works!</p>
+<section class="panel">
+  <header><h2>Recent Book Uploads</h2><a href="#">View All</a></header>
+  <div class="table-head"><span>Book Details</span><span>Author</span><span>Category</span><span>Status</span></div>
+  <article class="book-row" *ngFor="let book of books">
+    <div class="book-details"><img [src]="book.cover" alt=""><div><strong>{{ book.title }}</strong><span>{{ book.isbn }}</span></div></div>
+    <span>{{ book.author }}</span>
+    <span><em>{{ book.category }}</em></span>
+    <span class="status" [class]="book.statusClass"><i></i>{{ book.status }}</span>
+  </article>
+</section>

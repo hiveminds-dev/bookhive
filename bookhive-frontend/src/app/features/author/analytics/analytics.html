@@ -1,1 +1,34 @@
-<p>analytics works!</p>
+<main class="analytics-page">
+
+  <app-analytics-header
+    (exportSelected)="
+      exportAnalyticsReport()
+    "
+  />
+
+  <app-statistics />
+
+  <section
+    class="charts-grid"
+    aria-label="Monthly analytics charts"
+  >
+    <app-views-chart />
+
+    <app-readers-chart />
+  </section>
+
+  <section
+    class="performance-grid"
+    aria-label="Book and reader performance"
+  >
+    <app-top-books
+      (viewAllSelected)="goToBooks()"
+      (downloadReportSelected)="
+        downloadReports()
+      "
+    />
+
+    <app-book-performance />
+  </section>
+
+</main>
