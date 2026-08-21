@@ -1,1 +1,97 @@
-<p>book-form works!</p>
+<section
+  class="book-form-card"
+  [formGroup]="form">
+
+  <div class="two-column-row">
+
+    <div class="form-field">
+
+      <label for="book-title">
+        Book Title
+        <span>*</span>
+      </label>
+
+      <input
+        id="book-title"
+        type="text"
+        formControlName="title"
+        placeholder="Enter book title">
+
+      @if (hasError('title', 'required')) {
+        <small class="error-message">
+          Book title is required.
+        </small>
+      }
+
+    </div>
+
+    <div class="form-field">
+
+      <label for="author-name">
+        Author Name
+        <span>*</span>
+      </label>
+
+      <input
+        id="author-name"
+        type="text"
+        formControlName="authorName"
+        placeholder="Author name">
+
+      @if (
+        hasError(
+          'authorName',
+          'required'
+        )
+        ) {
+        <small class="error-message">
+          Author name is required.
+        </small>
+      }
+
+    </div>
+
+  </div>
+
+  <div class="form-field description-field">
+
+    <label for="book-description">
+      Short Description
+      (Max {{ maximumDescriptionLength }} characters)
+      <span>*</span>
+    </label>
+
+    <textarea
+      id="book-description"
+      rows="5"
+      maxlength="500"
+      formControlName="description"
+      placeholder="Tell readers what your book is about...">
+    </textarea>
+
+    <div class="description-footer">
+
+      <small class="error-message">
+
+        @if (
+          hasError(
+            'description',
+            'required'
+          )
+          ) {
+          Description is required.
+        }
+
+      </small>
+
+      <span>
+        {{ descriptionLength }}/{{
+          maximumDescriptionLength
+        }}
+      </span>
+
+    </div>
+
+  </div>
+
+</section>

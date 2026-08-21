@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.requests-page {
+  width: min(100%, 1100px);
+  min-height: calc(100vh - 180px);
+  margin: 0 auto;
+  padding: 55px 35px 80px;
+}
+
+app-author-request-header {
+  display: block;
+  margin-bottom: 45px;
+}
+
+app-author-request-filters {
+  display: block;
+  margin-bottom: 45px;
+}
+
+app-author-request-table {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .requests-page {
+    padding: 40px 24px 65px;
+  }
+
+  app-author-request-header,
+  app-author-request-filters {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .requests-page {
+    padding: 28px 16px 50px;
+  }
+
+  app-author-request-header,
+  app-author-request-filters {
+    margin-bottom: 22px;
+  }
+}

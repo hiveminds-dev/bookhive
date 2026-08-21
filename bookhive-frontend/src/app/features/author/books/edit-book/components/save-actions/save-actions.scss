@@ -1,0 +1,120 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: Inter, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.save-actions {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+
+  button {
+    display: inline-flex;
+    height: 58px;
+    padding: 0 28px;
+    border-radius: 9px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}
+
+.draft-button {
+  min-width: 180px;
+  border: 2px solid #8a806c;
+  background: #ffffff;
+  color: #2f2c27;
+
+  &:hover:not(:disabled) {
+    border-color: #816600;
+    background: #faf7ec;
+    color: #735a00;
+  }
+}
+
+.submit-button {
+  min-width: 250px;
+  border: 1px solid #c99809;
+  background: linear-gradient(
+    135deg,
+    #dfb52b,
+    #c69605
+  );
+  color: #ffffff;
+  box-shadow: 0 8px 18px
+  rgba(161, 119, 0, 0.19);
+
+  &:hover:not(:disabled) {
+    border-color: #ac7f00;
+    background: linear-gradient(
+      135deg,
+      #d5a919,
+      #b98900
+    );
+    box-shadow: 0 11px 23px
+    rgba(161, 119, 0, 0.25);
+    transform: translateY(-2px);
+  }
+}
+
+.rocket-icon {
+  font-size: 23px;
+  transform: rotate(-35deg);
+}
+
+.button-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid #b8aa89;
+  border-top-color: #6f5600;
+  border-radius: 50%;
+  animation: action-spin 0.7s linear infinite;
+
+  &.light {
+    border-color: rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+  }
+}
+
+@keyframes action-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 560px) {
+  .save-actions {
+    align-items: stretch;
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

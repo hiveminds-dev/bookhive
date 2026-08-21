@@ -1,1 +1,153 @@
-<p>book-cover-upload works!</p>
+<section class="upload-grid">
+
+  <!-- BOOK FILE -->
+
+  <article class="upload-card">
+
+    <h2>
+      <span aria-hidden="true">▤</span>
+      Book File
+      <strong>*</strong>
+    </h2>
+
+    <input
+      #bookFileInput
+      type="file"
+      accept=".pdf,.epub"
+      hidden
+      (change)="onBookFileChange($event)">
+
+    <button
+      type="button"
+      class="drop-zone"
+      [class.drag-active]="isBookDragActive"
+      [class.has-file]="selectedBookFile"
+      (click)="bookFileInput.click()"
+      (dragover)="onBookDragOver($event)"
+      (dragleave)="onBookDragLeave($event)"
+      (drop)="onBookDrop($event)">
+
+      @if (selectedBookFile) {
+
+        <span class="selected-icon" aria-hidden="true">
+          ✓
+        </span>
+
+        <strong class="selected-name">
+          {{ selectedBookFile.name }}
+        </strong>
+
+        <small>
+          Click to replace the book file
+        </small>
+
+      } @else {
+
+        <span class="upload-cloud" aria-hidden="true">
+          ☁
+        </span>
+
+        <p>
+          Drag &amp; drop or
+          <strong>browse</strong>
+        </p>
+
+        <small>
+          PDF, EPUB (Max 100MB)
+        </small>
+
+      }
+
+    </button>
+
+    @if (selectedBookFile) {
+      <button
+        type="button"
+        class="remove-button"
+        (click)="removeBookFile()">
+        Remove file
+      </button>
+    }
+
+    @if (bookFileError) {
+      <p class="error-message">
+        {{ bookFileError }}
+      </p>
+    }
+
+  </article>
+
+  <!-- BOOK COVER -->
+
+  <article class="upload-card">
+
+    <h2>
+      <span aria-hidden="true">▧</span>
+      Book Cover
+      <strong>*</strong>
+    </h2>
+
+    <input
+      #coverInput
+      type="file"
+      accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+      hidden
+      (change)="onCoverChange($event)">
+
+    <button
+      type="button"
+      class="drop-zone cover-zone"
+      [class.drag-active]="isCoverDragActive"
+      [class.has-file]="selectedCover"
+      (click)="coverInput.click()"
+      (dragover)="onCoverDragOver($event)"
+      (dragleave)="onCoverDragLeave($event)"
+      (drop)="onCoverDrop($event)">
+
+      @if (coverPreview) {
+
+        <img
+          class="cover-preview"
+          [src]="coverPreview"
+          alt="Selected book cover preview">
+
+        <span class="replace-overlay">
+          Click to replace cover
+        </span>
+
+      } @else {
+
+        <span class="image-icon" aria-hidden="true">
+          ▧
+        </span>
+
+        <p>
+          Click or drag a cover image
+        </p>
+
+        <small>
+          PNG, JPG (Max 10MB)
+        </small>
+
+      }
+
+    </button>
+
+    @if (selectedCover) {
+      <button
+        type="button"
+        class="remove-button"
+        (click)="removeCover()">
+        Remove cover
+      </button>
+    }
+
+    @if (coverError) {
+      <p class="error-message">
+        {{ coverError }}
+      </p>
+    }
+
+  </article>
+
+</section>

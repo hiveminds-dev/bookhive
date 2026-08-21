@@ -1,0 +1,248 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: Inter, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.book-card {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #efebe3;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 7px 21px rgba(46, 39, 22, 0.06);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 27px rgba(46, 39, 22, 0.11);
+}
+
+.book-image-area {
+  position: relative;
+  width: 100%;
+  height: 255px;
+  overflow: hidden;
+  background: #e9e8e4;
+}
+
+.book-image-area > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.book-card:hover .book-image-area > img {
+  transform: scale(1.025);
+}
+
+.status-badge {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  right: 12px;
+  display: inline-flex;
+  min-height: 28px;
+  padding: 0 16px;
+  border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  background: #d6ab19;
+  color: #5e4900;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(75, 57, 0, 0.13);
+}
+
+.status-badge.draft {
+  background: #f0cf4a;
+  color: #665000;
+}
+
+.status-badge.pending {
+  background: #ffe276;
+  color: #745a00;
+}
+
+.status-badge.rejected {
+  background: #ffdcdc;
+  color: #b32626;
+}
+
+.image-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 25px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background:
+    linear-gradient(145deg, #e7dfcc, #c9b88e);
+  color: #65542d;
+  text-align: center;
+}
+
+.image-placeholder span {
+  font-size: 43px;
+}
+
+.image-placeholder strong {
+  margin-top: 13px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+}
+
+.book-content {
+  padding: 24px 24px 20px;
+}
+
+.book-content h2 {
+  min-height: 55px;
+  margin: 0 0 7px;
+  overflow: hidden;
+  color: #242321;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.book-meta {
+  display: flex;
+  margin: 0;
+  align-items: center;
+  gap: 10px;
+  color: #4d4941;
+  font-size: 11px;
+}
+
+.book-meta span:first-child {
+  color: #806400;
+}
+
+.book-meta i {
+  color: #a8a197;
+  font-style: normal;
+}
+
+.book-statistics {
+  display: grid;
+  margin-top: 23px;
+  padding: 15px 0;
+  border-top: 1px solid #ded9cf;
+  border-bottom: 1px solid #ded9cf;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.book-statistics > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #302d28;
+  font-size: 14px;
+}
+
+.eye-icon {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 11px;
+  border: 1.7px solid currentColor;
+  border-radius: 50% / 60%;
+}
+
+.eye-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.download-icon {
+  font-size: 18px;
+  font-style: normal;
+}
+
+.book-footer {
+  display: flex;
+  min-height: 48px;
+  padding-top: 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.book-footer time {
+  color: #4e4941;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.book-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.book-actions button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #6c665d;
+  font-family: inherit;
+  font-size: 20px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.book-actions button:hover {
+  background: #f2eee4;
+}
+
+.book-actions .view-button {
+  color: #8a6d00;
+}
+
+.book-actions .edit-button {
+  color: #66615a;
+}
+
+.book-actions .delete-button {
+  color: #d22323;
+  font-size: 18px;
+}
+
+@media (max-width: 500px) {
+  .book-image-area {
+    height: 300px;
+  }
+}

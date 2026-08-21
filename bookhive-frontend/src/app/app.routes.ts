@@ -124,7 +124,7 @@ export const routes: Routes = [
             './features/author/books/book-management/book-management'
             ).then(
             module =>
-              module.BookManagement
+              module.BookManagementComponent
           )
       },
 
@@ -137,7 +137,7 @@ export const routes: Routes = [
             './features/author/books/edit-book/edit-book'
             ).then(
             module =>
-              module.EditBook
+              module.EditBookComponent
           )
       },
 
@@ -150,7 +150,7 @@ export const routes: Routes = [
             './features/author/books/edit-book/edit-book'
             ).then(
             module =>
-              module.EditBook
+              module.EditBookComponent
           )
       },
 
@@ -163,7 +163,7 @@ export const routes: Routes = [
             './features/author/requests/requests'
             ).then(
             module =>
-              module.Requests
+              module.RequestsComponent
           )
       },
 
