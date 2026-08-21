@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_models.book import Book, BookStatus
@@ -91,3 +91,29 @@ class BookRepository:
         book.submitted_at = submitted_at
         await session.flush()
         return book
+
+    async def get_author_status_counts(
+        self,
+        session: AsyncSession,
+        author_id: int,
+    ) -> dict[BookStatus, int]:
+        result = await session.execute(
+            select(Book.status, func.count(Book.id))
+            .where(Book.author_id == author_id)
+            .group_by(Book.status)
+        )
+        return {book_status: count for book_status, count in result.all()}
+
+    async def get_recent_author_books(
+        self,
+        session: AsyncSession,
+        author_id: int,
+        limit: int = 5,
+    ) -> list[Book]:
+        result = await session.execute(
+            select(Book)
+            .where(Book.author_id == author_id)
+            .order_by(Book.updated_at.desc())
+            .limit(limit)
+        )
+        return list(result.scalars().all())

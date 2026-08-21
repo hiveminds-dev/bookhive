@@ -9,7 +9,6 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-
 if TYPE_CHECKING:
     from orm_models.book import Book
 
@@ -83,7 +82,6 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
-
 
 class AuthorProfile(Base):
     __tablename__ = "author_profiles"

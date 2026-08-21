@@ -25,6 +25,8 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+import orm_models
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
