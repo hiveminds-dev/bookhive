@@ -1,1 +1,19 @@
-<p>dashboard works!</p>
+<section class="dashboard" aria-labelledby="dashboard-title">
+  <div class="sr-only">
+    <h1 id="dashboard-title">Admin Dashboard</h1>
+    <p>BookHive platform overview and pending work.</p>
+  </div>
+
+  <app-statistics />
+
+  <div class="dashboard-grid">
+    <div class="main-column">
+      <app-recent-books />
+      <div class="lower-grid">
+        <app-recent-authors />
+        <app-recent-requests />
+      </div>
+    </div>
+    <app-activity />
+  </div>
+</section>
