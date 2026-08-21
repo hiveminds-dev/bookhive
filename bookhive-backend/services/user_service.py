@@ -3,11 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from orm_models.user import User
 from repositories.user_repository import UserRepository
 from schemas.user import UserCreate
+from services.email_verification_service import EmailVerificationService
 
 
 class UserService:
     def __init__(self):
         self.user_repository = UserRepository()
+        self.email_verification_service = EmailVerificationService()
 
     async def create_user(
         self,
@@ -36,8 +38,18 @@ class UserService:
                 user_data,
             )
 
+            verification_token = await self.email_verification_service.create_token(
+                session,
+                user,
+            )
+
             await session.commit()
             await session.refresh(user)
+
+            await self.email_verification_service.send_token_after_registration(
+                user.email,
+                verification_token,
+            )
 
             return user
 

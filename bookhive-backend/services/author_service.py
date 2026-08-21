@@ -3,12 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from repositories.author_repository import AuthorRepository
 from repositories.user_repository import UserRepository
 from schemas.author import AuthorRegistrationRequest, AuthorRegistrationResponse
+from services.email_verification_service import EmailVerificationService
 
 
 class AuthorService:
     def __init__(self):
         self.author_repository = AuthorRepository()
         self.user_repository = UserRepository()
+        self.email_verification_service = EmailVerificationService()
 
     async def create_author(
         self,
@@ -43,8 +45,18 @@ class AuthorService:
                 author_data,
             )
 
+            verification_token = await self.email_verification_service.create_token(
+                session,
+                user,
+            )
+
             await session.commit()
             await session.refresh(author)
+
+            await self.email_verification_service.send_token_after_registration(
+                user.email,
+                verification_token,
+            )
 
             return AuthorRegistrationResponse(
                 id=user.id,
