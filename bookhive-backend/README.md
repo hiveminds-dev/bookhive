@@ -6,6 +6,32 @@ Simple FastAPI backend structure using this flow:
 
 Application entry point: `main.py`
 
+## Initial role seeding
+
+When `SEED_DATABASE_ON_STARTUP=true`, the backend creates the required startup
+accounts without duplicating existing records:
+
+- a regular administrator from `INITIAL_ADMIN_*`
+- a super administrator from `INITIAL_SUPER_ADMIN_*`
+
+Both seeded accounts are created as active, email-verified users. Before running
+the app locally or in a shared environment, replace the placeholder passwords in
+`.env` with secure values.
+
+If an existing PostgreSQL database was created before the `super_admin` role was
+added, update the existing enum before startup seeding. Confirm the enum type
+name and stored labels in your database first. For this SQLAlchemy enum setup,
+the stored labels are usually uppercase enum names:
+
+```sql
+ALTER TYPE userrole ADD VALUE IF NOT EXISTS 'SUPER_ADMIN';
+```
+
+After this readiness branch is merged into `develop`, run the backend tests,
+frontend tests, and a development frontend build before opening the `develop` to
+`main` pull request. Also manually verify login/profile loading for reader,
+author, admin, and super admin users.
+
 ## Gmail email verification setup
 
 Enable 2-Step Verification on the sender Google account and create a Google App

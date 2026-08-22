@@ -31,6 +31,12 @@ class Settings(BaseSettings):
     initial_admin_email: str = "admin@bookhive.com"
     initial_admin_password: str = "change_me"
 
+    # Initial super administrator
+    initial_super_admin_full_name: str = "BookHive Super Administrator"
+    initial_super_admin_username: str = "bookhive_super_admin"
+    initial_super_admin_email: str = "superadmin@bookhive.com"
+    initial_super_admin_password: str = "change_me"
+
     # Email verification
     email_verification_token_expire_minutes: int = 60
     email_verification_resend_cooldown_seconds: int = 60
