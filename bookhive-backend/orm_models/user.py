@@ -17,6 +17,7 @@ class UserRole(enum.StrEnum):
     READER = "reader"
     AUTHOR = "author"
     ADMIN = "admin"
+    SUPER_ADMIN = "super_admin"
 
 
 class AccountStatus(enum.StrEnum):

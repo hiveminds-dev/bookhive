@@ -74,6 +74,19 @@ def test_approved_author_can_login():
     )
 
 
+def test_active_super_admin_can_login():
+    AuthService._validate_account_access(
+        make_user(role=UserRole.SUPER_ADMIN, status=AccountStatus.ACTIVE),
+    )
+
+
+def test_inactive_super_admin_is_blocked():
+    with pytest.raises(AccountAccessError, match="not currently allowed"):
+        AuthService._validate_account_access(
+            make_user(role=UserRole.SUPER_ADMIN, status=AccountStatus.INACTIVE),
+        )
+
+
 @pytest.mark.asyncio
 async def test_logout_revokes_the_current_access_token(monkeypatch):
     service = AuthService()
