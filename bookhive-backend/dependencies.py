@@ -81,3 +81,42 @@ async def require_approved_author(
         )
 
     return current_user
+
+
+async def require_admin(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    """Allow only active administrators to access administration operations."""
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrator access is required",
+        )
+
+    return current_user
+
+
+async def require_author(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    """Allow authenticated authors, including authors awaiting approval."""
+    if current_user.role != UserRole.AUTHOR:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Author access is required",
+        )
+
+    return current_user
+
+
+async def require_reader(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    """Allow only active reader accounts to access reader-only operations."""
+    if current_user.role != UserRole.READER:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Reader access is required",
+        )
+
+    return current_user
