@@ -69,4 +69,11 @@ describe('Auth', () => {
     expect(service.getAccessToken()).toBeNull();
     expect(service.isAuthenticated()).toBe(false);
   });
+
+  it('resolves landing routes by role', () => {
+    expect(service.getLandingRouteForRole('reader')).toBe('/home');
+    expect(service.getLandingRouteForRole('author')).toBe('/author/dashboard');
+    expect(service.getLandingRouteForRole('admin')).toBe('/admin/dashboard');
+    expect(service.getLandingRouteForRole('super_admin')).toBe('/admin/dashboard');
+  });
 });

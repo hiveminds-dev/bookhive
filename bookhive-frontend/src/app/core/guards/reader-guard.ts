@@ -13,5 +13,5 @@ export const readerGuard: CanActivateFn = () => {
 
   return auth.hasRole('reader')
     ? true
-    : router.createUrlTree(['/home']);
+    : router.createUrlTree([auth.getCurrentUserLandingRoute()]);
 };
