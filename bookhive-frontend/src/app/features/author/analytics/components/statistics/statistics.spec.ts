@@ -1,0 +1,48 @@
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
+
+import {
+  StatisticsComponent
+} from './statistics';
+
+describe(
+  'StatisticsComponent',
+  () => {
+
+    let component: StatisticsComponent;
+
+    let fixture:
+      ComponentFixture<StatisticsComponent>;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [
+          StatisticsComponent
+        ]
+      }).compileComponents();
+
+      fixture =
+        TestBed.createComponent(
+          StatisticsComponent
+        );
+
+      component = fixture.componentInstance;
+
+      fixture.detectChanges();
+    });
+
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it(
+      'should contain four statistics',
+      () => {
+        expect(component.statistics.length)
+          .toBe(4);
+      }
+    );
+  }
+);

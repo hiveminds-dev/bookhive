@@ -6,6 +6,7 @@ import {
   RouterOutlet
 } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Auth } from '../../core/services/auth';
 
 @Component({
   selector: 'app-author-layout',
@@ -22,6 +23,7 @@ import { FormsModule } from '@angular/forms';
 export class AuthorLayoutComponent {
 
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
   searchTerm = '';
   mobileSidebarOpen = false;
@@ -67,6 +69,9 @@ export class AuthorLayoutComponent {
     this.closeSidebar();
     this.closeProfileMenu();
 
-    this.router.navigate(['/login']);
+    this.auth.logout().subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login']),
+    });
   }
 }

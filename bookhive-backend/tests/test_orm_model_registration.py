@@ -9,6 +9,9 @@ def test_all_orm_models_are_registered():
         "author_profiles",
         "books",
         "categories",
+        "email_verification_tokens",
+        "password_reset_tokens",
+        "revoked_access_tokens",
         "users",
     }
 

@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.profile-page {
+  width: min(100%, 1120px);
+  min-height: calc(100vh - 180px);
+  margin: 0 auto;
+  padding: 50px 35px 85px;
+}
+
+.profile-introduction {
+  display: grid;
+  margin-bottom: 55px;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 35px;
+}
+
+app-profile-statistics,
+app-profile-information,
+app-profile-books {
+  display: block;
+}
+
+app-profile-statistics {
+  margin-bottom: 55px;
+}
+
+app-profile-information {
+  margin-bottom: 45px;
+}
+
+.action-message {
+  display: flex;
+  max-width: 460px;
+  min-height: 48px;
+  margin: -30px 0 30px auto;
+  padding: 11px 14px 11px 18px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: #705900;
+  background: #fff8da;
+  border: 1px solid #e3d38d;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.action-message button {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  flex-shrink: 0;
+  place-items: center;
+  color: #796100;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.action-message button:hover {
+  background: #f3e8b7;
+}
+
+@media (max-width: 900px) {
+  .profile-page {
+    padding: 42px 24px 70px;
+  }
+
+  .profile-introduction {
+    margin-bottom: 42px;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .action-message {
+    margin: -20px 0 30px;
+  }
+
+  app-profile-statistics {
+    margin-bottom: 40px;
+  }
+
+  app-profile-information {
+    margin-bottom: 35px;
+  }
+}
+
+@media (max-width: 560px) {
+  .profile-page {
+    padding: 28px 16px 50px;
+  }
+
+  .profile-introduction {
+    margin-bottom: 30px;
+    gap: 25px;
+  }
+
+  app-profile-statistics {
+    margin-bottom: 30px;
+  }
+
+  app-profile-information {
+    margin-bottom: 25px;
+  }
+}

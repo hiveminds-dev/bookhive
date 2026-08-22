@@ -13,6 +13,7 @@ from database import (
     session_factory,
 )
 from routers import health_router
+from routers.auth_router import router as auth_router
 from routers.author_router import router as author_router
 from routers.user_router import router as user_router
 from routers.category_router import router as category_router
@@ -23,6 +24,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+import orm_models
 
 
 @asynccontextmanager
@@ -65,6 +68,11 @@ app.add_middleware(
 
 app.include_router(
     health_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    auth_router,
     prefix=settings.api_prefix,
 )
 

@@ -1,31 +1,29 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LucideEye, LucideEyeOff } from '@lucide/angular';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faApple, faFacebookF, faGoogle, faXTwitter } from '@fortawesome/free-brands-svg-icons';
+import { finalize } from 'rxjs';
+import { Auth } from '../../../../core/services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LucideEye, LucideEyeOff, FontAwesomeModule],
+  imports: [ReactiveFormsModule, RouterLink, LucideEye, LucideEyeOff],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
 export class Login {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private auth = inject(Auth);
+  private changeDetector = inject(ChangeDetectorRef);
 
   readonly appName = 'BookHive';
   readonly logoPath = 'assets/bookhive-logo.png';
-  readonly socialIcons = {
-    google: faGoogle,
-    facebook: faFacebookF,
-    apple: faApple,
-    x: faXTwitter,
-  };
-
   showPassword = false;
+  isSubmitting = false;
+  loginError: string | null = null;
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,12 +42,49 @@ export class Login {
   }
 
   signIn(): void {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.isSubmitting) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    console.log('Login form submitted:', this.loginForm.value);
+    const value = this.loginForm.getRawValue();
+    this.isSubmitting = true;
+    this.loginError = null;
+
+    this.auth
+      .login(
+        {
+          email: value.email!.trim().toLowerCase(),
+          password: value.password!,
+        },
+        value.rememberMe ?? false,
+      )
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.changeDetector.markForCheck();
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          const target =
+            response.user.role === 'admin'
+              ? '/admin/dashboard'
+              : response.user.role === 'author'
+                ? '/author/dashboard'
+                : '/home';
+          void this.router.navigateByUrl(target);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loginError =
+            typeof error.error?.detail === 'string'
+              ? error.error.detail
+              : error.status === 0
+                ? 'Unable to connect to the BookHive server.'
+                : 'Sign in failed. Please try again.';
+          this.changeDetector.markForCheck();
+        },
+      });
   }
 
   forgotPassword(): void {

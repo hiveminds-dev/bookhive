@@ -1,1 +1,152 @@
-<p>book-details works!</p>
+<section
+  class="book-details-card"
+  [formGroup]="form">
+
+  <div class="required-fields">
+
+    <div class="form-field">
+
+      <label for="book-language">
+        Language
+        <span>*</span>
+      </label>
+
+      <div class="select-wrapper">
+
+        <select
+          id="book-language"
+          formControlName="language">
+
+          <option value="" disabled>
+            Select language
+          </option>
+
+          @for (
+            language of languages;
+            track language
+            ) {
+            <option [value]="language">
+              {{ language }}
+            </option>
+          }
+
+        </select>
+
+        <span
+          class="select-arrow"
+          aria-hidden="true">
+          ⌄
+        </span>
+
+      </div>
+
+      @if (
+        hasError(
+          'language',
+          'required'
+        )
+        ) {
+        <small class="error-message">
+          Language is required.
+        </small>
+      }
+
+    </div>
+
+    <div class="form-field">
+
+      <label for="reading-level">
+        Reading Level
+        <span>*</span>
+      </label>
+
+      <div class="select-wrapper">
+
+        <select
+          id="reading-level"
+          formControlName="readingLevel">
+
+          <option value="" disabled>
+            Select reading level
+          </option>
+
+          @for (
+            level of readingLevels;
+            track level
+            ) {
+            <option [value]="level">
+              {{ level }}
+            </option>
+          }
+
+        </select>
+
+        <span
+          class="select-arrow"
+          aria-hidden="true">
+          ⌄
+        </span>
+
+      </div>
+
+      @if (
+        hasError(
+          'readingLevel',
+          'required'
+        )
+        ) {
+        <small class="error-message">
+          Reading level is required.
+        </small>
+      }
+
+    </div>
+
+  </div>
+
+  <h2>Optional</h2>
+
+  <div class="form-field optional-field">
+
+    <label for="book-isbn">
+      ISBN
+    </label>
+
+    <input
+      id="book-isbn"
+      type="text"
+      formControlName="isbn"
+      placeholder="Enter ISBN">
+
+    @if (
+      hasError(
+        'isbn',
+        'pattern'
+      )
+      ) {
+      <small class="error-message">
+        Enter a valid ISBN number.
+      </small>
+    }
+
+  </div>
+
+  <div class="form-field optional-field">
+
+    <label for="book-tags">
+      Tags
+    </label>
+
+    <input
+      id="book-tags"
+      type="text"
+      formControlName="tags"
+      placeholder="Add tags (press Enter)">
+
+    <small class="field-hint">
+      Separate multiple tags using commas.
+    </small>
+
+  </div>
+
+</section>

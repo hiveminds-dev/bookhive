@@ -1,1 +1,103 @@
-<p>request-details works!</p>
+<div
+  class="modal-backdrop"
+  role="presentation"
+  (click)="onBackdropClick($event)"
+>
+  <section
+    class="details-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="request-title"
+  >
+    <header class="modal-header">
+      <div>
+        <p class="eyebrow">
+          Book submission
+        </p>
+
+        <h2 id="request-title">
+          Request Details
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        aria-label="Close request details"
+        (click)="closeModal()"
+      >
+        ×
+      </button>
+    </header>
+
+    <div class="book-summary">
+      <img
+        class="book-cover"
+        [src]="request.cover"
+        [alt]="request.title + ' cover'"
+      >
+
+      <div class="book-information">
+        <h3>{{ request.title }}</h3>
+
+        <p>
+          ISBN: {{ request.isbn }}
+        </p>
+
+        <span
+          class="status"
+          [class.pending]="request.status === 'Pending'"
+          [class.approved]="request.status === 'Approved'"
+          [class.rejected]="request.status === 'Rejected'"
+        >
+          {{ request.status }}
+        </span>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-item">
+        <span class="detail-label">
+          Submission Date
+        </span>
+
+        <strong>
+          {{ request.submissionDate }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">
+          Request ID
+        </span>
+
+        <strong>
+          #BR-{{ request.id }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="feedback-section">
+      <span class="detail-label">
+        Admin Feedback
+      </span>
+
+      <p>
+        {{
+          request.adminFeedback ||
+          'No admin feedback has been added yet.'
+        }}
+      </p>
+    </div>
+
+    <footer class="modal-footer">
+      <button
+        type="button"
+        class="done-button"
+        (click)="closeModal()"
+      >
+        Done
+      </button>
+    </footer>
+  </section>
+</div>

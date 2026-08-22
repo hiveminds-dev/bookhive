@@ -1,0 +1,152 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: Inter, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.request-filters {
+  display: flex;
+  width: 100%;
+  min-height: 80px;
+  padding: 17px 25px;
+  border: 1px solid #efebe4;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  background: #ffffff;
+  box-shadow: 0 6px 20px
+  rgba(43, 37, 22, 0.045);
+}
+
+.filter-controls {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 20px;
+}
+
+.filter-label {
+  color: #5e584f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-buttons {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  button {
+    min-height: 34px;
+    padding: 0 17px;
+    border: 1px solid transparent;
+    border-radius: 18px;
+    background: transparent;
+    color: #4d4840;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background: #f4f0e4;
+      color: #755c00;
+    }
+
+    &.active {
+      border-color: #d8c887;
+      background: #f5f1e4;
+      color: #7c6200;
+      font-weight: 700;
+    }
+  }
+}
+
+.controls-divider {
+  display: block;
+  width: 1px;
+  height: 30px;
+  background: #e5e0d7;
+}
+
+.sort-wrapper {
+  position: relative;
+
+  select {
+    min-width: 100px;
+    height: 35px;
+    padding: 0 30px 0 11px;
+    border: 0;
+    outline: none;
+    appearance: none;
+    background: transparent;
+    color: #4f4a42;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+  }
+}
+
+.sort-arrow {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  color: #655f56;
+  font-size: 14px;
+  transform: translateY(-55%);
+  pointer-events: none;
+}
+
+.request-count {
+  margin: 0;
+  color: #554f46;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 950px) {
+  .request-filters {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .request-count {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 680px) {
+  .filter-controls {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .status-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .controls-divider {
+    display: none;
+  }
+
+  .request-count {
+    align-self: flex-start;
+  }
+}

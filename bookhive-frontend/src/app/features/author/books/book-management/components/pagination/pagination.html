@@ -1,1 +1,57 @@
-<p>pagination works!</p>
+@if (totalPages > 1) {
+
+  <nav
+    class="pagination"
+    aria-label="Book management pagination">
+
+    <button
+      type="button"
+      class="navigation-button"
+      aria-label="Previous page"
+      [disabled]="currentPage <= 1"
+      (click)="previousPage()">
+      ‹
+    </button>
+
+    @for (item of visiblePages; track $index) {
+
+      @if (isPageNumber(item)) {
+
+        <button
+          type="button"
+          class="page-button"
+          [class.active]="item === currentPage"
+          [attr.aria-current]="
+            item === currentPage
+              ? 'page'
+              : null
+          "
+          (click)="changePage(item)">
+
+          {{ item }}
+        </button>
+
+      } @else {
+
+        <span
+          class="ellipsis"
+          aria-hidden="true">
+          ...
+        </span>
+
+      }
+
+    }
+
+    <button
+      type="button"
+      class="navigation-button"
+      aria-label="Next page"
+      [disabled]="currentPage >= totalPages"
+      (click)="nextPage()">
+      ›
+    </button>
+
+  </nav>
+
+}

@@ -1,1 +1,36 @@
-<p>profile works!</p>
+<main class="profile-page">
+
+  <section class="profile-introduction">
+
+    <app-profile-header
+      [authorName]="authorName"
+      [penName]="penName"
+      [profileImage]="profileImage"
+      [badges]="badges"
+      (profileImageChanged)="
+        onProfileImageChanged($event)
+      "
+    />
+
+    <app-profile-actions
+      (editProfileSelected)="
+        editProfile()
+      "
+      (changePasswordSelected)="
+        changePassword()
+      "
+    />
+
+  </section>
+
+
+  <app-profile-statistics />
+
+  <app-profile-information />
+
+  <app-profile-books
+    (bookSelected)="openBook($event)"
+    (viewAllSelected)="viewAllBooks()"
+  />
+
+</main>

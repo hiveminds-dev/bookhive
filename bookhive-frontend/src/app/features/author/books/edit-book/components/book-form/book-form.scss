@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: Inter, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.book-form-card {
+  width: 100%;
+  padding: 47px;
+  border: 1px solid #efebe4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 7px 22px
+  rgba(43, 37, 22, 0.05);
+}
+
+.two-column-row {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+
+  label {
+    margin-bottom: 10px;
+    color: #575148;
+    font-size: 13px;
+    font-weight: 500;
+
+    span {
+      color: #e12626;
+    }
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    background: #f1f2f3;
+    color: #302d28;
+    font-family: inherit;
+    font-size: 13px;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+
+    &::placeholder {
+      color: #838995;
+    }
+
+    &:focus {
+      border-color: #b89a3e;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px
+      rgba(184, 154, 62, 0.11);
+    }
+
+    &.ng-touched.ng-invalid {
+      border-color: #d94444;
+    }
+  }
+
+  input {
+    height: 47px;
+    padding: 0 16px;
+  }
+
+  textarea {
+    min-height: 120px;
+    padding: 15px 16px;
+    resize: vertical;
+    line-height: 1.55;
+  }
+}
+
+.description-field {
+  margin-top: 26px;
+}
+
+.description-footer {
+  display: flex;
+  min-height: 22px;
+  padding-top: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+
+  > span {
+    margin-left: auto;
+    color: #5e5951;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+}
+
+.error-message {
+  color: #c92d2d;
+  font-size: 10px;
+}
+
+@media (max-width: 750px) {
+  .book-form-card {
+    padding: 30px 24px;
+  }
+
+  .two-column-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 450px) {
+  .book-form-card {
+    padding: 24px 17px;
+  }
+}

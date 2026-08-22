@@ -1,1 +1,98 @@
-<p>profile-information works!</p>
+<section class="information-grid">
+
+  <div class="left-column">
+
+    <article class="information-card contact-card">
+
+      <h2>Contact Details</h2>
+
+      <div class="contact-list">
+        @for (
+          detail of contactDetails;
+          track detail.id
+          ) {
+          <div class="contact-item">
+
+            <span
+              class="contact-icon"
+              aria-hidden="true"
+            >
+              {{ detail.icon }}
+            </span>
+
+            <div class="contact-content">
+              <span class="contact-label">
+                {{ detail.label }}
+              </span>
+
+              @if (detail.link) {
+                <a [href]="detail.link">
+                  {{ detail.value }}
+                </a>
+              } @else {
+                <p>
+                  {{ detail.value }}
+                </p>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+
+    </article>
+
+    <article class="information-card connect-card">
+
+      <p class="section-label">
+        Connect
+      </p>
+
+      <div class="social-links">
+        @for (
+          social of socialLinks;
+          track social.id
+          ) {
+          <a
+            class="social-link"
+            [href]="social.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="
+              'Open ' + social.label
+            "
+          >
+            <span
+              class="social-icon"
+              aria-hidden="true"
+            >
+              {{ social.icon }}
+            </span>
+
+            <strong>
+              {{ social.label }}
+            </strong>
+          </a>
+        }
+      </div>
+
+    </article>
+
+  </div>
+
+  <article class="information-card biography-card">
+
+    <div
+      class="corner-decoration"
+      aria-hidden="true"
+    ></div>
+
+    <h2>Biography</h2>
+
+    <p>
+      {{ biography }}
+    </p>
+
+  </article>
+
+</section>

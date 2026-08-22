@@ -1,1 +1,44 @@
-<p>page-header works!</p>
+<header class="page-header">
+
+  <h1>{{ title }}</h1>
+
+  <div class="header-row">
+
+    <div class="header-copy">
+
+      <h2>{{ sectionTitle }}</h2>
+
+      <p>{{ description }}</p>
+
+    </div>
+
+    <nav
+      class="management-tabs"
+      aria-label="Book management navigation">
+
+      <a
+        routerLink="/author/books"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{
+          exact: true
+        }">
+        My Books
+      </a>
+
+      <a
+        routerLink="/author/books/upload"
+        routerLinkActive="active">
+        Upload Book
+      </a>
+
+      <a
+        routerLink="/author/requests"
+        routerLinkActive="active">
+        Requests
+      </a>
+
+    </nav>
+
+  </div>
+
+</header>

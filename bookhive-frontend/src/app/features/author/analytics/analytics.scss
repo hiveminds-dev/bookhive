@@ -1,0 +1,99 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.analytics-page {
+  width: min(100%, 1180px);
+  min-height: calc(100vh - 180px);
+  margin: 0 auto;
+  padding: 55px 35px 85px;
+}
+
+app-analytics-header {
+  display: block;
+  margin-bottom: 45px;
+}
+
+app-statistics {
+  display: block;
+  margin-bottom: 55px;
+}
+
+.charts-grid {
+  display: grid;
+  margin-bottom: 55px;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+
+app-views-chart,
+app-readers-chart {
+  display: block;
+  min-width: 0;
+}
+
+.performance-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(280px, 1fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+app-top-books,
+app-book-performance {
+  display: block;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .performance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 850px) {
+  .analytics-page {
+    padding: 42px 24px 70px;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  app-analytics-header {
+    margin-bottom: 35px;
+  }
+
+  app-statistics,
+  .charts-grid {
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 560px) {
+  .analytics-page {
+    padding: 28px 16px 50px;
+  }
+
+  .charts-grid,
+  .performance-grid {
+    gap: 18px;
+  }
+
+  app-analytics-header {
+    margin-bottom: 28px;
+  }
+
+  app-statistics,
+  .charts-grid {
+    margin-bottom: 30px;
+  }
+}

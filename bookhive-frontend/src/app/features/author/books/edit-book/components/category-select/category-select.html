@@ -1,1 +1,49 @@
-<p>category-select works!</p>
+<section
+  class="category-section"
+  [formGroup]="form">
+
+  <div class="category-field">
+
+    <label for="book-category">
+      Categories
+      <span>*</span>
+    </label>
+
+    <div class="select-wrapper">
+
+      <select
+        id="book-category"
+        formControlName="category">
+
+        <option value="" disabled>
+          Search categories...
+        </option>
+
+        @for (
+          category of categories;
+          track category
+          ) {
+          <option [value]="category">
+            {{ category }}
+          </option>
+        }
+
+      </select>
+
+      <span
+        class="select-arrow"
+        aria-hidden="true">
+        ⌄
+      </span>
+
+    </div>
+
+    @if (hasRequiredError()) {
+      <small class="error-message">
+        Please select a category.
+      </small>
+    }
+
+  </div>
+
+</section>

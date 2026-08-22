@@ -1,0 +1,133 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.statistics-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.statistic-card {
+  min-width: 0;
+  min-height: 165px;
+  padding: 25px;
+  background: #ffffff;
+  border: 1px solid #f0ede5;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.statistic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(58, 50, 31, 0.1);
+}
+
+.card-header {
+  display: flex;
+  min-height: 39px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statistic-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.statistic-icon.gold {
+  color: #826900;
+  background: #f8f2dc;
+}
+
+.statistic-icon.gray {
+  color: #64615a;
+  background: #eeeeee;
+}
+
+.statistic-icon.yellow {
+  color: #705c00;
+  background: #f6dc6e;
+}
+
+.statistic-badge {
+  display: inline-flex;
+  min-height: 25px;
+  padding: 4px 8px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.statistic-badge.positive {
+  color: #16964b;
+  background: #e9fbef;
+  font-weight: 700;
+}
+
+.statistic-badge.neutral {
+  color: #999187;
+  background: transparent;
+}
+
+.statistic-title {
+  margin: 18px 0 8px;
+  color: #635c50;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.statistic-value {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.statistic-value strong {
+  color: #26231e;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.statistic-value span {
+  color: #625c50;
+  font-size: 14px;
+}
+
+@media (max-width: 1050px) {
+  .statistics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .statistics-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .statistic-card {
+    min-height: 145px;
+    padding: 21px;
+  }
+}
