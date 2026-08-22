@@ -1,4 +1,5 @@
 import { Component, inject, OnDestroy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -10,6 +11,8 @@ import {
   LucideShieldCheck,
   LucideSparkles,
 } from '@lucide/angular';
+import { finalize } from 'rxjs';
+import { PasswordRecoveryService } from '../../services/password-recovery';
 
 @Component({
   selector: 'app-forgot-password',
@@ -30,12 +33,14 @@ import {
 })
 export class ForgotPassword implements OnDestroy {
   private fb = inject(FormBuilder);
+  private readonly passwordRecovery = inject(PasswordRecoveryService);
 
   readonly appName = 'BookHive';
   readonly logoPath = 'assets/bookhive-logo.png';
 
   isSubmitting = false;
   emailSent = false;
+  requestError: string | null = null;
 
   submittedEmail = '';
 
@@ -69,15 +74,24 @@ export class ForgotPassword implements OnDestroy {
     }
 
     this.isSubmitting = true;
-
     this.submittedEmail = email.value ?? '';
+    this.requestError = null;
 
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.emailSent = true;
-
-      this.startResendCooldown();
-    }, 1200);
+    this.passwordRecovery
+      .requestReset(this.submittedEmail)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: () => {
+          this.emailSent = true;
+          this.startResendCooldown();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.requestError =
+            error.status === 0
+              ? 'Unable to connect to the BookHive server.'
+              : 'Unable to request a reset link. Please try again.';
+        },
+      });
   }
 
   resendEmail(): void {
@@ -86,12 +100,17 @@ export class ForgotPassword implements OnDestroy {
     }
 
     this.isSubmitting = true;
+    this.requestError = null;
 
-    setTimeout(() => {
-      this.isSubmitting = false;
-
-      this.startResendCooldown();
-    }, 1000);
+    this.passwordRecovery
+      .requestReset(this.submittedEmail)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: () => this.startResendCooldown(),
+        error: () => {
+          this.requestError = 'Unable to resend the reset link. Please try again.';
+        },
+      });
   }
 
   private startResendCooldown(): void {

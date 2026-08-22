@@ -84,6 +84,14 @@ export const routes: Routes = [
     component: VerificationSuccess
   },
 
+  {
+    path: 'auth/reset-password',
+    loadComponent: () =>
+      import('./features/auth/pages/reset-password/reset-password').then(
+        module => module.ResetPassword
+      )
+  },
+
   // ==========================================
   // AUTHOR STUDIO
   // ==========================================

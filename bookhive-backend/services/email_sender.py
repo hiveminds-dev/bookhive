@@ -43,6 +43,24 @@ class EmailSender:
                 "The verification email could not be sent. Please try again later."
             ) from exc
 
+    async def send_password_reset_email(self, email: str, token: str) -> None:
+        reset_url = f"{settings.frontend_url}/auth/reset-password?token={token}"
+
+        if not settings.smtp_enabled:
+            if settings.app_env.lower() == "development":
+                logger.info("Development password reset link for %s: %s", email, reset_url)
+                return
+            raise RuntimeError("SMTP must be enabled outside development.")
+
+        self._validate_smtp_settings()
+        try:
+            await asyncio.to_thread(self._send_password_reset_message, email, reset_url)
+        except (OSError, smtplib.SMTPException, TimeoutError) as exc:
+            logger.exception("Unable to send password reset email to %s", email)
+            raise EmailDeliveryError(
+                "The password reset email could not be sent. Please try again later."
+            ) from exc
+
     @staticmethod
     def _validate_smtp_settings() -> None:
         required_settings = {
@@ -90,6 +108,25 @@ class EmailSender:
                 minutes=settings.email_verification_token_expire_minutes,
             ),
             subtype="html",
+        )
+
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
+            if settings.smtp_use_tls:
+                smtp.starttls()
+            if settings.smtp_username:
+                smtp.login(settings.smtp_username, settings.smtp_password)
+            smtp.send_message(message)
+
+    def _send_password_reset_message(self, recipient: str, reset_url: str) -> None:
+        message = EmailMessage()
+        message["Subject"] = "Reset your BookHive password"
+        message["From"] = settings.smtp_from_email
+        message["To"] = recipient
+        message.set_content(
+            "Reset your BookHive password using this link:\n\n"
+            f"{reset_url}\n\n"
+            f"This link expires in {settings.password_reset_token_expire_minutes} minutes. "
+            "If you did not request a password reset, ignore this email."
         )
 
         with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:

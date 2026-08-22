@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     # Email verification
     email_verification_token_expire_minutes: int = 60
     email_verification_resend_cooldown_seconds: int = 60
+    password_reset_token_expire_minutes: int = 30
     smtp_enabled: bool = False
     smtp_host: str = ""
     smtp_port: int = 587

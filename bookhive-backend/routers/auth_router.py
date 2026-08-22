@@ -11,11 +11,13 @@ from dependencies import (
 from orm_models.user import User
 from schemas.auth import (
     EmailVerificationResponse,
+    ForgotPasswordRequest,
     AuthenticatedUserResponse,
     LoginRequest,
     LoginResponse,
     MessageResponse,
     ResendVerificationRequest,
+    ResetPasswordRequest,
 )
 from services.email_verification_service import (
     EmailVerificationCooldownError,
@@ -24,10 +26,12 @@ from services.email_verification_service import (
 )
 from services.email_sender import EmailDeliveryError
 from services.auth_service import AccountAccessError, AuthenticationError, AuthService
+from services.password_reset_service import PasswordResetError, PasswordResetService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 service = EmailVerificationService()
 auth_service = AuthService()
+password_reset_service = PasswordResetService()
 DbSession = Annotated[AsyncSession, Depends(get_db_session)]
 
 
@@ -118,3 +122,35 @@ async def resend_verification(
     return MessageResponse(
         message="If the account exists and is unverified, a new link has been sent."
     )
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+async def forgot_password(request: ForgotPasswordRequest, session: DbSession):
+    try:
+        await password_reset_service.request_reset(session, request.email)
+    except EmailDeliveryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(exc),
+        ) from exc
+
+    return MessageResponse(
+        message="If an account exists for that email, a password reset link has been sent."
+    )
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+async def reset_password(request: ResetPasswordRequest, session: DbSession):
+    try:
+        await password_reset_service.reset_password(
+            session,
+            request.token,
+            request.new_password,
+        )
+    except PasswordResetError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
+
+    return MessageResponse(message="Password reset successfully")
