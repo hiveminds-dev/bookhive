@@ -1,17 +1,42 @@
-import { Component, inject } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-statistics',
   standalone: true,
-  imports: [NgFor, RouterLink],
+  imports: [NgFor, NgIf, RouterLink, FormsModule],
   templateUrl: './statistics.html',
   styleUrl: './statistics.scss',
 })
 export class AdminStatisticsComponent {
   private readonly toastService = inject(ToastService);
+
+  searchQuery = signal('');
+  showAdvanceSearch = signal(false);
+  filterMetric = signal('');
+  filterTimeframe = signal('30days');
+
+  toggleAdvanceSearch(): void {
+    this.showAdvanceSearch.update(v => !v);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  applyFilters(): void {
+    this.toastService.success('Applied metric search & analytics filters.', 'Filter Applied');
+  }
+
+  resetFilters(): void {
+    this.searchQuery.set('');
+    this.filterMetric.set('');
+    this.filterTimeframe.set('30days');
+    this.toastService.info('Analytics filters reset.', 'Filters Reset');
+  }
 
   readonly monthlyUploads = [
     { month: 'JAN', dark: 40, light: 30 },

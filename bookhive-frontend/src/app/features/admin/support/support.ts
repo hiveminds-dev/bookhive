@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 
 interface FAQItem {
@@ -13,12 +14,36 @@ interface FAQItem {
 @Component({
   selector: 'app-support',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule],
+  imports: [NgFor, NgIf, FormsModule, RouterLink],
   templateUrl: './support.html',
   styleUrl: './support.scss',
 })
 export class SupportComponent {
   private readonly toastService = inject(ToastService);
+
+  searchQuery = signal('');
+  showAdvanceSearch = signal(false);
+  filterCategory = signal('');
+  filterPriority = signal('');
+
+  toggleAdvanceSearch(): void {
+    this.showAdvanceSearch.update(v => !v);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  applyFilters(): void {
+    this.toastService.success('Filtered support topics & tickets.', 'Filter Applied');
+  }
+
+  resetFilters(): void {
+    this.searchQuery.set('');
+    this.filterCategory.set('');
+    this.filterPriority.set('');
+    this.toastService.info('Support search filters reset.', 'Filters Reset');
+  }
 
   readonly faqsSignal = signal<FAQItem[]>([
     {

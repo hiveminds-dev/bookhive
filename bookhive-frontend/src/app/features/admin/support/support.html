@@ -1,14 +1,69 @@
-<div class="admin-page support-page">
-  <header class="page-header">
-    <div class="header-text">
+<div class="admin-master-container support-page">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Support</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
       <h1>Admin Support &amp; Help Center</h1>
       <p>Get assistance, inspect system guides, or submit a priority support request.</p>
     </div>
-    <div class="search-box">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="1.8"/></svg>
-      <input type="text" placeholder="Search help articles &amp; docs..." class="search-input" />
-    </div>
   </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search support topics, ticket IDs, or FAQ questions...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterCategory() || filterPriority()">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Topic Category</label>
+          <select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event)">
+            <option value="">All Categories</option>
+            <option value="Admin">System Administration</option>
+            <option value="Review">Book Review Workflow</option>
+            <option value="Author">Author Approvals</option>
+            <option value="Billing">Storage &amp; Server Health</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Ticket Priority</label>
+          <select [ngModel]="filterPriority()" (ngModelChange)="filterPriority.set($event)">
+            <option value="">All Priorities</option>
+            <option value="Urgent">Urgent / Critical</option>
+            <option value="High">High Priority</option>
+            <option value="Normal">Normal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
 
   <!-- Category Cards -->
   <section class="help-cards-grid">

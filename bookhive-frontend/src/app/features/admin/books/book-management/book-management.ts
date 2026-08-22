@@ -1,17 +1,46 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-book-management',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink],
+  imports: [NgFor, NgIf, RouterLink, FormsModule],
   templateUrl: './book-management.html',
   styleUrl: './book-management.scss',
 })
 export class BookManagement {
   private readonly toastService = inject(ToastService);
+
+  searchQuery = signal('');
+  showAdvanceSearch = signal(false);
+  filterCategory = signal('');
+  filterStatus = signal('');
+  filterLanguage = signal('');
+  filterSortBy = signal('newest');
+
+  toggleAdvanceSearch(): void {
+    this.showAdvanceSearch.update(v => !v);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  applyFilters(): void {
+    this.toastService.success('Search filters applied to repository books.', 'Filter Applied');
+  }
+
+  resetFilters(): void {
+    this.searchQuery.set('');
+    this.filterCategory.set('');
+    this.filterStatus.set('');
+    this.filterLanguage.set('');
+    this.filterSortBy.set('newest');
+    this.toastService.info('All search filters reset.', 'Filters Reset');
+  }
 
   readonly books = [
     {

@@ -12,6 +12,59 @@
     </div>
   </header>
 
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search across books, authors, readers, or system activity logs...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterSection()">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Target Domain</label>
+          <select [ngModel]="filterSection()" (ngModelChange)="filterSection.set($event)">
+            <option value="">All Admin Domains</option>
+            <option value="books">Books &amp; Manuscripts</option>
+            <option value="authors">Author Applications</option>
+            <option value="readers">Reader Accounts</option>
+            <option value="logs">System Health &amp; Activity Logs</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Date Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="today">Today's Activity</option>
+            <option value="7days">Past 7 Days</option>
+            <option value="30days">Past 30 Days</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
   <app-statistics />
 
   <div class="dashboard-grid">

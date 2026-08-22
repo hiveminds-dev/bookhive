@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmationModalComponent } from '../../../shared/components/confirmation-modal/confirmation-modal';
 
@@ -15,12 +16,36 @@ interface CategoryItem {
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, ConfirmationModalComponent],
+  imports: [NgFor, NgIf, FormsModule, RouterLink, ConfirmationModalComponent],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })
 export class CategoriesComponent {
   private readonly toastService = inject(ToastService);
+
+  searchQuery = signal('');
+  showAdvanceSearch = signal(false);
+  filterStatus = signal('');
+  filterMinBooks = signal<number | null>(null);
+
+  toggleAdvanceSearch(): void {
+    this.showAdvanceSearch.update(v => !v);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  applyFilters(): void {
+    this.toastService.success('Filtered categories successfully.', 'Filter Applied');
+  }
+
+  resetFilters(): void {
+    this.searchQuery.set('');
+    this.filterStatus.set('');
+    this.filterMinBooks.set(null);
+    this.toastService.info('Category search filters reset.', 'Filters Reset');
+  }
 
   readonly categoriesSignal = signal<CategoryItem[]>([
     { id: 1, name: 'Philosophy & Logic', description: 'Classical and modern philosophical texts and logic frameworks.', totalBooks: 142, isActive: true },
