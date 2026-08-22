@@ -1,0 +1,50 @@
+<div class="modal-backdrop" (click)="dismiss()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <div class="header-left">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>Platform System Logs</h3>
+      </div>
+      <button type="button" class="close-btn" (click)="dismiss()">&times;</button>
+    </header>
+
+    <div class="modal-body">
+      <div class="status-summary">
+        <div class="status-pill green">
+          <span class="dot"></span>
+          All Systems Operational
+        </div>
+        <span class="capacity-info">Storage: 64% used</span>
+      </div>
+
+      <div class="logs-table-wrapper">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th>TIMESTAMP</th>
+              <th>LEVEL</th>
+              <th>MODULE</th>
+              <th>MESSAGE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of logs">
+              <td class="time-cell">{{ log.timestamp }}</td>
+              <td>
+                <span class="level-badge" [class]="log.level.toLowerCase()">
+                  {{ log.level }}
+                </span>
+              </td>
+              <td class="module-cell">{{ log.module }}</td>
+              <td class="msg-cell">{{ log.message }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="button" class="btn-primary" (click)="dismiss()">Close Logs</button>
+    </footer>
+  </div>
+</div>

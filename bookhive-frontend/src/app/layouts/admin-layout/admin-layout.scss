@@ -34,12 +34,13 @@ a { color: inherit; text-decoration: none; }
 .side-nav a:hover, .side-nav a.active, .side-nav .logout:hover { color: #765d00; background: #f6f0df; }
 .side-nav .logout { color: #8a2f2f; }
 .sidebar-action { margin-top: auto; padding: 20px 18px; border-top: 1px solid #eee; }
-.sidebar-action button {
+.sidebar-action button, .sidebar-action .btn-publish {
   width: 100%; padding: 14px 12px; border: 0; border-radius: 13px;
   color: #fff; background: linear-gradient(135deg, #d9ae22, #b88700);
   box-shadow: 0 7px 16px #b88a0038; cursor: pointer; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
 }
-.sidebar-action button svg { width: 17px; height: 17px; margin-right: 7px; vertical-align: -4px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.sidebar-action button svg, .sidebar-action .btn-publish svg { width: 17px; height: 17px; margin-right: 7px; fill: none; stroke: currentColor; stroke-width: 1.8; }
 .workspace { width: calc(100% - 238px); min-height: 100vh; margin-left: 238px; display: flex; flex-direction: column; }
 .topbar {
   height: 76px; padding: 0 42px; display: flex; align-items: center; justify-content: space-between;

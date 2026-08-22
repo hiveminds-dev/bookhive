@@ -2,9 +2,11 @@ import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Auth } from '../../core/services/auth';
 
+import { ToastContainerComponent } from '../../shared/components/toast-container/toast-container';
+
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
 })

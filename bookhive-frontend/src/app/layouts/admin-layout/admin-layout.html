@@ -25,9 +25,11 @@
     </nav>
 
     <div class="sidebar-action">
-      <button type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg> Publish New Work</button>
+      <a routerLink="/admin/books/upload" class="btn-publish"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg> Publish New Work</a>
     </div>
   </aside>
+
+  <app-toast-container />
 
   <section class="workspace">
     <header class="topbar">
