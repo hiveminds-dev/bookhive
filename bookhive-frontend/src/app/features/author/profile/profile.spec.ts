@@ -4,8 +4,13 @@ import {
 } from '@angular/core/testing';
 
 import {
-  provideRouter
+  provideRouter,
+  Router
 } from '@angular/router';
+
+import {
+  vi
+} from 'vitest';
 
 import {
   Profile
@@ -19,6 +24,8 @@ describe(
 
     let fixture:
       ComponentFixture<Profile>;
+
+    let router: Router;
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
@@ -37,6 +44,8 @@ describe(
 
       component = fixture.componentInstance;
 
+      router = TestBed.inject(Router);
+
       fixture.detectChanges();
     });
 
@@ -53,26 +62,32 @@ describe(
     );
 
     it(
-      'should show edit profile message',
+      'should navigate to edit profile',
       () => {
+        const navigateSpy =
+          vi.spyOn(router, 'navigate');
+
         component.editProfile();
 
-        expect(component.editMessage)
-          .toBe(
-            'Edit Profile form will open here.'
-          );
+        expect(navigateSpy)
+          .toHaveBeenCalledWith([
+            '/author/profile/edit'
+          ]);
       }
     );
 
     it(
-      'should close action message',
+      'should navigate to change password',
       () => {
-        component.editProfile();
+        const navigateSpy =
+          vi.spyOn(router, 'navigate');
 
-        component.closeMessage();
+        component.changePassword();
 
-        expect(component.editMessage)
-          .toBe('');
+        expect(navigateSpy)
+          .toHaveBeenCalledWith([
+            '/author/profile/change-password'
+          ]);
       }
     );
   }

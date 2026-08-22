@@ -7,6 +7,10 @@ import {
   ProfileImageUpload
 } from './profile-image-upload';
 
+import {
+  vi
+} from 'vitest';
+
 describe(
   'ProfileImageUpload',
   () => {
@@ -50,9 +54,14 @@ describe(
       'should activate dragging state',
       () => {
         const event =
-          new DragEvent('dragover');
+          {
+            preventDefault: vi.fn()
+          } as unknown as DragEvent;
 
         component.onDragOver(event);
+
+        expect(event.preventDefault)
+          .toHaveBeenCalled();
 
         expect(component.isDragging)
           .toBe(true);
