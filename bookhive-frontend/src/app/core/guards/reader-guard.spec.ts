@@ -6,18 +6,23 @@ import { readerGuard } from './reader-guard';
 
 describe('readerGuard', () => {
   const loginTree = {} as UrlTree;
-  const homeTree = {} as UrlTree;
-  let auth: { isAuthenticated: ReturnType<typeof vi.fn>; hasRole: ReturnType<typeof vi.fn> };
+  const landingTree = {} as UrlTree;
+  let auth: {
+    isAuthenticated: ReturnType<typeof vi.fn>;
+    hasRole: ReturnType<typeof vi.fn>;
+    getCurrentUserLandingRoute: ReturnType<typeof vi.fn>;
+  };
   let router: { createUrlTree: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     auth = {
       isAuthenticated: vi.fn(),
       hasRole: vi.fn(),
+      getCurrentUserLandingRoute: vi.fn().mockReturnValue('/author/dashboard'),
     };
     router = {
       createUrlTree: vi.fn().mockImplementation((commands: string[]) =>
-        commands[0] === '/login' ? loginTree : homeTree,
+        commands[0] === '/login' ? loginTree : landingTree,
       ),
     };
 
@@ -50,11 +55,11 @@ describe('readerGuard', () => {
     expect(auth.hasRole).toHaveBeenCalledWith('reader');
   });
 
-  it('redirects a different role to the public home page', () => {
+  it('redirects a different role to that user landing page', () => {
     auth.isAuthenticated.mockReturnValue(true);
     auth.hasRole.mockReturnValue(false);
 
-    expect(executeGuard()).toBe(homeTree);
-    expect(router.createUrlTree).toHaveBeenCalledWith(['/home']);
+    expect(executeGuard()).toBe(landingTree);
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/author/dashboard']);
   });
 });

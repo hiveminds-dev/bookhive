@@ -4,8 +4,13 @@ import { Auth } from '../services/auth';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const auth = inject(Auth);
+  const router = inject(Router);
+
   if (!auth.isAuthenticated()) {
-    return inject(Router).createUrlTree(['/login']);
+    return router.createUrlTree(['/login']);
   }
-  return auth.hasRole('admin') ? true : inject(Router).createUrlTree(['/home']);
+
+  return auth.hasRole('admin') || auth.hasRole('super_admin')
+    ? true
+    : router.createUrlTree([auth.getCurrentUserLandingRoute()]);
 };

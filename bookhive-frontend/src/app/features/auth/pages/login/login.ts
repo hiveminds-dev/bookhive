@@ -67,13 +67,9 @@ export class Login {
       )
       .subscribe({
         next: (response) => {
-          const target =
-            response.user.role === 'admin'
-              ? '/admin/dashboard'
-              : response.user.role === 'author'
-                ? '/author/dashboard'
-                : '/home';
-          void this.router.navigateByUrl(target);
+          void this.router.navigateByUrl(
+            this.auth.getLandingRouteForRole(response.user.role),
+          );
         },
         error: (error: HttpErrorResponse) => {
           this.loginError =

@@ -52,6 +52,27 @@ export class Auth {
     return this.isAuthenticated() && this.currentUserSignal()?.role === role;
   }
 
+  getLandingRouteForRole(role: UserRole): string {
+    switch (role) {
+      case 'admin':
+      case 'super_admin':
+        return '/admin/dashboard';
+      case 'author':
+        return '/author/dashboard';
+      case 'reader':
+      default:
+        return '/home';
+    }
+  }
+
+  getCurrentUserLandingRoute(): string {
+    const user = this.currentUserSignal();
+
+    return user
+      ? this.getLandingRouteForRole(user.role)
+      : '/login';
+  }
+
   logout(): Observable<void> {
     if (!this.getAccessToken()) {
       this.clearSession();
