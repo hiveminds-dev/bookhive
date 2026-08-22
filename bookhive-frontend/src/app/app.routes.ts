@@ -30,6 +30,10 @@ import {
   authorGuard
 } from './core/guards/author-guard';
 
+import {
+  readerGuard
+} from './core/guards/reader-guard';
+
 export const routes: Routes = [
 
   // ==========================================
@@ -267,6 +271,17 @@ export const routes: Routes = [
             module =>
               module.Dashboard
           )
+      },
+      {
+        path: 'profile',
+
+        loadComponent: () =>
+          import(
+            './features/admin/profile/profile'
+            ).then(
+            module =>
+              module.AdminProfile
+          )
       }
     ]
   },
@@ -289,6 +304,20 @@ export const routes: Routes = [
             ).then(
             module =>
               module.Home
+          )
+      },
+      {
+        path: 'profile',
+        canActivate: [
+          readerGuard
+        ],
+
+        loadComponent: () =>
+          import(
+            './features/main/profile/profile'
+            ).then(
+            module =>
+              module.ReaderProfile
           )
       },
       {

@@ -3,10 +3,10 @@
   <section class="profile-introduction">
 
     <app-profile-header
-      [authorName]="authorName"
-      [penName]="penName"
+      [authorName]="authorName()"
+      [penName]="penName()"
       [profileImage]="profileImage"
-      [badges]="badges"
+      [badges]="badges()"
       (profileImageChanged)="
         onProfileImageChanged($event)
       "

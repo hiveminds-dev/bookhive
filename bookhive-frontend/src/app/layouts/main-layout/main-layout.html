@@ -105,6 +105,13 @@
         </button>
 
         @if (auth.isAuthenticated()) {
+          <a
+            class="sign-up"
+            routerLink="/profile"
+            (click)="closeMobileMenu()">
+            Profile
+          </a>
+
           <button class="sign-in" type="button" (click)="logout()">Log Out</button>
         } @else {
           <a

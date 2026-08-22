@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -30,10 +30,32 @@ export class AuthorLayoutComponent {
   profileMenuOpen = false;
   avatarLoadFailed = false;
 
-  readonly authorName = 'Marcus Aurelius';
-  readonly authorRole = 'Premium Author';
+  readonly currentUser =
+    this.auth.currentUser;
+
+  readonly authorName = computed(
+    () => this.currentUser()?.full_name ?? 'Author'
+  );
+
+  readonly authorRole = computed(
+    () => this.currentUser()?.role === 'author'
+      ? 'Author'
+      : 'BookHive Member'
+  );
+
+  readonly avatarInitials = computed(() => {
+    const name =
+      this.authorName().trim();
+
+    return name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase() ?? '')
+      .join('') || 'AU';
+  });
+
   readonly avatarPath =
-    'images/authors/marcus-aurelius.jpg';
+    'images/author/profile/profile-placeholder.jpg';
 
   toggleSidebar(): void {
     this.mobileSidebarOpen = !this.mobileSidebarOpen;

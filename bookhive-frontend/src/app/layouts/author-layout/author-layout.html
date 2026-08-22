@@ -115,17 +115,17 @@
           @if (!avatarLoadFailed) {
             <img
               [src]="avatarPath"
-              [alt]="authorName"
+              [alt]="authorName()"
               (error)="onAvatarError()">
           } @else {
-            <span>MA</span>
+            <span>{{ avatarInitials() }}</span>
           }
 
         </div>
 
         <div>
-          <strong>{{ authorName }}</strong>
-          <small>{{ authorRole }}</small>
+          <strong>{{ authorName() }}</strong>
+          <small>{{ authorRole() }}</small>
         </div>
 
       </a>
@@ -204,10 +204,10 @@
             @if (!avatarLoadFailed) {
               <img
                 [src]="avatarPath"
-                [alt]="authorName"
+                [alt]="authorName()"
                 (error)="onAvatarError()">
             } @else {
-              <span>MA</span>
+              <span>{{ avatarInitials() }}</span>
             }
 
           </span>
@@ -225,8 +225,8 @@
           <div class="profile-dropdown">
 
             <div class="dropdown-user">
-              <strong>{{ authorName }}</strong>
-              <small>{{ authorRole }}</small>
+              <strong>{{ authorName() }}</strong>
+              <small>{{ authorRole() }}</small>
             </div>
 
             <a
