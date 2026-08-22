@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NgFor } from '@angular/common';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-statistics',
@@ -9,6 +10,8 @@ import { NgFor } from '@angular/common';
   styleUrl: './statistics.scss',
 })
 export class AdminStatisticsComponent {
+  private readonly toastService = inject(ToastService);
+
   readonly monthlyUploads = [
     { month: 'JAN', dark: 40, light: 30 },
     { month: 'FEB', dark: 60, light: 20 },
@@ -105,4 +108,12 @@ export class AdminStatisticsComponent {
       initials: 'MK'
     }
   ];
+
+  exportPDF(): void {
+    this.toastService.success('Generating performance overview PDF export...', 'Export PDF');
+  }
+
+  filterDateRange(): void {
+    this.toastService.info('Filtering analytics for Last 30 Days.', 'Filter Date');
+  }
 }

@@ -5,11 +5,11 @@
       <p>Review, approve, and manage the Lumina Editorial creator ecosystem.</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn-secondary">
+      <button type="button" class="btn-secondary" (click)="exportReport()">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         Export Report
       </button>
-      <button type="button" class="btn-primary">
+      <button type="button" class="btn-primary" (click)="inviteAuthor()">
         <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Invite Author
       </button>
@@ -63,8 +63,8 @@
     <div class="table-top-bar">
       <h2>Recent Activity</h2>
       <div class="tool-btns">
-        <button type="button" class="btn-tool"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> Filter</button>
-        <button type="button" class="btn-tool"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> Export</button>
+        <button type="button" class="btn-tool" (click)="filterPosts()"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> Filter</button>
+        <button type="button" class="btn-tool" (click)="exportReport()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> Export</button>
       </div>
     </div>
 
@@ -101,9 +101,9 @@
           <td><span class="reports-text" [class.has-reports]="post.reports > 0">{{ post.reports }}</span></td>
           <td class="text-right">
             <div class="action-buttons">
-              <button type="button" class="btn-icon" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              <button type="button" class="btn-icon" title="Pin"><svg viewBox="0 0 24 24"><path d="M12 17v5M9 2h6l1 7H8l1-7z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              <button type="button" class="btn-icon danger" title="Delete"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon" title="View" (click)="viewPost(post)"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon" title="Pin" (click)="pinPost(post)"><svg viewBox="0 0 24 24"><path d="M12 17v5M9 2h6l1 7H8l1-7z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon danger" title="Delete" (click)="deletePost(post)"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
             </div>
           </td>
         </tr>
@@ -111,7 +111,7 @@
     </table>
 
     <div class="view-all-footer">
-      <button type="button" class="btn-link">View All Posts</button>
+      <button type="button" class="btn-link" (click)="exportReport()">View All Posts</button>
     </div>
   </section>
 </div>
