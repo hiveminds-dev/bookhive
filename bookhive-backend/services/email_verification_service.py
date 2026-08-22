@@ -24,6 +24,14 @@ class EmailVerificationError(ValueError):
     pass
 
 
+class EmailVerificationCooldownError(EmailVerificationError):
+    def __init__(self, retry_after: int):
+        self.retry_after = max(1, retry_after)
+        super().__init__(
+            f"Please wait {self.retry_after} seconds before requesting another email"
+        )
+
+
 class EmailVerificationService:
     def __init__(self):
         self.user_repository = UserRepository()
@@ -106,6 +114,23 @@ class EmailVerificationService:
         user = await self.user_repository.get_by_email(session, email)
         if user is None or user.email_verified:
             return
+
+        result = await session.execute(
+            select(EmailVerificationToken.created_at)
+            .where(EmailVerificationToken.user_id == user.id)
+            .order_by(EmailVerificationToken.created_at.desc())
+            .limit(1)
+        )
+        last_sent_at = result.scalar_one_or_none()
+        if last_sent_at is not None:
+            if last_sent_at.tzinfo is None:
+                last_sent_at = last_sent_at.replace(tzinfo=UTC)
+
+            elapsed = datetime.now(UTC) - last_sent_at
+            cooldown = settings.email_verification_resend_cooldown_seconds
+            remaining = cooldown - int(elapsed.total_seconds())
+            if remaining > 0:
+                raise EmailVerificationCooldownError(remaining)
 
         token = await self.create_token(session, user)
         await session.commit()

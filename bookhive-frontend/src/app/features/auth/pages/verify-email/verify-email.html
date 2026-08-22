@@ -40,9 +40,17 @@
         <p role="alert">{{ resendError }}</p>
       }
 
-      <button class="resend-button" type="button" (click)="resendEmail()" [disabled]="!email || isResending">
+      <button class="resend-button" type="button" (click)="resendEmail()" [disabled]="!email || isResending || resendCooldownSeconds > 0">
         <svg lucideRefreshCw aria-hidden="true"></svg>
-        <span>{{ isResending ? 'Sending…' : 'Resend verification email' }}</span>
+        <span>
+          {{
+            isResending
+              ? 'Sending…'
+              : resendCooldownSeconds > 0
+                ? 'Resend available in ' + resendCooldownSeconds + 's'
+                : 'Resend verification email'
+          }}
+        </span>
       </button>
 
       <a class="back-link" routerLink="/login">

@@ -15,6 +15,7 @@ from schemas.auth import (
     ResendVerificationRequest,
 )
 from services.email_verification_service import (
+    EmailVerificationCooldownError,
     EmailVerificationError,
     EmailVerificationService,
 )
@@ -77,6 +78,12 @@ async def resend_verification(
 ):
     try:
         await service.resend(session, request.email)
+    except EmailVerificationCooldownError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=str(exc),
+            headers={"Retry-After": str(exc.retry_after)},
+        ) from exc
     except EmailDeliveryError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
