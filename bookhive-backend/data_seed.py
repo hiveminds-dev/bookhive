@@ -96,26 +96,32 @@ async def get_category_by_name(
     return result.scalar_one_or_none()
 
 
-def validate_initial_admin_settings() -> None:
-    full_name = settings.initial_admin_full_name.strip()
-    username = settings.initial_admin_username.strip()
-    email = settings.initial_admin_email.strip()
-    password = settings.initial_admin_password
+def validate_initial_user_settings(
+    *,
+    full_name: str,
+    username: str,
+    email: str,
+    password: str,
+    env_prefix: str,
+) -> None:
+    full_name = full_name.strip()
+    username = username.strip()
+    email = email.strip()
 
     if len(full_name) < 2:
         raise RuntimeError(
-            "INITIAL_ADMIN_FULL_NAME must contain at least 2 characters."
+            f"{env_prefix}_FULL_NAME must contain at least 2 characters."
         )
 
     if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{2,49}", username):
         raise RuntimeError(
-            "INITIAL_ADMIN_USERNAME must start with a letter and contain "
+            f"{env_prefix}_USERNAME must start with a letter and contain "
             "3 to 50 letters, numbers, or underscores."
         )
 
     if not email:
         raise RuntimeError(
-            "INITIAL_ADMIN_EMAIL must be provided when database "
+            f"{env_prefix}_EMAIL must be provided when database "
             "seeding is enabled."
         )
 
@@ -125,21 +131,57 @@ def validate_initial_admin_settings() -> None:
         "replace_with_a_secure_password",
     }:
         raise RuntimeError(
-            "Set a secure INITIAL_ADMIN_PASSWORD in the .env file "
+            f"Set a secure {env_prefix}_PASSWORD in the .env file "
             "before starting the application."
         )
 
     if len(password) < 8:
         raise RuntimeError(
-            "INITIAL_ADMIN_PASSWORD must contain at least 8 characters."
+            f"{env_prefix}_PASSWORD must contain at least 8 characters."
         )
 
 
-async def seed_initial_admin(session: AsyncSession) -> None:
-    validate_initial_admin_settings()
+def validate_initial_admin_settings() -> None:
+    validate_initial_user_settings(
+        full_name=settings.initial_admin_full_name,
+        username=settings.initial_admin_username,
+        email=settings.initial_admin_email,
+        password=settings.initial_admin_password,
+        env_prefix="INITIAL_ADMIN",
+    )
 
-    email = settings.initial_admin_email.strip().lower()
-    username = settings.initial_admin_username.strip().lower()
+
+def validate_initial_super_admin_settings() -> None:
+    validate_initial_user_settings(
+        full_name=settings.initial_super_admin_full_name,
+        username=settings.initial_super_admin_username,
+        email=settings.initial_super_admin_email,
+        password=settings.initial_super_admin_password,
+        env_prefix="INITIAL_SUPER_ADMIN",
+    )
+
+
+async def seed_initial_user(
+    *,
+    session: AsyncSession,
+    full_name: str,
+    username: str,
+    email: str,
+    password: str,
+    role: UserRole,
+    env_prefix: str,
+    label: str,
+) -> None:
+    validate_initial_user_settings(
+        full_name=full_name,
+        username=username,
+        email=email,
+        password=password,
+        env_prefix=env_prefix,
+    )
+
+    email = email.strip().lower()
+    username = username.strip().lower()
 
     existing_user = await get_user_by_email(
         session=session,
@@ -147,13 +189,14 @@ async def seed_initial_admin(session: AsyncSession) -> None:
     )
 
     if existing_user is not None:
-        if existing_user.role != UserRole.ADMIN:
+        if existing_user.role != role:
             raise RuntimeError(
-                "INITIAL_ADMIN_EMAIL already belongs to a non-admin user."
+                f"{env_prefix}_EMAIL already belongs to a non-{role.value} user."
             )
 
         logger.info(
-            "Initial administrator already exists for %s.",
+            "Initial %s already exists for %s.",
+            label,
             email,
         )
         return
@@ -165,27 +208,54 @@ async def seed_initial_admin(session: AsyncSession) -> None:
 
     if existing_username is not None:
         raise RuntimeError(
-            "INITIAL_ADMIN_USERNAME already belongs to another user."
+            f"{env_prefix}_USERNAME already belongs to another user."
         )
 
-    admin = User(
-        full_name=settings.initial_admin_full_name.strip(),
+    user = User(
+        full_name=full_name.strip(),
         username=username,
         email=email,
         password_hash=hash_password(
-            settings.initial_admin_password,
+            password,
         ),
         email_verified=True,
-        role=UserRole.ADMIN,
+        role=role,
         account_status=AccountStatus.ACTIVE,
     )
 
-    session.add(admin)
+    session.add(user)
     await session.flush()
 
     logger.info(
-        "Initial BookHive administrator account was created for %s.",
+        "Initial BookHive %s account was created for %s.",
+        label,
         email,
+    )
+
+
+async def seed_initial_admin(session: AsyncSession) -> None:
+    await seed_initial_user(
+        session=session,
+        full_name=settings.initial_admin_full_name,
+        username=settings.initial_admin_username,
+        email=settings.initial_admin_email,
+        password=settings.initial_admin_password,
+        role=UserRole.ADMIN,
+        env_prefix="INITIAL_ADMIN",
+        label="administrator",
+    )
+
+
+async def seed_initial_super_admin(session: AsyncSession) -> None:
+    await seed_initial_user(
+        session=session,
+        full_name=settings.initial_super_admin_full_name,
+        username=settings.initial_super_admin_username,
+        email=settings.initial_super_admin_email,
+        password=settings.initial_super_admin_password,
+        role=UserRole.SUPER_ADMIN,
+        env_prefix="INITIAL_SUPER_ADMIN",
+        label="super administrator",
     )
 
 
@@ -243,6 +313,7 @@ async def seed_database(session: AsyncSession) -> None:
 
     try:
         await seed_initial_admin(session)
+        await seed_initial_super_admin(session)
         await seed_default_categories(session)
 
         if settings.seed_demo_data:
