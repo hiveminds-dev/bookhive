@@ -403,6 +403,17 @@ export const routes: Routes = [
             module =>
               module.AdminProfile
           )
+      },
+      {
+        path: 'admins',
+
+        loadComponent: () =>
+          import(
+            './features/admin/admin-management/admin-management'
+            ).then(
+            module =>
+              module.AdminManagementComponent
+          )
       }
     ]
   },
