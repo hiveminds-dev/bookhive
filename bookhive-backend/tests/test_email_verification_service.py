@@ -6,6 +6,7 @@ import pytest
 
 from orm_models.user import AccountStatus, UserRole
 from services.email_verification_service import (
+    EmailVerificationCooldownError,
     EmailVerificationError,
     EmailVerificationService,
 )
@@ -83,3 +84,48 @@ def test_verification_token_is_hashed_before_storage():
 
     assert hashed_token != raw_token
     assert len(hashed_token) == 64
+
+
+@pytest.mark.asyncio
+async def test_resend_is_rate_limited_during_cooldown(monkeypatch):
+    service = EmailVerificationService()
+    service.user_repository.get_by_email = AsyncMock(
+        return_value=SimpleNamespace(id=9, email="reader@example.com", email_verified=False),
+    )
+    result = MagicMock()
+    result.scalar_one_or_none.return_value = datetime.now(UTC) - timedelta(seconds=5)
+    session = AsyncMock()
+    session.execute.return_value = result
+    monkeypatch.setattr(
+        "services.email_verification_service.settings.email_verification_resend_cooldown_seconds",
+        60,
+    )
+
+    with pytest.raises(EmailVerificationCooldownError) as error:
+        await service.resend(session, "reader@example.com")
+
+    assert 54 <= error.value.retry_after <= 55
+    session.commit.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_resend_is_allowed_after_cooldown(monkeypatch):
+    service = EmailVerificationService()
+    user = SimpleNamespace(id=9, email="reader@example.com", email_verified=False)
+    service.user_repository.get_by_email = AsyncMock(return_value=user)
+    service.create_token = AsyncMock(return_value="new-token")
+    service.send_token = AsyncMock()
+    result = MagicMock()
+    result.scalar_one_or_none.return_value = datetime.now(UTC) - timedelta(minutes=2)
+    session = AsyncMock()
+    session.execute.return_value = result
+    monkeypatch.setattr(
+        "services.email_verification_service.settings.email_verification_resend_cooldown_seconds",
+        60,
+    )
+
+    await service.resend(session, user.email)
+
+    service.create_token.assert_awaited_once_with(session, user)
+    session.commit.assert_awaited_once()
+    service.send_token.assert_awaited_once_with(user.email, "new-token")

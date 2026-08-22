@@ -14,6 +14,7 @@ describe('VerifyEmail', () => {
   };
 
   beforeEach(async () => {
+    emailVerificationService.resendVerification.mockClear();
     await TestBed.configureTestingModule({
       imports: [VerifyEmail],
       providers: [
@@ -62,5 +63,11 @@ describe('VerifyEmail', () => {
       'reader@example.com',
     );
     expect(component.resendMessage).toBe('A new link has been sent.');
+    expect(component.resendCooldownSeconds).toBe(60);
+
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('.resend-button');
+    expect(button.disabled).toBe(true);
+    expect(button.textContent).toContain('Resend available in 60s');
   });
 });
