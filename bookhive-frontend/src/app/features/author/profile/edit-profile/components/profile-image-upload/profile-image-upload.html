@@ -1,0 +1,65 @@
+<section class="image-section">
+
+  <div class="section-heading">
+    <h2>Profile Photo</h2>
+
+    <p>
+      Upload a clear photo for your
+      author profile.
+    </p>
+  </div>
+
+  <div class="upload-content">
+
+    <div class="current-image">
+      <img
+        [src]="imageUrl"
+        alt="Current author profile"
+        (error)="handleImageError($event)"
+      >
+
+      <span class="image-label">
+        Current photo
+      </span>
+    </div>
+
+    <label
+      class="upload-area"
+      for="profile-image"
+      [class.dragging]="isDragging"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onFileDropped($event)"
+    >
+      <span
+        class="upload-icon"
+        aria-hidden="true"
+      >
+        ⇧
+      </span>
+
+      <strong>
+        Drag and drop your photo
+      </strong>
+
+      <p>
+        or
+        <span>browse files</span>
+      </p>
+
+      <small>
+        PNG, JPG or WEBP · Maximum 5MB
+      </small>
+    </label>
+
+    <input
+      id="profile-image"
+      class="file-input"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      (change)="onFileSelected($event)"
+    >
+
+  </div>
+
+</section>

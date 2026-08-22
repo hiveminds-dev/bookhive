@@ -1,0 +1,117 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.biography-section {
+  padding: 30px;
+  background: #ffffff;
+  border: 1px solid #f0ede5;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(52, 45, 28, 0.06);
+}
+
+.section-heading {
+  margin-bottom: 25px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: #25231f;
+  font-size: 21px;
+}
+
+.section-heading p {
+  margin: 7px 0 0;
+  color: #8c8579;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.form-group label {
+  color: #575044;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-group label span {
+  color: #d52a32;
+}
+
+textarea {
+  width: 100%;
+  min-height: 210px;
+  padding: 16px;
+  resize: vertical;
+  color: #403a31;
+  background: #f7f7f6;
+  border: 1px solid #ebe8e0;
+  border-radius: 10px;
+  outline: none;
+  font: inherit;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  line-height: 1.7;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+textarea::placeholder {
+  color: #a39c91;
+}
+
+textarea:focus {
+  background: #ffffff;
+  border-color: #b7971e;
+  box-shadow: 0 0 0 3px rgba(183, 151, 30, 0.12);
+}
+
+textarea.invalid {
+  border-color: #d8323c;
+}
+
+.textarea-footer {
+  display: flex;
+  min-height: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.error-message {
+  color: #c52731;
+  font-size: 11px;
+}
+
+.character-counter {
+  margin-left: auto;
+  color: #958e82;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.character-counter.limit-reached {
+  color: #c52731;
+  font-weight: 700;
+}
+
+@media (max-width: 650px) {
+  .biography-section {
+    padding: 24px 20px;
+  }
+
+  textarea {
+    min-height: 240px;
+  }
+}

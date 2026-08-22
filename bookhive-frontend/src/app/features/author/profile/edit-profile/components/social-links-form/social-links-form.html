@@ -1,0 +1,125 @@
+<section class="social-section">
+
+  <div class="section-heading">
+    <h2>Social Links</h2>
+
+    <p>
+      Add links where your readers can
+      connect with you.
+    </p>
+  </div>
+
+  <form
+    class="social-form"
+    [formGroup]="socialForm"
+  >
+
+    <div class="form-group">
+
+      <label for="website">
+        Website
+      </label>
+
+      <div
+        class="input-wrapper"
+        [class.invalid]="
+          isInvalid('website')
+        "
+      >
+        <span
+          class="input-icon"
+          aria-hidden="true"
+        >
+          ◎
+        </span>
+
+        <input
+          id="website"
+          type="url"
+          formControlName="website"
+          placeholder="https://yourwebsite.com"
+        >
+      </div>
+
+      @if (isInvalid('website')) {
+        <small class="error-message">
+          Enter a valid URL starting with
+          http:// or https://
+        </small>
+      }
+
+    </div>
+
+    <div class="form-group">
+
+      <label for="twitter">
+        Twitter
+      </label>
+
+      <div
+        class="input-wrapper"
+        [class.invalid]="
+          isInvalid('twitter')
+        "
+      >
+        <span
+          class="input-icon"
+          aria-hidden="true"
+        >
+          @
+        </span>
+
+        <input
+          id="twitter"
+          type="url"
+          formControlName="twitter"
+          placeholder="https://twitter.com/username"
+        >
+      </div>
+
+      @if (isInvalid('twitter')) {
+        <small class="error-message">
+          Enter a valid Twitter URL.
+        </small>
+      }
+
+    </div>
+
+    <div class="form-group full-width">
+
+      <label for="linkedin">
+        LinkedIn
+      </label>
+
+      <div
+        class="input-wrapper"
+        [class.invalid]="
+          isInvalid('linkedin')
+        "
+      >
+        <span
+          class="input-icon"
+          aria-hidden="true"
+        >
+          in
+        </span>
+
+        <input
+          id="linkedin"
+          type="url"
+          formControlName="linkedin"
+          placeholder="https://linkedin.com/in/username"
+        >
+      </div>
+
+      @if (isInvalid('linkedin')) {
+        <small class="error-message">
+          Enter a valid LinkedIn URL.
+        </small>
+      }
+
+    </div>
+
+  </form>
+
+</section>

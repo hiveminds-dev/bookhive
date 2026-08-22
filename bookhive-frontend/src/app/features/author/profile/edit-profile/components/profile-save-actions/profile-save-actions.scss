@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.save-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.cancel-button,
+.save-button {
+  min-width: 155px;
+  min-height: 49px;
+  padding: 11px 23px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cancel-button {
+  color: #4f493e;
+  background: #ffffff;
+  border: 1px solid #9c9179;
+}
+
+.cancel-button:hover:not(:disabled) {
+  color: #806600;
+  background: #fffaf0;
+  border-color: #a7860e;
+  transform: translateY(-2px);
+}
+
+.save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #ffffff;
+  background: #cda316;
+  border: 1px solid #cda316;
+  box-shadow: 0 8px 20px rgba(205, 163, 22, 0.23);
+}
+
+.save-button:hover:not(:disabled) {
+  background: #a58208;
+  border-color: #a58208;
+  transform: translateY(-2px);
+}
+
+.cancel-button:disabled,
+.save-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 440px) {
+  .save-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-button,
+  .save-button {
+    width: 100%;
+  }
+}

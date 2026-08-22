@@ -1,0 +1,37 @@
+<div class="save-actions">
+
+  <button
+    type="button"
+    class="cancel-button"
+    [disabled]="isSaving"
+    (click)="cancel()"
+  >
+    Cancel
+  </button>
+
+  <button
+    type="button"
+    class="save-button"
+    [disabled]="
+      isSaving ||
+      isSaveDisabled
+    "
+    (click)="save()"
+  >
+    @if (isSaving) {
+      <span
+        class="spinner"
+        aria-hidden="true"
+      ></span>
+
+      Saving...
+    } @else {
+      <span aria-hidden="true">
+        ✓
+      </span>
+
+      Save Changes
+    }
+  </button>
+
+</div>
