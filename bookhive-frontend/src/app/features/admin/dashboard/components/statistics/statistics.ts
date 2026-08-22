@@ -5,7 +5,7 @@ import { NgFor } from '@angular/common';
   selector: 'app-statistics',
   imports: [NgFor],
   templateUrl: './statistics.html',
-  styleUrl: './statistics.css',
+  styleUrl: './statistics.scss',
 })
 export class Statistics {
   readonly cards = [

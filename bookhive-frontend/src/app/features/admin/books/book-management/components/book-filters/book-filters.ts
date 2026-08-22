@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-book-filters',
   imports: [],
   templateUrl: './book-filters.html',
-  styleUrl: './book-filters.css',
+  styleUrl: './book-filters.scss',
 })
 export class BookFilters {}

@@ -1,1 +1,104 @@
-<p>book-management works!</p>
+<div class="admin-page books-management">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <span>Management</span>
+    <span class="sep">&gt;</span>
+    <span class="current">Books</span>
+  </nav>
+
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Books Management</h1>
+      <p>Oversee your reading community and engagement metrics.</p>
+    </div>
+    <button type="button" class="btn-primary">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      Add New Book
+    </button>
+  </header>
+
+  <section class="card-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>BOOK</th>
+          <th>AUTHOR &amp; CATEGORY</th>
+          <th>LANGUAGE</th>
+          <th>DATE</th>
+          <th>METRICS</th>
+          <th>STATUS</th>
+          <th class="text-right">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let book of books">
+          <td>
+            <div class="book-info">
+              <div class="book-cover">
+                <img [src]="book.cover" [alt]="book.title">
+              </div>
+              <div class="book-details">
+                <strong class="title">{{ book.title }}</strong>
+                <span class="isbn">ISBN: {{ book.isbn }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="author-cat">
+              <span class="author-name">{{ book.author }}</span>
+              <span class="badge-tag">{{ book.category }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="lang-cell">
+              <svg class="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              <span>{{ book.language }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="date-text">{{ book.date }}</span>
+          </td>
+          <td>
+            <div class="metrics-cell">
+              <div class="metric-item">
+                <strong>{{ book.views }}</strong>
+                <span class="sub">Views</span>
+                <svg class="trend-up" viewBox="0 0 24 24"><path d="M7 17l10-10M17 17V7H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="metric-item sub-metric">
+                <span class="dl-text">{{ book.downloads }} Dl.</span>
+                <svg class="trend-down" *ngIf="book.dlTrend === 'down'" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7v10H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <svg class="trend-up" *ngIf="book.dlTrend === 'up'" viewBox="0 0 24 24"><path d="M7 17l10-10M17 17V7H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="status-badge" [class]="book.statusClass">
+              <span class="dot"></span>
+              {{ book.status }}
+            </span>
+          </td>
+          <td class="text-right">
+            <div class="action-buttons">
+              <button type="button" class="btn-icon" title="Preview"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon danger" title="Delete"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="table-footer">
+      <span class="summary-text">Showing 1 to 3 of 128 books</span>
+      <div class="pagination">
+        <button type="button" class="page-btn nav-btn">&lt;</button>
+        <button type="button" class="page-btn active">1</button>
+        <button type="button" class="page-btn">2</button>
+        <button type="button" class="page-btn">3</button>
+        <span class="ellipsis">...</span>
+        <button type="button" class="page-btn">12</button>
+        <button type="button" class="page-btn nav-btn">&gt;</button>
+      </div>
+    </footer>
+  </section>
+</div>

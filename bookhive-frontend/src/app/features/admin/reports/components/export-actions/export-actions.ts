@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-export-actions',
   imports: [],
   templateUrl: './export-actions.html',
-  styleUrl: './export-actions.css',
+  styleUrl: './export-actions.scss',
 })
 export class ExportActions {}

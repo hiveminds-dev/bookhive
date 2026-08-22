@@ -5,7 +5,7 @@ import { NgFor, NgIf } from '@angular/common';
   selector: 'app-recent-requests',
   imports: [NgFor, NgIf],
   templateUrl: './recent-requests.html',
-  styleUrl: './recent-requests.css',
+  styleUrl: './recent-requests.scss',
 })
 export class RecentRequests {
   readonly requests = [

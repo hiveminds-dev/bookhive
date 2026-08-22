@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-book-row',
   imports: [],
   templateUrl: './book-row.html',
-  styleUrl: './book-row.css',
+  styleUrl: './book-row.scss',
 })
 export class BookRow {}

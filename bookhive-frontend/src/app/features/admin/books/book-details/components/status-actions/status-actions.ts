@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-status-actions',
   imports: [],
   templateUrl: './status-actions.html',
-  styleUrl: './status-actions.css',
+  styleUrl: './status-actions.scss',
 })
 export class StatusActions {}

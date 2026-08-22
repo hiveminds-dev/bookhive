@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-preview',
   imports: [],
   templateUrl: './preview.html',
-  styleUrl: './preview.css',
+  styleUrl: './preview.scss',
 })
 export class Preview {}

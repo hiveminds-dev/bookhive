@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-moderation-actions',
   imports: [],
   templateUrl: './moderation-actions.html',
-  styleUrl: './moderation-actions.css',
+  styleUrl: './moderation-actions.scss',
 })
 export class ModerationActions {}

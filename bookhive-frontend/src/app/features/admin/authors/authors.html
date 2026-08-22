@@ -1,0 +1,125 @@
+<div class="admin-page author-management">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Author Management</h1>
+      <p>Build, moderate, and engage your reading community with ease.</p>
+    </div>
+    <button type="button" class="btn-primary">
+      <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Create Community
+    </button>
+  </header>
+
+  <!-- Summary Stats -->
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
+        <span class="trend-badge positive">+12%</span>
+      </div>
+      <span class="stat-label">NEW APPLICATIONS</span>
+      <strong class="stat-value">24</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
+        <span class="trend-badge positive">+4%</span>
+      </div>
+      <span class="stat-label">TOTAL AUTHORS</span>
+      <strong class="stat-value">1,208</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
+        <span class="trend-badge high">High</span>
+      </div>
+      <span class="stat-label">BOOKS IN REVIEW</span>
+      <strong class="stat-value">42</strong>
+    </article>
+
+    <article class="stat-card highlight-card">
+      <div class="stat-header">
+        <div class="icon-box star-icon">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <span class="stat-label">PREMIUM CREDITS</span>
+      <strong class="stat-value">14.2k</strong>
+    </article>
+  </section>
+
+  <!-- Main Card Table -->
+  <section class="card-table-wrapper">
+    <div class="tabs-header">
+      <button type="button" class="tab-btn active">
+        Pending Author Requests
+        <span class="tab-badge">12</span>
+      </button>
+      <button type="button" class="tab-btn">Approved Authors</button>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>PROFILE</th>
+          <th>FULL NAME</th>
+          <th>PEN NAME</th>
+          <th>EMAIL</th>
+          <th>COUNTRY</th>
+          <th>APPLIED DATE</th>
+          <th class="text-right">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let author of authors">
+          <td>
+            <div class="avatar-cell">
+              <img [src]="author.avatar" [alt]="author.fullName">
+            </div>
+          </td>
+          <td>
+            <strong class="full-name">{{ author.fullName }}</strong>
+          </td>
+          <td>
+            <span class="pen-name">{{ author.penName }}</span>
+          </td>
+          <td>
+            <span class="email-text">{{ author.email }}</span>
+          </td>
+          <td>
+            <span class="country-text">{{ author.country }}</span>
+          </td>
+          <td>
+            <span class="date-text">{{ author.appliedDate }}</span>
+          </td>
+          <td class="text-right">
+            <div class="action-buttons">
+              <button type="button" class="btn-icon" title="Preview"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon approve" title="Approve"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+              <button type="button" class="btn-icon reject" title="Reject"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 9l-6 6M9 9l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="table-footer">
+      <span class="summary-text">Showing 1-10 of 124 records</span>
+      <div class="pagination">
+        <button type="button" class="page-btn nav-btn">&lt;</button>
+        <button type="button" class="page-btn active">1</button>
+        <button type="button" class="page-btn">2</button>
+        <button type="button" class="page-btn">3</button>
+        <button type="button" class="page-btn nav-btn">&gt;</button>
+      </div>
+    </footer>
+  </section>
+</div>

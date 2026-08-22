@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-community-header',
   imports: [],
   templateUrl: './community-header.html',
-  styleUrl: './community-header.css',
+  styleUrl: './community-header.scss',
 })
 export class CommunityHeader {}

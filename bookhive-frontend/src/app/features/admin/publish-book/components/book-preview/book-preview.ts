@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-book-preview',
   imports: [],
   templateUrl: './book-preview.html',
-  styleUrl: './book-preview.css',
+  styleUrl: './book-preview.scss',
 })
 export class BookPreview {}
