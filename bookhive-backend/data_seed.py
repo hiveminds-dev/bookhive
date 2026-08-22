@@ -286,24 +286,138 @@ async def seed_default_categories(session: AsyncSession) -> None:
 
 
 async def seed_demo_records(session: AsyncSession) -> None:
-    """
-    Add optional development-only sample data here.
-
-    Real demo readers, authors, books, and reviews can be added after
-    those modules and their final database fields are completed.
-    """
-
+    """Add development demo authors, readers, and sample books with cover images."""
     if settings.app_env.lower() != "development":
-        logger.warning(
-            "Demo data seeding was skipped because APP_ENV is not "
-            "development."
-        )
         return
 
-    logger.info(
-        "Demo data seeding is enabled, but no demo records are "
-        "currently configured."
-    )
+    from orm_models.book import Book, BookStatus
+    from orm_models.user import AuthorProfile
+
+    # Demo Author 1: Eleanor Vance
+    eleanor = await get_user_by_email(session, "eleanor.v@lumina.com")
+    if eleanor is None:
+        eleanor = User(
+            full_name="Eleanor Vance",
+            username="eleanorv",
+            email="eleanor.v@lumina.com",
+            password_hash=hash_password("Password123!"),
+            email_verified=True,
+            role=UserRole.AUTHOR,
+            account_status=AccountStatus.APPROVED,
+        )
+        session.add(eleanor)
+        await session.flush()
+        session.add(
+            AuthorProfile(
+                user_id=eleanor.id,
+                pen_name="E. V. Sterling",
+                country="United Kingdom",
+                short_bio="Author of classical and dark philosophy literature.",
+            )
+        )
+        await session.flush()
+
+    # Demo Author 2: Dr. Sarah Chen
+    sarah = await get_user_by_email(session, "sarah.chen@writes.org")
+    if sarah is None:
+        sarah = User(
+            full_name="Dr. Sarah Chen",
+            username="sarahchen",
+            email="sarah.chen@writes.org",
+            password_hash=hash_password("Password123!"),
+            email_verified=True,
+            role=UserRole.AUTHOR,
+            account_status=AccountStatus.APPROVED,
+        )
+        session.add(sarah)
+        await session.flush()
+        session.add(
+            AuthorProfile(
+                user_id=sarah.id,
+                pen_name="Dr. Sarah Chen",
+                country="Canada",
+                short_bio="Quantum physics researcher and science author.",
+            )
+        )
+        await session.flush()
+
+    # Demo Pending Author: Julian Thorne
+    julian = await get_user_by_email(session, "j.thorne@writes.org")
+    if julian is None:
+        julian = User(
+            full_name="Julian Thorne",
+            username="jthorne",
+            email="j.thorne@writes.org",
+            password_hash=hash_password("Password123!"),
+            email_verified=True,
+            role=UserRole.AUTHOR,
+            account_status=AccountStatus.PENDING,
+        )
+        session.add(julian)
+        await session.flush()
+        session.add(
+            AuthorProfile(
+                user_id=julian.id,
+                pen_name="J. Thistle",
+                country="Canada",
+                short_bio="Aspiring novelist submitting new work.",
+            )
+        )
+        await session.flush()
+
+    # Categories
+    philosophy = await get_category_by_name(session, "Philosophy")
+    science = await get_category_by_name(session, "Science")
+    fiction = await get_category_by_name(session, "Fiction")
+
+    # Sample Books
+    book1_result = await session.execute(select(Book).where(Book.title == "Beyond Good and Evil"))
+    if book1_result.scalar_one_or_none() is None and philosophy and eleanor:
+        session.add(
+            Book(
+                title="Beyond Good and Evil",
+                author_id=eleanor.id,
+                category_id=philosophy.id,
+                description="A prelude to a philosophy of the future.",
+                language="English",
+                reading_level="Advanced",
+                cover_image_path="storage/covers/beyond-good-and-evil.jpg",
+                status=BookStatus.PUBLISHED,
+            )
+        )
+
+    book2_result = await session.execute(select(Book).where(Book.title == "Quantum Mechanics"))
+    if book2_result.scalar_one_or_none() is None and science and sarah:
+        session.add(
+            Book(
+                title="Quantum Mechanics",
+                author_id=sarah.id,
+                category_id=science.id,
+                description="Explore quantum states, wave equations, and modern particle physics.",
+                language="English",
+                reading_level="Intermediate",
+                cover_image_path="storage/covers/quantum-mechanics.jpg",
+                status=BookStatus.PENDING_REVIEW,
+            )
+        )
+
+    book3_result = await session.execute(select(Book).where(Book.title == "The Silent Grove"))
+    if book3_result.scalar_one_or_none() is None and fiction and eleanor:
+        session.add(
+            Book(
+                title="The Silent Grove",
+                author_id=eleanor.id,
+                category_id=fiction.id,
+                description="A mystery novel set in ancient misty pine forests.",
+                language="Spanish",
+                reading_level="Beginner",
+                cover_image_path="storage/covers/the-silent-grove.jpg",
+                status=BookStatus.DRAFT,
+            )
+        )
+
+    await session.flush()
+    logger.info("Demo authors and books with cover images seeded successfully.")
 
 
 async def seed_database(session: AsyncSession) -> None:
