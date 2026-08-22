@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { NgFor } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-authors',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, RouterLink],
   templateUrl: './authors.html',
   styleUrl: './authors.scss',
 })

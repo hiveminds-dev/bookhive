@@ -1,8 +1,14 @@
-<div class="admin-page community-management">
-  <header class="page-header">
-    <div class="header-text">
+<div class="admin-master-container">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Community</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
       <h1>Community Management</h1>
-      <p>Review, approve, and manage the Lumina Editorial creator ecosystem.</p>
+      <p>Review, approve, and moderate the BookHive editorial community discussions.</p>
     </div>
     <div class="header-actions">
       <button type="button" class="btn-secondary" (click)="exportReport()">

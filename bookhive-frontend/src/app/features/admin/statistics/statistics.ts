@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { NgFor } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-statistics',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, RouterLink],
   templateUrl: './statistics.html',
   styleUrl: './statistics.scss',
 })

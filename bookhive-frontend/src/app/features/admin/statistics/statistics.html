@@ -1,8 +1,14 @@
-<div class="admin-page performance-overview">
-  <header class="page-header">
-    <div class="header-text">
-      <h1>Performance Overview</h1>
-      <p>Real-time repository health and engagement metrics.</p>
+<div class="admin-master-container">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Statistics</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <h1>Performance &amp; Analytics</h1>
+      <p>Real-time repository health, reader engagement, and platform growth metrics.</p>
     </div>
     <div class="header-actions">
       <button type="button" class="btn-dropdown" (click)="filterDateRange()">

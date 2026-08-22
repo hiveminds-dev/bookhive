@@ -1,19 +1,21 @@
-<div class="admin-page books-management">
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <span>Management</span>
-    <span class="sep">&gt;</span>
+<div class="admin-master-container">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
     <span class="current">Books</span>
   </nav>
 
-  <header class="page-header">
-    <div class="header-text">
+  <header class="admin-page-header">
+    <div class="header-titles">
       <h1>Books Management</h1>
-      <p>Oversee your reading community and engagement metrics.</p>
+      <p>Oversee published literature, review manuscript requests, and inspect repository books.</p>
     </div>
-    <a routerLink="/admin/books/upload" class="btn-primary">
-      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-      Add New Book
-    </a>
+    <div class="header-actions">
+      <a routerLink="/admin/books/upload" class="btn-primary">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        Add New Book
+      </a>
+    </div>
   </header>
 
   <section class="card-table-wrapper">
