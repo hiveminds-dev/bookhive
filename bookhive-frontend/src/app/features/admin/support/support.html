@@ -1,0 +1,83 @@
+<div class="admin-page support-page">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Admin Support &amp; Help Center</h1>
+      <p>Get assistance, inspect system guides, or submit a priority support request.</p>
+    </div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="1.8"/></svg>
+      <input type="text" placeholder="Search help articles &amp; docs..." class="search-input" />
+    </div>
+  </header>
+
+  <!-- Category Cards -->
+  <section class="help-cards-grid">
+    <article class="help-card">
+      <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <h3>System Administration</h3>
+      <p>Configure platform settings, storage limits, and security logs.</p>
+    </article>
+
+    <article class="help-card">
+      <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <h3>Content Moderation</h3>
+      <p>Guide for approving, reviewing, and managing book manuscripts.</p>
+    </article>
+
+    <article class="help-card">
+      <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <h3>Author Onboarding</h3>
+      <p>Manage author verification requests and creator profiles.</p>
+    </article>
+  </section>
+
+  <div class="support-grid">
+    <!-- FAQ Section -->
+    <div class="faq-column">
+      <h2>Frequently Asked Questions</h2>
+      <div class="accordion-list">
+        <div class="accordion-item" *ngFor="let item of faqsSignal()" [class.open]="item.isOpen">
+          <button type="button" class="accordion-header" (click)="toggleFAQ(item)">
+            <span>{{ item.question }}</span>
+            <span class="chevron">{{ item.isOpen ? '−' : '+' }}</span>
+          </button>
+          <div class="accordion-body" *ngIf="item.isOpen">
+            <p>{{ item.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket Form Column -->
+    <div class="ticket-column">
+      <div class="ticket-card">
+        <h2>Submit Support Ticket</h2>
+        <p>Need assistance from technical support? Send a ticket.</p>
+
+        <form (ngSubmit)="submitTicket()" class="ticket-form">
+          <div class="form-group">
+            <label>Subject *</label>
+            <input type="text" [(ngModel)]="ticketSubject" name="subject" placeholder="e.g. Storage sync delay" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label>Priority</label>
+            <select [(ngModel)]="ticketPriority" name="priority" class="form-control">
+              <option value="Low">Low Priority</option>
+              <option value="Medium">Medium Priority</option>
+              <option value="High">High Priority</option>
+              <option value="Urgent">Urgent / Critical</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea [(ngModel)]="ticketMessage" name="message" rows="4" placeholder="Describe the issue in detail..." class="form-control"></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Submit Support Ticket</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

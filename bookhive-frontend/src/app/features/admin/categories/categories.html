@@ -1,0 +1,92 @@
+<div class="admin-page categories-page">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Category Management</h1>
+      <p>Manage book genres, descriptions, and active status across the platform.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-primary" (click)="openAddCategoryModal()">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Category
+      </button>
+    </div>
+  </header>
+
+  <section class="card-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>CATEGORY NAME</th>
+          <th>DESCRIPTION</th>
+          <th>TOTAL BOOKS</th>
+          <th>STATUS</th>
+          <th class="text-right">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cat of categoriesSignal()">
+          <td>
+            <strong class="cat-name">{{ cat.name }}</strong>
+          </td>
+          <td>
+            <p class="cat-desc">{{ cat.description }}</p>
+          </td>
+          <td>
+            <span class="count-pill">{{ cat.totalBooks }} books</span>
+          </td>
+          <td>
+            <button type="button" class="status-toggle-btn" [class.active]="cat.isActive" (click)="toggleActive(cat)">
+              <span class="status-dot"></span>
+              {{ cat.isActive ? 'Active' : 'Inactive' }}
+            </button>
+          </td>
+          <td class="text-right">
+            <div class="action-buttons">
+              <button type="button" class="btn-icon danger" title="Delete" (click)="promptDelete(cat)">
+                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Add Category Modal -->
+  <div class="modal-backdrop" *ngIf="showAddModal()" (click)="closeAddCategoryModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Create New Category</h3>
+        <button type="button" class="close-btn" (click)="closeAddCategoryModal()">×</button>
+      </div>
+
+      <div class="form-body">
+        <div class="form-group">
+          <label>Category Name *</label>
+          <input type="text" [(ngModel)]="newCatName" placeholder="e.g. Quantum Physics" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="newCatDesc" rows="3" placeholder="Short description of this category..." class="form-control"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeAddCategoryModal()">Cancel</button>
+        <button type="button" class="btn-save" (click)="saveCategory()">Save Category</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <app-confirmation-modal
+    *ngIf="deleteTargetCategory()"
+    title="Delete Category?"
+    [message]="'Are you sure you want to permanently delete category &quot;' + deleteTargetCategory()?.name + '&quot;? This action cannot be undone.'"
+    confirmText="Delete Category"
+    type="danger"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  />
+</div>

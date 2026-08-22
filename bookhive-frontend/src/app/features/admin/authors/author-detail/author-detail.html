@@ -1,0 +1,69 @@
+<div class="admin-page author-detail-page">
+  <header class="page-header">
+    <a routerLink="/admin/authors" class="back-link">← Back to Authors List</a>
+    <h1>Author Profile &amp; Portfolio</h1>
+  </header>
+
+  <div class="profile-grid">
+    <!-- Left Column: Author Bio Card -->
+    <div class="author-card">
+      <div class="avatar-wrapper">
+        <img [src]="author.avatar" [alt]="author.fullName" class="avatar-img" />
+      </div>
+      <h2>{{ author.fullName }}</h2>
+      <span class="pen-name">Pen Name: <strong>{{ author.penName }}</strong></span>
+      <span class="status-badge approved">{{ author.status }}</span>
+
+      <div class="info-list">
+        <div class="info-item"><span>Email</span><strong>{{ author.email }}</strong></div>
+        <div class="info-item"><span>Country</span><strong>{{ author.country }}</strong></div>
+        <div class="info-item"><span>Applied Date</span><strong>{{ author.appliedDate }}</strong></div>
+      </div>
+
+      <div class="bio-box">
+        <h4>Biography</h4>
+        <p>{{ author.bio }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn-approve" (click)="approveAuthor()">Re-Approve Credentials</button>
+        <button type="button" class="btn-danger" (click)="suspendAuthor()">Suspend Account</button>
+      </div>
+    </div>
+
+    <!-- Right Column: Performance & Books -->
+    <div class="portfolio-column">
+      <div class="stats-row">
+        <div class="stat-box">
+          <span>PUBLISHED BOOKS</span>
+          <strong>{{ author.totalBooks }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>TOTAL READS</span>
+          <strong>{{ author.totalDownloads }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>AVERAGE RATING</span>
+          <strong>★ {{ author.rating }}</strong>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Published Works</h3>
+        <div class="books-list">
+          <div class="book-item" *ngFor="let b of publishedBooks">
+            <img [src]="b.cover" [alt]="b.title" class="book-cover" />
+            <div class="book-info">
+              <strong>{{ b.title }}</strong>
+              <small>Category: {{ b.category }}</small>
+            </div>
+            <div class="book-meta">
+              <span class="reads-text">{{ b.reads }} Reads</span>
+              <span class="status-pill">{{ b.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
