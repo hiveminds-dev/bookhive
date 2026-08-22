@@ -1,11 +1,16 @@
 import {
   Component,
+  computed,
   inject
 } from '@angular/core';
 
 import {
   Router
 } from '@angular/router';
+
+import {
+  Auth
+} from '../../../core/services/auth';
 
 import {
   ProfileHeader
@@ -44,18 +49,28 @@ import {
 export class Profile {
 
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
-  authorName = 'Julian Barnes';
+  readonly currentUser =
+    this.auth.currentUser;
 
-  penName = 'J.B. Aurelius';
+  readonly authorName = computed(
+    () => this.currentUser()?.full_name ?? 'Author'
+  );
+
+  readonly penName = computed(
+    () => this.currentUser()?.username
+      ? `@${this.currentUser()?.username}`
+      : 'Author Profile'
+  );
 
   profileImage =
-    'images/author/profile/julian-barnes.jpg';
+    'images/author/profile/profile-placeholder.jpg';
 
-  readonly badges: string[] = [
-    'Bestselling Author',
-    'Fiction'
-  ];
+  readonly badges = computed(() => [
+    this.currentUser()?.account_status ?? 'pending',
+    'Author'
+  ]);
 
   onProfileImageChanged(
     file: File

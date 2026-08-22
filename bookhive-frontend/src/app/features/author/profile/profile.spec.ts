@@ -1,4 +1,8 @@
 import {
+  signal
+} from '@angular/core';
+
+import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
@@ -11,6 +15,10 @@ import {
 import {
   vi
 } from 'vitest';
+
+import {
+  Auth
+} from '../../../core/services/auth';
 
 import {
   Profile
@@ -28,12 +36,28 @@ describe(
     let router: Router;
 
     beforeEach(async () => {
+      const currentUser = signal({
+        id: 1,
+        full_name: 'Julian Barnes',
+        username: 'julian',
+        email: 'julian@example.com',
+        role: 'author' as const,
+        account_status: 'approved',
+        email_verified: true
+      });
+
       await TestBed.configureTestingModule({
         imports: [
           Profile
         ],
         providers: [
-          provideRouter([])
+          provideRouter([]),
+          {
+            provide: Auth,
+            useValue: {
+              currentUser: currentUser.asReadonly()
+            }
+          }
         ]
       }).compileComponents();
 
@@ -56,7 +80,7 @@ describe(
     it(
       'should contain author name',
       () => {
-        expect(component.authorName)
+        expect(component.authorName())
           .toBe('Julian Barnes');
       }
     );

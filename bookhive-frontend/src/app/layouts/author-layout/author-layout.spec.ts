@@ -1,4 +1,8 @@
 import {
+  signal
+} from '@angular/core';
+
+import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
@@ -11,14 +15,37 @@ import {
   AuthorLayoutComponent
 } from './author-layout';
 
+import {
+  Auth
+} from '../../core/services/auth';
+
 describe('AuthorLayoutComponent', () => {
   let component: AuthorLayoutComponent;
   let fixture: ComponentFixture<AuthorLayoutComponent>;
 
   beforeEach(async () => {
+    const currentUser = signal({
+      id: 1,
+      full_name: 'Julian Barnes',
+      username: 'julian',
+      email: 'julian@example.com',
+      role: 'author' as const,
+      account_status: 'approved',
+      email_verified: true
+    });
+
     await TestBed.configureTestingModule({
       imports: [AuthorLayoutComponent],
-      providers: [provideRouter([])]
+      providers: [
+        provideRouter([]),
+        {
+          provide: Auth,
+          useValue: {
+            currentUser: currentUser.asReadonly(),
+            logout: () => ({ subscribe: () => undefined })
+          }
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(
@@ -57,5 +84,10 @@ describe('AuthorLayoutComponent', () => {
     component.onAvatarError();
 
     expect(component.avatarLoadFailed).toBe(true);
+  });
+
+  it('should show the logged-in author name', () => {
+    expect(component.authorName()).toBe('Julian Barnes');
+    expect(component.avatarInitials()).toBe('JB');
   });
 });

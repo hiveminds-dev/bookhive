@@ -1,0 +1,39 @@
+<main class="reader-profile">
+  <section class="profile-hero">
+    <div class="profile-avatar" aria-hidden="true">
+      {{ displayName().charAt(0).toUpperCase() }}
+    </div>
+
+    <div>
+      <span class="eyebrow">Reader Profile</span>
+      <h1>{{ displayName() }}</h1>
+      <p>{{ username() }}</p>
+    </div>
+  </section>
+
+  <section class="profile-details" aria-label="Reader account details">
+    <article>
+      <span>Email</span>
+      <strong>{{ user()?.email ?? 'Not available' }}</strong>
+    </article>
+
+    <article>
+      <span>Role</span>
+      <strong>Reader</strong>
+    </article>
+
+    <article>
+      <span>Status</span>
+      <strong>{{ status() }}</strong>
+    </article>
+
+    <article>
+      <span>Email Verification</span>
+      <strong>{{ user()?.email_verified ? 'Verified' : 'Not verified' }}</strong>
+    </article>
+  </section>
+
+  <a class="primary-link" routerLink="/explore">
+    Continue Reading
+  </a>
+</main>
