@@ -27,6 +27,21 @@
   padding: 0;
 }
 
+svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  max-width: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-color);
@@ -78,13 +93,13 @@ button {
   .current { color: var(--text-main); font-weight: 700; }
 }
 
-.admin-page-header {
+.admin-page-header, .page-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 28px;
 
-  .header-titles {
+  .header-titles, .header-text {
     h1 {
       font-size: 1.85rem;
       font-weight: 800;
@@ -101,6 +116,65 @@ button {
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1.4rem;
+  background-color: var(--primary-gold);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(133, 77, 14, 0.3);
+  transition: var(--transition-smooth);
+  text-decoration: none;
+
+  svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background-color: var(--primary-gold-hover);
+    color: #ffffff;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(133, 77, 14, 0.4);
+  }
+}
+
+.btn-secondary, .btn-dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1.4rem;
+  background-color: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  text-decoration: none;
+
+  svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    text-decoration: none;
   }
 }
 
