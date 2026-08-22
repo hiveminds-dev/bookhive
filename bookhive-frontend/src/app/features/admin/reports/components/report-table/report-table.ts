@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-report-table',
   imports: [],
   templateUrl: './report-table.html',
-  styleUrl: './report-table.css',
+  styleUrl: './report-table.scss',
 })
 export class ReportTable {}

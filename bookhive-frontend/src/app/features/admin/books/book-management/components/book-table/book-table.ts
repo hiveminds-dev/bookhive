@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-book-table',
   imports: [],
   templateUrl: './book-table.html',
-  styleUrl: './book-table.css',
+  styleUrl: './book-table.scss',
 })
 export class BookTable {}

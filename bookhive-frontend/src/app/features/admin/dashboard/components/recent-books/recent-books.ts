@@ -5,7 +5,7 @@ import { NgFor } from '@angular/common';
   selector: 'app-recent-books',
   imports: [NgFor],
   templateUrl: './recent-books.html',
-  styleUrl: './recent-books.css',
+  styleUrl: './recent-books.scss',
 })
 export class RecentBooks {
   readonly books = [

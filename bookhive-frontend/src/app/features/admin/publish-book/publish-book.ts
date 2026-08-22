@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-publish-book',
   imports: [],
   templateUrl: './publish-book.html',
-  styleUrl: './publish-book.css',
+  styleUrl: './publish-book.scss',
 })
 export class PublishBook {}

@@ -6,7 +6,7 @@ import { Auth } from '../../core/services/auth';
   selector: 'app-admin-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './admin-layout.html',
-  styleUrl: './admin-layout.css',
+  styleUrl: './admin-layout.scss',
 })
 export class AdminLayout {
   private readonly auth = inject(Auth);

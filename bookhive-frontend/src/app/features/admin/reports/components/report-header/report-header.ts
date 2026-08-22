@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-report-header',
   imports: [],
   templateUrl: './report-header.html',
-  styleUrl: './report-header.css',
+  styleUrl: './report-header.scss',
 })
 export class ReportHeader {}

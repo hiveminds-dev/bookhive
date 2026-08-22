@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-approval-actions',
   imports: [],
   templateUrl: './approval-actions.html',
-  styleUrl: './approval-actions.css',
+  styleUrl: './approval-actions.scss',
 })
 export class ApprovalActions {}

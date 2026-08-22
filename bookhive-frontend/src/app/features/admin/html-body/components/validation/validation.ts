@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-validation',
   imports: [],
   templateUrl: './validation.html',
-  styleUrl: './validation.css',
+  styleUrl: './validation.scss',
 })
 export class Validation {}

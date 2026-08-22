@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-discussion-table',
   imports: [],
   templateUrl: './discussion-table.html',
-  styleUrl: './discussion-table.css',
+  styleUrl: './discussion-table.scss',
 })
 export class DiscussionTable {}

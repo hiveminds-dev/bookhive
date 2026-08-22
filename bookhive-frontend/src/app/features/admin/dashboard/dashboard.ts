@@ -9,6 +9,6 @@ import { Statistics } from './components/statistics/statistics';
   selector: 'app-dashboard',
   imports: [Statistics, RecentBooks, RecentAuthors, RecentRequests, Activity],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrl: './dashboard.scss',
 })
 export class Dashboard {}

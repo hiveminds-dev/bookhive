@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-community-statistics',
   imports: [],
   templateUrl: './community-statistics.html',
-  styleUrl: './community-statistics.css',
+  styleUrl: './community-statistics.scss',
 })
 export class CommunityStatistics {}

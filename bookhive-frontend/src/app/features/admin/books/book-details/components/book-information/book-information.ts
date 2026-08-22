@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-book-information',
   imports: [],
   templateUrl: './book-information.html',
-  styleUrl: './book-information.css',
+  styleUrl: './book-information.scss',
 })
 export class BookInformation {}

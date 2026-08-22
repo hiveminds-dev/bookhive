@@ -1,1 +1,117 @@
-<p>community works!</p>
+<div class="admin-page community-management">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Community Management</h1>
+      <p>Review, approve, and manage the Lumina Editorial creator ecosystem.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-secondary">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Export Report
+      </button>
+      <button type="button" class="btn-primary">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Invite Author
+      </button>
+    </div>
+  </header>
+
+  <!-- Stat Cards -->
+  <section class="stats-grid">
+    <article class="stat-card">
+      <span class="stat-label">TOTAL POSTS</span>
+      <div class="value-row">
+        <strong class="stat-value">24,582</strong>
+        <span class="trend-badge positive">+12%</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">ACTIVE MEMBERS</span>
+      <div class="value-row">
+        <strong class="stat-value">8,921</strong>
+        <span class="trend-badge positive">+5.4%</span>
+      </div>
+    </article>
+
+    <article class="stat-card urgent-card">
+      <span class="stat-label urgent-label">REPORTED (URGENT)</span>
+      <div class="value-row">
+        <strong class="stat-value urgent-val">14</strong>
+        <span class="alert-icon">!</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">TOTAL COMMENTS</span>
+      <div class="value-row">
+        <strong class="stat-value">156k</strong>
+        <span class="trend-badge positive">+28%</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-bar">
+    <button type="button" class="tab-item active">All Community Posts</button>
+    <button type="button" class="tab-item">Reported Posts</button>
+    <button type="button" class="tab-item">Community Guidelines</button>
+  </div>
+
+  <!-- Activity Card -->
+  <section class="card-table-wrapper">
+    <div class="table-top-bar">
+      <h2>Recent Activity</h2>
+      <div class="tool-btns">
+        <button type="button" class="btn-tool"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> Filter</button>
+        <button type="button" class="btn-tool"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> Export</button>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>USER</th>
+          <th>POST TITLE</th>
+          <th>DATE</th>
+          <th>LIKES</th>
+          <th>REPORTS</th>
+          <th class="text-right">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let post of posts">
+          <td>
+            <div class="user-cell">
+              <div class="initials-avatar" [class]="post.badgeClass">{{ post.initials }}</div>
+              <div class="user-info">
+                <strong class="user-name">{{ post.userName }}</strong>
+                <span class="user-role">{{ post.userRole }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="post-title-cell">
+              <strong class="title-text">{{ post.title }}</strong>
+              <p class="snippet-text">{{ post.snippet }}</p>
+            </div>
+          </td>
+          <td><span class="date-text">{{ post.date }}</span></td>
+          <td><span class="likes-text">{{ post.likes }}</span></td>
+          <td><span class="reports-text" [class.has-reports]="post.reports > 0">{{ post.reports }}</span></td>
+          <td class="text-right">
+            <div class="action-buttons">
+              <button type="button" class="btn-icon" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon" title="Pin"><svg viewBox="0 0 24 24"><path d="M12 17v5M9 2h6l1 7H8l1-7z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon danger" title="Delete"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="view-all-footer">
+      <button type="button" class="btn-link">View All Posts</button>
+    </div>
+  </section>
+</div>

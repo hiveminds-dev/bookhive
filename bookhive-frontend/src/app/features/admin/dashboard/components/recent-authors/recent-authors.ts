@@ -5,7 +5,7 @@ import { NgFor } from '@angular/common';
   selector: 'app-recent-authors',
   imports: [NgFor],
   templateUrl: './recent-authors.html',
-  styleUrl: './recent-authors.css',
+  styleUrl: './recent-authors.scss',
 })
 export class RecentAuthors {
   readonly readers = [

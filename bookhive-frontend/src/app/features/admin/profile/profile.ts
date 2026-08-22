@@ -6,7 +6,7 @@ import { Auth } from '../../../core/services/auth';
   selector: 'app-admin-profile',
   standalone: true,
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrl: './profile.scss'
 })
 export class AdminProfile {
   private readonly auth = inject(Auth);

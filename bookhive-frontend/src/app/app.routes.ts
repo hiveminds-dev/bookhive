@@ -273,6 +273,50 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'books',
+
+        loadComponent: () =>
+          import(
+            './features/admin/books/book-management/book-management'
+            ).then(
+            module =>
+              module.BookManagement
+          )
+      },
+      {
+        path: 'authors',
+
+        loadComponent: () =>
+          import(
+            './features/admin/authors/authors'
+            ).then(
+            module =>
+              module.AuthorsComponent
+          )
+      },
+      {
+        path: 'community',
+
+        loadComponent: () =>
+          import(
+            './features/admin/community/community'
+            ).then(
+            module =>
+              module.Community
+          )
+      },
+      {
+        path: 'statistics',
+
+        loadComponent: () =>
+          import(
+            './features/admin/statistics/statistics'
+            ).then(
+            module =>
+              module.AdminStatisticsComponent
+          )
+      },
+      {
         path: 'profile',
 
         loadComponent: () =>
