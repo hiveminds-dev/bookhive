@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
+import { AdminApiService } from '../../../../core/services/admin-api.service';
 
 @Component({
   selector: 'app-book-management',
@@ -11,8 +12,9 @@ import { ToastService } from '../../../../core/services/toast.service';
   templateUrl: './book-management.html',
   styleUrl: './book-management.scss',
 })
-export class BookManagement {
+export class BookManagement implements OnInit {
   private readonly toastService = inject(ToastService);
+  private readonly adminApi = inject(AdminApiService);
 
   searchQuery = signal('');
   showAdvanceSearch = signal(false);
@@ -20,6 +22,42 @@ export class BookManagement {
   filterStatus = signal('');
   filterLanguage = signal('');
   filterSortBy = signal('newest');
+
+  readonly booksSignal = signal<any[]>([]);
+
+  ngOnInit(): void {
+    this.loadBooks();
+  }
+
+  loadBooks(): void {
+    this.adminApi.getBooks().subscribe({
+      next: (data) => {
+        if (data && data.length > 0) {
+          const mapped = data.map(b => ({
+            id: b.id,
+            title: b.title,
+            isbn: `978-${Math.floor(100000000 + Math.random() * 900000000)}`,
+            author: b.author_name,
+            category: b.category_name,
+            language: b.language || 'English',
+            date: new Date(b.created_at).toLocaleDateString(),
+            views: '1.2k',
+            downloads: '450',
+            dlTrend: 'up',
+            status: b.status === 'PUBLISHED' || b.status === 'Published' ? 'Published' : (b.status === 'PENDING_REVIEW' ? 'Review' : 'Draft'),
+            statusClass: b.status === 'PUBLISHED' || b.status === 'Published' ? 'status-published' : (b.status === 'PENDING_REVIEW' ? 'status-review' : 'status-draft'),
+            cover: b.cover_image_path ? `/${b.cover_image_path}` : 'assets/images/book-covers/beyond-good-and-evil.jpg'
+          }));
+          this.booksSignal.set(mapped);
+        } else {
+          this.booksSignal.set(this.defaultBooks);
+        }
+      },
+      error: () => {
+        this.booksSignal.set(this.defaultBooks);
+      }
+    });
+  }
 
   toggleAdvanceSearch(): void {
     this.showAdvanceSearch.update(v => !v);
@@ -42,7 +80,7 @@ export class BookManagement {
     this.toastService.info('All search filters reset.', 'Filters Reset');
   }
 
-  readonly books = [
+  private readonly defaultBooks = [
     {
       id: 1,
       title: 'Beyond Good and Evil',
