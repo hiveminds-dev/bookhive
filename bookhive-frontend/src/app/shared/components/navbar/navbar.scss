@@ -4,16 +4,15 @@
 }
 
 .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
   width: 100%;
   height: 64px;
 
   background: #ffffff;
-
   border-bottom: 1px solid #e8e5dc;
-
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 
 .navbar-container {
@@ -26,10 +25,8 @@
 
   display: flex;
   align-items: center;
-
   gap: 24px;
 }
-
 
 /* =========================================
    BRAND
@@ -40,24 +37,21 @@
   align-items: center;
   gap: 7px;
 
+  flex-shrink: 0;
+
   text-decoration: none;
+}
+
+.brand-logo {
+  display: block;
+
+  width: 34px;
+  height: 34px;
+
+  object-fit: contain;
+  object-position: center;
 
   flex-shrink: 0;
-}
-
-.brand-icon {
-  width: 28px;
-  height: 28px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #c59a21;
-}
-
-.brand-icon .material-symbols-outlined {
-  font-size: 24px;
 }
 
 .brand-name {
@@ -65,10 +59,10 @@
 
   font-size: 15px;
   font-weight: 700;
+  line-height: 1;
 
   letter-spacing: -0.2px;
 }
-
 
 /* =========================================
    NAV LINKS
@@ -79,14 +73,13 @@
 
   display: flex;
   align-items: center;
-
   gap: 20px;
 }
 
 .nav-links a {
-  height: 100%;
-
   position: relative;
+
+  height: 100%;
 
   display: flex;
   align-items: center;
@@ -98,8 +91,7 @@
   font-size: 9px;
   font-weight: 500;
 
-  transition:
-    color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
@@ -115,15 +107,14 @@
 
   position: absolute;
 
-  left: 0;
   right: 0;
   bottom: 0;
+  left: 0;
 
   height: 2px;
 
   background: #c59a21;
 }
-
 
 /* =========================================
    SEARCH
@@ -134,22 +125,19 @@
   height: 31px;
 
   margin-left: auto;
+  padding: 0 10px;
 
   display: flex;
   align-items: center;
-
   gap: 6px;
 
-  padding: 0 10px;
-
   background: #f4f4f2;
-
   border-radius: 18px;
 }
 
 .navbar-search .material-symbols-outlined {
-  font-size: 14px;
   color: #77746d;
+  font-size: 14px;
 }
 
 .navbar-search input {
@@ -159,16 +147,15 @@
   outline: none;
 
   background: transparent;
-
   color: #45433e;
 
+  font-family: inherit;
   font-size: 8px;
 }
 
 .navbar-search input::placeholder {
   color: #99968e;
 }
-
 
 /* =========================================
    RIGHT ACTIONS
@@ -177,19 +164,18 @@
 .navbar-actions {
   display: flex;
   align-items: center;
-
   gap: 14px;
 
   flex-shrink: 0;
 }
 
-
 /* Language */
 
 .language-btn {
+  padding: 0;
+
   display: flex;
   align-items: center;
-
   gap: 3px;
 
   border: none;
@@ -197,17 +183,15 @@
 
   color: #55534e;
 
+  font-family: inherit;
   font-size: 9px;
 
   cursor: pointer;
-
-  padding: 0;
 }
 
 .language-btn .material-symbols-outlined {
   font-size: 14px;
 }
-
 
 /* Sign In */
 
@@ -215,17 +199,17 @@
   color: #665817;
 
   text-decoration: none;
+  white-space: nowrap;
 
   font-size: 9px;
   font-weight: 500;
 
-  white-space: nowrap;
+  transition: color 0.2s ease;
 }
 
 .sign-in-btn:hover {
   color: #a17e0e;
 }
-
 
 /* Sign Up */
 
@@ -242,10 +226,10 @@
   border-radius: 4px;
 
   background: #d5ad38;
-
   color: #ffffff;
 
   text-decoration: none;
+  white-space: nowrap;
 
   font-size: 9px;
   font-weight: 600;
@@ -257,17 +241,14 @@
 
 .sign-up-btn:hover {
   background: #bd9524;
-
   transform: translateY(-1px);
 }
-
 
 /* =========================================
    RESPONSIVE
 ========================================= */
 
 @media (max-width: 1050px) {
-
   .navbar-container {
     gap: 15px;
   }
@@ -279,12 +260,9 @@
   .navbar-search {
     width: 170px;
   }
-
 }
 
-
 @media (max-width: 850px) {
-
   .navbar-search {
     width: 150px;
   }
@@ -292,12 +270,9 @@
   .nav-links {
     gap: 10px;
   }
-
 }
 
-
 @media (max-width: 750px) {
-
   .nav-links {
     display: none;
   }
@@ -305,12 +280,9 @@
   .navbar-search {
     margin-left: auto;
   }
-
 }
 
-
 @media (max-width: 520px) {
-
   .navbar {
     height: 58px;
   }
@@ -319,16 +291,21 @@
     padding: 0 15px;
   }
 
-  .navbar-search {
-    display: none;
-  }
-
-  .language-btn {
-    display: none;
+  .brand-logo {
+    width: 31px;
+    height: 31px;
   }
 
   .brand-name {
     font-size: 14px;
   }
 
+  .navbar-search,
+  .language-btn {
+    display: none;
+  }
+
+  .navbar-actions {
+    gap: 10px;
+  }
 }

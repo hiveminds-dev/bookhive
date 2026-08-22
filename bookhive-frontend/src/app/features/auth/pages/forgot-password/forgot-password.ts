@@ -36,7 +36,7 @@ export class ForgotPassword implements OnDestroy {
   private readonly passwordRecovery = inject(PasswordRecoveryService);
 
   readonly appName = 'BookHive';
-  readonly logoPath = 'assets/bookhive-logo.png';
+  readonly logoPath = 'assets/bookhive-logo.v2.png';
 
   isSubmitting = false;
   emailSent = false;

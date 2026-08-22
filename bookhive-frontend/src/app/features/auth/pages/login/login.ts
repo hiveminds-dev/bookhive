@@ -20,7 +20,7 @@ export class Login {
   private changeDetector = inject(ChangeDetectorRef);
 
   readonly appName = 'BookHive';
-  readonly logoPath = 'assets/bookhive-logo.png';
+  readonly logoPath = 'assets/bookhive-logo.v2.png';
   showPassword = false;
   isSubmitting = false;
   loginError: string | null = null;

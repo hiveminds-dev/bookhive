@@ -1,9 +1,19 @@
-import { Component } from '@angular/core';
+import {
+  Component
+} from '@angular/core';
+
+import {
+  RouterLink
+} from '@angular/router';
 
 @Component({
-  selector: 'app-cta',
-  imports: [],
+  selector: 'app-about-cta',
+  standalone: true,
+  imports: [
+    RouterLink
+  ],
   templateUrl: './cta.html',
-  styleUrl: './cta.css',
+  styleUrl: './cta.scss'
 })
-export class Cta {}
+export class Cta {
+}

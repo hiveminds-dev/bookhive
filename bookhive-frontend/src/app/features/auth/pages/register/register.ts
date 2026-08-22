@@ -70,7 +70,7 @@ export class Register {
   private router = inject(Router);
 
   readonly appName = 'BookHive';
-  readonly logoPath = 'assets/bookhive-logo.png';
+  readonly logoPath = 'assets/bookhive-logo.v2.png';
 
   // =========================
   // REGISTRATION STATE

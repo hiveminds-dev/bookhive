@@ -1,1 +1,33 @@
-<p>our-mission works!</p>
+<section class="mission-section">
+
+  <h2>Our Mission</h2>
+
+  <div class="mission-grid">
+
+    @for (
+      item of missionItems;
+      track item.id
+      ) {
+      <article class="mission-card">
+
+        <span
+          class="mission-icon"
+          aria-hidden="true"
+        >
+          {{ item.icon }}
+        </span>
+
+        <h3>
+          {{ item.title }}
+        </h3>
+
+        <p>
+          {{ item.description }}
+        </p>
+
+      </article>
+    }
+
+  </div>
+
+</section>
