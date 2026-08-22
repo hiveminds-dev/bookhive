@@ -1,1 +1,25 @@
-<p>statistics works!</p>
+<section
+  class="statistics-section"
+  aria-label="BookHive statistics"
+>
+  <div class="statistics-grid">
+
+    @for (
+      statistic of statistics;
+      track statistic.id
+      ) {
+      <article class="statistic-item">
+
+        <strong>
+          {{ statistic.value }}
+        </strong>
+
+        <span>
+          {{ statistic.label }}
+        </span>
+
+      </article>
+    }
+
+  </div>
+</section>

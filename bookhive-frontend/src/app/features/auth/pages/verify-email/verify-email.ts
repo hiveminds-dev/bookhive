@@ -22,7 +22,7 @@ export class VerifyEmail implements OnDestroy {
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly emailVerificationService = inject(EmailVerificationService);
 
-  readonly logoPath = 'assets/bookhive-logo.png';
+  readonly logoPath = 'assets/bookhive-logo.v2.png';
   email = '';
   isResending = false;
   resendMessage: string | null = null;

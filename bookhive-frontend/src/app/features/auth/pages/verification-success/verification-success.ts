@@ -16,7 +16,7 @@ export class VerificationSuccess implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly emailVerificationService = inject(EmailVerificationService);
-  readonly logoPath = 'assets/bookhive-logo.png';
+  readonly logoPath = 'assets/bookhive-logo.v2.png';
 
   isVerifying = true;
   verificationSucceeded = false;
