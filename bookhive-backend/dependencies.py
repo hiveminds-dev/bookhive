@@ -100,7 +100,7 @@ async def require_admin(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """Allow only active administrators to access administration operations."""
-    if current_user.role != UserRole.ADMIN:
+    if current_user.role not in {UserRole.ADMIN, UserRole.SUPER_ADMIN}:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Administrator access is required",

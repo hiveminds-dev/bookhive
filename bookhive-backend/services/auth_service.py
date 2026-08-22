@@ -82,8 +82,14 @@ class AuthService:
         if user.role == UserRole.AUTHOR and user.account_status != AccountStatus.APPROVED:
             raise AccountAccessError("Your author account is waiting for admin approval")
 
-        if user.role in {UserRole.READER, UserRole.ADMIN} and (
-            user.account_status != AccountStatus.ACTIVE
+        active_status_roles = {
+            UserRole.READER,
+            UserRole.ADMIN,
+            UserRole.SUPER_ADMIN,
+        }
+        if (
+            user.role in active_status_roles
+            and user.account_status != AccountStatus.ACTIVE
         ):
             raise AccountAccessError("This account is not currently active")
 

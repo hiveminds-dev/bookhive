@@ -21,6 +21,7 @@ def make_user(role: UserRole, account_status: AccountStatus):
     ("dependency", "allowed_role", "allowed_status"),
     [
         (require_admin, UserRole.ADMIN, AccountStatus.ACTIVE),
+        (require_admin, UserRole.SUPER_ADMIN, AccountStatus.ACTIVE),
         (require_author, UserRole.AUTHOR, AccountStatus.PENDING),
         (require_reader, UserRole.READER, AccountStatus.ACTIVE),
         (require_approved_author, UserRole.AUTHOR, AccountStatus.APPROVED),
