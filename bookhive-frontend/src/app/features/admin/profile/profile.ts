@@ -1,13 +1,14 @@
 import { Component, computed, inject } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-profile',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })

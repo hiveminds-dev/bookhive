@@ -1,7 +1,7 @@
 .performance-overview {
   width: 100%;
 
-  .page-header {
+  .admin-page-header, .page-header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -79,16 +79,25 @@
         margin-bottom: 14px;
 
         .icon-badge {
-          width: 34px;
-          height: 34px;
+          width: 34px !important;
+          height: 34px !important;
+          max-width: 34px !important;
+          max-height: 34px !important;
           border-radius: 10px;
           background: #fef9c3;
           color: #854d0e;
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
 
-          svg { width: 18px; height: 18px; }
+          svg {
+            width: 18px !important;
+            height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+            flex-shrink: 0;
+          }
         }
 
         .trend {

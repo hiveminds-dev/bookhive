@@ -306,6 +306,61 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'books/:id/review',
+
+        loadComponent: () =>
+          import(
+            './features/admin/books/book-review/book-review'
+            ).then(
+            module =>
+              module.BookReviewComponent
+          )
+      },
+      {
+        path: 'categories',
+
+        loadComponent: () =>
+          import(
+            './features/admin/categories/categories'
+            ).then(
+            module =>
+              module.CategoriesComponent
+          )
+      },
+      {
+        path: 'readers/:id',
+
+        loadComponent: () =>
+          import(
+            './features/admin/readers/reader-detail/reader-detail'
+            ).then(
+            module =>
+              module.ReaderDetailComponent
+          )
+      },
+      {
+        path: 'authors/:id',
+
+        loadComponent: () =>
+          import(
+            './features/admin/authors/author-detail/author-detail'
+            ).then(
+            module =>
+              module.AuthorDetailComponent
+          )
+      },
+      {
+        path: 'support',
+
+        loadComponent: () =>
+          import(
+            './features/admin/support/support'
+            ).then(
+            module =>
+              module.SupportComponent
+          )
+      },
+      {
         path: 'authors',
 
         loadComponent: () =>
@@ -347,6 +402,17 @@ export const routes: Routes = [
             ).then(
             module =>
               module.AdminProfile
+          )
+      },
+      {
+        path: 'admins',
+
+        loadComponent: () =>
+          import(
+            './features/admin/admin-management/admin-management'
+            ).then(
+            module =>
+              module.AdminManagementComponent
           )
       }
     ]

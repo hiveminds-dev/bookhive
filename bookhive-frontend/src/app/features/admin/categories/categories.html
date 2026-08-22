@@ -1,0 +1,144 @@
+<div class="admin-master-container categories-page">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Categories</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <h1>Category Management</h1>
+      <p>Manage book genres, descriptions, and active status across the platform.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-primary" (click)="openAddCategoryModal()">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Category
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search categories by name or description...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterStatus() || filterMinBooks() !== null">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Status</label>
+          <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+            <option value="">All Statuses</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Minimum Books Count</label>
+          <input type="number" [ngModel]="filterMinBooks()" (ngModelChange)="filterMinBooks.set($event)" placeholder="e.g. 50">
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>CATEGORY NAME</th>
+          <th>DESCRIPTION</th>
+          <th>TOTAL BOOKS</th>
+          <th>STATUS</th>
+          <th class="text-right">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cat of categoriesSignal()">
+          <td>
+            <strong class="cat-name">{{ cat.name }}</strong>
+          </td>
+          <td>
+            <p class="cat-desc">{{ cat.description }}</p>
+          </td>
+          <td>
+            <span class="count-pill">{{ cat.totalBooks }} books</span>
+          </td>
+          <td>
+            <button type="button" class="status-toggle-btn" [class.active]="cat.isActive" (click)="toggleActive(cat)">
+              <span class="status-dot"></span>
+              {{ cat.isActive ? 'Active' : 'Inactive' }}
+            </button>
+          </td>
+          <td class="text-right">
+            <div class="action-buttons">
+              <button type="button" class="btn-icon danger" title="Delete" (click)="promptDelete(cat)">
+                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Add Category Modal -->
+  <div class="modal-backdrop" *ngIf="showAddModal()" (click)="closeAddCategoryModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Create New Category</h3>
+        <button type="button" class="close-btn" (click)="closeAddCategoryModal()">×</button>
+      </div>
+
+      <div class="form-body">
+        <div class="form-group">
+          <label>Category Name *</label>
+          <input type="text" [(ngModel)]="newCatName" placeholder="e.g. Quantum Physics" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="newCatDesc" rows="3" placeholder="Short description of this category..." class="form-control"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeAddCategoryModal()">Cancel</button>
+        <button type="button" class="btn-save" (click)="saveCategory()">Save Category</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <app-confirmation-modal
+    *ngIf="deleteTargetCategory()"
+    title="Delete Category?"
+    [message]="'Are you sure you want to permanently delete category &quot;' + deleteTargetCategory()?.name + '&quot;? This action cannot be undone.'"
+    confirmText="Delete Category"
+    type="danger"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  />
+</div>
