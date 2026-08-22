@@ -1,10 +1,13 @@
+from datetime import UTC, datetime
+
+import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings
-from orm_models.user import AccountStatus, User, UserRole
+from orm_models.user import AccountStatus, RevokedAccessToken, User, UserRole
 from repositories.user_repository import UserRepository
 from schemas.auth import AuthenticatedUserResponse, LoginRequest, LoginResponse
-from utils.security import create_access_token, verify_password
+from utils.security import create_access_token, decode_access_token, verify_password
 
 
 class AuthenticationError(ValueError):
@@ -40,6 +43,28 @@ class AuthService:
             expires_in=settings.access_token_expire_minutes * 60,
             user=self.to_response(user),
         )
+
+    async def logout(
+        self,
+        session: AsyncSession,
+        token: str,
+        user: User,
+    ) -> None:
+        try:
+            payload = decode_access_token(token)
+            token_id = payload["jti"]
+            expires_at = datetime.fromtimestamp(payload["exp"], UTC)
+        except (jwt.InvalidTokenError, KeyError, TypeError, ValueError) as exc:
+            raise AuthenticationError("Invalid or expired access token") from exc
+
+        session.add(
+            RevokedAccessToken(
+                user_id=user.id,
+                jti=token_id,
+                expires_at=expires_at,
+            )
+        )
+        await session.commit()
 
     @staticmethod
     def _validate_account_access(user: User) -> None:

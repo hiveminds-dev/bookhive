@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 
 import {
   AuthenticatedUser,
@@ -52,7 +52,18 @@ export class Auth {
     return this.isAuthenticated() && this.currentUserSignal()?.role === role;
   }
 
-  logout(): void {
+  logout(): Observable<void> {
+    if (!this.getAccessToken()) {
+      this.clearSession();
+      return of(undefined);
+    }
+
+    return this.http.post<void>('/api/auth/logout', {}).pipe(
+      finalize(() => this.clearSession()),
+    );
+  }
+
+  private clearSession(): void {
     this.storage.remove(ACCESS_TOKEN_KEY);
     this.storage.remove(AUTH_USER_KEY);
     this.currentUserSignal.set(null);

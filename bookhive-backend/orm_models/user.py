@@ -83,6 +83,12 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    revoked_access_tokens: Mapped[list[RevokedAccessToken]] = relationship(
+        "RevokedAccessToken",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 class AuthorProfile(Base):
     __tablename__ = "author_profiles"
 
@@ -131,4 +137,27 @@ class EmailVerificationToken(Base):
     user: Mapped[User] = relationship(
         "User",
         back_populates="email_verification_tokens",
+    )
+
+
+class RevokedAccessToken(Base):
+    __tablename__ = "revoked_access_tokens"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    jti: Mapped[str] = mapped_column(String(36), unique=True, nullable=False, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    revoked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    user: Mapped[User] = relationship(
+        "User",
+        back_populates="revoked_access_tokens",
     )
