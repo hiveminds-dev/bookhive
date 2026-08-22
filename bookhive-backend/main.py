@@ -15,6 +15,7 @@ from database import (
 from routers import health_router
 from routers.author_router import router as author_router
 from routers.user_router import router as user_router
+from routers.category_router import router as category_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -77,6 +78,10 @@ app.include_router(
     prefix=settings.api_prefix,
 )
 
+app.include_router(
+    category_router,
+    prefix=settings.api_prefix
+)
 
 @app.get("/", tags=["Root"])
 async def root() -> dict[str, str]:

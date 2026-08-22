@@ -1,1 +1,24 @@
 """Checks Category data."""
+
+from datetime import datetime
+from pydantic import BaseModel, Field
+
+class CategoryCreate(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100, description="Unique category name")
+    description: str | None = Field(None, description="Optional category description")
+
+class CategoryUpdate(BaseModel):
+    name: str | None = Field(None, min_length=2, max_length=100)
+    description: str | None = None
+    is_active: bool | None = None
+
+class CategoryResponse(BaseModel):
+    id: int
+    name: str
+    description: str | None
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
