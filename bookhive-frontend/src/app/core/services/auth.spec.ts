@@ -70,6 +70,42 @@ describe('Auth', () => {
     expect(service.isAuthenticated()).toBe(false);
   });
 
+  it('refreshes the current user when a stored token exists', () => {
+    localStorage.setItem('bookhive_access_token', 'jwt-token');
+
+    let profileLoaded = false;
+    service.initializeSession().subscribe((user) => {
+      profileLoaded = user?.email === 'reader@example.com';
+    });
+
+    const request = httpTesting.expectOne('/api/auth/me');
+    expect(request.request.method).toBe('GET');
+    request.flush({
+      id: 1,
+      full_name: 'Reader',
+      username: 'reader',
+      email: 'reader@example.com',
+      role: 'reader',
+      account_status: 'active',
+      email_verified: true,
+    });
+
+    expect(profileLoaded).toBe(true);
+    expect(service.hasRole('reader')).toBe(true);
+  });
+
+  it('clears an invalid stored session during initialization', () => {
+    sessionStorage.setItem('bookhive_access_token', 'expired-token');
+
+    service.initializeSession().subscribe();
+
+    const request = httpTesting.expectOne('/api/auth/me');
+    request.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+    expect(service.getAccessToken()).toBeNull();
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
   it('resolves landing routes by role', () => {
     expect(service.getLandingRouteForRole('reader')).toBe('/home');
     expect(service.getLandingRouteForRole('author')).toBe('/author/dashboard');

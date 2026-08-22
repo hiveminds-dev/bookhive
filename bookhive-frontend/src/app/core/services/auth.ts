@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { finalize, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, tap } from 'rxjs';
 
 import {
   AuthenticatedUser,
@@ -40,6 +40,20 @@ export class Auth {
         this.currentUserSignal.set(user);
         const persistent = localStorage.getItem(ACCESS_TOKEN_KEY) !== null;
         this.storage.set(AUTH_USER_KEY, JSON.stringify(user), persistent);
+      }),
+    );
+  }
+
+  initializeSession(): Observable<AuthenticatedUser | null> {
+    if (!this.getAccessToken()) {
+      this.clearSession();
+      return of(null);
+    }
+
+    return this.getProfile().pipe(
+      catchError(() => {
+        this.clearSession();
+        return of(null);
       }),
     );
   }
