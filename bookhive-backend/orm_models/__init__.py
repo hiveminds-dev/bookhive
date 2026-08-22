@@ -6,6 +6,7 @@ from orm_models.user import (
     AccountStatus,
     AuthorProfile,
     EmailVerificationToken,
+    RevokedAccessToken,
     User,
     UserRole,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "BookStatus",
     "Category",
     "EmailVerificationToken",
+    "RevokedAccessToken",
     "User",
     "UserRole",
 ]

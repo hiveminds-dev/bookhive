@@ -5,10 +5,11 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db_session
-from orm_models.user import AccountStatus, User, UserRole
+from orm_models.user import AccountStatus, RevokedAccessToken, User, UserRole
 from repositories.user_repository import UserRepository
 from services.auth_service import AccountAccessError, AuthService
 from utils.security import decode_access_token
@@ -39,12 +40,24 @@ async def get_current_user(
         payload = decode_access_token(credentials.credentials)
         if payload.get("type") != "access":
             raise jwt.InvalidTokenError
+        token_id = payload.get("jti")
+        if not isinstance(token_id, str) or not token_id:
+            raise jwt.InvalidTokenError
         user_id = int(payload["sub"])
     except (jwt.InvalidTokenError, KeyError, TypeError, ValueError) as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired access token",
         ) from exc
+
+    revoked_result = await session.execute(
+        select(RevokedAccessToken.id).where(RevokedAccessToken.jti == token_id)
+    )
+    if revoked_result.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Access token has been revoked",
+        )
 
     user = await user_repository.get_by_id(session, user_id)
     if user is None:

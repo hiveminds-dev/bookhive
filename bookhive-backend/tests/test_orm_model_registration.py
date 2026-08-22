@@ -10,6 +10,7 @@ def test_all_orm_models_are_registered():
         "books",
         "categories",
         "email_verification_tokens",
+        "revoked_access_tokens",
         "users",
     }
 

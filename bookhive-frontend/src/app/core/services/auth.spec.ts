@@ -49,7 +49,22 @@ describe('Auth', () => {
 
   it('clears the stored session on logout', () => {
     localStorage.setItem('bookhive_access_token', 'jwt-token');
-    service.logout();
+    service.logout().subscribe();
+
+    const request = httpTesting.expectOne('/api/auth/logout');
+    expect(request.request.method).toBe('POST');
+    request.flush(null);
+
+    expect(service.getAccessToken()).toBeNull();
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('clears the local session even when the logout request fails', () => {
+    sessionStorage.setItem('bookhive_access_token', 'jwt-token');
+    service.logout().subscribe({ error: () => undefined });
+
+    const request = httpTesting.expectOne('/api/auth/logout');
+    request.flush('Server error', { status: 500, statusText: 'Server Error' });
 
     expect(service.getAccessToken()).toBeNull();
     expect(service.isAuthenticated()).toBe(false);

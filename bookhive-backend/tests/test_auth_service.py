@@ -1,5 +1,6 @@
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -71,3 +72,25 @@ def test_approved_author_can_login():
     AuthService._validate_account_access(
         make_user(role=UserRole.AUTHOR, status=AccountStatus.APPROVED),
     )
+
+
+@pytest.mark.asyncio
+async def test_logout_revokes_the_current_access_token(monkeypatch):
+    service = AuthService()
+    session = SimpleNamespace(add=MagicMock(), commit=AsyncMock())
+    expires_at = datetime.now(UTC) + timedelta(minutes=30)
+    monkeypatch.setattr(
+        "services.auth_service.decode_access_token",
+        lambda _: {
+            "jti": "760b79df-3dcc-4ef0-a778-54593b33717d",
+            "exp": int(expires_at.timestamp()),
+        },
+    )
+    user = make_user()
+
+    await service.logout(session, "access-token", user)
+
+    revoked_token = session.add.call_args.args[0]
+    assert revoked_token.user_id == user.id
+    assert revoked_token.jti == "760b79df-3dcc-4ef0-a778-54593b33717d"
+    session.commit.assert_awaited_once()

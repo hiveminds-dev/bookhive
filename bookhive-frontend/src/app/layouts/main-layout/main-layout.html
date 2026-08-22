@@ -104,19 +104,23 @@
           <span></span>
         </button>
 
-        <a
-          class="sign-in"
-          routerLink="/login"
-          (click)="closeMobileMenu()">
-          Sign In
-        </a>
+        @if (auth.isAuthenticated()) {
+          <button class="sign-in" type="button" (click)="logout()">Log Out</button>
+        } @else {
+          <a
+            class="sign-in"
+            routerLink="/login"
+            (click)="closeMobileMenu()">
+            Sign In
+          </a>
 
-        <a
-          class="sign-up"
-          routerLink="/register"
-          (click)="closeMobileMenu()">
-          Sign Up
-        </a>
+          <a
+            class="sign-up"
+            routerLink="/register"
+            (click)="closeMobileMenu()">
+            Sign Up
+          </a>
+        }
 
       </div>
 

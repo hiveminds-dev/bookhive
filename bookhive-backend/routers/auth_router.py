@@ -4,7 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db_session
-from dependencies import get_current_user as get_authenticated_user
+from dependencies import (
+    BearerCredentials,
+    get_current_user as get_authenticated_user,
+)
 from orm_models.user import User
 from schemas.auth import (
     EmailVerificationResponse,
@@ -49,6 +52,29 @@ async def get_current_user(
     current_user: Annotated[User, Depends(get_authenticated_user)],
 ):
     return auth_service.to_response(current_user)
+
+
+@router.post("/logout", response_model=MessageResponse)
+async def logout(
+    session: DbSession,
+    credentials: BearerCredentials,
+    current_user: Annotated[User, Depends(get_authenticated_user)],
+):
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+        )
+
+    try:
+        await auth_service.logout(session, credentials.credentials, current_user)
+    except AuthenticationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        ) from exc
+
+    return MessageResponse(message="Signed out successfully")
 
 
 @router.get("/verify-email", response_model=EmailVerificationResponse)
