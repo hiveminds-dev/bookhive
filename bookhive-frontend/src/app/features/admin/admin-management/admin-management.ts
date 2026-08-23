@@ -101,6 +101,36 @@ export class AdminManagementComponent {
     this.searchQuery.set('');
   }
 
+  get filteredAdmins(): AdminUser[] {
+    const q = this.searchQuery().toLowerCase().trim();
+    const role = this.filterRole().toLowerCase().trim();
+    const status = this.filterStatus().toLowerCase().trim();
+    const sortBy = this.filterSortBy();
+
+    let list = this.adminsSignal().filter(a => {
+      const matchesQ = !q || a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.department.toLowerCase().includes(q);
+      if (!matchesQ) return false;
+
+      const matchesRole = !role || a.role.toLowerCase().includes(role);
+      if (!matchesRole) return false;
+
+      const matchesStatus = !status || a.status.toLowerCase().includes(status);
+      if (!matchesStatus) return false;
+
+      return true;
+    });
+
+    if (sortBy === 'name') {
+      list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'oldest') {
+      list = [...list].sort((a, b) => a.id - b.id);
+    } else {
+      list = [...list].sort((a, b) => b.id - a.id);
+    }
+
+    return list;
+  }
+
   applyFilters(): void {
     this.toastService.success('Admin accounts list filtered.', 'Filter Applied');
   }

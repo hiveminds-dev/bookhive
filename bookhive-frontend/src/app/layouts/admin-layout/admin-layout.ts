@@ -30,6 +30,10 @@ export class AdminLayout {
       : 'Administrator'
   );
 
+  readonly isSuperAdmin = computed(
+    () => this.user()?.role === 'super_admin'
+  );
+
   promptLogout(): void {
     this.showLogoutConfirmSignal.set(true);
   }

@@ -28,6 +28,21 @@ export class Community {
     this.searchQuery.set('');
   }
 
+  get filteredPosts(): any[] {
+    const q = this.searchQuery().toLowerCase().trim();
+    const role = this.filterRole().toLowerCase().trim();
+
+    return this.posts.filter(p => {
+      const matchesQ = !q || p.userName.toLowerCase().includes(q) || p.title.toLowerCase().includes(q) || p.snippet.toLowerCase().includes(q);
+      if (!matchesQ) return false;
+
+      const matchesRole = !role || p.userRole.toLowerCase().includes(role);
+      if (!matchesRole) return false;
+
+      return true;
+    });
+  }
+
   applyFilters(): void {
     this.toastService.success('Filtered community discussions.', 'Filter Applied');
   }

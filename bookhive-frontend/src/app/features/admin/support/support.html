@@ -91,7 +91,8 @@
     <div class="faq-column">
       <h2>Frequently Asked Questions</h2>
       <div class="accordion-list">
-        <div class="accordion-item" *ngFor="let item of faqsSignal()" [class.open]="item.isOpen">
+        <div class="empty-state" *ngIf="filteredFaqs.length === 0" style="padding: 1.5rem; color: #64748b;">No matching FAQ topics found.</div>
+        <div class="accordion-item" *ngFor="let item of filteredFaqs" [class.open]="item.isOpen">
           <button type="button" class="accordion-header" (click)="toggleFAQ(item)">
             <span>{{ item.question }}</span>
             <span class="chevron">{{ item.isOpen ? '−' : '+' }}</span>

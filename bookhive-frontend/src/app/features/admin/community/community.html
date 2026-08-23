@@ -148,7 +148,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let post of posts">
+        <tr *ngIf="filteredPosts.length === 0">
+          <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">No community posts found matching your search.</td>
+        </tr>
+        <tr *ngFor="let post of filteredPosts">
           <td>
             <div class="user-cell">
               <div class="initials-avatar" [class]="post.badgeClass">{{ post.initials }}</div>

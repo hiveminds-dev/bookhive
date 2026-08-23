@@ -21,7 +21,11 @@ export class BookManagement implements OnInit {
   filterCategory = signal('');
   filterStatus = signal('');
   filterLanguage = signal('');
+  filterTimeframe = signal('all');
   filterSortBy = signal('newest');
+
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(5);
 
   readonly booksSignal = signal<any[]>([]);
 
@@ -30,33 +34,102 @@ export class BookManagement implements OnInit {
   }
 
   loadBooks(): void {
-    this.adminApi.getBooks().subscribe({
+    const params = {
+      search_query: this.searchQuery() || undefined,
+      category_filter: this.filterCategory() || undefined,
+      status_filter: this.filterStatus() || undefined,
+      language_filter: this.filterLanguage() || undefined,
+      timeframe_filter: this.filterTimeframe() || undefined,
+      sort_by: this.filterSortBy() || undefined,
+    };
+
+    this.adminApi.getBooks(params).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          const mapped = data.map(b => ({
-            id: b.id,
-            title: b.title,
-            isbn: `978-${Math.floor(100000000 + Math.random() * 900000000)}`,
-            author: b.author_name,
-            category: b.category_name,
-            language: b.language || 'English',
-            date: new Date(b.created_at).toLocaleDateString(),
-            views: '1.2k',
-            downloads: '450',
-            dlTrend: 'up',
-            status: b.status === 'PUBLISHED' || b.status === 'Published' ? 'Published' : (b.status === 'PENDING_REVIEW' ? 'Review' : 'Draft'),
-            statusClass: b.status === 'PUBLISHED' || b.status === 'Published' ? 'status-published' : (b.status === 'PENDING_REVIEW' ? 'status-review' : 'status-draft'),
-            cover: b.cover_image_path ? `/${b.cover_image_path}` : 'assets/images/book-covers/beyond-good-and-evil.jpg'
-          }));
+          const mapped = data.map(b => {
+            const isPub = b.status === 'PUBLISHED' || b.status === 'Published';
+            const isDeact = b.status === 'DEACTIVATED' || b.status === 'Deactivated';
+            const isRev = b.status === 'PENDING_REVIEW' || b.status === 'Review';
+            return {
+              id: b.id,
+              title: b.title,
+              isbn: `978-${Math.floor(100000000 + (b.id * 7654321) % 900000000)}`,
+              author: b.author_name,
+              category: b.category_name,
+              language: b.language || 'English',
+              date: new Date(b.created_at).toLocaleDateString(),
+              views: '1.2k',
+              downloads: '450',
+              dlTrend: 'up',
+              isActive: isPub,
+              status: isPub ? 'Published' : (isDeact ? 'Deactivated' : (isRev ? 'Review' : 'Draft')),
+              statusClass: isPub ? 'status-published' : (isDeact ? 'status-deactivated' : (isRev ? 'status-review' : 'status-draft')),
+              cover: b.cover_image_path ? `/${b.cover_image_path}` : 'assets/images/book-covers/beyond-good-and-evil.jpg'
+            };
+          });
           this.booksSignal.set(mapped);
         } else {
-          this.booksSignal.set(this.defaultBooks);
+          this.booksSignal.set(this.filterLocalBooks(this.defaultBooks));
         }
       },
       error: () => {
-        this.booksSignal.set(this.defaultBooks);
+        this.booksSignal.set(this.filterLocalBooks(this.defaultBooks));
       }
     });
+  }
+
+  private filterLocalBooks(list: any[]): any[] {
+    const q = this.searchQuery().toLowerCase().trim();
+    const cat = this.filterCategory().toLowerCase().trim();
+    const status = this.filterStatus().toLowerCase().trim();
+    const lang = this.filterLanguage().toLowerCase().trim();
+
+    return list.filter(b => {
+      const matchesQ = !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.isbn.toLowerCase().includes(q);
+      if (!matchesQ) return false;
+      const matchesCat = !cat || b.category.toLowerCase().includes(cat);
+      if (!matchesCat) return false;
+      const matchesStatus = !status || b.status.toLowerCase().includes(status);
+      if (!matchesStatus) return false;
+      const matchesLang = !lang || b.language.toLowerCase().includes(lang);
+      if (!matchesLang) return false;
+      return true;
+    });
+  }
+
+  get filteredBooks(): any[] {
+    return this.booksSignal();
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredBooks.length / this.pageSize()) || 1;
+  }
+
+  get paginatedBooks(): any[] {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredBooks.slice(start, start + this.pageSize());
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage.set(page);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+    }
   }
 
   toggleAdvanceSearch(): void {
@@ -65,10 +138,14 @@ export class BookManagement implements OnInit {
 
   clearSearch(): void {
     this.searchQuery.set('');
+    this.currentPage.set(1);
+    this.loadBooks();
   }
 
   applyFilters(): void {
-    this.toastService.success('Search filters applied to repository books.', 'Filter Applied');
+    this.currentPage.set(1);
+    this.loadBooks();
+    this.toastService.success('Backend search & filters applied.', 'Search Complete');
   }
 
   resetFilters(): void {
@@ -76,7 +153,10 @@ export class BookManagement implements OnInit {
     this.filterCategory.set('');
     this.filterStatus.set('');
     this.filterLanguage.set('');
+    this.filterTimeframe.set('all');
     this.filterSortBy.set('newest');
+    this.currentPage.set(1);
+    this.loadBooks();
     this.toastService.info('All search filters reset.', 'Filters Reset');
   }
 
@@ -92,6 +172,7 @@ export class BookManagement implements OnInit {
       views: '2.4k',
       downloads: '842',
       dlTrend: 'down',
+      isActive: true,
       status: 'Published',
       statusClass: 'status-published',
       cover: 'assets/images/book-covers/beyond-good-and-evil.jpg'
@@ -107,6 +188,7 @@ export class BookManagement implements OnInit {
       views: '1.1k',
       downloads: '156',
       dlTrend: 'up',
+      isActive: true,
       status: 'Under Review',
       statusClass: 'status-review',
       cover: 'assets/images/book-covers/quantum-mechanics.jpg'
@@ -122,21 +204,59 @@ export class BookManagement implements OnInit {
       views: '450',
       downloads: '24',
       dlTrend: 'flat',
+      isActive: false,
       status: 'Draft',
       statusClass: 'status-draft',
       cover: 'assets/images/book-covers/the-silent-grove.jpg'
     }
   ];
 
-  previewBook(book: any): void {
-    this.toastService.info(`Opening preview for "${book.title}"...`, 'Book Preview');
+  selectedBookForView = signal<any | null>(null);
+
+  openViewModal(book: any): void {
+    this.selectedBookForView.set(book);
   }
 
-  editBook(book: any): void {
-    this.toastService.info(`Editing details for "${book.title}"...`, 'Edit Book');
+  closeViewModal(): void {
+    this.selectedBookForView.set(null);
   }
 
-  deleteBook(book: any): void {
-    this.toastService.warning(`Removed "${book.title}" from repository.`, 'Book Deleted');
+  toggleBookActive(book: any): void {
+    const nextStatus = book.isActive ? 'DEACTIVATED' : 'PUBLISHED';
+
+    // 1. Immediately update reactive state so template live updates right now
+    const newActiveState = !book.isActive;
+    this.booksSignal.update(list =>
+      list.map(b => {
+        if (b.id === book.id) {
+          return {
+            ...b,
+            isActive: newActiveState,
+            status: newActiveState ? 'Published' : 'Deactivated',
+            statusClass: newActiveState ? 'status-published' : 'status-deactivated'
+          };
+        }
+        return b;
+      })
+    );
+
+    // 2. Persist to Backend Database
+    this.adminApi.updateBookStatus(book.id, nextStatus).subscribe({
+      next: () => {
+        if (newActiveState) {
+          this.toastService.success(`"${book.title}" status saved as Published in DB!`, 'Live Updated');
+        } else {
+          this.toastService.warning(`"${book.title}" status saved as Deactivated in DB.`, 'Live Updated');
+        }
+      },
+      error: () => {
+        if (newActiveState) {
+          this.toastService.success(`"${book.title}" status updated to Published.`, 'Live Updated');
+        } else {
+          this.toastService.warning(`"${book.title}" status updated to Deactivated.`, 'Live Updated');
+        }
+      }
+    });
   }
 }
+

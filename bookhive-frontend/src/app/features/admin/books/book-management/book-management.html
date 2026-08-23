@@ -32,7 +32,7 @@
       <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
         <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Advance Search</span>
-        <span class="filter-count-badge" *ngIf="filterCategory() || filterStatus() || filterLanguage()">!</span>
+        <span class="filter-count-badge" *ngIf="filterCategory() || filterStatus() || filterLanguage() || filterTimeframe() !== 'all'">!</span>
       </button>
     </div>
 
@@ -73,6 +73,16 @@
         </div>
 
         <div class="filter-group">
+          <label>Date Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="all">All Time</option>
+            <option value="today">Today's Activity</option>
+            <option value="7days">Past 7 Days</option>
+            <option value="30days">Past 30 Days</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
           <label>Sort By</label>
           <select [ngModel]="filterSortBy()" (ngModelChange)="filterSortBy.set($event)">
             <option value="newest">Newest First</option>
@@ -107,14 +117,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let book of booksSignal()">
+        <tr *ngIf="filteredBooks.length === 0">
+          <td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">No books found matching your search criteria.</td>
+        </tr>
+        <tr *ngFor="let book of paginatedBooks">
           <td>
             <div class="book-info">
-              <div class="book-cover">
+              <div class="book-cover" [routerLink]="['/admin/books', book.id, 'review']" style="cursor: pointer;">
                 <img [src]="book.cover" [alt]="book.title">
               </div>
               <div class="book-details">
-                <strong class="title">{{ book.title }}</strong>
+                <strong class="title" [routerLink]="['/admin/books', book.id, 'review']" style="cursor: pointer;">{{ book.title }}</strong>
                 <span class="isbn">ISBN: {{ book.isbn }}</span>
               </div>
             </div>
@@ -156,9 +169,11 @@
           </td>
           <td class="text-right">
             <div class="action-buttons">
-              <a [routerLink]="['/admin/books', book.id, 'review']" class="btn-icon" title="Inspect Manuscript & Review"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></a>
-              <button type="button" class="btn-icon" title="Edit" (click)="editBook(book)"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              <button type="button" class="btn-icon danger" title="Delete" (click)="deleteBook(book)"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <a [routerLink]="['/admin/books', book.id, 'review']" class="btn-icon" title="View Book Details"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></a>
+              <button type="button" class="btn-icon status-toggle-btn" [class.is-active]="book.isActive" [class.is-deactive]="!book.isActive" [title]="book.isActive ? 'Deactivate Book' : 'Activate Book'" (click)="toggleBookActive(book)">
+                <svg *ngIf="book.isActive" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="2" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <svg *ngIf="!book.isActive" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
             </div>
           </td>
         </tr>
@@ -166,16 +181,67 @@
     </table>
 
     <footer class="table-footer">
-      <span class="summary-text">Showing 1 to 3 of 128 books</span>
+      <span class="summary-text">
+        Showing {{ filteredBooks.length > 0 ? (currentPage() - 1) * pageSize() + 1 : 0 }} to {{ ((currentPage() * pageSize()) > filteredBooks.length ? filteredBooks.length : (currentPage() * pageSize())) }} of {{ filteredBooks.length }} books
+      </span>
       <div class="pagination">
-        <button type="button" class="page-btn nav-btn">&lt;</button>
-        <button type="button" class="page-btn active">1</button>
-        <button type="button" class="page-btn">2</button>
-        <button type="button" class="page-btn">3</button>
-        <span class="ellipsis">...</span>
-        <button type="button" class="page-btn">12</button>
-        <button type="button" class="page-btn nav-btn">&gt;</button>
+        <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === 1" (click)="prevPage()">&lt;</button>
+        <button type="button" class="page-btn" *ngFor="let page of pageNumbers" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</button>
+        <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === totalPages" (click)="nextPage()">&gt;</button>
       </div>
     </footer>
   </section>
+
+  <!-- Quick Book Details Modal -->
+  <div class="modal-backdrop" *ngIf="selectedBookForView()" (click)="closeViewModal()">
+    <div class="modal-card book-detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-info">
+          <span class="badge-tag">{{ selectedBookForView()?.category }}</span>
+          <h2>{{ selectedBookForView()?.title }}</h2>
+          <p class="subtitle">by <strong>{{ selectedBookForView()?.author }}</strong> · ISBN: {{ selectedBookForView()?.isbn }}</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeViewModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="cover-col">
+            <img [src]="selectedBookForView()?.cover" [alt]="selectedBookForView()?.title" class="modal-cover">
+          </div>
+          <div class="info-col">
+            <div class="info-group">
+              <label>Status</label>
+              <span class="status-badge" [class]="selectedBookForView()?.statusClass">
+                <span class="dot"></span> {{ selectedBookForView()?.status }}
+              </span>
+            </div>
+            <div class="info-group">
+              <label>Language</label>
+              <span>{{ selectedBookForView()?.language }}</span>
+            </div>
+            <div class="info-group">
+              <label>Date Added</label>
+              <span>{{ selectedBookForView()?.date }}</span>
+            </div>
+            <div class="info-group">
+              <label>Total Views</label>
+              <span>{{ selectedBookForView()?.views }}</span>
+            </div>
+            <div class="info-group">
+              <label>Total Downloads</label>
+              <span>{{ selectedBookForView()?.downloads }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
+        <a [routerLink]="['/admin/books', selectedBookForView()?.id, 'review']" class="btn-primary" (click)="closeViewModal()">
+          Open Full Manuscript Inspector →
+        </a>
+      </div>
+    </div>
+  </div>
 </div>

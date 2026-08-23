@@ -34,6 +34,21 @@ export class SupportComponent {
     this.searchQuery.set('');
   }
 
+  get filteredFaqs(): FAQItem[] {
+    const q = this.searchQuery().toLowerCase().trim();
+    const cat = this.filterCategory().toLowerCase().trim();
+
+    return this.faqsSignal().filter(f => {
+      const matchesQ = !q || f.question.toLowerCase().includes(q) || f.answer.toLowerCase().includes(q);
+      if (!matchesQ) return false;
+
+      const matchesCat = !cat || f.question.toLowerCase().includes(cat) || f.answer.toLowerCase().includes(cat);
+      if (!matchesCat) return false;
+
+      return true;
+    });
+  }
+
   applyFilters(): void {
     this.toastService.success('Filtered support topics & tickets.', 'Filter Applied');
   }

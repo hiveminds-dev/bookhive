@@ -92,3 +92,38 @@ a { color: inherit; text-decoration: none; }
   .global-search { width: 70%; }
   .topbar-actions button:first-of-type { display: none; }
 }
+
+/* Super Admin role distinction */
+.admin-profile span.role-super-admin {
+  color: #9a6f00;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  background: linear-gradient(90deg, #fde68a, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.side-nav .super-link {
+  position: relative;
+  color: #7a5500 !important;
+  background: linear-gradient(135deg, #fef9ec, #fdf0c2) !important;
+  border: 1px solid #f5d778;
+
+  &:hover, &.active {
+    background: linear-gradient(135deg, #fef0b4, #fde07a) !important;
+    color: #5a3e00 !important;
+  }
+}
+
+.super-badge {
+  margin-left: auto;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d9ae22, #b88700);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}

@@ -36,6 +36,24 @@ export class CategoriesComponent {
     this.searchQuery.set('');
   }
 
+  get filteredCategories(): CategoryItem[] {
+    const q = this.searchQuery().toLowerCase().trim();
+    const status = this.filterStatus();
+    const minBooks = this.filterMinBooks();
+
+    return this.categoriesSignal().filter(c => {
+      const matchesQ = !q || c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
+      if (!matchesQ) return false;
+
+      if (status === 'active' && !c.isActive) return false;
+      if (status === 'inactive' && c.isActive) return false;
+
+      if (minBooks !== null && c.totalBooks < minBooks) return false;
+
+      return true;
+    });
+  }
+
   applyFilters(): void {
     this.toastService.success('Filtered categories successfully.', 'Filter Applied');
   }
