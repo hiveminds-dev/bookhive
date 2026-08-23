@@ -65,14 +65,19 @@
         <div class="section-box">
           <div class="section-header">
             <h2>Reader Reviews</h2>
-            <button type="button" class="btn-write-review">Write a Review ✍️</button>
+            <button type="button" class="btn-write-review">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;margin-right:6px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+              Write a Review
+            </button>
           </div>
           <div class="review-card-item">
             <div class="reviewer-avatar">A</div>
             <div class="review-body">
               <div class="reviewer-top">
                 <strong>anonymous Reader</strong>
-                <span class="stars-gold">★★★★★</span>
+                <span class="stars-gold">
+                  <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" style="width:14px;height:14px;fill:#f59e0b;stroke:#f59e0b;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
               </div>
               <p class="review-text">{{ book.reviewSnippet }}</p>
             </div>
@@ -141,9 +146,13 @@
         <button type="button" class="tool-btn" title="Zoom Out">-</button>
         <span class="zoom-level">100%</span>
         <button type="button" class="tool-btn" title="Zoom In">+</button>
-        <span class="page-nav">&lt; Page 15 of 120 &gt;</span>
-        <button type="button" class="tool-btn" title="Bookmark">🔖</button>
-        <button type="button" class="tool-btn" title="Download">📥</button>
+        <span class="page-nav">&lt; Pages: {{ book.pages }} &gt;</span>
+        <button type="button" class="tool-btn" title="Bookmark">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button type="button" class="tool-btn" title="Download">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        </button>
       </div>
     </header>
 
@@ -154,7 +163,7 @@
         <div class="sidebar-book-card">
           <img [src]="book.cover" alt="cover" class="side-cover" />
           <div class="side-meta">
-            <span>Pages <strong>120</strong></span>
+            <span>Pages <strong>{{ book.pages }}</strong></span>
             <span>Rating <strong>4.9/5</strong></span>
           </div>
         </div>
@@ -167,21 +176,14 @@
         </ul>
       </aside>
 
-      <!-- Center Manuscript Canvas -->
+      <!-- Center Manuscript Canvas (Real PDF Viewer Embed) -->
       <main class="manuscript-canvas">
-        <div class="manuscript-paper">
-          <h1 class="chapter-title">Chapter 4: The Geometry of Dawn</h1>
+        <iframe *ngIf="pdfViewerUrlSignal()" [src]="pdfViewerUrlSignal()" class="pdf-manuscript-iframe" width="100%" height="750px" style="border:none; border-radius:14px; background:#ffffff; box-shadow: 0 8px 30px rgba(0,0,0,0.12);"></iframe>
 
+        <div *ngIf="!pdfViewerUrlSignal()" class="manuscript-paper">
+          <h1 class="chapter-title">Manuscript Inspection</h1>
           <p class="lead-paragraph">
-            In the quiet stillness of the early morning, light acts not merely as a visibility tool, but as a sculptor. It carves out shapes from the darkness, redefining the boundaries of a room before the first mechanical switch is ever flipped. The architecture of a space is fundamentally incomplete without this temporal interaction.
-          </p>
-
-          <div class="manuscript-illustration">
-            <img [src]="book.cover" alt="Embedded Figure Illustration" class="illustration-img" />
-          </div>
-
-          <p class="body-paragraph">
-            To design for light is to design for time. Every window is a calendar, every shadow a clock. When Eliza Reed argues that the modern facade is a living organ, she refers specifically to the translucent materials that breathe photons into the structural skeleton. This interplay creates a psychological resonance that transcends mere utility.
+            Loading digital manuscript file...
           </p>
         </div>
       </main>
