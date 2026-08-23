@@ -125,7 +125,6 @@ export class BookReviewComponent implements OnInit {
     }
     return { label: 'Under Editorial Review', class: 'status-pending', nextStep: 'Approve & Publish' };
   }
-
   ngOnInit(): void {
     const bookId = Number(this.route.snapshot.params['id']);
     if (bookId) {
