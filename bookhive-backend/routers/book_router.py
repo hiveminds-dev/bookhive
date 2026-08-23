@@ -7,6 +7,7 @@ from fastapi import (
     Depends,
     File,
     HTTPException,
+    Path,
     Query,
     UploadFile,
     status,
@@ -61,6 +62,11 @@ CoverUpload = Annotated[
 BookStatusFilter = Annotated[
     BookStatus | None,
     Query(alias="status"),
+]
+
+BookIdPath = Annotated[
+    int,
+    Path(gt=0),
 ]
 
 OffsetQuery = Annotated[
@@ -178,7 +184,7 @@ async def list_my_books(
     response_model=BookDetailsResultResponse,
 )
 async def get_public_book_details(
-    book_id: int,
+    book_id: BookIdPath,
     session: DbSession,
 ):
     """Return public details for a published book."""

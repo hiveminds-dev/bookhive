@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_models.book import Book, BookStatus
 from repositories.book_repository import BookRepository
+from repositories.review_repository import ReviewRepository
 from schemas.book import (
     BookCreateRequest,
     BookDetailsAuthorResponse,
@@ -15,6 +16,7 @@ from schemas.book import (
     BookDetailsResponse,
     BookUpdateRequest,
 )
+from schemas.review import PublicReviewResponse
 from utils.file_handler import (
     FileUploadError,
     delete_stored_file,
@@ -40,6 +42,7 @@ class BookValidationError(ValueError):
 class BookService:
     def __init__(self) -> None:
         self.book_repository = BookRepository()
+        self.review_repository = ReviewRepository()
 
     async def create_draft(
         self,
@@ -129,6 +132,24 @@ class BookService:
 
         has_pdf = pdf_url is not None
 
+        reviews = (
+            await self.review_repository.get_reviews_for_book(
+                session=session,
+                book_id=book.id,
+            )
+        )
+
+        review_count = len(reviews)
+        average_rating = (
+            round(
+                sum(review.rating for review in reviews)
+                / review_count,
+                1,
+            )
+            if review_count
+            else 0.0
+        )
+
         return BookDetailsResponse(
             id=book.id,
             title=book.title,
@@ -141,6 +162,18 @@ class BookService:
             published_at=book.published_at,
             can_read=has_pdf,
             can_download=has_pdf,
+            average_rating=average_rating,
+            review_count=review_count,
+            reviews=[
+                PublicReviewResponse(
+                    id=review.id,
+                    reader_name=review.user.username,
+                    rating=review.rating,
+                    comment=review.comment,
+                    created_at=review.created_at,
+                )
+                for review in reviews
+            ],
             author=BookDetailsAuthorResponse(
                 id=book.author.id,
                 display_name=display_name,

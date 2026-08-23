@@ -48,6 +48,9 @@ def make_book_details() -> BookDetailsResponse:
         published_at=datetime.now(UTC),
         can_read=True,
         can_download=True,
+        average_rating=4.5,
+        review_count=2,
+        reviews=[],
         author=BookDetailsAuthorResponse(
             id=7,
             display_name="E. V. Sterling",
@@ -114,6 +117,8 @@ async def test_book_details_endpoint_is_public(
     )
     assert payload["data"]["can_read"] is True
     assert payload["data"]["can_download"] is True
+    assert payload["data"]["average_rating"] == 4.5
+    assert payload["data"]["review_count"] == 2
 
     get_details_mock.assert_awaited_once_with(
         session=ANY,
@@ -158,3 +163,16 @@ async def test_missing_or_unpublished_book_returns_404(
         session=ANY,
         book_id=999,
     )
+
+
+@pytest.mark.asyncio
+async def test_invalid_book_id_is_rejected():
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
+        response = await client.get(
+            "/api/books/0"
+        )
+
+    assert response.status_code == 422
