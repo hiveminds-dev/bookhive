@@ -33,10 +33,19 @@ export interface ChapterItem {
   active: boolean;
 }
 
+export interface ReaderReviewItem {
+  id: number;
+  userName: string;
+  avatarLetter: string;
+  rating: number;
+  date: string;
+  comment: string;
+}
+
 @Component({
   selector: 'app-book-review',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule, ConfirmationModalComponent],
+  imports: [NgFor, NgIf, RouterLink, FormsModule],
   templateUrl: './book-review.html',
   styleUrl: './book-review.scss',
 })
@@ -48,6 +57,7 @@ export class BookReviewComponent implements OnInit {
 
   readonly currentModeSignal = signal<'overview' | 'reader'>('overview');
   readonly showRejectConfirm = signal<boolean>(false);
+  readonly rejectionReasonSignal = signal<string>('');
   readonly pdfViewerUrlSignal = signal<SafeResourceUrl | null>(null);
 
   readonly currentPageSignal = signal<number>(1);
@@ -55,16 +65,35 @@ export class BookReviewComponent implements OnInit {
   readonly zoomLevelSignal = signal<number>(100);
   readonly chaptersSignal = signal<ChapterItem[]>([]);
 
+  readonly readerReviewsSignal = signal<ReaderReviewItem[]>([
+    {
+      id: 1,
+      userName: 'Dr. Sarah Chen',
+      avatarLetter: 'S',
+      rating: 5,
+      date: '2 days ago',
+      comment: 'An exceptional read! Highly recommended for anyone interested in this discipline. The logical structure and clear narrative make complex ideas digestible.'
+    },
+    {
+      id: 2,
+      userName: 'Amir Hassan',
+      avatarLetter: 'A',
+      rating: 4,
+      date: '1 week ago',
+      comment: 'Thorough research and well-crafted chapters. A valuable contribution to modern philosophy and technical analysis.'
+    }
+  ]);
+
   rawPdfUrl = '';
 
   readonly bookSignal = signal<BookDetailModel>({
     title: 'Beyond Good and Evil',
     author: 'Eleanor Vance',
-    authorTitle: 'Professor of Philosophy, Cambridge',
-    authorBio: 'Eleanor Vance is a renowned philosopher and author specializing in 19th-century epistemological critique and classical logic.',
+    authorTitle: 'Official BookHive Author',
+    authorBio: 'Eleanor Vance is a published creator on BookHive contributing to Philosophy.',
     category: 'PHILOSOPHY & SCIENCE',
-    rating: '4.9/5',
-    reviewsCount: '1,240 reviews',
+    rating: '4.8/5',
+    reviewsCount: '850 reviews',
     readTime: '12 hours',
     pages: '342 pages',
     cover: 'assets/images/book-covers/beyond-good-and-evil.jpg',
@@ -72,7 +101,7 @@ export class BookReviewComponent implements OnInit {
     reviewSnippet: 'A masterpiece of clarity and vision. Dense philosophical concepts are transformed into intuitive, captivating insights.',
     isbn: '978-0140449235',
     language: 'English',
-    status: 'Published'
+    status: 'PENDING'
   });
 
   get book(): BookDetailModel {
@@ -85,13 +114,17 @@ export class BookReviewComponent implements OnInit {
     return Math.min(100, Math.round((this.currentPageSignal() / total) * 100));
   }
 
-  readonly relatedBooks = [
-    { title: 'The Forgotten Empire', author: 'Amir Hassan', cover: 'assets/images/book-covers/beyond-good-and-evil.jpg' },
-    { title: 'Silicon Dreams', author: 'Yuki Tanaka', cover: 'assets/images/book-covers/quantum-mechanics.jpg' },
-    { title: 'The Art of Stillness', author: 'Isabella Rossi', cover: 'assets/images/book-covers/the-silent-grove.jpg' },
-    { title: 'Clean Architecture in Python', author: 'Yuki Tanaka', cover: 'assets/images/book-covers/quantum-mechanics.jpg' },
-  ];
-
+  get currentStatusInfo(): { label: string; class: string; nextStep: string } {
+    const status = (this.book.status || 'PENDING').toUpperCase();
+    if (status === 'PUBLISHED') {
+      return { label: 'Published & Active', class: 'status-published', nextStep: 'Live on Public Catalog' };
+    } else if (status === 'REJECTED') {
+      return { label: 'Rejected', class: 'status-rejected', nextStep: 'Returned for Revisions' };
+    } else if (status === 'DRAFT') {
+      return { label: 'Draft', class: 'status-draft', nextStep: 'Awaiting Author Submission' };
+    }
+    return { label: 'Under Editorial Review', class: 'status-pending', nextStep: 'Approve & Publish' };
+  }
   ngOnInit(): void {
     const bookId = Number(this.route.snapshot.params['id']);
     if (bookId) {
@@ -119,7 +152,7 @@ export class BookReviewComponent implements OnInit {
           this.rawPdfUrl = `http://localhost:8000/${pdfPath}`;
           this.totalPagesSignal.set(pageCount);
           this.currentPageSignal.set(1);
-          this.chaptersSignal.set([]); // No fake sample chapters unless extracted
+          this.chaptersSignal.set([]);
           this.updatePdfViewerUrl();
 
           this.bookSignal.set({
@@ -249,10 +282,12 @@ export class BookReviewComponent implements OnInit {
   }
 
   approvePublication(): void {
+    this.bookSignal.update(b => ({ ...b, status: 'PUBLISHED' }));
+
     if (this.book.id) {
       this.adminApi.updateBookStatus(this.book.id, 'PUBLISHED').subscribe({
         next: () => {
-          this.toastService.success(`"${this.book.title}" was approved and saved to database!`, 'Book Published');
+          this.toastService.success(`"${this.book.title}" was approved and published!`, 'Book Published');
         },
         error: () => {
           this.toastService.success(`"${this.book.title}" was approved and published!`, 'Book Published');
@@ -264,10 +299,11 @@ export class BookReviewComponent implements OnInit {
   }
 
   requestChanges(): void {
-    this.toastService.info(`Revision request sent to ${this.book.author}.`, 'Changes Requested');
+    this.toastService.info(`Revision request sent to author ${this.book.author}.`, 'Changes Requested');
   }
 
   promptReject(): void {
+    this.rejectionReasonSignal.set('');
     this.showRejectConfirm.set(true);
   }
 
@@ -276,11 +312,14 @@ export class BookReviewComponent implements OnInit {
   }
 
   confirmReject(): void {
+    const reason = this.rejectionReasonSignal().trim();
     this.showRejectConfirm.set(false);
+    this.bookSignal.update(b => ({ ...b, status: 'REJECTED' }));
+
     if (this.book.id) {
       this.adminApi.updateBookStatus(this.book.id, 'REJECTED').subscribe({
         next: () => {
-          this.toastService.warning(`Submission for "${this.book.title}" was rejected and saved to database.`, 'Submission Rejected');
+          this.toastService.warning(`Submission for "${this.book.title}" was rejected.${reason ? ' Reason: ' + reason : ''}`, 'Submission Rejected');
         },
         error: () => {
           this.toastService.warning(`Submission for "${this.book.title}" was rejected.`, 'Submission Rejected');

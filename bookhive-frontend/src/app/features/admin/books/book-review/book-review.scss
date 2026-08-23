@@ -302,13 +302,28 @@
         align-items: center;
         gap: 10px;
 
-        .status-pill.pending {
-          padding: 3px 10px;
+        .status-pill {
+          padding: 4px 12px;
           border-radius: 10px;
-          background: #fef3c7;
-          color: #92400e;
           font-weight: 700;
-          font-size: 0.78rem;
+          font-size: 0.8rem;
+
+          &.status-pending {
+            background: #fef3c7;
+            color: #92400e;
+          }
+          &.status-published {
+            background: #dcfce7;
+            color: #15803d;
+          }
+          &.status-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+          }
+          &.status-draft {
+            background: #f1f5f9;
+            color: #475569;
+          }
         }
       }
 
