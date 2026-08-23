@@ -1,35 +1,25 @@
 <nav class="navbar">
-
   <div class="navbar-container">
 
-    <!-- =========================
-         LOGO
-    ========================== -->
-
+    <!-- Logo -->
     <a
       routerLink="/home"
       class="brand"
+      aria-label="BookHive Home"
     >
-
-      <div class="brand-icon">
-        <span class="material-symbols-outlined">
-          menu_book
-        </span>
-      </div>
+      <img
+        src="/images/assets/bookhive-logo.v2.png"
+        alt="BookHive logo"
+        class="brand-logo"
+      />
 
       <span class="brand-name">
         BookHive
       </span>
-
     </a>
 
-
-    <!-- =========================
-         NAVIGATION
-    ========================== -->
-
+    <!-- Navigation -->
     <div class="nav-links">
-
       <a
         routerLink="/home"
         routerLinkActive="active"
@@ -58,47 +48,34 @@
       >
         About
       </a>
-
     </div>
 
-
-    <!-- =========================
-         SEARCH
-    ========================== -->
-
+    <!-- Search -->
     <div class="navbar-search">
-
       <span class="material-symbols-outlined">
         search
       </span>
 
       <input
-        type="text"
+        type="search"
         placeholder="Search books, authors, categories..."
+        aria-label="Search books"
       />
-
     </div>
 
-
-    <!-- =========================
-         RIGHT ACTIONS
-    ========================== -->
-
+    <!-- Right Actions -->
     <div class="navbar-actions">
-
       <button
         type="button"
         class="language-btn"
+        aria-label="Change language"
       >
-
         <span class="material-symbols-outlined">
           language
         </span>
 
         <span>EN</span>
-
       </button>
-
 
       <a
         routerLink="/login"
@@ -107,16 +84,13 @@
         Sign In
       </a>
 
-
       <a
         routerLink="/register"
         class="sign-up-btn"
       >
         Sign Up
       </a>
-
     </div>
 
   </div>
-
 </nav>

@@ -1,1 +1,26 @@
-<p>core-values works!</p>
+<section class="values-section">
+
+  <h2>Our Core Values</h2>
+
+  <div class="values-grid">
+
+    @for (
+      value of values;
+      track value.id
+      ) {
+      <article class="value-card">
+
+        <h3>
+          {{ value.title }}
+        </h3>
+
+        <p>
+          {{ value.description }}
+        </p>
+
+      </article>
+    }
+
+  </div>
+
+</section>
