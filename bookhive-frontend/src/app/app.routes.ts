@@ -284,6 +284,28 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'books/upload',
+
+        loadComponent: () =>
+          import(
+            './features/admin/books/upload-book/upload-book'
+            ).then(
+            module =>
+              module.UploadBookComponent
+          )
+      },
+      {
+        path: 'publish-book',
+
+        loadComponent: () =>
+          import(
+            './features/admin/publish-book/publish-book'
+            ).then(
+            module =>
+              module.PublishBookComponent
+          )
+      },
+      {
         path: 'authors',
 
         loadComponent: () =>
