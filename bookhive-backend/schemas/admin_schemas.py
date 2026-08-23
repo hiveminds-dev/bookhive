@@ -24,6 +24,7 @@ class BookAdminResponse(BaseModel):
     reading_level: str | None
     status: str
     cover_image_path: str | None
+    pdf_path: str | None = None
     page_count: int | None = None
     estimated_reading_time: str | None = None
     created_at: datetime

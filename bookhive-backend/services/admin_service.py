@@ -157,6 +157,7 @@ class AdminService:
                     reading_level=b.reading_level,
                     status=b.status.value if hasattr(b.status, "value") else str(b.status),
                     cover_image_path=b.cover_image_path,
+                    pdf_path=b.pdf_path,
                     page_count=p_count,
                     estimated_reading_time=r_time,
                     created_at=b.created_at,
