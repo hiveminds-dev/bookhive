@@ -145,3 +145,4 @@ export class AuthorsComponent implements OnInit {
     this.toastService.info('Opening Create Community dialogue...', 'Community');
   }
 }
+
