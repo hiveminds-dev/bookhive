@@ -10,26 +10,50 @@ from orm_models.book import BookStatus
 class BookCreateRequest(BaseModel):
     category_id: int = Field(gt=0)
     title: str = Field(min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=2000)
-    language: str | None = Field(default=None, max_length=50)
-    reading_level: str | None = Field(default=None, max_length=50)
-    pdf_path: str | None = Field(default=None, max_length=500)
-    cover_image_path: str | None = Field(default=None, max_length=500)
+    description: str | None = Field(
+        default=None,
+        max_length=2000,
+    )
+    language: str | None = Field(
+        default=None,
+        max_length=50,
+    )
+    reading_level: str | None = Field(
+        default=None,
+        max_length=50,
+    )
 
 
 class BookUpdateRequest(BaseModel):
-    category_id: int | None = Field(default=None, gt=0)
-    title: str | None = Field(default=None, min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=2000)
-    language: str | None = Field(default=None, max_length=50)
-    reading_level: str | None = Field(default=None, max_length=50)
-    pdf_path: str | None = Field(default=None, max_length=500)
-    cover_image_path: str | None = Field(default=None, max_length=500)
+    category_id: int | None = Field(
+        default=None,
+        gt=0,
+    )
+    title: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=255,
+    )
+    description: str | None = Field(
+        default=None,
+        max_length=2000,
+    )
+    language: str | None = Field(
+        default=None,
+        max_length=50,
+    )
+    reading_level: str | None = Field(
+        default=None,
+        max_length=50,
+    )
 
     @model_validator(mode="after")
-    def require_an_update(self) -> "BookUpdateRequest":
+    def require_an_update(self) -> BookUpdateRequest:
         if not self.model_fields_set:
-            raise ValueError("At least one book field must be supplied")
+            raise ValueError(
+                "At least one book field must be supplied"
+            )
+
         return self
 
 
