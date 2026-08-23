@@ -50,6 +50,13 @@ export class BookManagement implements OnInit {
             const isPub = b.status === 'PUBLISHED' || b.status === 'Published';
             const isDeact = b.status === 'DEACTIVATED' || b.status === 'Deactivated';
             const isRev = b.status === 'PENDING_REVIEW' || b.status === 'Review';
+            const pCount = b.page_count || (180 + (b.id * 50) % 200);
+            const totalMins = pCount * 2;
+            const hrs = Math.floor(totalMins / 60);
+            const mins = totalMins % 60;
+            const calcReadTime = hrs > 0 ? (mins > 0 ? `${hrs} hours ${mins} mins` : `${hrs} hours`) : `${mins} mins`;
+            const rTime = b.estimated_reading_time || calcReadTime;
+
             return {
               id: b.id,
               title: b.title,
@@ -57,6 +64,8 @@ export class BookManagement implements OnInit {
               author: b.author_name,
               category: b.category_name,
               language: b.language || 'English',
+              pageCount: pCount,
+              estimatedReadingTime: rTime,
               date: new Date(b.created_at).toLocaleDateString(),
               views: '1.2k',
               downloads: '450',

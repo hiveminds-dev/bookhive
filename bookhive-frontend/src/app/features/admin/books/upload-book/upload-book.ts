@@ -27,6 +27,8 @@ export class UploadBookComponent {
   readonly tagsSignal = signal<string[]>([]);
   readonly selectedBookFileName = signal<string | null>(null);
   readonly selectedCoverFileName = signal<string | null>(null);
+  readonly detectedPageCountSignal = signal<number | null>(null);
+  readonly estimatedReadingTimeSignal = signal<string | null>(null);
 
   readonly categories = [
     'Fiction',
@@ -61,14 +63,58 @@ export class UploadBookComponent {
   onFileSelected(event: Event, type: 'file' | 'cover'): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const fileName = input.files[0].name;
+      const file = input.files[0];
+      const fileName = file.name;
       if (type === 'file') {
         this.selectedBookFileName.set(fileName);
+        if (fileName.toLowerCase().endsWith('.pdf')) {
+          this.parsePdfPages(file);
+        } else {
+          this.toastService.info(`Selected file: ${fileName}`, 'File Attached');
+        }
       } else {
         this.selectedCoverFileName.set(fileName);
+        this.toastService.info(`Selected cover: ${fileName}`, 'Cover Image Attached');
       }
-      this.toastService.info(`Selected file: ${fileName}`, 'File Attached');
     }
+  }
+
+  private parsePdfPages(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      try {
+        const result = e.target?.result;
+        if (!result) return;
+        const buffer = new Uint8Array(result as ArrayBuffer);
+        const text = new TextDecoder('latin1').decode(buffer);
+        const matches = text.match(/\/Type\s*\/Page\b/g);
+        let pages = matches ? matches.length : 0;
+        if (pages === 0) {
+          pages = Math.max(1, Math.round(file.size / 25000));
+        }
+        this.detectedPageCountSignal.set(pages);
+
+        const totalMinutes = pages * 2;
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+        let timeStr = '';
+        if (hours > 0 && mins > 0) {
+          timeStr = `${hours} hours ${mins} mins`;
+        } else if (hours > 0) {
+          timeStr = `${hours} hours`;
+        } else {
+          timeStr = `${mins} mins`;
+        }
+        this.estimatedReadingTimeSignal.set(timeStr);
+        this.toastService.success(
+          `Detected ${pages} pages • Estimated Reading Time: ${timeStr}`,
+          'PDF Manuscript Analyzed'
+        );
+      } catch (err) {
+        console.error('PDF parsing error:', err);
+      }
+    };
+    reader.readAsArrayBuffer(file);
   }
 
   saveDraft(): void {

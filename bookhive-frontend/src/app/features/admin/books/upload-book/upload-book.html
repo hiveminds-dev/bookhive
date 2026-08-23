@@ -87,6 +87,12 @@
             <span class="file-hint">PDF, EPUB (Max 100MB)</span>
           </div>
         </div>
+
+        <div *ngIf="detectedPageCountSignal()" class="pdf-analysis-pill" style="margin-top: 12px; padding: 10px 14px; background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; font-size: 13px; color: #854d0e; display: flex; align-items: center; gap: 8px;">
+          <span>📄 <strong>{{ detectedPageCountSignal() }} Pages</strong> auto-detected</span>
+          <span style="opacity: 0.4;">•</span>
+          <span>⏱️ Estimated Reading Time: <strong>{{ estimatedReadingTimeSignal() }}</strong></span>
+        </div>
       </div>
 
       <div class="form-card dropzone-card">

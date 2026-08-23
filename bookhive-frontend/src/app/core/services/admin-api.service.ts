@@ -20,6 +20,8 @@ export interface AdminBookItem {
   reading_level: string | null;
   status: string;
   cover_image_path: string | null;
+  page_count?: number;
+  estimated_reading_time?: string;
   created_at: string;
   published_at: string | null;
 }
