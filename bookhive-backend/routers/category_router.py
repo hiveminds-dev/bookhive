@@ -57,7 +57,6 @@ async def list_categories(
         "page_size": page_size,
     }
 
-
 @router.post(
     "/",
     response_model=CategoryResponse,

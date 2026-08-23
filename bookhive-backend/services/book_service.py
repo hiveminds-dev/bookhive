@@ -1,6 +1,7 @@
 """Handles Book rules."""
 
 import logging
+import math
 from datetime import UTC, datetime
 
 from fastapi import UploadFile
@@ -11,10 +12,12 @@ from repositories.book_repository import BookRepository
 from repositories.review_repository import ReviewRepository
 from schemas.book import (
     BookCreateRequest,
+    CatalogueBookResponse,
     BookDetailsAuthorResponse,
     BookDetailsCategoryResponse,
     BookDetailsResponse,
     BookUpdateRequest,
+    PaginatedCatalogueResponse,
 )
 from schemas.review import PublicReviewResponse
 from utils.file_handler import (
@@ -84,6 +87,53 @@ class BookService:
             book_status,
             offset,
             limit,
+        )
+
+    async def get_public_catalogue(
+        self,
+        session: AsyncSession,
+        *,
+        page: int,
+        page_size: int,
+        search_query: str | None = None,
+        category_id: int | None = None,
+        language: str | None = None,
+    ) -> PaginatedCatalogueResponse:
+        filters = {
+            "search_query": search_query,
+            "category_id": category_id,
+            "language": language,
+        }
+        total_items = await self.book_repository.get_published_books_count(
+            session=session, **filters
+        )
+        books = await self.book_repository.get_published_books_with_filters(
+            session=session,
+            offset=(page - 1) * page_size,
+            limit=page_size,
+            **filters,
+        )
+        return PaginatedCatalogueResponse(
+            total_items=total_items,
+            total_pages=math.ceil(total_items / page_size),
+            current_page=page,
+            page_size=page_size,
+            items=[
+                CatalogueBookResponse(
+                    id=book.id,
+                    title=book.title,
+                    description=book.description,
+                    language=book.language,
+                    reading_level=book.reading_level,
+                    published_at=book.published_at,
+                    cover_url=self._to_public_storage_url(
+                        book.cover_image_path
+                    ),
+                    author_name=book.author.full_name,
+                    category_name=book.category.name,
+                )
+                for book in books
+            ],
         )
 
     async def get_public_book_details(
