@@ -21,6 +21,8 @@ class BookStatus(enum.StrEnum):
     PENDING_REVIEW = "PENDING_REVIEW"
     PUBLISHED = "PUBLISHED"
     REJECTED = "REJECTED"
+    DEACTIVATED = "DEACTIVATED"
+
 
 
 class Book(Base):

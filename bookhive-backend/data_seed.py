@@ -286,23 +286,372 @@ async def seed_default_categories(session: AsyncSession) -> None:
 
 
 async def seed_demo_records(session: AsyncSession) -> None:
-    """
-    Add optional development-only sample data here.
-
-    Real demo readers, authors, books, and reviews can be added after
-    those modules and their final database fields are completed.
-    """
-
+    """Add rich development demo data: readers, authors (approved/pending/rejected), and books."""
     if settings.app_env.lower() != "development":
-        logger.warning(
-            "Demo data seeding was skipped because APP_ENV is not "
-            "development."
-        )
         return
 
+    from datetime import datetime, timezone, timedelta
+
+    from orm_models.book import Book, BookStatus
+    from orm_models.user import AuthorProfile
+
+    # ===========================================================================
+    # DEMO READERS (8 active readers)
+    # ===========================================================================
+
+    _readers_data = [
+        ("Liam Henderson", "liamh", "liam.henderson@mail.com", "United States"),
+        ("Sarah Jenkins", "sarahj", "sarah.jenkins@mail.com", "Australia"),
+        ("Marcus Webb", "marcusw", "marcus.webb@mail.com", "United Kingdom"),
+        ("Diana Ross", "dianar", "diana.ross@mail.com", "Canada"),
+        ("Amara Osei", "amaraos", "amara.osei@mail.com", "Ghana"),
+        ("Felix Müller", "felixm", "felix.muller@mail.com", "Germany"),
+        ("Priya Nair", "priyan", "priya.nair@mail.com", "India"),
+        ("Carlos Reyes", "carlosr", "carlos.reyes@mail.com", "Mexico"),
+    ]
+
+    for full_name, username, email, _country in _readers_data:
+        existing = await get_user_by_email(session, email)
+        if existing is None:
+            session.add(User(
+                full_name=full_name,
+                username=username,
+                email=email,
+                password_hash=hash_password("Password123!"),
+                email_verified=True,
+                role=UserRole.READER,
+                account_status=AccountStatus.ACTIVE,
+            ))
+    await session.flush()
+
+    # ===========================================================================
+    # DEMO AUTHORS — APPROVED (5)
+    # ===========================================================================
+
+    _approved_authors = [
+        ("Eleanor Vance", "eleanorv", "eleanor.v@lumina.com",
+         "E. V. Sterling", "United Kingdom", "English",
+         "Author of classical and dark philosophy literature."),
+        ("Dr. Sarah Chen", "sarahchen", "sarah.chen@writes.org",
+         "Dr. Sarah Chen", "Canada", "English",
+         "Quantum physics researcher and science author."),
+        ("Amir Hassan", "amirh", "amir.hassan@authorhub.com",
+         "A. Hassan", "Egypt", "Arabic",
+         "Bestselling novelist exploring Middle-Eastern historical fiction."),
+        ("Yuki Tanaka", "yukit", "yuki.tanaka@writes.jp",
+         "Y. T. Bloom", "Japan", "Japanese",
+         "Technology author and software architect from Tokyo."),
+        ("Isabella Rossi", "isabellaro", "i.rossi@literario.it",
+         "Bella R.", "Italy", "Italian",
+         "Award-winning author of contemporary European fiction."),
+    ]
+
+    author_users: dict[str, User] = {}
+    for full_name, username, email, pen_name, country, language, bio in _approved_authors:
+        user = await get_user_by_email(session, email)
+        if user is None:
+            user = User(
+                full_name=full_name,
+                username=username,
+                email=email,
+                password_hash=hash_password("Password123!"),
+                email_verified=True,
+                role=UserRole.AUTHOR,
+                account_status=AccountStatus.APPROVED,
+            )
+            session.add(user)
+            await session.flush()
+            session.add(AuthorProfile(
+                user_id=user.id,
+                pen_name=pen_name,
+                country=country,
+                preferred_language=language,
+                short_bio=bio,
+            ))
+            await session.flush()
+        author_users[email] = user
+
+    # ===========================================================================
+    # DEMO AUTHORS — PENDING (4 waiting for approval)
+    # ===========================================================================
+
+    _pending_authors = [
+        ("Julian Thorne", "jthorne", "j.thorne@writes.org",
+         "J. Thistle", "Canada", "Aspiring novelist submitting new work."),
+        ("Noah Adeyemi", "noaha", "noah.adeyemi@writes.ng",
+         "N. Adeyemi", "Nigeria", "Debut author covering African contemporary stories."),
+        ("Mei Lin", "meilin", "mei.lin@authorstudio.cn",
+         "Mei L.", "China", "Aspiring science fiction writer with three manuscripts ready."),
+        ("Tariq Khalid", "tariqk", "tariq.khalid@writes.ae",
+         "T. Khalid", "UAE", "Philosophy and self-development author seeking approval."),
+    ]
+
+    for full_name, username, email, pen_name, country, bio in _pending_authors:
+        user = await get_user_by_email(session, email)
+        if user is None:
+            user = User(
+                full_name=full_name,
+                username=username,
+                email=email,
+                password_hash=hash_password("Password123!"),
+                email_verified=True,
+                role=UserRole.AUTHOR,
+                account_status=AccountStatus.PENDING,
+            )
+            session.add(user)
+            await session.flush()
+            session.add(AuthorProfile(
+                user_id=user.id,
+                pen_name=pen_name,
+                country=country,
+                short_bio=bio,
+            ))
+            await session.flush()
+        author_users[email] = user
+
+    # ===========================================================================
+    # DEMO AUTHORS — REJECTED (2)
+    # ===========================================================================
+
+    _rejected_authors = [
+        ("Viktor Petrov", "viktorp", "viktor.petrov@mail.ru",
+         "V. Petrov", "Russia", "Rejected due to incomplete manuscript submission."),
+        ("Fatima Al-Zahra", "fatimaz", "fatima.alzahra@writes.ma",
+         "F. Al-Zahra", "Morocco", "Rejected — duplicate submission under different account."),
+    ]
+
+    for full_name, username, email, pen_name, country, bio in _rejected_authors:
+        user = await get_user_by_email(session, email)
+        if user is None:
+            user = User(
+                full_name=full_name,
+                username=username,
+                email=email,
+                password_hash=hash_password("Password123!"),
+                email_verified=True,
+                role=UserRole.AUTHOR,
+                account_status=AccountStatus.REJECTED,
+            )
+            session.add(user)
+            await session.flush()
+            session.add(AuthorProfile(
+                user_id=user.id,
+                pen_name=pen_name,
+                country=country,
+                short_bio=bio,
+            ))
+            await session.flush()
+
+    # ===========================================================================
+    # FETCH ALL CATEGORIES
+    # ===========================================================================
+
+    fiction = await get_category_by_name(session, "Fiction")
+    non_fiction = await get_category_by_name(session, "Non-Fiction")
+    technology = await get_category_by_name(session, "Technology")
+    programming = await get_category_by_name(session, "Programming")
+    science = await get_category_by_name(session, "Science")
+    business = await get_category_by_name(session, "Business")
+    design = await get_category_by_name(session, "Design")
+    personal_growth = await get_category_by_name(session, "Personal Growth")
+    history = await get_category_by_name(session, "History")
+    philosophy = await get_category_by_name(session, "Philosophy")
+
+    # Convenience: author lookup by email
+    def _author(email: str) -> User | None:
+        return author_users.get(email)
+
+    # ===========================================================================
+    # BOOKS — PUBLISHED (8)
+    # ===========================================================================
+
+    _published_books = [
+        ("Beyond Good and Evil",
+         "eleanor.v@lumina.com", philosophy,
+         "A prelude to a philosophy of the future. Nietzsche challenges the foundations of morality.",
+         "English", "Advanced", "storage/covers/beyond-good-and-evil.jpg"),
+        ("The Forgotten Empire",
+         "amir.hassan@authorhub.com", history,
+         "A sweeping historical fiction set in the height of the Ottoman Empire.",
+         "English", "Intermediate", None),
+        ("Silicon Dreams",
+         "yuki.tanaka@writes.jp", technology,
+         "An insider's guide to how modern technology companies build and scale products.",
+         "English", "Intermediate", None),
+        ("The Art of Stillness",
+         "i.rossi@literario.it", personal_growth,
+         "A practical guide to mindfulness, focus, and finding calm in a chaotic world.",
+         "English", "Beginner", None),
+        ("Clean Architecture in Python",
+         "yuki.tanaka@writes.jp", programming,
+         "Practical patterns and principles for writing maintainable Python applications.",
+         "English", "Advanced", None),
+        ("Echoes of Tomorrow",
+         "i.rossi@literario.it", fiction,
+         "A near-future science fiction novel exploring human identity and artificial consciousness.",
+         "Italian", "Intermediate", None),
+        ("The Lean Startup Mindset",
+         "amir.hassan@authorhub.com", business,
+         "How modern entrepreneurs use continuous innovation to create successful businesses.",
+         "English", "Intermediate", None),
+        ("Cosmos and Consciousness",
+         "sarah.chen@writes.org", science,
+         "Bridging modern astrophysics and human consciousness through cutting-edge research.",
+         "English", "Advanced", "storage/covers/quantum-mechanics.jpg"),
+    ]
+
+    for title, author_email, cat, desc, lang, level, cover in _published_books:
+        author = _author(author_email)
+        if cat is None or author is None:
+            continue
+        result = await session.execute(select(Book).where(Book.title == title))
+        if result.scalar_one_or_none() is None:
+            session.add(Book(
+                title=title,
+                author_id=author.id,
+                category_id=cat.id,
+                description=desc,
+                language=lang,
+                reading_level=level,
+                cover_image_path=cover,
+                status=BookStatus.PUBLISHED,
+                submitted_at=datetime.now(timezone.utc) - timedelta(days=30),
+                published_at=datetime.now(timezone.utc) - timedelta(days=20),
+            ))
+
+    await session.flush()
+
+    # ===========================================================================
+    # BOOKS — PENDING REVIEW (5)
+    # ===========================================================================
+
+    _pending_books = [
+        ("Quantum Mechanics: A Visual Guide",
+         "sarah.chen@writes.org", science,
+         "Explore quantum states, wave equations, and modern particle physics with visual aids.",
+         "English", "Intermediate", "storage/covers/quantum-mechanics.jpg"),
+        ("Designing for Humans",
+         "yuki.tanaka@writes.jp", design,
+         "A comprehensive guide to user-centred product design and UX research methodologies.",
+         "English", "Intermediate", None),
+        ("The Entrepreneur's Compass",
+         "amir.hassan@authorhub.com", business,
+         "Navigate the challenges of founding and scaling a startup in the modern economy.",
+         "Arabic", "Intermediate", None),
+        ("Roots of History",
+         "i.rossi@literario.it", history,
+         "A deep dive into the ancient civilizations that shaped the modern Western world.",
+         "Italian", "Advanced", None),
+        ("Mind Over Marathon",
+         "eleanor.v@lumina.com", personal_growth,
+         "Mental endurance strategies for high-performance athletes and everyday achievers.",
+         "English", "Beginner", None),
+    ]
+
+    for title, author_email, cat, desc, lang, level, cover in _pending_books:
+        author = _author(author_email)
+        if cat is None or author is None:
+            continue
+        result = await session.execute(select(Book).where(Book.title == title))
+        if result.scalar_one_or_none() is None:
+            session.add(Book(
+                title=title,
+                author_id=author.id,
+                category_id=cat.id,
+                description=desc,
+                language=lang,
+                reading_level=level,
+                cover_image_path=cover,
+                status=BookStatus.PENDING_REVIEW,
+                submitted_at=datetime.now(timezone.utc) - timedelta(days=5),
+            ))
+
+    await session.flush()
+
+    # ===========================================================================
+    # BOOKS — DRAFT (4)
+    # ===========================================================================
+
+    _draft_books = [
+        ("The Silent Grove",
+         "eleanor.v@lumina.com", fiction,
+         "A mystery novel set in ancient misty pine forests where secrets never die.",
+         "Spanish", "Beginner", "storage/covers/the-silent-grove.jpg"),
+        ("Neural Networks Demystified",
+         "yuki.tanaka@writes.jp", programming,
+         "A beginner-friendly deep dive into how modern neural networks actually work.",
+         "English", "Intermediate", None),
+        ("The Stoic CEO",
+         "amir.hassan@authorhub.com", philosophy,
+         "Applying ancient Stoic philosophy to modern leadership and business strategy.",
+         "English", "Intermediate", None),
+        ("Brushstrokes of Light",
+         "i.rossi@literario.it", design,
+         "The intersection of classical painting techniques and modern digital design.",
+         "Italian", "Beginner", None),
+    ]
+
+    for title, author_email, cat, desc, lang, level, cover in _draft_books:
+        author = _author(author_email)
+        if cat is None or author is None:
+            continue
+        result = await session.execute(select(Book).where(Book.title == title))
+        if result.scalar_one_or_none() is None:
+            session.add(Book(
+                title=title,
+                author_id=author.id,
+                category_id=cat.id,
+                description=desc,
+                language=lang,
+                reading_level=level,
+                cover_image_path=cover,
+                status=BookStatus.DRAFT,
+            ))
+
+    await session.flush()
+
+    # ===========================================================================
+    # BOOKS — REJECTED (3)
+    # ===========================================================================
+
+    _rejected_books = [
+        ("Shadows and Echoes",
+         "eleanor.v@lumina.com", fiction,
+         "A rejected manuscript — contained unverified source material.",
+         "English", "Intermediate", None),
+        ("Data Without Borders",
+         "sarah.chen@writes.org", technology,
+         "A rejected submission — duplicate content detected from prior publication.",
+         "English", "Advanced", None),
+        ("The Unfinished Symphony",
+         "amir.hassan@authorhub.com", non_fiction,
+         "A rejected work — manuscript was incomplete at time of submission.",
+         "Arabic", "Intermediate", None),
+    ]
+
+    for title, author_email, cat, desc, lang, level, cover in _rejected_books:
+        author = _author(author_email)
+        if cat is None or author is None:
+            continue
+        result = await session.execute(select(Book).where(Book.title == title))
+        if result.scalar_one_or_none() is None:
+            session.add(Book(
+                title=title,
+                author_id=author.id,
+                category_id=cat.id,
+                description=desc,
+                language=lang,
+                reading_level=level,
+                cover_image_path=cover,
+                status=BookStatus.REJECTED,
+                submitted_at=datetime.now(timezone.utc) - timedelta(days=60),
+            ))
+
+    await session.flush()
     logger.info(
-        "Demo data seeding is enabled, but no demo records are "
-        "currently configured."
+        "Demo records seeded: 8 readers, 11 authors "
+        "(5 approved, 4 pending, 2 rejected), 20 books "
+        "(8 published, 5 pending, 4 draft, 3 rejected)."
     )
 
 

@@ -1,9 +1,19 @@
-import { Component } from '@angular/core';
+import {
+  Component
+} from '@angular/core';
+
+import {
+  RouterLink
+} from '@angular/router';
 
 @Component({
-  selector: 'app-hero',
-  imports: [],
+  selector: 'app-about-hero',
+  standalone: true,
+  imports: [
+    RouterLink
+  ],
   templateUrl: './hero.html',
-  styleUrl: './hero.css',
+  styleUrl: './hero.scss'
 })
-export class Hero {}
+export class Hero {
+}
