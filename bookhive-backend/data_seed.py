@@ -1,16 +1,50 @@
 import logging
+import os
 import re
+import shutil
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings
+from orm_models.book import Book, BookStatus
 from orm_models.category import Category
 from orm_models.user import AccountStatus, User, UserRole
 from utils.security import hash_password
 
 logger = logging.getLogger(__name__)
+
+
+def assign_seed_pdf_for_book(book_index: int) -> tuple[str, int]:
+    """Ensures each book index gets a unique PDF file in storage/books/ (copying sample PDFs if needed). Returns (pdf_path, page_count)."""
+    base_dir = os.path.join(os.path.dirname(__file__), "storage", "books")
+    os.makedirs(base_dir, exist_ok=True)
+
+    target_filename = f"book_{book_index}.pdf"
+    target_path = os.path.join(base_dir, target_filename)
+
+    sample_index = ((book_index - 1) % 11) + 1
+    sample_filename = f"sample{sample_index}.pdf"
+    sample_path = os.path.join(base_dir, sample_filename)
+
+    if not os.path.exists(target_path):
+        if os.path.exists(sample_path):
+            shutil.copyfile(sample_path, target_path)
+            logger.info(f"Copied {sample_filename} to {target_filename} for book #{book_index}")
+
+    page_count = 6
+    if os.path.exists(target_path):
+        try:
+            with open(target_path, "rb") as f:
+                content = f.read()
+            matches = re.findall(rb'/Type\s*/Page\b', content)
+            if matches:
+                page_count = len(matches)
+        except Exception as e:
+            logger.warning(f"Error reading PDF page count for {target_path}: {e}")
+
+    return f"storage/books/{target_filename}", page_count
 
 
 DEFAULT_CATEGORIES: tuple[tuple[str, str], ...] = (
@@ -461,6 +495,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
     def _author(email: str) -> User | None:
         return author_users.get(email)
 
+    book_counter = 0
+
     # ===========================================================================
     # BOOKS — PUBLISHED (8)
     # ===========================================================================
@@ -504,6 +540,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
             session.add(Book(
@@ -514,6 +552,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 language=lang,
                 reading_level=level,
                 cover_image_path=cover,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.PUBLISHED,
                 submitted_at=datetime.now(timezone.utc) - timedelta(days=30),
                 published_at=datetime.now(timezone.utc) - timedelta(days=20),
@@ -552,6 +592,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
             session.add(Book(
@@ -562,6 +604,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 language=lang,
                 reading_level=level,
                 cover_image_path=cover,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.PENDING_REVIEW,
                 submitted_at=datetime.now(timezone.utc) - timedelta(days=5),
             ))
@@ -595,6 +639,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
             session.add(Book(
@@ -605,6 +651,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 language=lang,
                 reading_level=level,
                 cover_image_path=cover,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.DRAFT,
             ))
 
@@ -633,6 +681,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
             session.add(Book(
@@ -643,6 +693,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 language=lang,
                 reading_level=level,
                 cover_image_path=cover,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.REJECTED,
                 submitted_at=datetime.now(timezone.utc) - timedelta(days=60),
             ))
