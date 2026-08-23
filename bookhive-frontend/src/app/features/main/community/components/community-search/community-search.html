@@ -1,0 +1,36 @@
+<section class="search-section">
+
+  <div class="search-box">
+
+    <span
+      class="material-symbols-outlined search-icon"
+      aria-hidden="true"
+    >
+      search
+    </span>
+
+    <input
+      #searchInput
+      type="search"
+      [value]="searchTerm"
+      placeholder="Search discussions, books, authors..."
+      aria-label="Search community discussions"
+      (input)="onSearch($event)"
+    />
+
+    @if (searchTerm) {
+      <button
+        type="button"
+        class="clear-button"
+        aria-label="Clear search"
+        (click)="clearSearch(); searchInput.value = ''"
+      >
+        <span class="material-symbols-outlined">
+          close
+        </span>
+      </button>
+    }
+
+  </div>
+
+</section>

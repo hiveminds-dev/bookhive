@@ -1,0 +1,133 @@
+:host {
+  display: block;
+}
+
+.members-section {
+  width: 100%;
+}
+
+h2 {
+  margin: 0 0 28px;
+
+  color: #252421;
+
+  font-size: 27px;
+  font-weight: 700;
+
+  letter-spacing: -0.6px;
+}
+
+.members-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.member-card {
+  min-height: 205px;
+
+  padding: 22px 14px 18px;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  text-align: center;
+
+  background: #ffffff;
+
+  border: 1px solid #ebe8df;
+  border-radius: 11px;
+
+  box-shadow:
+    0 7px 20px rgb(45 40 29 / 5%);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 11px 25px rgb(45 40 29 / 9%);
+}
+
+.member-image {
+  width: 70px;
+  height: 70px;
+
+  display: block;
+
+  object-fit: cover;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  box-shadow:
+    0 3px 12px rgb(74 61 28 / 17%);
+}
+
+.member-card h3 {
+  margin: 15px 0 5px;
+
+  color: #34312d;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.member-card p {
+  margin: 0;
+
+  color: #858078;
+
+  font-size: 9px;
+}
+
+.member-card button {
+  min-width: 75px;
+  height: 25px;
+
+  margin-top: 15px;
+  padding: 0 13px;
+
+  border: 1px solid #aa7f0c;
+  border-radius: 15px;
+
+  background: #ffffff;
+  color: #8d6909;
+
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.member-card button:hover,
+.member-card button.following {
+  background: #d5a41d;
+  color: #ffffff;
+}
+
+@media (max-width: 700px) {
+  .members-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .members-grid {
+    grid-template-columns: 1fr;
+  }
+}

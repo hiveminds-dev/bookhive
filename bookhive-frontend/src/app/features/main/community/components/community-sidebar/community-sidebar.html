@@ -1,0 +1,150 @@
+<aside class="community-sidebar">
+
+  <!-- Guidelines -->
+  <section class="sidebar-card guidelines-card">
+
+    <h3>
+      <span class="material-symbols-outlined">
+        gavel
+      </span>
+
+      Guidelines
+    </h3>
+
+    <ul>
+      @for (
+        guideline of guidelines;
+        track guideline
+        ) {
+        <li>
+          {{ guideline }}
+        </li>
+      }
+    </ul>
+
+    <button
+      type="button"
+      class="policy-button"
+      (click)="openPolicy()"
+    >
+      Read full policy
+    </button>
+
+  </section>
+
+  <!-- Trending Tags -->
+  <section class="sidebar-card">
+
+    <h3>
+      Trending Tags
+    </h3>
+
+    <div class="tags">
+
+      @for (
+        tag of tags;
+        track tag
+        ) {
+        <button
+          type="button"
+          class="tag"
+        >
+          {{ tag }}
+        </button>
+      }
+
+    </div>
+
+  </section>
+
+  <!-- Suggested Communities -->
+  <section class="sidebar-card">
+
+    <h3>
+      Suggested for You
+    </h3>
+
+    <div class="suggestions">
+
+      @for (
+        community of suggestedCommunities;
+        track community.id
+        ) {
+        <div class="suggestion-row">
+
+          <div class="suggestion-icon">
+            <span class="material-symbols-outlined">
+              {{ community.icon }}
+            </span>
+          </div>
+
+          <div class="suggestion-details">
+            <strong>
+              {{ community.name }}
+            </strong>
+
+            <span>
+              {{ community.members }}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="add-button"
+            [attr.aria-label]="'Join ' + community.name"
+            (click)="selectCommunity(community)"
+          >
+            <span class="material-symbols-outlined">
+              add_circle
+            </span>
+          </button>
+
+        </div>
+      }
+
+    </div>
+
+  </section>
+
+  <!-- Recent Activity -->
+  <section class="sidebar-card">
+
+    <h3>
+      Recent Activity
+    </h3>
+
+    <div class="activities">
+
+      @for (
+        activity of recentActivities;
+        track activity.id
+        ) {
+        <div class="activity-row">
+
+          <div
+            class="activity-avatar"
+            aria-hidden="true"
+          >
+            {{ activity.initials }}
+          </div>
+
+          <p>
+            <strong>
+              {{ activity.user }}
+            </strong>
+
+            {{ activity.action }}
+
+            <b>
+              "{{ activity.target }}"
+            </b>
+          </p>
+
+        </div>
+      }
+
+    </div>
+
+  </section>
+
+</aside>

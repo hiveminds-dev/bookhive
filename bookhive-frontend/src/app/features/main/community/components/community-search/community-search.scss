@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+.search-section {
+  padding: 12px 24px 58px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.search-box {
+  width: 100%;
+  max-width: 630px;
+  height: 64px;
+
+  padding: 0 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: #f5f5f3;
+  border: 1px solid transparent;
+  border-radius: 34px;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.search-box:focus-within {
+  background: #ffffff;
+  border-color: #d8b758;
+
+  box-shadow:
+    0 8px 24px rgb(118 88 10 / 9%);
+}
+
+.search-icon {
+  color: #747169;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+  color: #34322e;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+input::placeholder {
+  color: #96928a;
+}
+
+input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.clear-button {
+  width: 32px;
+  height: 32px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #77736b;
+
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  background: #e9e7e1;
+  color: #a0770c;
+}
+
+.clear-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
+@media (max-width: 600px) {
+  .search-section {
+    padding: 8px 20px 42px;
+  }
+
+  .search-box {
+    height: 56px;
+    padding: 0 18px;
+  }
+}
