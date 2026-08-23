@@ -11,8 +11,10 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
 if TYPE_CHECKING:
     from orm_models.category import Category
+    from orm_models.review import Review
     from orm_models.user import User
 
 
@@ -107,12 +109,19 @@ class Book(Base):
         nullable=True,
     )
 
-    author: Mapped["User"] = relationship(
+    author: Mapped[User] = relationship(
         "User",
         back_populates="books",
     )
 
-    category: Mapped["Category"] = relationship(
+    category: Mapped[Category] = relationship(
         "Category",
         back_populates="books",
+    )
+
+    reviews: Mapped[list[Review]] = relationship(
+        "Review",
+        back_populates="book",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )

@@ -1,10 +1,13 @@
 """Validates Book API data."""
 
+from __future__ import annotations
+
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from orm_models.book import BookStatus
+from schemas.review import PublicReviewResponse
 
 
 class BookCreateRequest(BaseModel):
@@ -111,6 +114,9 @@ class BookDetailsResponse(BaseModel):
     published_at: datetime | None
     can_read: bool
     can_download: bool
+    average_rating: float = Field(ge=0, le=5)
+    review_count: int = Field(ge=0)
+    reviews: list[PublicReviewResponse]
     author: BookDetailsAuthorResponse
     category: BookDetailsCategoryResponse
 

@@ -2,6 +2,7 @@
 
 from orm_models.book import Book, BookStatus
 from orm_models.category import Category
+from orm_models.review import Review
 from orm_models.user import (
     AccountStatus,
     AuthorProfile,
@@ -21,6 +22,7 @@ __all__ = [
     "EmailVerificationToken",
     "PasswordResetToken",
     "RevokedAccessToken",
+    "Review",
     "User",
     "UserRole",
 ]

@@ -66,6 +66,32 @@ async def test_published_book_details_are_mapped():
             return_value=book,
         )
     )
+    service.review_repository.get_visible_reviews_for_book = (
+        AsyncMock(
+            return_value=[
+                SimpleNamespace(
+                    id=21,
+                    reader=SimpleNamespace(
+                        username="reader_one",
+                    ),
+                    rating=5,
+                    comment="Excellent book.",
+                    helpful_count=3,
+                    created_at=datetime.now(UTC),
+                ),
+                SimpleNamespace(
+                    id=22,
+                    reader=SimpleNamespace(
+                        username="reader_two",
+                    ),
+                    rating=4,
+                    comment="Very useful.",
+                    helpful_count=1,
+                    created_at=datetime.now(UTC),
+                ),
+            ],
+        )
+    )
 
     result = await service.get_public_book_details(
         session=AsyncMock(),
@@ -85,6 +111,12 @@ async def test_published_book_details_are_mapped():
 
     assert result.can_read is True
     assert result.can_download is True
+    assert result.average_rating == 4.5
+    assert result.review_count == 2
+    assert len(result.reviews) == 2
+    assert result.reviews[0].reader_name == (
+        "reader_one"
+    )
 
     assert result.author.id == 7
     assert result.author.display_name == (
@@ -119,6 +151,9 @@ async def test_author_full_name_is_used_without_profile():
             return_value=book,
         )
     )
+    service.review_repository.get_visible_reviews_for_book = (
+        AsyncMock(return_value=[])
+    )
 
     result = await service.get_public_book_details(
         session=AsyncMock(),
@@ -135,6 +170,9 @@ async def test_author_full_name_is_used_without_profile():
     assert result.cover_url is None
     assert result.can_read is False
     assert result.can_download is False
+    assert result.average_rating == 0.0
+    assert result.review_count == 0
+    assert result.reviews == []
 
 
 @pytest.mark.asyncio
