@@ -1,19 +1,84 @@
-<section class="dashboard" aria-labelledby="dashboard-title">
-  <div class="sr-only">
-    <h1 id="dashboard-title">Admin Dashboard</h1>
-    <p>BookHive platform overview and pending work.</p>
-  </div>
+<div class="admin-master-container dashboard">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Dashboard</span>
+  </nav>
 
-  <app-statistics />
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <div class="title-row">
+        <h1>{{ pageTitle() }}</h1>
+        <span class="super-admin-badge" *ngIf="isSuperAdmin()">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          Super Admin
+        </span>
+      </div>
+      <p>{{ pageSubtitle() }}</p>
+    </div>
+  </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search across books, authors, readers, or system activity logs...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterTimeframe() !== 'all' || filterSortBy() !== 'newest'">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Date Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="all">All Time</option>
+            <option value="today">Today's Activity</option>
+            <option value="7days">Past 7 Days</option>
+            <option value="30days">Past 30 Days</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select [ngModel]="filterSortBy()" (ngModelChange)="filterSortBy.set($event)">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <app-statistics [isSuperAdmin]="isSuperAdmin()" />
 
   <div class="dashboard-grid">
     <div class="main-column">
-      <app-recent-books />
+      <app-recent-books [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
       <div class="lower-grid">
-        <app-recent-authors />
-        <app-recent-requests />
+        <app-recent-authors [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
+        <app-recent-requests [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
       </div>
     </div>
-    <app-activity />
+    <app-activity [isSuperAdmin]="isSuperAdmin()" />
   </div>
-</section>
+</div>
+
