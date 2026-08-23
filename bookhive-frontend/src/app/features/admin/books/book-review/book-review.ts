@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AdminApiService } from '../../../../core/services/admin-api.service';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal';
@@ -22,6 +23,7 @@ export interface BookDetailModel {
   isbn?: string;
   language?: string;
   status?: string;
+  pdfPath?: string;
 }
 
 @Component({
@@ -35,9 +37,11 @@ export class BookReviewComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly adminApi = inject(AdminApiService);
   private readonly route = inject(ActivatedRoute);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly currentModeSignal = signal<'overview' | 'reader'>('overview');
   readonly showRejectConfirm = signal<boolean>(false);
+  readonly pdfViewerUrlSignal = signal<SafeResourceUrl | null>(null);
 
   readonly bookSignal = signal<BookDetailModel>({
     title: 'Beyond Good and Evil',
@@ -96,6 +100,10 @@ export class BookReviewComponent implements OnInit {
           const calcReadTime = hrs > 0 ? (mins > 0 ? `${hrs} hours ${mins} mins` : `${hrs} hours`) : `${mins} mins`;
           const readTimeStr = found.estimated_reading_time || calcReadTime;
 
+          const pdfPath = (found as any).pdf_path || `storage/books/book_${found.id}.pdf`;
+          const rawUrl = `http://localhost:8000/${pdfPath}`;
+          this.pdfViewerUrlSignal.set(this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl));
+
           this.bookSignal.set({
             id: found.id,
             title: found.title,
@@ -112,7 +120,8 @@ export class BookReviewComponent implements OnInit {
             reviewSnippet: `An exceptional read by ${found.author_name}. Highly recommended for anyone interested in ${found.category_name}.`,
             isbn: `978-${Math.floor(100000000 + (id * 1234567) % 900000000)}`,
             language: found.language || 'English',
-            status: found.status
+            status: found.status,
+            pdfPath: pdfPath
           });
         }
       }
