@@ -8,7 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_models.book import Book, BookStatus
 from repositories.book_repository import BookRepository
-from schemas.book import BookCreateRequest, BookUpdateRequest
+from schemas.book import (
+    BookCreateRequest,
+    BookDetailsAuthorResponse,
+    BookDetailsCategoryResponse,
+    BookDetailsResponse,
+    BookUpdateRequest,
+)
 from utils.file_handler import (
     FileUploadError,
     delete_stored_file,
@@ -41,7 +47,10 @@ class BookService:
         author_id: int,
         book_data: BookCreateRequest,
     ) -> Book:
-        await self._validate_category(session, book_data.category_id)
+        await self._validate_category(
+            session,
+            book_data.category_id,
+        )
 
         try:
             book = await self.book_repository.create_book(
@@ -49,9 +58,11 @@ class BookService:
                 author_id=author_id,
                 book_data=book_data.model_dump(),
             )
+
             await session.commit()
             await session.refresh(book)
             return book
+
         except Exception:
             await session.rollback()
             raise
@@ -72,6 +83,77 @@ class BookService:
             limit,
         )
 
+    async def get_public_book_details(
+        self,
+        session: AsyncSession,
+        book_id: int,
+    ) -> BookDetailsResponse:
+        """Return details for a published book."""
+
+        book = (
+            await self.book_repository.get_published_book_details(
+                session,
+                book_id,
+            )
+        )
+
+        if book is None:
+            raise BookNotFoundError(
+                "Published book not found"
+            )
+
+        author_profile = book.author.author_profile
+
+        display_name = book.author.full_name
+        biography = None
+        profile_image_url = None
+
+        if author_profile is not None:
+            if author_profile.pen_name.strip():
+                display_name = author_profile.pen_name.strip()
+
+            biography = author_profile.short_bio
+            profile_image_url = (
+                self._to_public_storage_url(
+                    author_profile.profile_image_path
+                )
+            )
+
+        pdf_url = self._to_public_storage_url(
+            book.pdf_path
+        )
+
+        cover_url = self._to_public_storage_url(
+            book.cover_image_path
+        )
+
+        has_pdf = pdf_url is not None
+
+        return BookDetailsResponse(
+            id=book.id,
+            title=book.title,
+            description=book.description,
+            language=book.language,
+            reading_level=book.reading_level,
+            cover_url=cover_url,
+            pdf_url=pdf_url,
+            status=book.status,
+            published_at=book.published_at,
+            can_read=has_pdf,
+            can_download=has_pdf,
+            author=BookDetailsAuthorResponse(
+                id=book.author.id,
+                display_name=display_name,
+                username=book.author.username,
+                biography=biography,
+                profile_image_url=profile_image_url,
+            ),
+            category=BookDetailsCategoryResponse(
+                id=book.category.id,
+                name=book.category.name,
+            ),
+        )
+
     async def update_book(
         self,
         session: AsyncSession,
@@ -87,7 +169,9 @@ class BookService:
 
         self._ensure_book_is_editable(book)
 
-        updates = book_data.model_dump(exclude_unset=True)
+        updates = book_data.model_dump(
+            exclude_unset=True
+        )
         category_id = updates.get("category_id")
 
         if category_id is not None:
@@ -97,11 +181,14 @@ class BookService:
             )
 
         try:
-            updated_book = await self.book_repository.update_book(
-                session,
-                book,
-                updates,
+            updated_book = (
+                await self.book_repository.update_book(
+                    session,
+                    book,
+                    updates,
+                )
             )
+
             await session.commit()
             await session.refresh(updated_book)
             return updated_book
@@ -187,7 +274,9 @@ class BookService:
                 "description": book.description,
                 "language": book.language,
                 "pdf_path": book.pdf_path,
-                "cover_image_path": book.cover_image_path,
+                "cover_image_path": (
+                    book.cover_image_path
+                ),
             }.items()
             if value is None
             or (
@@ -207,10 +296,13 @@ class BookService:
                 await self.book_repository.update_book_status(
                     session=session,
                     book=book,
-                    new_status=BookStatus.PENDING_REVIEW,
+                    new_status=(
+                        BookStatus.PENDING_REVIEW
+                    ),
                     submitted_at=datetime.now(UTC),
                 )
             )
+
             await session.commit()
             await session.refresh(updated_book)
             return updated_book
@@ -243,10 +335,14 @@ class BookService:
         """Save an uploaded path and clean up replaced files."""
 
         try:
-            updated_book = await self.book_repository.update_book(
-                session,
-                book,
-                {field_name: new_path},
+            updated_book = (
+                await self.book_repository.update_book(
+                    session,
+                    book,
+                    {
+                        field_name: new_path,
+                    },
+                )
             )
 
             await session.commit()
@@ -254,11 +350,15 @@ class BookService:
 
         except Exception:
             await session.rollback()
-            await self._delete_upload_quietly(new_path)
+            await self._delete_upload_quietly(
+                new_path
+            )
             raise
 
         if old_path and old_path != new_path:
-            await self._delete_upload_quietly(old_path)
+            await self._delete_upload_quietly(
+                old_path
+            )
 
         return updated_book
 
@@ -266,7 +366,7 @@ class BookService:
         self,
         path: str | None,
     ) -> None:
-        """Delete an upload without failing a completed database update."""
+        """Delete an upload without failing a database update."""
 
         try:
             await delete_stored_file(path)
@@ -290,7 +390,9 @@ class BookService:
         )
 
         if book is None:
-            raise BookNotFoundError("Book not found")
+            raise BookNotFoundError(
+                "Book not found"
+            )
 
         if book.author_id != author_id:
             raise BookPermissionError(
@@ -304,9 +406,11 @@ class BookService:
         session: AsyncSession,
         category_id: int,
     ) -> None:
-        category = await self.book_repository.get_active_category(
-            session,
-            category_id,
+        category = (
+            await self.book_repository.get_active_category(
+                session,
+                category_id,
+            )
         )
 
         if category is None:
@@ -315,7 +419,40 @@ class BookService:
             )
 
     @staticmethod
-    def _ensure_book_is_editable(book: Book) -> None:
+    def _to_public_storage_url(
+        stored_path: str | None,
+    ) -> str | None:
+        """Convert a stored relative path into a public URL."""
+
+        if stored_path is None:
+            return None
+
+        normalized_path = (
+            stored_path
+            .strip()
+            .replace("\\", "/")
+            .lstrip("/")
+        )
+
+        if not normalized_path:
+            return None
+
+        if normalized_path.startswith(
+            ("http://", "https://")
+        ):
+            return normalized_path
+
+        if not normalized_path.startswith(
+            "storage/"
+        ):
+            return None
+
+        return f"/{normalized_path}"
+
+    @staticmethod
+    def _ensure_book_is_editable(
+        book: Book,
+    ) -> None:
         if book.status not in {
             BookStatus.DRAFT,
             BookStatus.REJECTED,

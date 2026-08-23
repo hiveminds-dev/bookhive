@@ -86,6 +86,35 @@ class BookStatusResponse(BaseModel):
     published_at: datetime | None = None
 
 
+class BookDetailsAuthorResponse(BaseModel):
+    id: int
+    display_name: str
+    username: str
+    biography: str | None = None
+    profile_image_url: str | None = None
+
+
+class BookDetailsCategoryResponse(BaseModel):
+    id: int
+    name: str
+
+
+class BookDetailsResponse(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    language: str | None
+    reading_level: str | None
+    cover_url: str | None
+    pdf_url: str | None
+    status: BookStatus
+    published_at: datetime | None
+    can_read: bool
+    can_download: bool
+    author: BookDetailsAuthorResponse
+    category: BookDetailsCategoryResponse
+
+
 class BookResultResponse(BaseModel):
     message: str
     data: BookResponse
@@ -99,3 +128,8 @@ class BookStatusResultResponse(BaseModel):
 class BookListResultResponse(BaseModel):
     message: str
     data: list[BookResponse]
+
+
+class BookDetailsResultResponse(BaseModel):
+    message: str
+    data: BookDetailsResponse
