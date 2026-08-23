@@ -1,1 +1,93 @@
-<p>trending-discussions works!</p>
+<section class="discussions-section">
+
+  <h2>
+    Trending Discussions
+  </h2>
+
+  <div class="discussion-list">
+
+    @for (
+      discussion of discussions;
+      track discussion.id
+      ) {
+      <article class="discussion-card">
+
+        <div class="author-row">
+
+          <div
+            class="author-avatar"
+            aria-hidden="true"
+          >
+            {{ discussion.initials }}
+          </div>
+
+          <div class="author-details">
+
+            <strong>
+              {{ discussion.author }}
+            </strong>
+
+            <span>
+              {{ discussion.timeAgo }}
+              in
+              <b>{{ discussion.tag }}</b>
+            </span>
+
+          </div>
+
+        </div>
+
+        <h3>
+          {{ discussion.title }}
+        </h3>
+
+        <p>
+          {{ discussion.description }}
+        </p>
+
+        <footer class="card-footer">
+
+          <div class="discussion-stats">
+
+            <button
+              type="button"
+              aria-label="Like discussion"
+              (click)="likeDiscussion(discussion)"
+            >
+              <span class="material-symbols-outlined">
+                thumb_up
+              </span>
+
+              {{ discussion.likes }}
+            </button>
+
+            <span class="comment-count">
+              <span class="material-symbols-outlined">
+                chat_bubble
+              </span>
+
+              {{ discussion.comments }}
+            </span>
+
+          </div>
+
+          <button
+            type="button"
+            class="view-thread"
+            (click)="viewThread(discussion)"
+          >
+            View Thread
+
+            <span class="material-symbols-outlined">
+              arrow_forward
+            </span>
+          </button>
+
+        </footer>
+
+      </article>
+    }
+
+  </div>
+
+</section>

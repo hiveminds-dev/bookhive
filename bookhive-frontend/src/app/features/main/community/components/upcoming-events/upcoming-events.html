@@ -1,0 +1,76 @@
+<section class="events-section">
+
+  <h2>
+    Upcoming Book Club Events
+  </h2>
+
+  <div class="events-grid">
+
+    @for (
+      event of events;
+      track event.id
+      ) {
+      <article class="event-card">
+
+        <div class="event-image">
+
+          <img
+            [src]="event.image"
+            [alt]="event.title"
+          />
+
+          <span class="event-date">
+            {{ event.date }}
+          </span>
+
+        </div>
+
+        <div class="event-content">
+
+          <h3>
+            {{ event.title }}
+          </h3>
+
+          <p class="event-host">
+            Hosted by:
+            <strong>
+              {{ event.host }}
+            </strong>
+          </p>
+
+          <div class="event-details">
+
+            <span>
+              <span class="material-symbols-outlined">
+                schedule
+              </span>
+
+              {{ event.time }}
+            </span>
+
+            <span>
+              <span class="material-symbols-outlined">
+                location_on
+              </span>
+
+              {{ event.location }}
+            </span>
+
+          </div>
+
+          <button
+            type="button"
+            [class.featured]="event.featured"
+            (click)="selectEvent(event)"
+          >
+            {{ event.buttonText }}
+          </button>
+
+        </div>
+
+      </article>
+    }
+
+  </div>
+
+</section>

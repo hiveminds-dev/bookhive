@@ -1,0 +1,69 @@
+<section
+  class="popular-section"
+  id="popular-communities"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      Popular Communities
+    </h2>
+
+    <button
+      type="button"
+      class="view-all-button"
+      (click)="onViewAll()"
+    >
+      View All
+    </button>
+
+  </div>
+
+  <div class="communities-grid">
+
+    @for (
+      community of communities;
+      track community.id
+      ) {
+      <article class="community-card">
+
+        <div class="card-heading">
+
+          <div class="community-icon">
+            <span class="material-symbols-outlined">
+              {{ community.icon }}
+            </span>
+          </div>
+
+          <div class="community-title">
+
+            <h3>
+              {{ community.name }}
+            </h3>
+
+            <span>
+              {{ community.members }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <p>
+          {{ community.description }}
+        </p>
+
+        <button
+          type="button"
+          class="join-button"
+          (click)="joinCommunity(community)"
+        >
+          Join Community
+        </button>
+
+      </article>
+    }
+
+  </div>
+
+</section>

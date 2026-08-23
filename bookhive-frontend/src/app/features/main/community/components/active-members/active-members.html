@@ -1,0 +1,47 @@
+<section class="members-section">
+
+  <h2>
+    Active Members
+  </h2>
+
+  <div class="members-grid">
+
+    @for (
+      member of members;
+      track member.id
+      ) {
+      <article class="member-card">
+
+        <img
+          [src]="member.image"
+          [alt]="member.name"
+          class="member-image"
+        />
+
+        <h3>
+          {{ member.name }}
+        </h3>
+
+        <p>
+          {{ member.booksRead }}
+          Books Read
+        </p>
+
+        <button
+          type="button"
+          [class.following]="member.following"
+          (click)="toggleFollow(member)"
+        >
+          @if (member.following) {
+            Following
+          } @else {
+            Follow
+          }
+        </button>
+
+      </article>
+    }
+
+  </div>
+
+</section>
