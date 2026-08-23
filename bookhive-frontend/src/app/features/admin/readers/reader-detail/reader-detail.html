@@ -1,0 +1,59 @@
+<div class="admin-page reader-detail-page">
+  <header class="page-header">
+    <a routerLink="/admin/dashboard" class="back-link">← Back to Dashboard</a>
+    <h1>Reader Profile Details</h1>
+  </header>
+
+  <div class="profile-grid">
+    <!-- Left Column: User Card -->
+    <div class="user-card">
+      <div class="avatar-large">MW</div>
+      <h2>{{ reader.name }}</h2>
+      <span class="role-badge">{{ reader.role }}</span>
+      <span class="status-badge active">{{ reader.status }}</span>
+
+      <div class="info-list">
+        <div class="info-item"><span>Email</span><strong>{{ reader.email }}</strong></div>
+        <div class="info-item"><span>Joined</span><strong>{{ reader.joined }}</strong></div>
+        <div class="info-item"><span>Location</span><strong>{{ reader.location }}</strong></div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn-secondary" (click)="resetPassword()">Reset Password</button>
+        <button type="button" class="btn-danger" (click)="suspendAccount()">Suspend Account</button>
+      </div>
+    </div>
+
+    <!-- Right Column: Reading Activity -->
+    <div class="activity-column">
+      <div class="stats-row">
+        <div class="stat-box">
+          <span>COMPLETED BOOKS</span>
+          <strong>{{ reader.completedBooksCount }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>READING TIME</span>
+          <strong>{{ reader.totalReadTime }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>SAVED BOOKS</span>
+          <strong>{{ reader.savedBooksCount }}</strong>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Reading History</h3>
+        <div class="history-list">
+          <div class="history-item" *ngFor="let item of readingHistory">
+            <img [src]="item.cover" [alt]="item.title" class="history-cover" />
+            <div class="history-info">
+              <strong>{{ item.title }}</strong>
+              <small>by {{ item.author }}</small>
+            </div>
+            <span class="status-pill">{{ item.status }} ({{ item.progress }})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

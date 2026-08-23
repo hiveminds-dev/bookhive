@@ -1,0 +1,224 @@
+<div class="admin-page book-review-page">
+  <!-- Mode Switch Tabs -->
+  <div class="mode-header">
+    <a routerLink="/admin/books" class="back-link">
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2"/><polyline points="12 19 5 12 12 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      Back to Books List
+    </a>
+
+    <div class="view-switch-btns">
+      <button type="button" [class.active]="currentModeSignal() === 'overview'" (click)="switchMode('overview')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="21" x2="9" y2="9" stroke="currentColor" stroke-width="1.8"/></svg>
+        Overview &amp; Details (Image 1)
+      </button>
+      <button type="button" [class.active]="currentModeSignal() === 'reader'" (click)="switchMode('reader')">
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Manuscript Inspector (Image 2)
+      </button>
+    </div>
+  </div>
+
+  <!-- MODE 1: OVERVIEW & DETAILS (INSPIRED BY IMAGE 1) -->
+  <div class="overview-mode" *ngIf="currentModeSignal() === 'overview'">
+    <div class="review-grid">
+      <!-- Left Column: Cover Preview -->
+      <div class="cover-column">
+        <div class="cover-wrapper-3d">
+          <img [src]="book.cover" [alt]="book.title" class="book-cover-img" />
+        </div>
+      </div>
+
+      <!-- Center Column: Book Content & Meta -->
+      <div class="content-column">
+        <span class="category-badge">{{ book.category }}</span>
+        <h1 class="book-title">{{ book.title }}</h1>
+        <p class="author-subtitle">by <strong>{{ book.author }}</strong></p>
+
+        <div class="meta-row">
+          <div class="rating-box">
+            <span class="star-icon">★</span>
+            <strong>{{ book.rating }}</strong>
+            <span class="reviews-count">({{ book.reviewsCount }})</span>
+          </div>
+          <span class="meta-divider">•</span>
+          <div class="meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> {{ book.readTime }}</div>
+          <span class="meta-divider">•</span>
+          <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> {{ book.pages }}</div>
+        </div>
+
+        <div class="action-buttons-top">
+          <button type="button" class="btn-read-now" (click)="switchMode('reader')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+            Inspect Manuscript
+          </button>
+          <button type="button" class="btn-download">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            Download PDF
+          </button>
+        </div>
+
+        <div class="section-box">
+          <h2>Abstract</h2>
+          <p class="abstract-text">{{ book.abstract }}</p>
+        </div>
+
+        <div class="section-box">
+          <div class="section-header">
+            <h2>Reader Reviews</h2>
+            <button type="button" class="btn-write-review">Write a Review ✍️</button>
+          </div>
+          <div class="review-card-item">
+            <div class="reviewer-avatar">A</div>
+            <div class="review-body">
+              <div class="reviewer-top">
+                <strong>anonymous Reader</strong>
+                <span class="stars-gold">★★★★★</span>
+              </div>
+              <p class="review-text">{{ book.reviewSnippet }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <h2>Related Books</h2>
+          <div class="related-books-grid">
+            <div class="related-card" *ngFor="let item of relatedBooks">
+              <img [src]="item.cover" [alt]="item.title" />
+              <strong>{{ item.title }}</strong>
+              <small>{{ item.author }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Author Profile Box -->
+      <div class="author-column">
+        <div class="author-card-sticky">
+          <div class="author-avatar-wrapper">
+            <img src="assets/images/auth/sign_in_1.png" alt="Author photo" class="author-avatar-img" />
+          </div>
+          <h3>{{ book.author }}</h3>
+          <span class="author-title-badge">{{ book.authorTitle }}</span>
+          <p class="author-bio">{{ book.authorBio }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Decision Footer Bar -->
+    <footer class="review-decision-bar">
+      <div class="decision-info">
+        <strong>Review Status:</strong>
+        <span class="status-pill pending">Under Editorial Review</span>
+      </div>
+      <div class="decision-actions">
+        <button type="button" class="btn-reject" (click)="promptReject()">Reject Submission</button>
+        <button type="button" class="btn-revision" (click)="requestChanges()">Request Changes</button>
+        <button type="button" class="btn-approve" (click)="approvePublication()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          Approve &amp; Publish
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODE 2: DIGITAL MANUSCRIPT READER / INSPECTOR (INSPIRED BY IMAGE 2) -->
+  <div class="reader-mode" *ngIf="currentModeSignal() === 'reader'">
+    <!-- Top Reader Bar -->
+    <header class="reader-topbar">
+      <button type="button" class="back-btn" (click)="switchMode('overview')">
+        ← Back to Details
+      </button>
+
+      <div class="reader-book-info">
+        <img [src]="book.cover" alt="thumb" class="thumb-small" />
+        <div>
+          <strong class="title">{{ book.title }}</strong>
+          <span class="author">by {{ book.author }}</span>
+        </div>
+      </div>
+
+      <div class="reader-toolbar">
+        <button type="button" class="tool-btn" title="Zoom Out">-</button>
+        <span class="zoom-level">100%</span>
+        <button type="button" class="tool-btn" title="Zoom In">+</button>
+        <span class="page-nav">&lt; Page 15 of 120 &gt;</span>
+        <button type="button" class="tool-btn" title="Bookmark">🔖</button>
+        <button type="button" class="tool-btn" title="Download">📥</button>
+      </div>
+    </header>
+
+    <!-- Main Inspector Viewport -->
+    <div class="reader-viewport-grid">
+      <!-- Left Sidebar: Contents -->
+      <aside class="left-sidebar">
+        <div class="sidebar-book-card">
+          <img [src]="book.cover" alt="cover" class="side-cover" />
+          <div class="side-meta">
+            <span>Pages <strong>120</strong></span>
+            <span>Rating <strong>4.9/5</strong></span>
+          </div>
+        </div>
+
+        <h3>Contents</h3>
+        <ul class="contents-list">
+          <li *ngFor="let ch of chapterList" [class.active]="ch.active">
+            {{ ch.title }}
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Center Manuscript Canvas -->
+      <main class="manuscript-canvas">
+        <div class="manuscript-paper">
+          <h1 class="chapter-title">Chapter 4: The Geometry of Dawn</h1>
+
+          <p class="lead-paragraph">
+            In the quiet stillness of the early morning, light acts not merely as a visibility tool, but as a sculptor. It carves out shapes from the darkness, redefining the boundaries of a room before the first mechanical switch is ever flipped. The architecture of a space is fundamentally incomplete without this temporal interaction.
+          </p>
+
+          <div class="manuscript-illustration">
+            <img [src]="book.cover" alt="Embedded Figure Illustration" class="illustration-img" />
+          </div>
+
+          <p class="body-paragraph">
+            To design for light is to design for time. Every window is a calendar, every shadow a clock. When Eliza Reed argues that the modern facade is a living organ, she refers specifically to the translucent materials that breathe photons into the structural skeleton. This interplay creates a psychological resonance that transcends mere utility.
+          </p>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Quick Actions -->
+      <aside class="right-sidebar">
+        <div class="quick-actions-card">
+          <h4>QUICK ACTIONS</h4>
+          <button type="button" class="action-item"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share Excerpt</button>
+          <button type="button" class="action-item danger"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1"/></svg> Report Issue</button>
+        </div>
+
+        <div class="page-jumper-card">
+          <label>PAGE NUMBER</label>
+          <input type="number" value="15" class="page-input" />
+        </div>
+      </aside>
+    </div>
+
+    <!-- Bottom Progress Footer -->
+    <footer class="reader-bottombar">
+      <span>Page 15 of 120</span>
+      <div class="progress-bar-track">
+        <div class="progress-fill" style="width: 12.5%;"></div>
+      </div>
+      <span>12.5% Read</span>
+    </footer>
+  </div>
+
+  <!-- Reject Confirmation Modal -->
+  <app-confirmation-modal
+    *ngIf="showRejectConfirm()"
+    title="Reject Book Submission?"
+    [message]="'Are you sure you want to reject the publication request for &quot;' + book.title + '&quot;? The author will be notified.'"
+    confirmText="Reject Submission"
+    type="danger"
+    (confirm)="confirmReject()"
+    (cancel)="cancelReject()"
+  />
+</div>

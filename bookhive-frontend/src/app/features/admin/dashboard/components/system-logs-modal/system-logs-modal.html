@@ -17,8 +17,20 @@
         <span class="capacity-info">Storage: 64% used</span>
       </div>
 
-      <div class="logs-table-wrapper">
-        <table class="logs-table">
+      <!-- Loading state -->
+      <div class="logs-loading" *ngIf="loading()">
+        <span class="spinner"></span> Fetching live system logs...
+      </div>
+
+      <!-- Error state -->
+      <div class="logs-error" *ngIf="error()">
+        ⚠ Could not fetch live logs. Please check backend connectivity.
+      </div>
+
+      <!-- Live log data -->
+      <div class="logs-table-wrapper" *ngIf="!loading() && !error()">
+        <div class="logs-empty" *ngIf="logs().length === 0">No log entries available.</div>
+        <table class="logs-table" *ngIf="logs().length > 0">
           <thead>
             <tr>
               <th>TIMESTAMP</th>
@@ -28,10 +40,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let log of logs">
+            <tr *ngFor="let log of logs()">
               <td class="time-cell">{{ log.timestamp }}</td>
               <td>
-                <span class="level-badge" [class]="log.level.toLowerCase()">
+                <span class="level-badge" [class]="getLevelClass(log.level)">
                   {{ log.level }}
                 </span>
               </td>

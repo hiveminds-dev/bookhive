@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
 import { NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { SystemLogsModalComponent } from '../system-logs-modal/system-logs-modal';
 
@@ -13,6 +13,10 @@ import { SystemLogsModalComponent } from '../system-logs-modal/system-logs-modal
 })
 export class Activity {
   private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
+
+  @Input() isSuperAdmin = false;
+
   readonly showLogsModalSignal = signal<boolean>(false);
 
   openLogs(): void {
@@ -24,6 +28,10 @@ export class Activity {
   }
 
   addCategory(): void {
-    this.toastService.info('Opening Add Category form...', 'Categories');
+    this.router.navigate(['/admin/categories']);
+  }
+
+  manageAdmins(): void {
+    this.router.navigate(['/admin/admins']);
   }
 }
