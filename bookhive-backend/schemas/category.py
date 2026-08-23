@@ -1,26 +1,27 @@
-"""Checks Category data."""
+"""Validates Category API data."""
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CategoryCreate(BaseModel):
-    name: str = Field(..., min_length=2, max_length=100, description="Unique category name")
-    description: str | None = Field(None, description="Optional category description")
+    name: str = Field(min_length=2, max_length=100)
+    description: str | None = None
+
 
 class CategoryUpdate(BaseModel):
-    name: str | None = Field(None, min_length=2, max_length=100)
+    name: str | None = Field(default=None, min_length=2, max_length=100)
     description: str | None = None
     is_active: bool | None = None
 
+
 class CategoryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     description: str | None
     is_active: bool
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
