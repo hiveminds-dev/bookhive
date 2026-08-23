@@ -2,11 +2,12 @@
 
 from datetime import datetime, timezone
 
+import math
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_models.book import Book, BookStatus
 from repositories.book_repository import BookRepository
-from schemas.book import BookCreateRequest, BookUpdateRequest
+from schemas.book import BookCreateRequest, BookUpdateRequest, PaginatedCatalogueResponse, CatalogueBookResponse
 
 
 class BookNotFoundError(ValueError):
@@ -170,3 +171,56 @@ class BookService:
         )
         if category is None:
             raise BookValidationError("Category does not exist or is inactive")
+
+    async def get_public_catalogue(
+        self,
+        session: AsyncSession,
+        page: int = 1,
+        page_size: int = 10,
+        search_query: str | None = None,
+        category_id: int | None = None,
+        language: str | None = None
+    ) -> PaginatedCatalogueResponse:
+
+        skip = (page - 1) * page_size
+
+        total_items = await self.book_repository.get_published_books_count(
+            session=session,
+            search_query=search_query,
+            category_id=category_id,
+            language=language
+        )
+
+        books = await self.book_repository.get_published_books_with_filters(
+            session=session,
+            skip=skip,
+            limit=page_size,
+            search_query=search_query,
+            category_id=category_id,
+            language=language
+        )
+
+        total_pages = math.ceil(total_items / page_size) if total_items > 0 else 1
+
+        items = []
+        for book in books:
+            items.append(
+                CatalogueBookResponse(
+                    id=book.id,
+                    title=book.title,
+                    description=book.description,
+                    language=book.language,
+                    reading_level=book.reading_level,
+                    published_at=book.published_at,
+                    author_name=book.author.full_name,
+                    category_name=book.category.name
+                )
+            )
+
+        return PaginatedCatalogueResponse(
+            total_items=total_items,
+            total_pages=total_pages,
+            current_page=page,
+            page_size=page_size,
+            items=items
+        )

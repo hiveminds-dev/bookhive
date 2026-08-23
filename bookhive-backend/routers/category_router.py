@@ -13,7 +13,6 @@ category_service = CategoryService()
 
 DbSession = Annotated[AsyncSession, Depends(get_db_session)]
 
-
 @router.post(
     "/",
     response_model=CategoryResponse,

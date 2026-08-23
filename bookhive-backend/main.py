@@ -19,6 +19,7 @@ from routers.author_router import router as author_router
 from routers.category_router import router as category_router
 from routers import health_router
 from routers.user_router import router as user_router
+from routers.catalogue_router import router as catalogue_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -95,6 +96,11 @@ app.include_router(
 
 app.include_router(
     admin_router,
+    prefix=settings.api_prefix
+)
+
+app.include_router(
+    catalogue_router,
     prefix=settings.api_prefix
 )
 

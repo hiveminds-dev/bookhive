@@ -1,6 +1,7 @@
 """Validates Book API data."""
 
 from datetime import datetime
+from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -75,3 +76,23 @@ class BookStatusResultResponse(BaseModel):
 class BookListResultResponse(BaseModel):
     message: str
     data: list[BookResponse]
+
+class CatalogueBookResponse(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    language: Optional[str] = None
+    reading_level: Optional[str] = None
+    published_at: Optional[datetime] = None
+    author_name: str
+    category_name: str
+
+    class Config:
+        from_attributes = True
+
+class PaginatedCatalogueResponse(BaseModel):
+    total_items: int
+    total_pages: int
+    current_page: int
+    page_size: int
+    items: List[CatalogueBookResponse]

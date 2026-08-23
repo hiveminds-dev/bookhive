@@ -1,9 +1,11 @@
 """Handles Book database work."""
 
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from orm_models.book import Book, BookStatus
 from orm_models.category import Category
@@ -117,3 +119,45 @@ class BookRepository:
             .limit(limit)
         )
         return list(result.scalars().all())
+
+    async def get_published_books_with_filters(
+            self,
+            session: AsyncSession,
+            skip: int = 0,
+            limit: int = 10,
+            search_query: str | None = None,
+            category_id: int | None = None,
+            language: str | None = None) -> List[Book]:
+        query = select(Book).options(
+            joinedload(Book.author),
+            joinedload(Book.category)
+        ).where(Book.status == BookStatus.PUBLISHED)
+
+        if search_query:
+            query = query.where(Book.title.ilike(f"%{search_query}&"))
+
+        if category_id:
+            query = query.where(Book.category_id == category_id)
+
+        if language:
+            query = query.where(Book.language.ilike(language))
+
+        query = query.order_by(Book.published_at.desc()).offset(skip).limit(limit)
+
+        result = await session.execute(query)
+        return list(result.scalars().all())
+
+    async def get_published_books_count(self, session: AsyncSession, search_query: str | None = None, category_id: int | None = None, language: str | None = None) -> int:
+        query = select(func.count(Book.id)).where(Book.status == BookStatus.PUBLISHED)
+
+        if search_query:
+            query = query.where(Book.title.ilike(f"%{search_query}%"))
+
+        if category_id:
+            query = query.where(Book.category_id == category_id)
+
+        if language:
+            query = query.where(Book.language.ilike(language))
+
+        result = await session.execute(query)
+        return result.scalar_one() or 0
