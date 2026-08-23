@@ -221,6 +221,14 @@
               <span>{{ selectedBookForView()?.language }}</span>
             </div>
             <div class="info-group">
+              <label>Page Count</label>
+              <span>📄 {{ selectedBookForView()?.pageCount || 280 }} pages</span>
+            </div>
+            <div class="info-group">
+              <label>Estimated Reading Time</label>
+              <span>⏱️ {{ selectedBookForView()?.estimatedReadingTime || '9 hours' }}</span>
+            </div>
+            <div class="info-group">
               <label>Date Added</label>
               <span>{{ selectedBookForView()?.date }}</span>
             </div>

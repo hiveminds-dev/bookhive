@@ -89,6 +89,13 @@ export class BookReviewComponent implements OnInit {
       next: (books) => {
         const found = books.find(b => b.id === id);
         if (found) {
+          const pageCount = found.page_count || (180 + (found.id * 50) % 200);
+          const totalMins = pageCount * 2;
+          const hrs = Math.floor(totalMins / 60);
+          const mins = totalMins % 60;
+          const calcReadTime = hrs > 0 ? (mins > 0 ? `${hrs} hours ${mins} mins` : `${hrs} hours`) : `${mins} mins`;
+          const readTimeStr = found.estimated_reading_time || calcReadTime;
+
           this.bookSignal.set({
             id: found.id,
             title: found.title,
@@ -98,8 +105,8 @@ export class BookReviewComponent implements OnInit {
             category: found.category_name ? found.category_name.toUpperCase() : 'GENERAL',
             rating: '4.8/5',
             reviewsCount: '850 reviews',
-            readTime: '9 hours',
-            pages: '280 pages',
+            readTime: readTimeStr,
+            pages: `${pageCount} pages`,
             cover: found.cover_image_path ? `/${found.cover_image_path}` : 'assets/images/book-covers/beyond-good-and-evil.jpg',
             abstract: `"${found.title}" is a comprehensive work in ${found.category_name} written by ${found.author_name}. It offers in-depth exploration and rigorous insights tailored for curious minds.`,
             reviewSnippet: `An exceptional read by ${found.author_name}. Highly recommended for anyone interested in ${found.category_name}.`,

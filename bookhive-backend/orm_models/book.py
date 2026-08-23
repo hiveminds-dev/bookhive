@@ -76,6 +76,29 @@ class Book(Base):
         nullable=True,
     )
 
+    page_count: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+        default=0,
+    )
+
+    @property
+    def estimated_reading_time(self) -> str:
+        """Returns estimated reading time string based on page count (~2 mins/page)."""
+        pages = self.page_count or 0
+        if pages <= 0:
+            return "N/A"
+        total_minutes = pages * 2
+        hours = total_minutes // 60
+        mins = total_minutes % 60
+        if hours > 0 and mins > 0:
+            return f"{hours} hours {mins} mins"
+        elif hours > 0:
+            return f"{hours} hours"
+        else:
+            return f"{mins} mins"
+
+
     status: Mapped[BookStatus] = mapped_column(
         SQLEnum(BookStatus),
         default=BookStatus.DRAFT,
