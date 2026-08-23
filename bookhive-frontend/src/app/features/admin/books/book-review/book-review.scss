@@ -395,11 +395,33 @@
         color: #475569;
 
         .tool-btn {
-          padding: 4px 8px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 5px 9px;
           border-radius: 6px;
           border: 1px solid #e2e8f0;
           background: #ffffff;
+          color: #334155;
           cursor: pointer;
+          transition: background 0.15s ease, border-color 0.15s ease;
+          &:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+          }
+        }
+
+        .icon-btn {
+          padding: 5px 7px;
+        }
+
+        .nav-arrow {
+          padding: 5px 7px;
+          margin: 0 4px;
+          &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+          }
         }
       }
     }
@@ -448,9 +470,46 @@
       }
 
       .manuscript-canvas {
-        padding: 40px;
+        padding: 20px;
         display: flex;
         justify-content: center;
+        overflow: hidden;
+        background: #f8fafc;
+
+        .pdf-viewport-box {
+          width: 100%;
+          max-width: 960px;
+          height: 780px;
+          overflow: auto;
+          background: #ffffff;
+          border-radius: 16px;
+          border: 1px solid #e2e8f0;
+          padding: 16px;
+          display: flex;
+          justify-content: center;
+          box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.02);
+          cursor: grab;
+          user-select: none;
+
+          &.is-dragging {
+            cursor: grabbing !important;
+          }
+        }
+
+        .pdf-scale-wrapper {
+          width: 100%;
+          transform-origin: top center;
+          transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pdf-manuscript-iframe {
+          width: 100%;
+          height: 750px;
+          border: none;
+          border-radius: 12px;
+          background: #ffffff;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
 
         .manuscript-paper {
           background: #ffffff;
@@ -462,14 +521,6 @@
 
           .chapter-title { font-size: 1.5rem; font-weight: 800; color: #854d0e; margin-bottom: 20px; }
           .lead-paragraph { font-size: 0.95rem; color: #334155; line-height: 1.6; margin-bottom: 24px; }
-
-          .manuscript-illustration {
-            margin: 24px 0;
-            text-align: center;
-            .illustration-img { max-width: 100%; height: 220px; border-radius: 8px; object-fit: cover; }
-          }
-
-          .body-paragraph { font-size: 0.92rem; color: #475569; line-height: 1.6; }
         }
       }
 
