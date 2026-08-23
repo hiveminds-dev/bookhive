@@ -147,7 +147,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let admin of adminsSignal()">
+        <tr *ngIf="filteredAdmins.length === 0">
+          <td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">No admin staff found matching your search filters.</td>
+        </tr>
+        <tr *ngFor="let admin of filteredAdmins">
           <td>
             <div class="user-cell">
               <div class="avatar-cell">

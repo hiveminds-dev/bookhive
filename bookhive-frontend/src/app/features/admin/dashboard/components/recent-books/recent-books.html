@@ -1,10 +1,21 @@
 <section class="panel">
   <header><h2>Recent Book Uploads</h2><a href="#">View All</a></header>
   <div class="table-head"><span>Book Details</span><span>Author</span><span>Category</span><span>Status</span></div>
-  <article class="book-row" *ngFor="let book of books">
-    <div class="book-details"><img [src]="book.cover" alt=""><div><strong>{{ book.title }}</strong><span>{{ book.isbn }}</span></div></div>
-    <span>{{ book.author }}</span>
-    <span><em>{{ book.category }}</em></span>
-    <span class="status" [class]="book.statusClass"><i></i>{{ book.status }}</span>
+
+  <div class="loading-row" *ngIf="loading()">Loading...</div>
+
+  <div class="empty-row" *ngIf="!loading() && filteredBooks.length === 0 && !searchQuery">No books yet.</div>
+  <div class="empty-row" *ngIf="!loading() && filteredBooks.length === 0 && searchQuery">No results for "{{ searchQuery }}".</div>
+
+  <article class="book-row" *ngFor="let book of filteredBooks">
+    <div class="book-details">
+      <img [src]="book.cover_image_path ? '/' + book.cover_image_path : 'assets/images/book-covers/beyond-good-and-evil.jpg'" alt="">
+      <div><strong>{{ book.title }}</strong><span>{{ book.author_name }}</span></div>
+    </div>
+    <span>{{ book.author_name }}</span>
+    <span><em>{{ book.category_name }}</em></span>
+    <span class="status" [class]="getStatusClass(book.status)"><i></i>{{ getStatusLabel(book.status) }}</span>
   </article>
 </section>
+
+

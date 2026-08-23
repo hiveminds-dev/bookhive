@@ -76,7 +76,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let cat of categoriesSignal()">
+        <tr *ngIf="filteredCategories.length === 0">
+          <td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No categories found matching your search.</td>
+        </tr>
+        <tr *ngFor="let cat of filteredCategories">
           <td>
             <strong class="cat-name">{{ cat.name }}</strong>
           </td>

@@ -32,7 +32,7 @@
       <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
         <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Advance Search</span>
-        <span class="filter-count-badge" *ngIf="filterCountry() || filterStatus()">!</span>
+        <span class="filter-count-badge" *ngIf="filterCountry() || filterStatus() || filterTimeframe() !== 'all'">!</span>
       </button>
     </div>
 
@@ -58,6 +58,16 @@
             <option value="Pending">Pending Approval</option>
             <option value="Approved">Approved Creators</option>
             <option value="Rejected">Rejected Applications</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Date Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="all">All Time</option>
+            <option value="today">Today's Activity</option>
+            <option value="7days">Past 7 Days</option>
+            <option value="30days">Past 30 Days</option>
           </select>
         </div>
 
@@ -131,66 +141,62 @@
   <section class="card-table-wrapper">
     <div class="tabs-header">
       <button type="button" class="tab-btn active">
-        Pending Author Requests
-        <span class="tab-badge">12</span>
+        All Author Applications
+        <span class="tab-badge">{{ authorsSignal().length }}</span>
       </button>
-      <button type="button" class="tab-btn">Approved Authors</button>
     </div>
 
-    <table class="data-table">
+    <!-- Loading state -->
+    <div class="loading-row" *ngIf="loading()">Loading author applications...</div>
+
+    <!-- Empty state -->
+    <div class="empty-row" *ngIf="!loading() && filteredAuthors.length === 0">No authors found.</div>
+
+    <table class="data-table" *ngIf="!loading() && filteredAuthors.length > 0">
       <thead>
         <tr>
-          <th>PROFILE</th>
           <th>FULL NAME</th>
           <th>PEN NAME</th>
           <th>EMAIL</th>
           <th>COUNTRY</th>
           <th>APPLIED DATE</th>
+          <th>STATUS</th>
           <th class="text-right">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let author of authors">
+        <tr *ngFor="let author of filteredAuthors">
           <td>
-            <div class="avatar-cell">
-              <img [src]="author.avatar" [alt]="author.fullName">
-            </div>
+            <strong class="full-name">{{ author.full_name }}</strong>
           </td>
           <td>
-            <strong class="full-name">{{ author.fullName }}</strong>
-          </td>
-          <td>
-            <span class="pen-name">{{ author.penName }}</span>
+            <span class="pen-name">{{ author.pen_name }}</span>
           </td>
           <td>
             <span class="email-text">{{ author.email }}</span>
           </td>
           <td>
-            <span class="country-text">{{ author.country }}</span>
+            <span class="country-text">{{ author.country ?? '—' }}</span>
           </td>
           <td>
-            <span class="date-text">{{ author.appliedDate }}</span>
+            <span class="date-text">{{ author.applied_date | date:'MMM d, y' }}</span>
+          </td>
+          <td>
+            <span class="status-badge" [class]="getStatusClass(author.account_status)">{{ author.account_status }}</span>
           </td>
           <td class="text-right">
             <div class="action-buttons">
-              <button type="button" class="btn-icon" title="Preview"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              <button type="button" class="btn-icon approve" title="Approve" (click)="approveAuthor(author)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-              <button type="button" class="btn-icon reject" title="Reject" (click)="rejectAuthor(author)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 9l-6 6M9 9l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+              <button type="button" class="btn-icon" [routerLink]="['/admin/authors', author.user_id]" title="View Profile"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              <button type="button" class="btn-icon approve" title="Approve" (click)="approveAuthor(author)" [disabled]="author.account_status === 'approved'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+              <button type="button" class="btn-icon reject" title="Reject" (click)="rejectAuthor(author)" [disabled]="author.account_status === 'rejected'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 9l-6 6M9 9l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <footer class="table-footer">
-      <span class="summary-text">Showing 1-10 of 124 records</span>
-      <div class="pagination">
-        <button type="button" class="page-btn nav-btn">&lt;</button>
-        <button type="button" class="page-btn active">1</button>
-        <button type="button" class="page-btn">2</button>
-        <button type="button" class="page-btn">3</button>
-        <button type="button" class="page-btn nav-btn">&gt;</button>
-      </div>
+    <footer class="table-footer" *ngIf="!loading() && filteredAuthors.length > 0">
+      <span class="summary-text">Showing {{ filteredAuthors.length }} of {{ authorsSignal().length }} records</span>
     </footer>
   </section>
 </div>

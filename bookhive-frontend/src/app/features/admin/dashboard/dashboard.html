@@ -7,8 +7,14 @@
 
   <header class="admin-page-header">
     <div class="header-titles">
-      <h1>Curator Dashboard Overview</h1>
-      <p>Monitor platform statistics, pending manuscripts, author credentials, and system health.</p>
+      <div class="title-row">
+        <h1>{{ pageTitle() }}</h1>
+        <span class="super-admin-badge" *ngIf="isSuperAdmin()">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          Super Admin
+        </span>
+      </div>
+      <p>{{ pageSubtitle() }}</p>
     </div>
   </header>
 
@@ -26,7 +32,7 @@
       <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
         <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Advance Search</span>
-        <span class="filter-count-badge" *ngIf="filterSection()">!</span>
+        <span class="filter-count-badge" *ngIf="filterTimeframe() !== 'all' || filterSortBy() !== 'newest'">!</span>
       </button>
     </div>
 
@@ -34,23 +40,20 @@
     <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
       <div class="filter-grid">
         <div class="filter-group">
-          <label>Target Domain</label>
-          <select [ngModel]="filterSection()" (ngModelChange)="filterSection.set($event)">
-            <option value="">All Admin Domains</option>
-            <option value="books">Books &amp; Manuscripts</option>
-            <option value="authors">Author Applications</option>
-            <option value="readers">Reader Accounts</option>
-            <option value="logs">System Health &amp; Activity Logs</option>
+          <label>Date Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="all">All Time</option>
+            <option value="today">Today's Activity</option>
+            <option value="7days">Past 7 Days</option>
+            <option value="30days">Past 30 Days</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label>Date Window</label>
-          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
-            <option value="today">Today's Activity</option>
-            <option value="7days">Past 7 Days</option>
-            <option value="30days">Past 30 Days</option>
-            <option value="all">All Time</option>
+          <label>Sort By</label>
+          <select [ngModel]="filterSortBy()" (ngModelChange)="filterSortBy.set($event)">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
           </select>
         </div>
       </div>
@@ -65,16 +68,17 @@
     </div>
   </section>
 
-  <app-statistics />
+  <app-statistics [isSuperAdmin]="isSuperAdmin()" />
 
   <div class="dashboard-grid">
     <div class="main-column">
-      <app-recent-books />
+      <app-recent-books [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
       <div class="lower-grid">
-        <app-recent-authors />
-        <app-recent-requests />
+        <app-recent-authors [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
+        <app-recent-requests [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
       </div>
     </div>
-    <app-activity />
+    <app-activity [isSuperAdmin]="isSuperAdmin()" />
   </div>
 </div>
+
