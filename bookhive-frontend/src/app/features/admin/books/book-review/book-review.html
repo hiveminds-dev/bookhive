@@ -143,14 +143,25 @@
       </div>
 
       <div class="reader-toolbar">
-        <button type="button" class="tool-btn" title="Zoom Out">-</button>
-        <span class="zoom-level">100%</span>
-        <button type="button" class="tool-btn" title="Zoom In">+</button>
-        <span class="page-nav">&lt; Pages: {{ book.pages }} &gt;</span>
-        <button type="button" class="tool-btn" title="Bookmark">
-          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <button type="button" class="tool-btn icon-btn" title="Zoom Out" (click)="zoomOut()">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;"><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
-        <button type="button" class="tool-btn" title="Download">
+        <span class="zoom-level">{{ zoomLevelSignal() }}%</span>
+        <button type="button" class="tool-btn icon-btn" title="Zoom In" (click)="zoomIn()">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+
+        <span class="page-nav">
+          <button type="button" class="tool-btn nav-arrow" (click)="prevPage()" [disabled]="currentPageSignal() === 1" title="Previous Page">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          Page {{ currentPageSignal() }} of {{ totalPagesSignal() }}
+          <button type="button" class="tool-btn nav-arrow" (click)="nextPage()" [disabled]="currentPageSignal() === totalPagesSignal()" title="Next Page">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </span>
+
+        <button type="button" class="tool-btn" title="Download PDF" (click)="downloadPdf()">
           <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         </button>
       </div>
@@ -158,33 +169,49 @@
 
     <!-- Main Inspector Viewport -->
     <div class="reader-viewport-grid">
-      <!-- Left Sidebar: Contents -->
+      <!-- Left Sidebar: Meta & Contents (only show contents if valid PDF headings exist) -->
       <aside class="left-sidebar">
         <div class="sidebar-book-card">
           <img [src]="book.cover" alt="cover" class="side-cover" />
           <div class="side-meta">
-            <span>Pages <strong>{{ book.pages }}</strong></span>
-            <span>Rating <strong>4.9/5</strong></span>
+            <span>Pages <strong>{{ totalPagesSignal() }}</strong></span>
+            <span>Rating <strong>{{ book.rating }}</strong></span>
           </div>
         </div>
 
-        <h3>Contents</h3>
-        <ul class="contents-list">
-          <li *ngFor="let ch of chapterList" [class.active]="ch.active">
-            {{ ch.title }}
-          </li>
-        </ul>
+        <div class="contents-section" *ngIf="chaptersSignal().length > 0">
+          <h3>Contents</h3>
+          <ul class="contents-list">
+            <li *ngFor="let ch of chaptersSignal()" [class.active]="ch.active" (click)="goToPage(ch.page)" style="cursor: pointer;">
+              {{ ch.title }}
+            </li>
+          </ul>
+        </div>
       </aside>
 
-      <!-- Center Manuscript Canvas (Real PDF Viewer Embed) -->
+      <!-- Center Manuscript Canvas (Contained Viewport with Mouse Drag-to-Pan) -->
       <main class="manuscript-canvas">
-        <iframe *ngIf="pdfViewerUrlSignal()" [src]="pdfViewerUrlSignal()" class="pdf-manuscript-iframe" width="100%" height="750px" style="border:none; border-radius:14px; background:#ffffff; box-shadow: 0 8px 30px rgba(0,0,0,0.12);"></iframe>
+        <div class="pdf-viewport-box"
+             [class.is-dragging]="isDraggingSignal()"
+             (mousedown)="onMouseDown($event)"
+             (mouseleave)="onMouseLeaveOrUp()"
+             (mouseup)="onMouseLeaveOrUp()"
+             (mousemove)="onMouseMove($event)">
+          <div class="pdf-scale-wrapper" [style.transform]="'scale(' + (zoomLevelSignal() / 100) + ')'">
+            <iframe *ngIf="pdfViewerUrlSignal()"
+                    [src]="pdfViewerUrlSignal()"
+                    class="pdf-manuscript-iframe"
+                    [style.pointer-events]="isDraggingSignal() ? 'none' : 'auto'"
+                    width="100%"
+                    height="760px"></iframe>
 
-        <div *ngIf="!pdfViewerUrlSignal()" class="manuscript-paper">
-          <h1 class="chapter-title">Manuscript Inspection</h1>
-          <p class="lead-paragraph">
-            Loading digital manuscript file...
-          </p>
+            <div *ngIf="!pdfViewerUrlSignal()" class="manuscript-paper">
+              <h1 class="chapter-title">Manuscript Inspection</h1>
+              <p class="lead-paragraph">
+                Loading digital manuscript file...
+              </p>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -198,18 +225,18 @@
 
         <div class="page-jumper-card">
           <label>PAGE NUMBER</label>
-          <input type="number" value="15" class="page-input" />
+          <input type="number" [ngModel]="currentPageSignal()" (ngModelChange)="goToPage($event)" [min]="1" [max]="totalPagesSignal()" class="page-input" />
         </div>
       </aside>
     </div>
 
     <!-- Bottom Progress Footer -->
     <footer class="reader-bottombar">
-      <span>Page 15 of 120</span>
+      <span>Page {{ currentPageSignal() }} of {{ totalPagesSignal() }}</span>
       <div class="progress-bar-track">
-        <div class="progress-fill" style="width: 12.5%;"></div>
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
       </div>
-      <span>12.5% Read</span>
+      <span>{{ progressPercentage }}% Read</span>
     </footer>
   </div>
 
