@@ -1,11 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
+  ActivatedRoute,
+  NavigationEnd,
   Router,
   RouterLink,
   RouterLinkActive,
-  RouterOutlet
+  RouterOutlet,
 } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { filter, Subscription } from 'rxjs';
 import { Auth } from '../../core/services/auth';
 
 @Component({
@@ -20,12 +23,40 @@ import { Auth } from '../../core/services/auth';
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
-export class MainLayoutComponent {
+export class MainLayoutComponent implements OnInit, OnDestroy {
   readonly auth = inject(Auth);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  private routerSub?: Subscription;
 
   searchTerm = '';
   mobileMenuOpen = false;
+
+  ngOnInit(): void {
+    this.syncSearchTerm();
+
+    this.routerSub = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.syncSearchTerm();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.routerSub?.unsubscribe();
+  }
+
+  private syncSearchTerm(): void {
+    let currentRoute = this.route;
+    while (currentRoute.firstChild) {
+      currentRoute = currentRoute.firstChild;
+    }
+    const searchParam = currentRoute.snapshot.queryParamMap.get('search');
+    if (searchParam !== null) {
+      this.searchTerm = searchParam;
+    }
+  }
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
@@ -38,11 +69,16 @@ export class MainLayoutComponent {
   searchBooks(): void {
     const search = this.searchTerm.trim();
 
-    if (!search) {
-      return;
-    }
+    void this.router.navigate(['/explore'], {
+      queryParams: { search: search || null },
+      queryParamsHandling: 'merge'
+    });
+  }
 
-    console.log('Searching for:', search);
+  onSearchChange(): void {
+    if (this.router.url.startsWith('/explore')) {
+      this.searchBooks();
+    }
   }
 
   logout(): void {

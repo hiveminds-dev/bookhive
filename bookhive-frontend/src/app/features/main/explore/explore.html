@@ -4,6 +4,7 @@
 
     <aside class="filters-column">
       <app-explore-filters
+        [search]="activeFilters.search"
         (filtersChanged)="onFiltersChanged($event)">
       </app-explore-filters>
     </aside>
