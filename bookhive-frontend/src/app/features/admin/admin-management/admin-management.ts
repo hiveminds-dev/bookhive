@@ -1,22 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
+import { AdminApiService, AdminStaffStats, AdminUserItem } from '../../../core/services/admin-api.service';
 import { ConfirmationModalComponent } from '../../../shared/components/confirmation-modal/confirmation-modal';
-
-interface AdminUser {
-  id: number;
-  name: string;
-  email: string;
-  role: 'Super Admin' | 'Senior Editor' | 'Manuscript Moderator' | 'Support Lead';
-  roleBadgeClass: string;
-  department: string;
-  lastActive: string;
-  twoFactor: boolean;
-  status: 'Active' | 'Suspended' | 'Invited';
-  avatar: string;
-}
 
 @Component({
   selector: 'app-admin-management',
@@ -25,59 +13,13 @@ interface AdminUser {
   templateUrl: './admin-management.html',
   styleUrl: './admin-management.scss',
 })
-export class AdminManagementComponent {
+export class AdminManagementComponent implements OnInit {
   private readonly toastService = inject(ToastService);
+  private readonly adminApi = inject(AdminApiService);
 
-  readonly adminsSignal = signal<AdminUser[]>([
-    {
-      id: 1,
-      name: 'Alexander Wright',
-      email: 'alexander.wright@bookhive.com',
-      role: 'Super Admin',
-      roleBadgeClass: 'role-super',
-      department: 'Executive Governance',
-      lastActive: 'Just now (Active)',
-      twoFactor: true,
-      status: 'Active',
-      avatar: 'assets/images/auth/sign_in_1.png'
-    },
-    {
-      id: 2,
-      name: 'Samantha Reed',
-      email: 'samantha.reed@bookhive.com',
-      role: 'Senior Editor',
-      roleBadgeClass: 'role-senior',
-      department: 'Editorial & Curation',
-      lastActive: '12 mins ago',
-      twoFactor: true,
-      status: 'Active',
-      avatar: 'assets/images/auth/sign_in_1.png'
-    },
-    {
-      id: 3,
-      name: 'Marcus Vance',
-      email: 'marcus.vance@bookhive.com',
-      role: 'Manuscript Moderator',
-      roleBadgeClass: 'role-moderator',
-      department: 'Author Compliance',
-      lastActive: '2 hours ago',
-      twoFactor: false,
-      status: 'Active',
-      avatar: 'assets/images/auth/sign_in_1.png'
-    },
-    {
-      id: 4,
-      name: 'Elena Rostova',
-      email: 'elena.rostova@bookhive.com',
-      role: 'Support Lead',
-      roleBadgeClass: 'role-support',
-      department: 'Community & Help Desk',
-      lastActive: 'Invited (Pending)',
-      twoFactor: false,
-      status: 'Invited',
-      avatar: 'assets/images/auth/sign_in_1.png'
-    }
-  ]);
+  readonly adminsSignal = signal<AdminUserItem[]>([]);
+  readonly staffStatsSignal = signal<AdminStaffStats | null>(null);
+  readonly loading = signal(true);
 
   searchQuery = signal('');
   showAdvanceSearch = signal(false);
@@ -85,13 +27,43 @@ export class AdminManagementComponent {
   filterStatus = signal('');
   filterSortBy = signal('newest');
 
-  showInviteModal = signal(false);
-  targetAdminForDelete = signal<AdminUser | null>(null);
+  showCreateModal = signal(false);
+  targetAdminForDelete = signal<AdminUserItem | null>(null);
 
   newAdminName = '';
+  newAdminUsername = '';
   newAdminEmail = '';
-  newAdminRole: AdminUser['role'] = 'Senior Editor';
+  newAdminPassword = '';
+  newAdminRole = 'Senior Editor';
   newAdminDept = 'Editorial & Curation';
+
+  ngOnInit(): void {
+    this.loadAdminStaff();
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+  }
+
+  loadAdminStaff(): void {
+    this.loading.set(true);
+    this.adminApi.getAdminStaffStats().subscribe({
+      next: (stats) => {
+        this.staffStatsSignal.set(stats);
+      }
+    });
+
+    this.adminApi.getAdminStaff().subscribe({
+      next: (data) => {
+        this.adminsSignal.set(data ?? []);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.toastService.info('Could not load admin staff accounts.', 'Notice');
+        this.loading.set(false);
+      }
+    });
+  }
 
   toggleAdvanceSearch(): void {
     this.showAdvanceSearch.update(v => !v);
@@ -101,7 +73,7 @@ export class AdminManagementComponent {
     this.searchQuery.set('');
   }
 
-  get filteredAdmins(): AdminUser[] {
+  get filteredAdmins(): AdminUserItem[] {
     const q = this.searchQuery().toLowerCase().trim();
     const role = this.filterRole().toLowerCase().trim();
     const status = this.filterStatus().toLowerCase().trim();
@@ -132,6 +104,7 @@ export class AdminManagementComponent {
   }
 
   applyFilters(): void {
+    this.loadAdminStaff();
     this.toastService.success('Admin accounts list filtered.', 'Filter Applied');
   }
 
@@ -140,67 +113,78 @@ export class AdminManagementComponent {
     this.filterRole.set('');
     this.filterStatus.set('');
     this.filterSortBy.set('newest');
+    this.loadAdminStaff();
     this.toastService.info('Admin search filters reset.', 'Filters Reset');
   }
 
-  openInviteModal(): void {
+  openCreateModal(): void {
     this.newAdminName = '';
+    this.newAdminUsername = '';
     this.newAdminEmail = '';
+    this.newAdminPassword = '';
     this.newAdminRole = 'Senior Editor';
     this.newAdminDept = 'Editorial & Curation';
-    this.showInviteModal.set(true);
+    this.showCreateModal.set(true);
   }
 
-  closeInviteModal(): void {
-    this.showInviteModal.set(false);
+  closeCreateModal(): void {
+    this.showCreateModal.set(false);
   }
 
-  saveInviteAdmin(): void {
-    if (!this.newAdminName.trim() || !this.newAdminEmail.trim()) {
-      this.toastService.error('Please fill in required admin details.', 'Validation Error');
+  saveCreateAdmin(): void {
+    if (!this.newAdminName.trim() || !this.newAdminUsername.trim() || !this.newAdminEmail.trim() || !this.newAdminPassword.trim()) {
+      this.toastService.error('Please fill in all required admin account details.', 'Validation Error');
       return;
     }
 
-    let badgeClass = 'role-senior';
-    if (this.newAdminRole === 'Super Admin') badgeClass = 'role-super';
-    else if (this.newAdminRole === 'Manuscript Moderator') badgeClass = 'role-moderator';
-    else if (this.newAdminRole === 'Support Lead') badgeClass = 'role-support';
-
-    const newAdmin: AdminUser = {
-      id: Date.now(),
+    this.adminApi.createAdminStaff({
       name: this.newAdminName.trim(),
+      username: this.newAdminUsername.trim(),
       email: this.newAdminEmail.trim(),
+      password: this.newAdminPassword.trim(),
       role: this.newAdminRole,
-      roleBadgeClass: badgeClass,
-      department: this.newAdminDept,
-      lastActive: 'Invited (Pending)',
-      twoFactor: false,
-      status: 'Invited',
-      avatar: 'assets/images/auth/sign_in_1.png'
-    };
-
-    this.adminsSignal.update(list => [newAdmin, ...list]);
-    this.showInviteModal.set(false);
-    this.toastService.success(`Sent invitation link to "${newAdmin.email}" with role "${newAdmin.role}".`, 'Admin Invited');
+      department: this.newAdminDept
+    }).subscribe({
+      next: (created) => {
+        this.loadAdminStaff();
+        this.showCreateModal.set(false);
+        this.toastService.success(`Successfully created Admin Account for "${created.name}" (${created.role})!`, 'Admin Account Created');
+      },
+      error: (err) => {
+        const errorMsg = err.error?.detail || 'Failed to create admin account.';
+        this.toastService.error(errorMsg, 'Creation Error');
+      }
+    });
   }
 
-  toggleAdminStatus(admin: AdminUser): void {
+  toggleAdminStatus(admin: AdminUserItem): void {
     if (admin.role === 'Super Admin') {
       this.toastService.warning('Super Admin account status cannot be modified.', 'Action Protected');
       return;
     }
 
-    const nextStatus: AdminUser['status'] = admin.status === 'Active' ? 'Suspended' : 'Active';
-    admin.status = nextStatus;
-    const msg = nextStatus === 'Suspended' ? 'suspended access for' : 're-activated access for';
-    this.toastService.info(`Successfully ${msg} ${admin.name}.`, 'Admin Status Updated');
+    this.adminApi.toggleAdminStaffStatus(admin.id).subscribe({
+      next: () => {
+        const nextStatus = admin.status === 'Active' ? 'Suspended' : 'Active';
+        this.adminsSignal.update(list =>
+          list.map(a => (a.id === admin.id ? { ...a, status: nextStatus } : a))
+        );
+        const msg = nextStatus === 'Suspended' ? 'suspended access for' : 're-activated access for';
+        this.toastService.info(`Successfully ${msg} ${admin.name}.`, 'Admin Status Updated');
+        this.loadAdminStaff();
+      },
+      error: (err) => {
+        const errorMsg = err.error?.detail || 'Failed to update admin status.';
+        this.toastService.error(errorMsg, 'Status Update Failed');
+      }
+    });
   }
 
-  resetPassword(admin: AdminUser): void {
+  resetPassword(admin: AdminUserItem): void {
     this.toastService.info(`Dispatched security password reset link to "${admin.email}".`, 'Password Reset Sent');
   }
 
-  promptRevokeAdmin(admin: AdminUser): void {
+  promptRevokeAdmin(admin: AdminUserItem): void {
     if (admin.role === 'Super Admin') {
       this.toastService.warning('Super Admin accounts cannot be deleted.', 'Action Protected');
       return;
@@ -215,8 +199,17 @@ export class AdminManagementComponent {
   confirmRevoke(): void {
     const admin = this.targetAdminForDelete();
     if (admin) {
-      this.adminsSignal.update(list => list.filter(a => a.id !== admin.id));
-      this.toastService.warning(`Revoked administrative credentials for ${admin.name}.`, 'Admin Credentials Revoked');
+      this.adminApi.deleteAdminStaff(admin.id).subscribe({
+        next: () => {
+          this.adminsSignal.update(list => list.filter(a => a.id !== admin.id));
+          this.toastService.warning(`Revoked administrative credentials for ${admin.name}.`, 'Admin Credentials Revoked');
+          this.loadAdminStaff();
+        },
+        error: (err) => {
+          const errorMsg = err.error?.detail || 'Failed to revoke admin credentials.';
+          this.toastService.error(errorMsg, 'Revoke Failed');
+        }
+      });
     }
     this.targetAdminForDelete.set(null);
   }

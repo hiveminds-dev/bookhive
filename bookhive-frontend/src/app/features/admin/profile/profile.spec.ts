@@ -1,5 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 
 import { Auth } from '../../../core/services/auth';
 import { AdminProfile } from './profile';
@@ -22,10 +24,12 @@ describe('AdminProfile', () => {
     await TestBed.configureTestingModule({
       imports: [AdminProfile],
       providers: [
+        provideRouter([]),
         {
           provide: Auth,
           useValue: {
-            currentUser: currentUser.asReadonly()
+            currentUser: currentUser.asReadonly(),
+            getProfile: () => of(currentUser())
           }
         }
       ]

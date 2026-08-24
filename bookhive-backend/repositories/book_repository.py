@@ -4,9 +4,11 @@ from datetime import datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload, selectinload
 
 from orm_models.book import Book, BookStatus
 from orm_models.category import Category
+from orm_models.user import User
 
 
 class BookRepository:
@@ -36,7 +38,35 @@ class BookRepository:
         session: AsyncSession,
         book_id: int,
     ) -> Book | None:
-        result = await session.execute(select(Book).where(Book.id == book_id))
+        result = await session.execute(
+            select(Book).where(
+                Book.id == book_id,
+            )
+        )
+        return result.scalar_one_or_none()
+
+    async def get_published_book_details(
+        self,
+        session: AsyncSession,
+        book_id: int,
+    ) -> Book | None:
+        """Return a published book with its author and category."""
+
+        query = (
+            select(Book)
+            .options(
+                selectinload(Book.author).selectinload(
+                    User.author_profile
+                ),
+                selectinload(Book.category),
+            )
+            .where(
+                Book.id == book_id,
+                Book.status == BookStatus.PUBLISHED,
+            )
+        )
+
+        result = await session.execute(query)
         return result.scalar_one_or_none()
 
     async def get_author_books(
@@ -47,13 +77,22 @@ class BookRepository:
         offset: int,
         limit: int,
     ) -> list[Book]:
-        query = select(Book).where(Book.author_id == author_id)
+        query = select(Book).where(
+            Book.author_id == author_id
+        )
+
         if book_status is not None:
-            query = query.where(Book.status == book_status)
+            query = query.where(
+                Book.status == book_status
+            )
 
         result = await session.execute(
-            query.order_by(Book.updated_at.desc()).offset(offset).limit(limit)
+            query
+            .order_by(Book.updated_at.desc())
+            .offset(offset)
+            .limit(limit)
         )
+
         return list(result.scalars().all())
 
     async def get_active_category(
@@ -77,6 +116,7 @@ class BookRepository:
     ) -> Book:
         for field, value in updates.items():
             setattr(book, field, value)
+
         await session.flush()
         return book
 
@@ -89,6 +129,7 @@ class BookRepository:
     ) -> Book:
         book.status = new_status
         book.submitted_at = submitted_at
+
         await session.flush()
         return book
 
@@ -98,11 +139,20 @@ class BookRepository:
         author_id: int,
     ) -> dict[BookStatus, int]:
         result = await session.execute(
-            select(Book.status, func.count(Book.id))
-            .where(Book.author_id == author_id)
+            select(
+                Book.status,
+                func.count(Book.id),
+            )
+            .where(
+                Book.author_id == author_id
+            )
             .group_by(Book.status)
         )
-        return {book_status: count for book_status, count in result.all()}
+
+        return {
+            book_status: count
+            for book_status, count in result.all()
+        }
 
     async def get_recent_author_books(
         self,
@@ -112,8 +162,81 @@ class BookRepository:
     ) -> list[Book]:
         result = await session.execute(
             select(Book)
-            .where(Book.author_id == author_id)
+            .where(
+                Book.author_id == author_id
+            )
             .order_by(Book.updated_at.desc())
             .limit(limit)
         )
+
         return list(result.scalars().all())
+
+    async def get_published_books_with_filters(
+        self,
+        session: AsyncSession,
+        *,
+        offset: int,
+        limit: int,
+        search_query: str | None = None,
+        category_id: int | None = None,
+        language: str | None = None,
+    ) -> list[Book]:
+        query = (
+            select(Book)
+            .options(joinedload(Book.author), joinedload(Book.category))
+            .where(Book.status == BookStatus.PUBLISHED)
+        )
+        query = self._apply_catalogue_filters(
+            query,
+            search_query=search_query,
+            category_id=category_id,
+            language=language,
+        )
+        result = await session.execute(
+            query.order_by(
+                Book.published_at.desc(), Book.id.desc()
+            )
+            .offset(offset)
+            .limit(limit)
+        )
+        return list(result.scalars().all())
+
+    async def get_published_books_count(
+        self,
+        session: AsyncSession,
+        *,
+        search_query: str | None = None,
+        category_id: int | None = None,
+        language: str | None = None,
+    ) -> int:
+        query = select(func.count(Book.id)).where(
+            Book.status == BookStatus.PUBLISHED
+        )
+        query = self._apply_catalogue_filters(
+            query,
+            search_query=search_query,
+            category_id=category_id,
+            language=language,
+        )
+        result = await session.execute(query)
+        return int(result.scalar_one())
+
+    @staticmethod
+    def _apply_catalogue_filters(
+        query,
+        *,
+        search_query: str | None,
+        category_id: int | None,
+        language: str | None,
+    ):
+        if search_query:
+            query = query.where(
+                Book.title.ilike(f"%{search_query.strip()}%")
+            )
+        if category_id is not None:
+            query = query.where(Book.category_id == category_id)
+        if language:
+            query = query.where(
+                func.lower(Book.language) == language.strip().lower()
+            )
+        return query

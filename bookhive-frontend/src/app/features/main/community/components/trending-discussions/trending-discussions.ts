@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Input,
   Output
 } from '@angular/core';
 
@@ -24,6 +25,9 @@ export interface CommunityDiscussion {
   styleUrl: './trending-discussions.scss'
 })
 export class TrendingDiscussions {
+
+  @Input()
+  searchTerm = '';
 
   @Output()
   readonly threadSelected =
@@ -62,6 +66,21 @@ export class TrendingDiscussions {
       comments: 56
     }
   ];
+
+  get filteredDiscussions(): CommunityDiscussion[] {
+    const query = this.searchTerm.trim().toLowerCase();
+    if (!query) {
+      return this.discussions;
+    }
+    return this.discussions.filter(discussion =>
+      [
+        discussion.title,
+        discussion.description,
+        discussion.author,
+        discussion.tag
+      ].some(value => value.toLowerCase().includes(query))
+    );
+  }
 
   viewThread(
     discussion: CommunityDiscussion
