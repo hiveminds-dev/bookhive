@@ -435,7 +435,7 @@ export const routes: Routes = [
             './features/main/home/home'
             ).then(
             module =>
-              module.Home
+              module.HomeComponent
           )
       },
       {

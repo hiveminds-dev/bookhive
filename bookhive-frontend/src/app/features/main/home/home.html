@@ -1,1 +1,528 @@
-<p>home works!</p>
+<!-- ================= LOADING ================= -->
+
+<div
+  class="loading-screen"
+  *ngIf="isLoading"
+  aria-live="polite"
+  aria-label="Loading BookHive"
+>
+  <div class="loading-content">
+
+    <img
+      src="assets/bookhive-logo.png"
+      alt="BookHive"
+      class="loading-logo"
+    />
+
+    <div
+      class="loading-spinner"
+      aria-hidden="true"
+    ></div>
+
+    <p>Loading BookHive...</p>
+
+  </div>
+</div>
+
+
+<!-- ================= ERROR ================= -->
+
+<div
+  class="error-screen"
+  *ngIf="!isLoading && hasError"
+  role="alert"
+  aria-live="assertive"
+>
+  <div class="error-content">
+
+    <div class="error-icon" aria-hidden="true">
+      ⚠️
+    </div>
+
+    <h2>Unable to load books</h2>
+
+    <p>
+      We couldn't load the BookHive library.
+      Please try again.
+    </p>
+
+    <button
+      type="button"
+      class="retry-btn"
+      (click)="loadBooks()"
+    >
+      Try Again
+    </button>
+
+  </div>
+</div>
+
+
+     <!--=========Home==========-->
+
+<div class="home"
+     *ngIf="!isLoading && !hasError"  >
+
+  <!-- ================= NAVBAR ================= -->
+  <nav class="navbar">
+
+    <div class="logo">
+      <img src="assets/bookhive-logo.png" alt="BookHive">
+    </div>
+
+    <ul class="nav-links">
+      <li><a routerLink="/home">Home</a></li>
+      <li><a routerLink="/explore">Explore</a></li>
+      <li><a routerLink="/community">Community</a></li>
+      <li><a routerLink="/about">About</a></li>
+    </ul>
+
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Search books, authors, categories..."
+        [(ngModel)]="searchText"
+      />
+    </div>
+
+    <div class="nav-buttons">
+
+      <button class="upload-btn" (click)="uploadBook()">
+        Upload
+      </button>
+
+      <button class="login-btn" (click)="login()">
+        Sign In
+      </button>
+
+      <button class="signup-btn" (click)="signup()">
+        Sign Up
+      </button>
+
+    </div>
+
+  </nav>
+
+
+  <!-- ================= HERO ================= -->
+
+  <section class="hero">
+
+    <div class="overlay"></div>
+
+    <div class="hero-content">
+
+      <p class="hero-small">
+        CURATION EXCELLENCE 2026
+      </p>
+
+      <h1>
+        The Sanctuary of
+        <span>Modern Knowledge</span>
+      </h1>
+
+      <p class="hero-description">
+        Access a curated universe of premium literature,
+        research papers and exclusive author insights.
+        Designed for readers who value quality and learning.
+      </p>
+
+      <div class="hero-buttons">
+
+        <button
+          class="primary-btn"
+          (click)="startJourney()">
+          Start Your Journey
+        </button>
+
+        <button
+          class="secondary-btn"
+          (click)="exploreLibrary()">
+          Explore Library
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- Stats -->
+
+    <div class="stats">
+
+      <div class="stat-card">
+        <h2>{{ totalBooks / 1000 | number:'1.0-0'}}k+</h2>
+        <span>Premium Books</span>
+      </div>
+
+      <div class="stat-card">
+        <h2>{{ rating }}/5</h2>
+        <span>Reader Rating</span>
+      </div>
+
+      <div class="stat-card">
+        <h2>24/7</h2>
+        <span>Author Support</span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= FEATURED SECTION ================= -->
+
+  <section class="featured-section">
+
+    <!-- Left Side -->
+
+    <div class="featured-left">
+
+      <div class="book-image">
+        <img
+          src="assets/images/home-page/library-bg.png"
+          alt="Book of the Month"
+          loading="lazy"
+        />
+      </div>
+
+      <div class="book-content">
+
+        <p class="section-title">
+          BOOK OF THE MONTH
+        </p>
+
+        <h2>
+          The Alchemy of Thought
+        </h2>
+
+        <p>
+          A compelling exploration of philosophy, architecture,
+          and human creativity. Discover how ideas shape the
+          future through timeless knowledge.
+        </p>
+
+        <button
+          *ngIf="books.length > 0"
+          class="read-btn"
+          type="button"
+          (click)="readBook(books[0])">
+          Read Overview →
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- Right Card -->
+
+    <div class="category-card">
+
+      <div class="icon-circle">
+        📚
+      </div>
+
+      <h3>Philosophy</h3>
+
+      <p>
+        {{ categories[0].books | number }} curated books covering
+        classical philosophy, ethics,
+        psychology and modern thinking.
+      </p>
+
+      <button
+        (click)="browseCategory('Philosophy')">
+        Browse Collection
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= AUTHOR SECTION ================= -->
+
+  <section class="author-section">
+
+    <div class="counter-card">
+
+      <h2>{{ totalAuthors | number }}</h2>
+
+      <span>PREMIUM AUTHORS</span>
+
+    </div>
+
+
+    <div class="author-card">
+
+      <img
+        src="assets/images/home-page/author.png"
+        alt="Author"
+      />
+
+      <div class="author-info">
+
+        <small>Author Spotlight</small>
+
+        <h3>Dr. Elena Vance</h3>
+
+        <p>
+          "Reading is not just consumption.
+          It is an architectural process
+          of the mind."
+        </p>
+
+        <div class="author-tags">
+
+          <span>Cognitive Science</span>
+
+          <span>Future History</span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= BOOKS ================= -->
+
+  <section class="books-section">
+
+    <!-- SHOW BOOKS WHEN RESULTS EXIST -->
+    <div
+      class="books-grid"
+      *ngIf="filteredBooks.length > 0"
+    >
+
+      <div
+        class="book-card"
+        *ngFor="let book of filteredBooks"
+      >
+
+        <img
+          [src]="book.image"
+          [alt]="book.title"
+          loading="lazy"
+        />
+
+        <h3>
+          {{ book.title }}
+        </h3>
+
+        <p>
+          {{ book.author }}
+        </p>
+
+        <small>
+          {{ book.category }}
+        </small>
+
+        <button
+          type="button"
+          (click)="readBook(book)"
+        >
+          Read More
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- SHOW EMPTY STATE WHEN SEARCH HAS NO RESULTS -->
+    <div
+      class="empty-state"
+      *ngIf="searchText.trim() !== '' && filteredBooks.length === 0"
+    >
+
+      <div class="empty-icon">
+        🔍
+      </div>
+
+      <h3>No books found</h3>
+
+      <p>
+        We couldn't find any books matching
+        "<strong>{{ searchText }}</strong>".
+      </p>
+
+      <button
+        type="button"
+        class="clear-search-btn"
+        (click)="clearSearch()"
+      >
+        Clear Search
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer">
+
+    <!-- TOP BAR -->
+    <div class="footer-header">
+
+      <div class="footer-logo">
+        <img
+          src="assets/bookhive-logo.png"
+          alt="BookHive"
+        />
+      </div>
+
+      <p class="footer-tagline">
+        Built for innovation and success
+      </p>
+
+    </div>
+
+
+    <!-- DIVIDER -->
+    <div class="footer-divider"></div>
+
+
+    <!-- MAIN FOOTER -->
+    <div class="footer-top">
+
+      <!-- COMPANY INFO -->
+      <div class="footer-brand">
+
+        <h4>BookHive A/S</h4>
+
+        <p>123 Office Way,</p>
+        <p>8000 Aarhus, Denmark</p>
+
+        <div class="footer-gap"></div>
+
+        <p>info&#64;bookhive.com</p>
+        <p>+45 12 34 56 78</p>
+
+        <div class="footer-gap"></div>
+
+        <p>Monday - Friday &nbsp; 10:00 - 14:00</p>
+        <p>Saturday - Sunday &nbsp; Closed</p>
+
+      </div>
+
+
+      <!-- SOLUTIONS -->
+      <div class="footer-links">
+
+        <h4>Solutions</h4>
+
+        <a href="#">Digital Library</a>
+        <a href="#">Author Tools</a>
+        <a href="#">Reader Space</a>
+
+      </div>
+
+
+      <!-- LOCATIONS -->
+      <div class="footer-links">
+
+        <h4>Locations</h4>
+
+        <a href="#">Aarhus</a>
+        <a href="#">Copenhagen</a>
+        <a href="#">Odense</a>
+        <a href="#">All Locations</a>
+
+      </div>
+
+
+      <!-- PARTNERSHIPS -->
+      <div class="footer-links">
+
+        <h4>Partnerships</h4>
+
+        <a href="#">Franchise</a>
+        <a href="#">Investor</a>
+        <a href="#">Affiliate</a>
+
+      </div>
+
+
+      <!-- ABOUT -->
+      <div class="footer-links">
+
+        <h4>About</h4>
+
+        <a href="#">Contact</a>
+        <a href="#">Careers</a>
+        <a href="#">Our People</a>
+        <a href="#">Press</a>
+
+      </div>
+
+    </div>
+
+
+    <!-- LANGUAGE -->
+    <div class="footer-language-row">
+
+      <button
+        type="button"
+        class="language-btn">
+        <i class="fas fa-globe"></i>
+        English
+        <i class="fas fa-chevron-down"></i>
+      </button>
+
+    </div>
+
+
+    <!-- DIVIDER -->
+    <div class="footer-divider"></div>
+
+
+    <!-- BOTTOM -->
+    <div class="footer-bottom">
+
+      <!-- COPYRIGHT -->
+      <p class="copyright">
+        © 2026 - BookHive
+      </p>
+
+
+      <!-- SOCIAL ICONS -->
+      <div class="social-icons">
+
+        <a href="#" aria-label="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a href="#" aria-label="Facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+
+        <a href="#" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+
+        <a href="#" aria-label="TikTok">
+          <i class="fab fa-tiktok"></i>
+        </a>
+
+      </div>
+
+
+      <!-- LEGAL LINKS -->
+      <div class="footer-legal">
+
+        <a routerLink="/terms">Terms</a>
+        <a routerLink="/privacy">Privacy</a>
+        <a routerLink="/cookies">Cookies</a>
+        <a routerLink="/sitemap">Sitemap</a>
+
+      </div>
+
+    </div>
+
+  </footer>
+</div> <!--.home-->
