@@ -183,7 +183,10 @@ class BookRepository:
     ) -> list[Book]:
         query = (
             select(Book)
-            .options(joinedload(Book.author), joinedload(Book.category))
+            .options(
+                joinedload(Book.author).joinedload(User.author_profile),
+                joinedload(Book.category),
+            )
             .where(Book.status == BookStatus.PUBLISHED)
         )
         query = self._apply_catalogue_filters(

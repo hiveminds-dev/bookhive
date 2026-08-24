@@ -38,8 +38,8 @@ describe('BookService', () => {
         description: 'Test Description',
         language: 'English',
         reading_level: 'Intermediate',
-        cover_url: 'test-cover.jpg',
-        pdf_url: 'test.pdf',
+        cover_url: '/storage/covers/test-cover.jpg',
+        pdf_url: '/storage/books/test.pdf',
         status: 'published',
         published_at: '2026-01-01T00:00:00Z',
         page_count: 240,
@@ -66,6 +66,7 @@ describe('BookService', () => {
     service.getBookDetails(1).subscribe((book) => {
       expect(book.title).toBe('Test Book');
       expect(book.id).toBe(1);
+      expect(book.cover_url).toBe('/storage/covers/test-cover.jpg');
     });
 
     const req = httpTesting.expectOne('/api/books/1');
@@ -73,7 +74,7 @@ describe('BookService', () => {
     req.flush(mockResponse);
   });
 
-  it('should fetch catalogue with filter parameters', () => {
+  it('should fetch catalogue with filter parameters including category_id', () => {
     const mockCatalogue: PaginatedCatalogue = {
       total_items: 1,
       total_pages: 1,
@@ -87,26 +88,53 @@ describe('BookService', () => {
           language: 'English',
           reading_level: 'Beginner',
           published_at: '2026-01-01',
-          cover_url: null,
+          cover_url: '/storage/covers/cover_1.jpg',
           author_name: 'Author',
           category_name: 'Tech',
         },
       ],
     };
 
-    service.getCatalogue({ page: 2, size: 5, search: 'logic' }).subscribe((res) => {
+    service.getCatalogue({ page: 2, size: 8, search: 'logic', category_id: 3 }).subscribe((res) => {
       expect(res.items.length).toBe(1);
       expect(res.items[0].title).toBe('Filtered Book');
+      expect(res.items[0].cover_url).toBe('/storage/covers/cover_1.jpg');
     });
 
     const req = httpTesting.expectOne(
       (request) =>
         request.url === '/api/catalogue/books' &&
         request.params.get('page') === '2' &&
-        request.params.get('size') === '5' &&
-        request.params.get('search') === 'logic',
+        request.params.get('size') === '8' &&
+        request.params.get('search') === 'logic' &&
+        request.params.get('category_id') === '3',
     );
     expect(req.request.method).toBe('GET');
     req.flush(mockCatalogue);
+  });
+
+  it('should fetch categories with pagination parameters', () => {
+    const mockCategories = {
+      items: [
+        {
+          id: 1,
+          name: 'Technology',
+          description: 'Tech books',
+          is_active: true,
+        },
+      ],
+      total: 1,
+      page: 1,
+      page_size: 20,
+    };
+
+    service.getCategories(1, 20).subscribe((res) => {
+      expect(res.items.length).toBe(1);
+      expect(res.items[0].name).toBe('Technology');
+    });
+
+    const req = httpTesting.expectOne('/api/categories/?page=1&page_size=20');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCategories);
   });
 });

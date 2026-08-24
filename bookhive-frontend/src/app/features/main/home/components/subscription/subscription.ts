@@ -1,9 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import {
+  LucideCompass,
+  LucideSparkles,
+  LucideUserPlus,
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-subscription',
-  imports: [],
+  standalone: true,
+  imports: [
+    RouterLink,
+    LucideSparkles,
+    LucideUserPlus,
+    LucideCompass,
+  ],
   templateUrl: './subscription.html',
-  styleUrl: './subscription.css',
+  styleUrl: './subscription.scss',
 })
-export class Subscription {}
+export class SubscriptionComponent {
+  @Output() registerClick = new EventEmitter<void>();
+  @Output() exploreClick = new EventEmitter<void>();
+
+  onRegister(): void {
+    this.registerClick.emit();
+  }
+
+  onExplore(): void {
+    this.exploreClick.emit();
+  }
+}

@@ -1,9 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import {
+  LucideArrowRight,
+  LucideBookOpen,
+  LucideMessageSquare,
+  LucidePenLine,
+  LucideUsers,
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-community-section',
-  imports: [],
+  standalone: true,
+  imports: [
+    RouterLink,
+    LucideMessageSquare,
+    LucideUsers,
+    LucidePenLine,
+    LucideBookOpen,
+    LucideArrowRight,
+  ],
   templateUrl: './community-section.html',
-  styleUrl: './community-section.css',
+  styleUrl: './community-section.scss',
 })
-export class CommunitySection {}
+export class CommunitySectionComponent {
+  @Output() joinCommunityClick = new EventEmitter<void>();
+
+  onJoinCommunity(): void {
+    this.joinCommunityClick.emit();
+  }
+}

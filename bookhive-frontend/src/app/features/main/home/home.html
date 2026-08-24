@@ -1,1 +1,135 @@
-<p>home works!</p>
+<main class="home-page">
+  <app-hero
+    (exploreClick)="onExploreAll()"
+    (communityClick)="onJoinCommunity()"
+  />
+
+  @if (highlightedBook || highlightedCategory) {
+    <section class="curated-grid-section" aria-label="Curated Discoveries">
+      <div class="curated-container">
+        <!-- Card 1: Highlighted Book from Real Catalogue -->
+        @if (highlightedBook) {
+          <article class="curated-card book-highlight-card">
+            <div class="card-image-col">
+              @if (highlightedBook.cover_url && !highlightedCoverFailed) {
+                <img
+                  [src]="highlightedBook.cover_url"
+                  [alt]="highlightedBook.title + ' cover'"
+                  class="feature-book-img"
+                  loading="lazy"
+                  (error)="onHighlightedCoverError()" />
+              } @else {
+                <div class="book-cover-placeholder" aria-hidden="true">
+                  <svg lucideBookOpen class="book-placeholder-icon"></svg>
+                  <span>{{ highlightedBook.title }}</span>
+                </div>
+              }
+            </div>
+            <div class="card-text-col">
+              <span class="card-eyebrow">From the Catalogue</span>
+              <h2 class="card-heading">{{ highlightedBook.title }}</h2>
+              <p class="card-author-line">By {{ highlightedBook.author_name }}</p>
+              <p class="card-summary">
+                {{ highlightedBook.description || 'Explore this verified manuscript available for reading in our open digital library.' }}
+              </p>
+              <a
+                [routerLink]="['/explore', highlightedBook.id, 'preview']"
+                class="card-action-link">
+                <span>Read Overview</span>
+                <svg lucideArrowRight class="link-arrow" aria-hidden="true"></svg>
+              </a>
+            </div>
+          </article>
+        }
+
+        <!-- Card 2: Active Category Highlight -->
+        @if (highlightedCategory) {
+          <article class="curated-card category-highlight-card">
+            <div class="highlight-icon-wrapper" aria-hidden="true">
+              <svg lucideSparkles class="highlight-svg"></svg>
+            </div>
+            <div class="highlight-body">
+              <span class="highlight-eyebrow">Category Spotlight</span>
+              <h2 class="highlight-title">{{ highlightedCategory.name }}</h2>
+              <p class="highlight-description">
+                {{ highlightedCategory.description || 'Explore published manuscripts and curated titles in this category.' }}
+              </p>
+            </div>
+            <a
+              [routerLink]="['/explore']"
+              [queryParams]="{ category_id: highlightedCategory.id }"
+              class="highlight-action-link">
+              <span>Browse Collection</span>
+              <svg lucideArrowRight class="link-arrow" aria-hidden="true"></svg>
+            </a>
+          </article>
+        }
+
+        <!-- Card 3: Digital Commons Value Proposition -->
+        <article class="curated-card value-stat-card">
+          <div class="value-card-icon" aria-hidden="true">
+            <svg lucideLayers class="stat-icon"></svg>
+          </div>
+          <h2 class="value-card-title">Open Digital Reading</h2>
+          <p class="value-card-text">
+            Read verified manuscripts and academic papers directly in your browser with our integrated reader.
+          </p>
+          <a
+            routerLink="/explore"
+            class="value-card-link">
+            <span>Explore Library</span>
+            <svg lucideArrowRight class="link-arrow" aria-hidden="true"></svg>
+          </a>
+        </article>
+
+        <!-- Card 4: Community Value Proposition -->
+        <article class="curated-card author-spotlight-card">
+          <div class="author-avatar-col" aria-hidden="true">
+            <div class="community-avatar-box">
+              <svg lucideUsers class="author-box-icon"></svg>
+            </div>
+          </div>
+          <div class="author-details-col">
+            <span class="spotlight-tag">Community Powered</span>
+            <h2 class="author-name">Direct Reader & Author Dialogue</h2>
+            <p class="author-quote">
+              Join literary discussion circles, share constructive manuscript reviews, and connect directly with authors.
+            </p>
+            <div class="author-tags">
+              <a routerLink="/community" class="author-pill">Discussion Circles</a>
+              <a routerLink="/register" class="author-pill">Reader Accounts</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  }
+
+  <app-search
+    (searchSubmitted)="onSearch($event)"
+  />
+
+  <app-featured-books
+    [books]="featuredBooks"
+    [isLoading]="isLoadingFeatured"
+    [hasError]="featuredHasError"
+    (retryClick)="loadFeaturedBooks()"
+    (exploreAllClick)="onExploreAll()"
+  />
+
+  <app-categories
+    [categories]="categories"
+    [isLoading]="isLoadingCategories"
+    [hasError]="categoriesHasError"
+    (retryClick)="loadCategories()"
+  />
+
+  <app-community-section
+    (joinCommunityClick)="onJoinCommunity()"
+  />
+
+  <app-subscription
+    (registerClick)="onRegister()"
+    (exploreClick)="onExploreAll()"
+  />
+</main>

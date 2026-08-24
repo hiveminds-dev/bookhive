@@ -115,9 +115,13 @@ app.include_router(
     prefix=settings.api_prefix
 )
 
+settings.storage_root.mkdir(parents=True, exist_ok=True)
+settings.book_storage_path.mkdir(parents=True, exist_ok=True)
+settings.cover_storage_path.mkdir(parents=True, exist_ok=True)
+
 app.mount(
     "/storage",
-    StaticFiles(directory="storage"),
+    StaticFiles(directory=str(settings.storage_root)),
     name="storage",
 )
 

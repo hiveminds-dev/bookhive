@@ -73,6 +73,22 @@ export interface PaginatedCatalogue {
   items: CatalogueBook[];
 }
 
+export interface CategoryItem {
+  id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CategoryListResponse {
+  items: CategoryItem[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
 export interface CatalogueFilterParams {
   page?: number;
   size?: number;
@@ -115,5 +131,13 @@ export class BookService {
     return this.http.get<PaginatedCatalogue>('/api/catalogue/books', {
       params: httpParams,
     });
+  }
+
+  getCategories(page = 1, pageSize = 20): Observable<CategoryListResponse> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+
+    return this.http.get<CategoryListResponse>('/api/categories/', { params });
   }
 }
