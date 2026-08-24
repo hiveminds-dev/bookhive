@@ -11,6 +11,21 @@ export interface DashboardStats {
   author_requests: number;
 }
 
+export interface BookReviewItem {
+  id: number;
+  user_name: string;
+  avatar_letter: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
+export interface BookRejectionLogItem {
+  id: number;
+  reason: string;
+  created_at: string;
+}
+
 export interface AdminBookItem {
   id: number;
   title: string;
@@ -20,8 +35,42 @@ export interface AdminBookItem {
   reading_level: string | null;
   status: string;
   cover_image_path: string | null;
+  page_count?: number;
+  estimated_reading_time?: string;
+  average_rating?: number;
+  review_count?: number;
+  reviews?: BookReviewItem[];
+  rejection_logs?: BookRejectionLogItem[];
+  author_profile_image_path?: string | null;
+  rejection_reason?: string | null;
   created_at: string;
   published_at: string | null;
+}
+
+export interface CategoryAdminItem {
+  id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  total_books: number;
+  created_at: string;
+}
+
+export interface PaginatedBookAdminResponse {
+  items: AdminBookItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+}
+
+export interface AuthorStats {
+  new_applications: number;
+  total_authors: number;
+  books_in_review: number;
+  total_rejected: number;
 }
 
 export interface AuthorApplicationItem {
@@ -32,7 +81,85 @@ export interface AuthorApplicationItem {
   email: string;
   country: string | null;
   account_status: string;
+  profile_image_path?: string | null;
+  bio?: string | null;
   applied_date: string;
+}
+
+export interface MonthlyUploadItem {
+  month: string;
+  dark: number;
+  light: number;
+}
+
+export interface MonthlyRegistrationItem {
+  month: string;
+  val: number;
+}
+
+export interface TopCategoryStatItem {
+  name: string;
+  pct: number;
+}
+
+export interface MostReadBookItem {
+  id: number;
+  title: string;
+  author: string;
+  category: string;
+  totalReads: string;
+  rating: string;
+  trend: string;
+  cover?: string | null;
+}
+
+export interface ActiveAuthorItem {
+  name: string;
+  booksCount: number;
+  score: string;
+  avatar?: string | null;
+}
+
+export interface ActiveReaderItem {
+  name: string;
+  joined: string;
+  totalReads: number;
+  initials: string;
+}
+
+export interface PlatformStatistics {
+  total_books: number;
+  total_readers: number;
+  total_authors: number;
+  total_downloads: string;
+  total_views: string;
+  monthly_uploads: MonthlyUploadItem[];
+  monthly_registrations: MonthlyRegistrationItem[];
+  top_categories: TopCategoryStatItem[];
+  most_read_books: MostReadBookItem[];
+  active_authors: ActiveAuthorItem[];
+  active_readers: ActiveReaderItem[];
+}
+
+export interface AdminStaffStats {
+  total_admin_accounts: number;
+  super_admins: number;
+  two_fa_protected_count: number;
+  two_fa_total: number;
+  pending_invites: number;
+}
+
+export interface AdminUserItem {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  role_badge_class: string;
+  department: string;
+  last_active: string;
+  two_factor: boolean;
+  status: string;
+  avatar: string;
 }
 
 export interface ReaderItem {
@@ -121,7 +248,9 @@ export class AdminApiService {
     language_filter?: string;
     timeframe_filter?: string;
     sort_by?: string;
-  }): Observable<AdminBookItem[]> {
+    page?: number;
+    page_size?: number;
+  }): Observable<PaginatedBookAdminResponse> {
     let queryParts: string[] = [];
     if (params?.search_query) queryParts.push(`search_query=${encodeURIComponent(params.search_query)}`);
     if (params?.category_filter) queryParts.push(`category_filter=${encodeURIComponent(params.category_filter)}`);
@@ -129,25 +258,59 @@ export class AdminApiService {
     if (params?.language_filter) queryParts.push(`language_filter=${encodeURIComponent(params.language_filter)}`);
     if (params?.timeframe_filter) queryParts.push(`timeframe_filter=${encodeURIComponent(params.timeframe_filter)}`);
     if (params?.sort_by) queryParts.push(`sort_by=${encodeURIComponent(params.sort_by)}`);
+    if (params?.page) queryParts.push(`page=${params.page}`);
+    if (params?.page_size) queryParts.push(`page_size=${params.page_size}`);
 
     const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-    return this.http.get<AdminBookItem[]>(`/api/admin/books${queryString}`);
+    return this.http.get<PaginatedBookAdminResponse>(`/api/admin/books${queryString}`);
   }
 
   approveBook(bookId: number): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`/api/admin/books/${bookId}/approve`, {});
   }
 
-  rejectBook(bookId: number): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`/api/admin/books/${bookId}/reject`, {});
+  rejectBook(bookId: number, rejectionReason?: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`/api/admin/books/${bookId}/reject`, { status: 'REJECTED', rejection_reason: rejectionReason });
   }
 
-  updateBookStatus(bookId: number, status: string): Observable<{ message: string }> {
+  updateBookStatus(bookId: number, status: string, rejectionReason?: string): Observable<{ message: string }> {
     this.invalidateDashboardRecent();
-    return this.http.put<{ message: string }>(`/api/admin/books/${bookId}/status`, { status });
+    return this.http.put<{ message: string }>(`/api/admin/books/${bookId}/status`, { status, rejection_reason: rejectionReason });
+  }
+
+  // ─── Admin Governance Staff ────────────────────────────────────────────────
+
+  getAdminStaffStats(): Observable<AdminStaffStats> {
+    return this.http.get<AdminStaffStats>('/api/admin/staff/stats');
+  }
+
+  getAdminStaff(): Observable<AdminUserItem[]> {
+    return this.http.get<AdminUserItem[]>('/api/admin/staff');
+  }
+
+  createAdminStaff(data: { name: string; username: string; email: string; password: string; role: string; department: string }): Observable<AdminUserItem> {
+    return this.http.post<AdminUserItem>('/api/admin/staff/create', data);
+  }
+
+  toggleAdminStaffStatus(userId: number): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`/api/admin/staff/${userId}/toggle-status`, {});
+  }
+
+  deleteAdminStaff(userId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`/api/admin/staff/${userId}`);
+  }
+
+  // ─── Platform Statistics ──────────────────────────────────────────────────
+
+  getPlatformStatistics(): Observable<PlatformStatistics> {
+    return this.http.get<PlatformStatistics>('/api/admin/statistics');
   }
 
   // ─── Authors ──────────────────────────────────────────────────────────────
+
+  getAuthorStats(): Observable<AuthorStats> {
+    return this.http.get<AuthorStats>('/api/admin/authors/stats');
+  }
 
   getAuthorApplications(statusFilter?: string): Observable<AuthorApplicationItem[]> {
     const url = statusFilter
@@ -174,6 +337,24 @@ export class AdminApiService {
 
   getSystemLogs(): Observable<SystemLogItem[]> {
     return this.http.get<SystemLogItem[]>('/api/admin/system-logs');
+  }
+
+  // ─── Categories ───────────────────────────────────────────────────────────
+
+  getCategories(): Observable<CategoryAdminItem[]> {
+    return this.http.get<CategoryAdminItem[]>('/api/admin/categories');
+  }
+
+  createCategory(data: { name: string; description?: string }): Observable<CategoryAdminItem> {
+    return this.http.post<CategoryAdminItem>('/api/admin/categories', data);
+  }
+
+  toggleCategoryStatus(categoryId: number): Observable<{ message: string; is_active: boolean }> {
+    return this.http.put<{ message: string; is_active: boolean }>(`/api/admin/categories/${categoryId}/toggle-status`, {});
+  }
+
+  deleteCategory(categoryId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`/api/admin/categories/${categoryId}`);
   }
 }
 

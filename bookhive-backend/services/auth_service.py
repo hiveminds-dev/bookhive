@@ -104,3 +104,84 @@ class AuthService:
             account_status=user.account_status.value,
             email_verified=user.email_verified,
         )
+
+    async def update_profile(
+        self,
+        session: AsyncSession,
+        user: User,
+        full_name: str,
+        email: str,
+    ) -> AuthenticatedUserResponse:
+        user.full_name = full_name
+        user.email = email
+        await session.commit()
+        await session.refresh(user)
+        return self.to_response(user)
+
+    _password_change_codes: dict[int, tuple[str, datetime]] = {}
+
+    async def request_password_change_otp(
+        self,
+        session: AsyncSession,
+        user: User,
+        current_pass: str,
+    ) -> None:
+        import random
+        from datetime import datetime, timedelta
+
+        from services.email_sender import EmailSender
+        from utils.security import verify_password
+
+        if not verify_password(current_pass, user.password_hash):
+            raise AuthenticationError("Incorrect current password")
+
+        code = f"{random.randint(100000, 999999)}"
+        expires_at = datetime.now(UTC) + timedelta(minutes=10)
+        AuthService._password_change_codes[user.id] = (code, expires_at)
+
+        email_sender = EmailSender()
+        await email_sender.send_password_change_otp(user.email, code)
+
+    async def verify_password_change_otp(
+        self,
+        session: AsyncSession,
+        user: User,
+        otp_code: str,
+        current_pass: str,
+        new_pass: str,
+    ) -> None:
+        from datetime import datetime
+
+        from utils.security import hash_password, verify_password
+
+        if not verify_password(current_pass, user.password_hash):
+            raise AuthenticationError("Incorrect current password")
+
+        record = AuthService._password_change_codes.get(user.id)
+        if not record:
+            raise AuthenticationError("No verification code found. Please request a new code.")
+
+        stored_code, expires_at = record
+        if datetime.now(UTC) > expires_at:
+            AuthService._password_change_codes.pop(user.id, None)
+            raise AuthenticationError("Verification code has expired. Please request a new code.")
+
+        if stored_code != otp_code.strip():
+            raise AuthenticationError("Invalid 6-digit verification code. Please check your email.")
+
+        user.password_hash = hash_password(new_pass)
+        await session.commit()
+        AuthService._password_change_codes.pop(user.id, None)
+
+    async def change_password(
+        self,
+        session: AsyncSession,
+        user: User,
+        current_pass: str,
+        new_pass: str,
+    ) -> None:
+        from utils.security import hash_password, verify_password
+        if not verify_password(current_pass, user.password_hash):
+            raise AuthenticationError("Incorrect current password")
+        user.password_hash = hash_password(new_pass)
+        await session.commit()

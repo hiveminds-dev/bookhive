@@ -56,10 +56,43 @@ class EmailSender:
         try:
             await asyncio.to_thread(self._send_password_reset_message, email, reset_url)
         except (OSError, smtplib.SMTPException, TimeoutError) as exc:
-            logger.exception("Unable to send password reset email to %s", email)
             raise EmailDeliveryError(
                 "The password reset email could not be sent. Please try again later."
             ) from exc
+
+    async def send_password_change_otp(self, email: str, code: str) -> None:
+        if not settings.smtp_enabled:
+            if settings.app_env.lower() == "development":
+                logger.info("Development Password Change Verification Code for %s: %s", email, code)
+                return
+            raise RuntimeError("SMTP must be enabled outside development.")
+
+        self._validate_smtp_settings()
+        try:
+            await asyncio.to_thread(self._send_password_change_otp_message, email, code)
+        except (OSError, smtplib.SMTPException, TimeoutError) as exc:
+            logger.exception("Unable to send password change code email to %s", email)
+            raise EmailDeliveryError(
+                "The verification code email could not be sent. Please try again later."
+            ) from exc
+
+    def _send_password_change_otp_message(self, recipient: str, code: str) -> None:
+        message = EmailMessage()
+        message["Subject"] = f"BookHive Security - Password Change Verification Code [{code}]"
+        message["From"] = settings.smtp_from_email
+        message["To"] = recipient
+        message.set_content(
+            f"Your BookHive password change verification code is: {code}\n\n"
+            "Enter this 6-digit code on the profile security page to confirm your password change.\n"
+            "If you did not request this, please contact support immediately."
+        )
+
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
+            if settings.smtp_use_tls:
+                smtp.starttls()
+            if settings.smtp_username:
+                smtp.login(settings.smtp_username, settings.smtp_password)
+            smtp.send_message(message)
 
     @staticmethod
     def _validate_smtp_settings() -> None:
@@ -87,26 +120,23 @@ class EmailSender:
             f"{settings.email_verification_token_expire_minutes} minutes."
         )
         message.add_alternative(
-            """
+            f"""
             <html>
               <body style="font-family:Arial,sans-serif;color:#201d18;line-height:1.6">
                 <div style="max-width:560px;margin:auto;padding:32px;border:1px solid #eadfca;border-radius:16px">
                   <h1 style="color:#9a7200">Welcome to BookHive</h1>
                   <p>Please confirm your email address to finish creating your account.</p>
                   <p style="margin:28px 0">
-                    <a href="{url}" style="background:#c99716;color:#fff;padding:12px 22px;text-decoration:none;border-radius:8px">
+                    <a href="{verification_url}" style="background:#c99716;color:#fff;padding:12px 22px;text-decoration:none;border-radius:8px">
                       Verify email address
                     </a>
                   </p>
-                  <p>This link expires in {minutes} minutes.</p>
+                  <p>This link expires in {settings.email_verification_token_expire_minutes} minutes.</p>
                   <p style="font-size:13px;color:#6b6258">If you did not create a BookHive account, you can ignore this email.</p>
                 </div>
               </body>
             </html>
-            """.format(
-                url=verification_url,
-                minutes=settings.email_verification_token_expire_minutes,
-            ),
+            """,
             subtype="html",
         )
 

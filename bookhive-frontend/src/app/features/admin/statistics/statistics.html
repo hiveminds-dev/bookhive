@@ -80,46 +80,46 @@
     <article class="stat-card">
       <div class="card-top">
         <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
-        <span class="trend positive">+12%</span>
+        <span class="trend positive">Active</span>
       </div>
       <span class="label">TOTAL BOOKS</span>
-      <strong class="val">14,280</strong>
+      <strong class="val">{{ statsSignal()?.total_books ?? 0 }}</strong>
     </article>
 
     <article class="stat-card">
       <div class="card-top">
         <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
-        <span class="trend positive">+8%</span>
+        <span class="trend positive">Total</span>
       </div>
       <span class="label">TOTAL READERS</span>
-      <strong class="val">52,491</strong>
+      <strong class="val">{{ statsSignal()?.total_readers ?? 0 }}</strong>
     </article>
 
     <article class="stat-card">
       <div class="card-top">
         <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
-        <span class="trend negative">-2%</span>
+        <span class="trend positive">Total</span>
       </div>
       <span class="label">TOTAL AUTHORS</span>
-      <strong class="val">1,842</strong>
+      <strong class="val">{{ statsSignal()?.total_authors ?? 0 }}</strong>
     </article>
 
     <article class="stat-card">
       <div class="card-top">
         <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
-        <span class="trend positive">+24%</span>
+        <span class="trend positive">Total</span>
       </div>
       <span class="label">DOWNLOADS</span>
-      <strong class="val">89.2k</strong>
+      <strong class="val">{{ statsSignal()?.total_downloads ?? '0' }}</strong>
     </article>
 
     <article class="stat-card">
       <div class="card-top">
         <div class="icon-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
-        <span class="trend positive">+15%</span>
+        <span class="trend positive">Total</span>
       </div>
       <span class="label">PAGE VIEWS</span>
-      <strong class="val">412k</strong>
+      <strong class="val">{{ statsSignal()?.total_views ?? '0' }}</strong>
     </article>
   </section>
 
@@ -131,7 +131,7 @@
         <span class="dots">•••</span>
       </div>
       <div class="bar-chart">
-        <div class="bar-group" *ngFor="let m of monthlyUploads">
+        <div class="bar-group" *ngFor="let m of statsSignal()?.monthly_uploads || []">
           <div class="bar-stack">
             <div class="bar-top" [style.height.%]="m.light"></div>
             <div class="bar-bottom" [style.height.%]="m.dark"></div>
@@ -147,7 +147,7 @@
         <span class="legend"><span class="dot-gold"></span> NEW USERS</span>
       </div>
       <div class="bar-chart">
-        <div class="bar-group" *ngFor="let r of monthlyRegs">
+        <div class="bar-group" *ngFor="let r of statsSignal()?.monthly_registrations || []">
           <div class="bar-single" [style.height.%]="r.val"></div>
           <span class="bar-label">{{ r.month }}</span>
         </div>
@@ -160,7 +160,7 @@
     <article class="content-card cat-card">
       <h2>Top Categories</h2>
       <div class="cat-list">
-        <div class="cat-item" *ngFor="let cat of topCategories">
+        <div class="cat-item" *ngFor="let cat of statsSignal()?.top_categories || []">
           <div class="cat-header">
             <span class="cat-name">{{ cat.name }}</span>
             <span class="cat-pct">{{ cat.pct }}%</span>
@@ -175,7 +175,7 @@
     <article class="content-card books-card">
       <div class="card-title-bar">
         <h2>Most Read Books</h2>
-        <button type="button" class="link-btn">View All</button>
+        <button type="button" class="link-btn" routerLink="/admin/books">View All</button>
       </div>
       <table class="mini-table">
         <thead>
@@ -188,10 +188,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let b of mostReadBooks">
+          <tr *ngFor="let b of statsSignal()?.most_read_books || []">
             <td>
               <div class="mini-book-cell">
-                <img [src]="b.cover" [alt]="b.title">
+                <img [src]="b.cover || 'assets/images/book-covers/beyond-good-and-evil.jpg'" [alt]="b.title">
                 <strong class="title">{{ b.title }}</strong>
               </div>
             </td>
@@ -214,9 +214,9 @@
     <article class="content-card">
       <h2>Most Active Authors</h2>
       <div class="people-list">
-        <div class="person-row" *ngFor="let a of activeAuthors">
+        <div class="person-row" *ngFor="let a of statsSignal()?.active_authors || []">
           <div class="person-left">
-            <img [src]="a.avatar" [alt]="a.name" class="avatar-img">
+            <img [src]="a.avatar || 'assets/images/auth/sign_in_1.png'" [alt]="a.name" class="avatar-img">
             <div class="info">
               <strong class="name">{{ a.name }}</strong>
               <span class="sub">{{ a.booksCount }} Books Published</span>
@@ -233,7 +233,7 @@
     <article class="content-card">
       <h2>Most Active Readers</h2>
       <div class="people-list">
-        <div class="person-row" *ngFor="let r of activeReaders">
+        <div class="person-row" *ngFor="let r of statsSignal()?.active_readers || []">
           <div class="person-left">
             <div class="initials-circle">{{ r.initials }}</div>
             <div class="info">
