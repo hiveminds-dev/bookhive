@@ -112,6 +112,8 @@ class BookDetailsResponse(BaseModel):
     pdf_url: str | None
     status: BookStatus
     published_at: datetime | None
+    page_count: int | None = None
+    estimated_reading_time: str | None = None
     can_read: bool
     can_download: bool
     average_rating: float = Field(ge=0, le=5)
@@ -147,6 +149,7 @@ class CatalogueBookResponse(BaseModel):
     description: str | None = None
     language: str | None = None
     reading_level: str | None = None
+    page_count: int | None = None
     published_at: datetime | None = None
     cover_url: str | None = None
     author_name: str

@@ -34,6 +34,8 @@ export interface BookDetails {
   pdf_url: string | null;
   status: string;
   published_at: string | null;
+  page_count?: number | null;
+  estimated_reading_time?: string | null;
   can_read: boolean;
   can_download: boolean;
   average_rating: number;
@@ -54,6 +56,9 @@ export interface CatalogueBook {
   description: string | null;
   language: string | null;
   reading_level: string | null;
+  page_count?: number | null;
+  rating?: number | null;
+  review_count?: number | null;
   published_at: string | null;
   cover_url: string | null;
   author_name: string;

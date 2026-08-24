@@ -137,6 +137,34 @@ describe('BookPreviewComponent', () => {
     expect(component.hasServerError).toBe(true);
   });
 
+  it('should map real page count and reading time when available', () => {
+    const bookWithMeta: BookDetails = {
+      ...sampleBookDetails,
+      page_count: 420,
+      estimated_reading_time: '14 hours',
+    };
+    mockBookService.getBookDetails.mockReturnValue(of(bookWithMeta));
+    paramMapSubject.next(convertToParamMap({ id: '1' }));
+    fixture.detectChanges();
+
+    expect(component.book?.pages).toBe(420);
+    expect(component.book?.readingTime).toBe('14 hours');
+  });
+
+  it('should cleanly handle unavailable page count and reading time without fake values', () => {
+    const bookWithoutMeta: BookDetails = {
+      ...sampleBookDetails,
+      page_count: null,
+      estimated_reading_time: null,
+    };
+    mockBookService.getBookDetails.mockReturnValue(of(bookWithoutMeta));
+    paramMapSubject.next(convertToParamMap({ id: '1' }));
+    fixture.detectChanges();
+
+    expect(component.book?.pages).toBeNull();
+    expect(component.book?.readingTime).toBeNull();
+  });
+
   it('should not perform read action when book is null', () => {
     component.book = null;
     const routerSpy = vi.spyOn((component as any).router, 'navigate');

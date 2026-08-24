@@ -28,8 +28,8 @@ export interface PreviewBook {
   language: string;
   rating: number;
   reviewsCount: number;
-  pages: number;
-  readingTime: string;
+  pages: number | null;
+  readingTime: string | null;
   cover: string;
   badge: string;
   canDownload: boolean;
@@ -227,8 +227,8 @@ export class BookPreviewComponent implements OnInit, OnDestroy {
       language: data.language || 'English',
       rating: data.average_rating ?? 0,
       reviewsCount: data.review_count ?? 0,
-      pages: 350,
-      readingTime: '7 hours',
+      pages: (data.page_count && data.page_count > 0) ? data.page_count : null,
+      readingTime: data.estimated_reading_time || (data.page_count && data.page_count > 0 ? (data.page_count * 2 >= 60 ? `${Math.floor((data.page_count * 2) / 60)} hours ${((data.page_count * 2) % 60) > 0 ? ((data.page_count * 2) % 60) + ' mins' : ''}`.trim() : `${data.page_count * 2} mins`) : null),
       cover: data.cover_url || 'images/explore/architecture-of-logic.jpg',
       badge: 'Published',
       canDownload: data.can_download,

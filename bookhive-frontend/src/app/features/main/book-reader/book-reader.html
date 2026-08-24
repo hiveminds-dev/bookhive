@@ -78,7 +78,7 @@
           <app-reader-sidebar
             [bookTitle]="book.title"
             [cover]="book.cover"
-            [totalPages]="book.totalPages"
+            [totalPages]="book.totalPages ?? 0"
             [rating]="book.rating"
             [currentPage]="currentPage"
             [chapters]="chapters"
@@ -94,7 +94,7 @@
           <app-reader-toolbar
             [zoomLevel]="zoomLevel"
             [currentPage]="currentPage"
-            [totalPages]="book.totalPages"
+            [totalPages]="book.totalPages ?? 0"
             [bookmarked]="bookmarked"
             (zoomIn)="zoomIn()"
             (zoomOut)="zoomOut()"
@@ -105,15 +105,22 @@
             (fullscreen)="openFullscreen()">
           </app-reader-toolbar>
 
-          <app-book-content
-            [chapterNumber]="currentContent.chapterNumber"
-            [chapterTitle]="currentContent.chapterTitle"
-            [paragraphs]="currentContent.paragraphs"
-            [image]="currentContent.image"
-            [imageAlt]="currentContent.imageAlt"
-            [imagePosition]="currentContent.imagePosition"
-            [zoomLevel]="zoomLevel">
-          </app-book-content>
+          @if (pdfViewerUrl) {
+            <div class="reader-pdf-container">
+              <iframe
+                [src]="pdfViewerUrl"
+                class="reader-pdf-iframe"
+                title="Manuscript PDF Viewer">
+              </iframe>
+            </div>
+          } @else {
+            <div class="reader-content-unavailable" role="status">
+              <div class="unavailable-icon" aria-hidden="true">📄</div>
+              <h3>Reader Content Unavailable</h3>
+              <p>A digital manuscript PDF is not available for this book at this time.</p>
+              <button type="button" class="btn-primary" (click)="backToLibrary()">Back to Library</button>
+            </div>
+          }
 
         </div>
 
@@ -123,7 +130,7 @@
 
           <app-reader-settings
             [currentPage]="lastReadPage"
-            [totalPages]="book.totalPages"
+            [totalPages]="book.totalPages ?? 0"
             (pageSelected)="goToPage($event)"
             (shareExcerpt)="shareExcerpt()"
             (reportIssue)="reportIssue()">
@@ -135,11 +142,13 @@
 
       <!-- Reading progress -->
 
-      <app-page-navigation
-        [currentPage]="lastReadPage"
-        [totalPages]="book.totalPages"
-        [secondsRemaining]="secondsRemaining">
-      </app-page-navigation>
+      @if (book.pdfUrl) {
+        <app-page-navigation
+          [currentPage]="lastReadPage"
+          [totalPages]="book.totalPages ?? 0"
+          [secondsRemaining]="secondsRemaining">
+        </app-page-navigation>
+      }
 
     </section>
 

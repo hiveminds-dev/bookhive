@@ -125,6 +125,7 @@ class BookService:
                     description=book.description,
                     language=book.language,
                     reading_level=book.reading_level,
+                    page_count=book.page_count,
                     published_at=book.published_at,
                     cover_url=self._to_public_storage_url(
                         book.cover_image_path
@@ -200,6 +201,19 @@ class BookService:
             else 0.0
         )
 
+        page_count = getattr(book, "page_count", None)
+        estimated_reading_time = getattr(book, "estimated_reading_time", None)
+        if estimated_reading_time is None and page_count and page_count > 0:
+            total_minutes = page_count * 2
+            hours = total_minutes // 60
+            mins = total_minutes % 60
+            if hours > 0 and mins > 0:
+                estimated_reading_time = f"{hours} hours {mins} mins"
+            elif hours > 0:
+                estimated_reading_time = f"{hours} hours"
+            else:
+                estimated_reading_time = f"{mins} mins"
+
         return BookDetailsResponse(
             id=book.id,
             title=book.title,
@@ -210,6 +224,8 @@ class BookService:
             pdf_url=pdf_url,
             status=book.status,
             published_at=book.published_at,
+            page_count=page_count,
+            estimated_reading_time=estimated_reading_time,
             can_read=has_pdf,
             can_download=has_pdf,
             average_rating=average_rating,

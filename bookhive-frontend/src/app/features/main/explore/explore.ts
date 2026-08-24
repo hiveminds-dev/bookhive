@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subject, Subscription, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, Subscription, switchMap } from 'rxjs';
 
 import { BookService, PaginatedCatalogue } from '../../../core/services/book.service';
 import {
@@ -37,22 +37,20 @@ export class ExploreComponent implements OnInit, OnDestroy {
   private readonly bookService = inject(BookService);
   private readonly changeDetector = inject(ChangeDetectorRef);
 
-  private readonly searchSubject = new Subject<{ search: string; page: number }>();
-  private searchSubscription?: Subscription;
   private routeSubscription?: Subscription;
 
   viewMode: ViewMode = 'grid';
   sortOption: SortOption = 'popular';
   currentPage = 1;
-  totalPages = 12;
-  totalBooksCount = 32587;
+  totalPages = 1;
+  totalBooksCount = 0;
   isLoading = false;
 
   activeFilters: ExploreFilterValues = {
     search: '',
-    categories: ['Technology'],
+    categories: [],
     language: '',
-    minimumRating: 4
+    minimumRating: 1
   };
 
   readonly skeletonCards = [1, 2, 3];
@@ -105,14 +103,26 @@ export class ExploreComponent implements OnInit, OnDestroy {
   books: Book[] = [...this.defaultBooks];
 
   ngOnInit(): void {
-    // Setup reactive pipeline to handle rapid search queries with debounce and switchMap (prevents race conditions)
-    this.searchSubscription = this.searchSubject
+    // URL query parameters are the single authoritative source of truth for catalogue requests
+    this.routeSubscription = this.route.queryParams
       .pipe(
-        debounceTime(150),
+        map((params) => {
+          const search = (params['search'] ?? '').trim();
+          const rawPage = Number(params['page']);
+          const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
+          return { search, page };
+        }),
         distinctUntilChanged((prev, curr) => prev.search === curr.search && prev.page === curr.page),
+        debounceTime(150),
         switchMap(({ search, page }) => {
+          this.activeFilters = {
+            ...this.activeFilters,
+            search
+          };
+          this.currentPage = page;
           this.isLoading = true;
           this.changeDetector.markForCheck();
+
           return this.bookService.getCatalogue({
             page,
             size: 12,
@@ -130,9 +140,9 @@ export class ExploreComponent implements OnInit, OnDestroy {
               author: item.author_name,
               category: item.category_name,
               language: item.language || 'English',
-              rating: 4.8,
-              reviews: 120,
-              pages: 320,
+              rating: item.rating ?? null,
+              reviews: item.review_count !== undefined ? item.review_count : null,
+              pages: item.page_count ?? null,
               cover: item.cover_url || 'images/explore/architecture-of-logic.jpg',
               description: item.description || 'Explore this title on BookHive.',
               badge: 'Published',
@@ -140,7 +150,6 @@ export class ExploreComponent implements OnInit, OnDestroy {
             this.totalPages = Math.max(1, catalogue.total_pages);
             this.totalBooksCount = catalogue.total_items;
           } else {
-            // When search query yields no results from API, check if default mock books match query; if not, empty
             if (this.activeFilters.search) {
               this.books = [];
               this.totalPages = 1;
@@ -155,34 +164,14 @@ export class ExploreComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.isLoading = false;
-          // Fallback to local default books if API is not available
-          this.books = [...this.defaultBooks];
+          this.books = this.activeFilters.search ? [] : [...this.defaultBooks];
           this.changeDetector.markForCheck();
         }
       });
-
-    // Listen to route query parameters
-    this.routeSubscription = this.route.queryParams.subscribe((params) => {
-      const searchParam = (params['search'] ?? '').trim();
-      if (searchParam !== this.activeFilters.search) {
-        this.activeFilters = {
-          ...this.activeFilters,
-          search: searchParam
-        };
-        this.currentPage = 1;
-      }
-      this.triggerCatalogueSearch();
-    });
   }
 
   ngOnDestroy(): void {
-    this.searchSubscription?.unsubscribe();
     this.routeSubscription?.unsubscribe();
-  }
-
-  triggerCatalogueSearch(): void {
-    const trimmed = (this.activeFilters.search || '').trim();
-    this.searchSubject.next({ search: trimmed, page: this.currentPage });
   }
 
   get filteredBooks(): Book[] {
@@ -210,9 +199,11 @@ export class ExploreComponent implements OnInit, OnDestroy {
       );
     }
 
-    result = result.filter(book =>
-      book.rating >= this.activeFilters.minimumRating
-    );
+    if (this.activeFilters.minimumRating > 1) {
+      result = result.filter(book =>
+        book.rating !== undefined && book.rating !== null ? book.rating >= this.activeFilters.minimumRating : true
+      );
+    }
 
     return this.sortBooks(result);
   }
@@ -223,15 +214,15 @@ export class ExploreComponent implements OnInit, OnDestroy {
       ...filters,
       search
     };
-    this.currentPage = 1;
 
     void this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { search: search || null },
+      queryParams: {
+        search: search || null,
+        page: null
+      },
       queryParamsHandling: 'merge'
     });
-
-    this.triggerCatalogueSearch();
   }
 
   setViewMode(mode: ViewMode): void {
@@ -243,8 +234,13 @@ export class ExploreComponent implements OnInit, OnDestroy {
   }
 
   onPageChanged(page: number): void {
-    this.currentPage = page;
-    this.triggerCatalogueSearch();
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page: page > 1 ? page : null
+      },
+      queryParamsHandling: 'merge'
+    });
 
     window.scrollTo({
       top: 0,
@@ -263,7 +259,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
   private sortBooks(books: Book[]): Book[] {
     switch (this.sortOption) {
       case 'rating':
-        return books.sort((a, b) => b.rating - a.rating);
+        return books.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 
       case 'title':
         return books.sort((a, b) =>
@@ -273,7 +269,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
       case 'popular':
       default:
         return books.sort((a, b) =>
-          b.reviews - a.reviews
+          (b.reviews ?? 0) - (a.reviews ?? 0)
         );
     }
   }

@@ -42,6 +42,8 @@ describe('BookService', () => {
         pdf_url: 'test.pdf',
         status: 'published',
         published_at: '2026-01-01T00:00:00Z',
+        page_count: 240,
+        estimated_reading_time: '8 hours',
         can_read: true,
         can_download: true,
         average_rating: 4.5,
