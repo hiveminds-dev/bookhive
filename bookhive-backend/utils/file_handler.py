@@ -122,7 +122,7 @@ async def delete_stored_file(relative_path: str | None) -> None:
     candidate = Path(relative_path)
 
     if not candidate.is_absolute():
-        candidate = Path.cwd() / candidate
+        candidate = settings.storage_root.parent / candidate
 
     resolved_path = candidate.resolve()
 

@@ -130,7 +130,14 @@ class BookService:
                     cover_url=self._to_public_storage_url(
                         book.cover_image_path
                     ),
-                    author_name=book.author.full_name,
+                    author_name=(
+                        book.author.author_profile.pen_name.strip()
+                        if getattr(book.author, "author_profile", None)
+                        and book.author.author_profile
+                        and book.author.author_profile.pen_name
+                        and book.author.author_profile.pen_name.strip()
+                        else book.author.full_name
+                    ),
                     category_name=book.category.name,
                 )
                 for book in books
@@ -533,7 +540,7 @@ class BookService:
             .lstrip("/")
         )
 
-        if not normalized_path:
+        if not normalized_path or ".." in normalized_path:
             return None
 
         if normalized_path.startswith(

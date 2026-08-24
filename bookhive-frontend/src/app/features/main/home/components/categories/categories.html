@@ -1,1 +1,77 @@
-<p>categories works!</p>
+<section class="categories-section" aria-labelledby="categories-heading">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="header-text">
+        <span class="section-badge">Explore Subjects</span>
+        <h2 id="categories-heading" class="section-title">Browse by Knowledge Categories</h2>
+        <p class="section-subtitle">Deep dive into curated collections across disciplines.</p>
+      </div>
+
+      <a
+        routerLink="/explore"
+        class="browse-all-btn">
+        <span>View All Categories</span>
+        <svg lucideArrowRight class="btn-arrow" aria-hidden="true"></svg>
+      </a>
+    </div>
+
+    @if (isLoading) {
+      <div class="categories-grid" role="status" aria-live="polite">
+        @for (item of skeletonCount; track item) {
+          <div class="category-card-skeleton">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-desc"></div>
+          </div>
+        }
+      </div>
+    } @else if (hasError) {
+      <div class="state-card error-card" role="alert">
+        <div class="state-icon-box" aria-hidden="true">
+          <svg lucideAlertCircle class="state-icon"></svg>
+        </div>
+        <h3>Unable to load categories</h3>
+        <p>A connection error occurred while loading categories.</p>
+        <button type="button" class="retry-btn" (click)="onRetry()">
+          <svg lucideRotateCw class="retry-icon" aria-hidden="true"></svg>
+          Try Again
+        </button>
+      </div>
+    } @else if (displayCategories.length === 0) {
+      <div class="state-card empty-card" role="status">
+        <div class="state-icon-box" aria-hidden="true">
+          <svg lucideFolder class="state-icon"></svg>
+        </div>
+        <h3>No categories available</h3>
+        <p>Categories will appear here once configured.</p>
+      </div>
+    } @else {
+      <div class="categories-grid">
+        @for (category of displayCategories; track category.id) {
+          <a
+            [routerLink]="['/explore']"
+            [queryParams]="{ category_id: category.id }"
+            class="category-card">
+            <div class="category-icon-box" aria-hidden="true">
+              @switch (category.iconType) {
+                @case ('code') { <svg lucideCode class="cat-icon"></svg> }
+                @case ('cpu') { <svg lucideCpu class="cat-icon"></svg> }
+                @case ('atom') { <svg lucideAtom class="cat-icon"></svg> }
+                @case ('briefcase') { <svg lucideBriefcase class="cat-icon"></svg> }
+                @case ('palette') { <svg lucidePalette class="cat-icon"></svg> }
+                @case ('history') { <svg lucideHistory class="cat-icon"></svg> }
+                @case ('sparkles') { <svg lucideSparkles class="cat-icon"></svg> }
+                @default { <svg lucideBookOpen class="cat-icon"></svg> }
+              }
+            </div>
+            <div class="category-info">
+              <h3 class="category-name">{{ category.name }}</h3>
+              <p class="category-desc">{{ category.description }}</p>
+            </div>
+            <svg lucideArrowRight class="card-arrow" aria-hidden="true"></svg>
+          </a>
+        }
+      </div>
+    }
+  </div>
+</section>

@@ -9,6 +9,11 @@ import {
 } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { filter, Subscription } from 'rxjs';
+import {
+  LucideGlobe,
+  LucideSearch,
+  LucideUpload,
+} from '@lucide/angular';
 import { Auth } from '../../core/services/auth';
 
 @Component({
@@ -18,10 +23,13 @@ import { Auth } from '../../core/services/auth';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    FormsModule
+    FormsModule,
+    LucideSearch,
+    LucideGlobe,
+    LucideUpload,
   ],
   templateUrl: './main-layout.html',
-  styleUrl: './main-layout.scss'
+  styleUrl: './main-layout.scss',
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   readonly auth = inject(Auth);
@@ -30,8 +38,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   private routerSub?: Subscription;
 
+  readonly logoPath = 'images/assets/bookhive-logo.v2.png';
   searchTerm = '';
   mobileMenuOpen = false;
+  readonly currentYear = new Date().getFullYear();
 
   ngOnInit(): void {
     this.syncSearchTerm();
@@ -71,7 +81,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
     void this.router.navigate(['/explore'], {
       queryParams: { search: search || null },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
   }
 

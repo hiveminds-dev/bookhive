@@ -1,8 +1,12 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Self
 from urllib.parse import quote_plus
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BACKEND_DIR = Path(__file__).resolve().parent
 
 
 class Settings(BaseSettings):
@@ -52,9 +56,10 @@ class Settings(BaseSettings):
     smtp_from_email: str = "noreply@bookhive.local"
     smtp_use_tls: bool = True
 
-    # Book file uploads
-    book_storage_path: Path = Path("./storage/books")
-    cover_storage_path: Path = Path("./storage/covers")
+    # Storage paths (resolved relative to backend directory)
+    storage_root: Path = BACKEND_DIR / "storage"
+    book_storage_path: Path = BACKEND_DIR / "storage" / "books"
+    cover_storage_path: Path = BACKEND_DIR / "storage" / "covers"
     max_book_size_mb: int = 50
     max_cover_size_mb: int = 5
 
@@ -63,6 +68,16 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @model_validator(mode="after")
+    def resolve_storage_paths(self) -> Self:
+        if not self.storage_root.is_absolute():
+            self.storage_root = (BACKEND_DIR / self.storage_root).resolve()
+        if not self.book_storage_path.is_absolute():
+            self.book_storage_path = (BACKEND_DIR / self.book_storage_path).resolve()
+        if not self.cover_storage_path.is_absolute():
+            self.cover_storage_path = (BACKEND_DIR / self.cover_storage_path).resolve()
+        return self
 
     @property
     def database_url(self) -> str:

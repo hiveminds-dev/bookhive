@@ -110,11 +110,13 @@ export class ExploreComponent implements OnInit, OnDestroy {
           const search = (params['search'] ?? '').trim();
           const rawPage = Number(params['page']);
           const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
-          return { search, page };
+          const rawCategoryId = Number(params['category_id'] ?? params['categoryId']);
+          const categoryId = Number.isInteger(rawCategoryId) && rawCategoryId > 0 ? rawCategoryId : undefined;
+          return { search, page, categoryId };
         }),
-        distinctUntilChanged((prev, curr) => prev.search === curr.search && prev.page === curr.page),
+        distinctUntilChanged((prev, curr) => prev.search === curr.search && prev.page === curr.page && prev.categoryId === curr.categoryId),
         debounceTime(150),
-        switchMap(({ search, page }) => {
+        switchMap(({ search, page, categoryId }) => {
           this.activeFilters = {
             ...this.activeFilters,
             search
@@ -126,7 +128,8 @@ export class ExploreComponent implements OnInit, OnDestroy {
           return this.bookService.getCatalogue({
             page,
             size: 12,
-            search: search || undefined
+            search: search || undefined,
+            category_id: categoryId
           });
         })
       )

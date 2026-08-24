@@ -1,1 +1,106 @@
-<p>featured-books works!</p>
+<section class="featured-section" aria-labelledby="latest-books-heading">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="header-text">
+        <span class="section-badge">Latest Releases</span>
+        <h2 id="latest-books-heading" class="section-title">Recently Published Books</h2>
+        <p class="section-subtitle">Discover newly published manuscripts and literature available across the platform.</p>
+      </div>
+
+      <a
+        routerLink="/explore"
+        class="view-all-link">
+        <span>Explore Full Catalogue</span>
+        <svg lucideArrowRight class="link-arrow" aria-hidden="true"></svg>
+      </a>
+    </div>
+
+    @if (isLoading) {
+      <div class="books-grid" role="status" aria-live="polite">
+        @for (item of skeletonCount; track item) {
+          <div class="book-card-skeleton">
+            <div class="skeleton-cover"></div>
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-author"></div>
+            <div class="skeleton-text skeleton-meta"></div>
+          </div>
+        }
+      </div>
+    } @else if (hasError) {
+      <div class="state-card error-card" role="alert">
+        <div class="state-icon-box" aria-hidden="true">
+          <svg lucideAlertCircle class="state-icon"></svg>
+        </div>
+        <h3>Unable to load catalogue books</h3>
+        <p>A connection error occurred while loading books from the catalogue.</p>
+        <button type="button" class="retry-btn" (click)="onRetry()">
+          <svg lucideRotateCw class="retry-icon" aria-hidden="true"></svg>
+          Try Again
+        </button>
+      </div>
+    } @else if (books.length === 0) {
+      <div class="state-card empty-card" role="status">
+        <div class="state-icon-box" aria-hidden="true">
+          <svg lucideLibrary class="state-icon"></svg>
+        </div>
+        <h3>No books available</h3>
+        <p>Check back soon for newly published additions to the library.</p>
+        <a routerLink="/explore" class="explore-btn">
+          <span>Browse All Books</span>
+          <svg lucideArrowRight class="btn-arrow" aria-hidden="true"></svg>
+        </a>
+      </div>
+    } @else {
+      <div class="books-grid">
+        @for (book of books; track book.id) {
+          <article class="featured-book-card">
+            <div class="card-cover-wrapper">
+              @if (hasCover(book)) {
+                <img
+                  [src]="book.cover_url"
+                  [alt]="book.title + ' cover'"
+                  class="book-cover-img"
+                  loading="lazy"
+                  (error)="onCoverError(book.id)" />
+              } @else {
+                <div class="cover-placeholder" aria-hidden="true">
+                  <svg lucideBookOpen class="placeholder-icon"></svg>
+                  <span class="placeholder-text">{{ book.title }}</span>
+                </div>
+              }
+              <span class="category-badge">{{ book.category_name }}</span>
+            </div>
+
+            <div class="card-body">
+              <h3 class="book-title" [title]="book.title">
+                {{ book.title }}
+              </h3>
+
+              <p class="book-author">By {{ book.author_name }}</p>
+
+              <div class="book-meta">
+                @if (book.language) {
+                  <span class="meta-tag">{{ book.language }}</span>
+                } @else {
+                  <span class="meta-tag">Language not specified</span>
+                }
+                @if (book.page_count && book.page_count > 0) {
+                  <span class="meta-sep" aria-hidden="true">/</span>
+                  <span class="meta-tag">{{ book.page_count }} Pages</span>
+                }
+              </div>
+
+              <div class="card-footer">
+                <a
+                  [routerLink]="['/explore', book.id, 'preview']"
+                  class="preview-action-btn">
+                  View Preview
+                </a>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

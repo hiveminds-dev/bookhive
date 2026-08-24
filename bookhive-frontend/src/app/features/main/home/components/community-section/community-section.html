@@ -1,1 +1,75 @@
-<p>community-section works!</p>
+<section class="community-highlight-section" aria-labelledby="community-heading">
+  <div class="section-container">
+    <div class="community-grid">
+      <div class="community-info">
+        <span class="section-badge">Reader Network</span>
+        <h2 id="community-heading" class="section-title">Where Curious Minds Meet & Discuss</h2>
+        <p class="section-description">
+          Reading is better together. Join topic-focused discussion circles, exchange chapter reflections, review published manuscripts, and connect directly with independent authors.
+        </p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon-box" aria-hidden="true">
+              <svg lucideMessageSquare class="feature-icon"></svg>
+            </div>
+            <div class="feature-text">
+              <strong>Open Topic Discussions</strong>
+              <span>Engage in thought-provoking discourse across philosophy, technology, and literature.</span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon-box" aria-hidden="true">
+              <svg lucideUsers class="feature-icon"></svg>
+            </div>
+            <div class="feature-text">
+              <strong>Curated Reading Circles</strong>
+              <span>Discover reading clubs organized around specific knowledge categories.</span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon-box" aria-hidden="true">
+              <svg lucidePenLine class="feature-icon"></svg>
+            </div>
+            <div class="feature-text">
+              <strong>Author & Reader Feedback</strong>
+              <span>Share detailed manuscript reviews and engage directly with creators.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="community-actions">
+          <a
+            routerLink="/community"
+            class="btn-primary community-cta-btn"
+            (click)="onJoinCommunity()">
+            <span>Explore Community Hub</span>
+            <svg lucideArrowRight class="btn-arrow" aria-hidden="true"></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="community-cards-visual" aria-hidden="true">
+        <div class="info-card">
+          <div class="card-icon-header">
+            <svg lucideBookOpen class="card-lead-icon"></svg>
+            <span class="card-tag">Reader Circles</span>
+          </div>
+          <h3 class="card-lead-title">Collaborative Reading</h3>
+          <p class="card-lead-desc">Participate in community-driven discussions and discover new perspectives from fellow readers.</p>
+        </div>
+
+        <div class="info-card offset-card">
+          <div class="card-icon-header">
+            <svg lucideUsers class="card-lead-icon"></svg>
+            <span class="card-tag">Author Interaction</span>
+          </div>
+          <h3 class="card-lead-title">Direct Connection</h3>
+          <p class="card-lead-desc">Independent authors publish their works directly and receive feedback from engaged readers.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
