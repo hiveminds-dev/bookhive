@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
+import orm_models  # noqa: F401
 from config import settings
 from data_seed import seed_database
 from database import (
@@ -12,14 +14,14 @@ from database import (
     initialize_database,
     session_factory,
 )
-from fastapi.staticfiles import StaticFiles
+from routers import health_router
 from routers.admin_router import router as admin_router
 from routers.auth_router import router as auth_router
 from routers.author_router import router as author_router
-from routers.category_router import router as category_router
-from routers import health_router
-from routers.user_router import router as user_router
+from routers.book_router import router as book_router
 from routers.catalogue_router import router as catalogue_router
+from routers.category_router import router as category_router
+from routers.user_router import router as user_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,8 +29,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
-import orm_models
 
 
 @asynccontextmanager
@@ -91,20 +91,30 @@ app.include_router(
 
 app.include_router(
     category_router,
-    prefix=settings.api_prefix
+    prefix=settings.api_prefix,
 )
 
 app.include_router(
     admin_router,
-    prefix=settings.api_prefix
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    book_router,
+    prefix=settings.api_prefix,
 )
 
 app.include_router(
     catalogue_router,
-    prefix=settings.api_prefix
+    prefix=settings.api_prefix,
 )
 
-app.mount("/storage", StaticFiles(directory="storage"), name="storage")
+app.mount(
+    "/storage",
+    StaticFiles(directory="storage"),
+    name="storage",
+)
+
 
 @app.get("/", tags=["Root"])
 async def root() -> dict[str, str]:

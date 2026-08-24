@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 from urllib.parse import quote_plus
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -41,6 +42,8 @@ class Settings(BaseSettings):
     email_verification_token_expire_minutes: int = 60
     email_verification_resend_cooldown_seconds: int = 60
     password_reset_token_expire_minutes: int = 30
+
+    # Email delivery
     smtp_enabled: bool = False
     smtp_host: str = ""
     smtp_port: int = 587
@@ -48,6 +51,12 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from_email: str = "noreply@bookhive.local"
     smtp_use_tls: bool = True
+
+    # Book file uploads
+    book_storage_path: Path = Path("./storage/books")
+    cover_storage_path: Path = Path("./storage/covers")
+    max_book_size_mb: int = 50
+    max_cover_size_mb: int = 5
 
     model_config = SettingsConfigDict(
         env_file=".env",

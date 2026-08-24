@@ -1,35 +1,37 @@
+"""Provides the public Book catalogue endpoint."""
+
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Query
 
-from database import get_db_session
+from dependencies import DbSession
 from schemas.book import PaginatedCatalogueResponse
 from services.book_service import BookService
 
 router = APIRouter(prefix="/catalogue", tags=["Public Catalogue"])
-
 book_service = BookService()
-DbSession = Annotated[AsyncSession, Depends(get_db_session)]
+
+Page = Annotated[int, Query(ge=1)]
+PageSize = Annotated[int, Query(ge=1, le=100)]
+Search = Annotated[str | None, Query(max_length=200)]
+CategoryFilter = Annotated[int | None, Query(gt=0)]
+LanguageFilter = Annotated[str | None, Query(max_length=100)]
 
 
-@router.get("/books", response_model=PaginatedCatalogueResponse, status_code=status.HTTP_200_OK)
+@router.get("/books", response_model=PaginatedCatalogueResponse)
 async def get_published_books(
-        session: DbSession,
-        page: Annotated[int, Query(ge=1, description="Page number to retrieve")] = 1,
-        size: Annotated[int, Query(ge=1, le=100, description="Number of items per page")] = 10,
-        search: Annotated[str | None, Query(description="Search by book title")] = None,
-        category_id: Annotated[int | None, Query(description="Filter by category ID")] = None,
-        language: Annotated[str | None, Query(description="Filter by language (e.g., English, Sinhala)")] = None,
+    session: DbSession,
+    page: Page = 1,
+    size: PageSize = 10,
+    search: Search = None,
+    category_id: CategoryFilter = None,
+    language: LanguageFilter = None,
 ):
-
-    result = await book_service.get_public_catalogue(
+    return await book_service.get_public_catalogue(
         session=session,
         page=page,
         page_size=size,
         search_query=search,
         category_id=category_id,
-        language=language
+        language=language,
     )
-
-    return result

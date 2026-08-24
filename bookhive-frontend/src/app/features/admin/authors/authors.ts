@@ -25,14 +25,34 @@ export class AuthorsComponent implements OnInit {
 
   readonly authorsSignal = signal<AuthorApplicationItem[]>([]);
   readonly loading = signal(true);
+  readonly selectedAuthorForProfile = signal<AuthorApplicationItem | null>(null);
+  readonly authorStatsSignal = signal({
+    new_applications: 0,
+    total_authors: 0,
+    books_in_review: 0,
+    total_rejected: 0,
+  });
 
   ngOnInit(): void {
     this.loadAuthors();
   }
 
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+  }
+
   loadAuthors(): void {
     const status = this.filterStatus() || undefined;
     this.loading.set(true);
+
+    this.adminApi.getAuthorStats().subscribe({
+      next: (stats) => {
+        if (stats) {
+          this.authorStatsSignal.set(stats);
+        }
+      }
+    });
+
     this.adminApi.getAuthorApplications(status).subscribe({
       next: (data) => {
         this.authorsSignal.set(data ?? []);
@@ -43,6 +63,24 @@ export class AuthorsComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  getAuthorAvatar(author: AuthorApplicationItem | null): string {
+    if (!author) return 'assets/images/auth/sign_in_1.png';
+    if (author.profile_image_path) {
+      return author.profile_image_path.startsWith('http')
+        ? author.profile_image_path
+        : `http://localhost:8000/${author.profile_image_path}`;
+    }
+    return 'assets/images/auth/sign_in_1.png';
+  }
+
+  openAuthorProfile(author: AuthorApplicationItem): void {
+    this.selectedAuthorForProfile.set(author);
+  }
+
+  closeAuthorProfileModal(): void {
+    this.selectedAuthorForProfile.set(null);
   }
 
   get filteredAuthors(): AuthorApplicationItem[] {
@@ -108,11 +146,25 @@ export class AuthorsComponent implements OnInit {
     this.toastService.info('Author search filters reset.', 'Filters Reset');
   }
 
+  toggleAuthorStatus(author: AuthorApplicationItem): void {
+    const isCurrentlyApproved = author.account_status.toLowerCase() === 'approved';
+    if (isCurrentlyApproved) {
+      this.rejectAuthor(author);
+    } else {
+      this.approveAuthor(author);
+    }
+  }
+
   approveAuthor(author: AuthorApplicationItem): void {
     this.adminApi.approveAuthor(author.user_id).subscribe({
       next: () => {
+        this.authorsSignal.update(list =>
+          list.map(a => (a.user_id === author.user_id ? { ...a, account_status: 'approved' } : a))
+        );
+        if (this.selectedAuthorForProfile()?.user_id === author.user_id) {
+          this.selectedAuthorForProfile.update(a => a ? { ...a, account_status: 'approved' } : null);
+        }
         this.toastService.success(`Approved ${author.full_name} as an official Author!`, 'Request Approved');
-        this.loadAuthors();
       },
       error: () => {
         this.toastService.warning('Failed to approve author. Please try again.', 'Error');
@@ -123,8 +175,13 @@ export class AuthorsComponent implements OnInit {
   rejectAuthor(author: AuthorApplicationItem): void {
     this.adminApi.rejectAuthor(author.user_id).subscribe({
       next: () => {
+        this.authorsSignal.update(list =>
+          list.map(a => (a.user_id === author.user_id ? { ...a, account_status: 'rejected' } : a))
+        );
+        if (this.selectedAuthorForProfile()?.user_id === author.user_id) {
+          this.selectedAuthorForProfile.update(a => a ? { ...a, account_status: 'rejected' } : null);
+        }
         this.toastService.warning(`Rejected application for ${author.full_name}.`, 'Request Rejected');
-        this.loadAuthors();
       },
       error: () => {
         this.toastService.warning('Failed to reject author. Please try again.', 'Error');
@@ -141,8 +198,8 @@ export class AuthorsComponent implements OnInit {
     }
   }
 
-  createCommunity(): void {
-    this.toastService.info('Opening Create Community dialogue...', 'Community');
+  createAuthorModal(): void {
+    this.toastService.info('Opening Create Author modal...', 'Create Author');
   }
 }
 

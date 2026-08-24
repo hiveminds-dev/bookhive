@@ -52,7 +52,7 @@ class Category(Base):
         nullable=False,
     )
 
-    books: Mapped[list["Book"]] = relationship(
+    books: Mapped[list[Book]] = relationship(
         "Book",
         back_populates="category",
     )
