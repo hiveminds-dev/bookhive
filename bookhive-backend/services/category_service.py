@@ -5,10 +5,9 @@ from __future__ import annotations
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
+from orm_models.category import Category
 from repositories.category_repository import CategoryRepository
 from schemas.category import CategoryCreate
-from orm_models.category import Category
 
 
 class CategoryService:

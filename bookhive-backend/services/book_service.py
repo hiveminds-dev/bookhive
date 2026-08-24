@@ -1,6 +1,6 @@
 """Handles Book rules."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -127,7 +127,7 @@ class BookService:
                 session=session,
                 book=book,
                 new_status=BookStatus.PENDING_REVIEW,
-                submitted_at=datetime.now(timezone.utc),
+                submitted_at=datetime.now(UTC),
             )
             await session.commit()
             await session.refresh(updated_book)

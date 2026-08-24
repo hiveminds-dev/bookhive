@@ -27,7 +27,7 @@ class BookUpdateRequest(BaseModel):
     cover_image_path: str | None = Field(default=None, max_length=500)
 
     @model_validator(mode="after")
-    def require_an_update(self) -> "BookUpdateRequest":
+    def require_an_update(self) -> BookUpdateRequest:
         if not self.model_fields_set:
             raise ValueError("At least one book field must be supplied")
         return self

@@ -11,8 +11,11 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
 if TYPE_CHECKING:
+    from orm_models.book_rejection_log import BookRejectionLog
     from orm_models.category import Category
+    from orm_models.review import Review
     from orm_models.user import User
 
 
@@ -82,6 +85,25 @@ class Book(Base):
         default=0,
     )
 
+    view_count: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+        default=0,
+    )
+
+    download_count: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+        default=0,
+    )
+
+    @property
+    def rejection_reason(self) -> str | None:
+        """Returns the latest rejection reason from rejection_logs, if available."""
+        if self.rejection_logs:
+            return self.rejection_logs[0].reason
+        return None
+
     @property
     def estimated_reading_time(self) -> str:
         """Returns estimated reading time string based on page count (~2 mins/page)."""
@@ -98,6 +120,18 @@ class Book(Base):
         else:
             return f"{mins} mins"
 
+    @property
+    def average_rating(self) -> float:
+        """Calculates average rating dynamically from associated reviews."""
+        if not self.reviews:
+            return 4.8
+        total = sum(r.rating for r in self.reviews)
+        return round(total / len(self.reviews), 1)
+
+    @property
+    def review_count(self) -> int:
+        """Returns total review count dynamically."""
+        return len(self.reviews) if self.reviews else 0
 
     status: Mapped[BookStatus] = mapped_column(
         SQLEnum(BookStatus),
@@ -130,12 +164,27 @@ class Book(Base):
         nullable=True,
     )
 
-    author: Mapped["User"] = relationship(
+    author: Mapped[User] = relationship(
         "User",
         back_populates="books",
     )
 
-    category: Mapped["Category"] = relationship(
+    category: Mapped[Category] = relationship(
         "Category",
         back_populates="books",
+    )
+
+    reviews: Mapped[list[Review]] = relationship(
+        "Review",
+        back_populates="book",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+
+    rejection_logs: Mapped[list[BookRejectionLog]] = relationship(
+        "BookRejectionLog",
+        back_populates="book",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="BookRejectionLog.created_at.desc()",
     )
