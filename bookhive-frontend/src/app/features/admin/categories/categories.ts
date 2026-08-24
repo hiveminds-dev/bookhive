@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
+import { AdminApiService } from '../../../core/services/admin-api.service';
 import { ConfirmationModalComponent } from '../../../shared/components/confirmation-modal/confirmation-modal';
 
 interface CategoryItem {
@@ -20,13 +21,47 @@ interface CategoryItem {
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })
-export class CategoriesComponent {
+export class CategoriesComponent implements OnInit {
   private readonly toastService = inject(ToastService);
+  private readonly adminApi = inject(AdminApiService);
 
   searchQuery = signal('');
   showAdvanceSearch = signal(false);
   filterStatus = signal('');
   filterMinBooks = signal<number | null>(null);
+
+  readonly categoriesSignal = signal<CategoryItem[]>([]);
+  readonly showAddModal = signal<boolean>(false);
+  readonly deleteTargetCategory = signal<CategoryItem | null>(null);
+
+  newCatName = '';
+  newCatDesc = '';
+
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.adminApi.getCategories().subscribe({
+      next: (data) => {
+        const mapped: CategoryItem[] = data.map(c => ({
+          id: c.id,
+          name: c.name,
+          description: c.description || 'No description provided.',
+          totalBooks: c.total_books,
+          isActive: c.is_active,
+        }));
+        this.categoriesSignal.set(mapped);
+      },
+      error: () => {
+        this.categoriesSignal.set([]);
+      }
+    });
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+  }
 
   toggleAdvanceSearch(): void {
     this.showAdvanceSearch.update(v => !v);
@@ -65,20 +100,6 @@ export class CategoriesComponent {
     this.toastService.info('Category search filters reset.', 'Filters Reset');
   }
 
-  readonly categoriesSignal = signal<CategoryItem[]>([
-    { id: 1, name: 'Philosophy & Logic', description: 'Classical and modern philosophical texts and logic frameworks.', totalBooks: 142, isActive: true },
-    { id: 2, name: 'Science & Physics', description: 'Quantum mechanics, physics, biology, and natural sciences.', totalBooks: 98, isActive: true },
-    { id: 3, name: 'Fiction & Novels', description: 'Literary fiction, mystery, sci-fi, and narrative works.', totalBooks: 215, isActive: true },
-    { id: 4, name: 'History & Society', description: 'World history, anthropology, and social studies.', totalBooks: 76, isActive: true },
-    { id: 5, name: 'Art & Design', description: 'Visual design, architecture, typography, and aesthetics.', totalBooks: 54, isActive: false },
-  ]);
-
-  readonly showAddModal = signal<boolean>(false);
-  readonly deleteTargetCategory = signal<CategoryItem | null>(null);
-
-  newCatName = '';
-  newCatDesc = '';
-
   openAddCategoryModal(): void {
     this.newCatName = '';
     this.newCatDesc = '';
@@ -95,24 +116,35 @@ export class CategoriesComponent {
       return;
     }
 
-    const newId = this.categoriesSignal().length + 1;
-    const item: CategoryItem = {
-      id: newId,
+    this.adminApi.createCategory({
       name: this.newCatName.trim(),
-      description: this.newCatDesc.trim() || 'No description provided.',
-      totalBooks: 0,
-      isActive: true,
-    };
-
-    this.categoriesSignal.update((list) => [item, ...list]);
-    this.showAddModal.set(false);
-    this.toastService.success(`Created category "${item.name}" successfully!`, 'Category Created');
+      description: this.newCatDesc.trim() || undefined,
+    }).subscribe({
+      next: (created) => {
+        this.loadCategories();
+        this.showAddModal.set(false);
+        this.toastService.success(`Created category "${created.name}" successfully!`, 'Category Created');
+      },
+      error: (err) => {
+        const errorMsg = err.error?.detail || 'Failed to create category.';
+        this.toastService.error(errorMsg, 'Creation Failed');
+      }
+    });
   }
 
   toggleActive(cat: CategoryItem): void {
-    cat.isActive = !cat.isActive;
-    const statusStr = cat.isActive ? 'activated' : 'deactivated';
-    this.toastService.info(`Category "${cat.name}" was ${statusStr}.`, 'Status Updated');
+    this.adminApi.toggleCategoryStatus(cat.id).subscribe({
+      next: (res) => {
+        this.categoriesSignal.update(list =>
+          list.map(c => (c.id === cat.id ? { ...c, isActive: res.is_active } : c))
+        );
+        const statusStr = res.is_active ? 'activated' : 'deactivated';
+        this.toastService.info(`Category "${cat.name}" was ${statusStr}.`, 'Status Updated');
+      },
+      error: () => {
+        this.toastService.error('Failed to update category status.', 'Update Error');
+      }
+    });
   }
 
   promptDelete(cat: CategoryItem): void {
@@ -126,8 +158,15 @@ export class CategoriesComponent {
   confirmDelete(): void {
     const cat = this.deleteTargetCategory();
     if (cat) {
-      this.categoriesSignal.update((list) => list.filter((c) => c.id !== cat.id));
-      this.toastService.warning(`Permanently deleted category "${cat.name}".`, 'Category Deleted');
+      this.adminApi.deleteCategory(cat.id).subscribe({
+        next: () => {
+          this.loadCategories();
+          this.toastService.warning(`Permanently deleted category "${cat.name}".`, 'Category Deleted');
+        },
+        error: () => {
+          this.toastService.error('Failed to delete category.', 'Delete Error');
+        }
+      });
     }
     this.deleteTargetCategory.set(null);
   }
