@@ -44,6 +44,38 @@ export class Auth {
     );
   }
 
+  updateProfile(fullName: string, email: string): Observable<AuthenticatedUser> {
+    return this.http.put<AuthenticatedUser>('/api/auth/me', { full_name: fullName, email }).pipe(
+      tap((user) => {
+        this.currentUserSignal.set(user);
+        const persistent = localStorage.getItem(ACCESS_TOKEN_KEY) !== null;
+        this.storage.set(AUTH_USER_KEY, JSON.stringify(user), persistent);
+      }),
+    );
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>('/api/auth/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+  }
+
+  requestPasswordOTP(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('/api/auth/request-password-otp', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+  }
+
+  verifyPasswordOTP(otpCode: string, currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('/api/auth/verify-password-otp', {
+      otp_code: otpCode,
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+  }
+
   initializeSession(): Observable<AuthenticatedUser | null> {
     if (!this.getAccessToken()) {
       this.clearSession();

@@ -66,27 +66,25 @@ async def test_published_book_details_are_mapped():
             return_value=book,
         )
     )
-    service.review_repository.get_visible_reviews_for_book = (
+    service.review_repository.get_reviews_for_book = (
         AsyncMock(
             return_value=[
                 SimpleNamespace(
                     id=21,
-                    reader=SimpleNamespace(
+                    user=SimpleNamespace(
                         username="reader_one",
                     ),
                     rating=5,
                     comment="Excellent book.",
-                    helpful_count=3,
                     created_at=datetime.now(UTC),
                 ),
                 SimpleNamespace(
                     id=22,
-                    reader=SimpleNamespace(
+                    user=SimpleNamespace(
                         username="reader_two",
                     ),
                     rating=4,
                     comment="Very useful.",
-                    helpful_count=1,
                     created_at=datetime.now(UTC),
                 ),
             ],
@@ -151,7 +149,7 @@ async def test_author_full_name_is_used_without_profile():
             return_value=book,
         )
     )
-    service.review_repository.get_visible_reviews_for_book = (
+    service.review_repository.get_reviews_for_book = (
         AsyncMock(return_value=[])
     )
 

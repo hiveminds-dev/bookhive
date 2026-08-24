@@ -55,6 +55,19 @@ class User(Base):
         default=AccountStatus.INACTIVE,
         nullable=False,
     )
+    two_factor_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+    department: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+    role_title: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -82,9 +95,8 @@ class User(Base):
 
     reviews: Mapped[list[Review]] = relationship(
         "Review",
-        back_populates="reader",
+        back_populates="user",
         cascade="all, delete-orphan",
-        passive_deletes=True,
     )
 
     email_verification_tokens: Mapped[list[EmailVerificationToken]] = relationship(

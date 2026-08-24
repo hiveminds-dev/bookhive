@@ -1,58 +1,131 @@
 import logging
+import os
 import re
+import shutil
+from datetime import UTC
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings
+from orm_models.book import Book, BookStatus
 from orm_models.category import Category
+from orm_models.review import Review
 from orm_models.user import AccountStatus, User, UserRole
 from utils.security import hash_password
 
 logger = logging.getLogger(__name__)
 
 
+def assign_seed_pdf_for_book(book_index: int) -> tuple[str, int]:
+    """Ensures each book index gets a unique PDF file in storage/books/ (copying sample PDFs if needed). Returns (pdf_path, page_count)."""
+    base_dir = os.path.join(os.path.dirname(__file__), "storage", "books")
+    os.makedirs(base_dir, exist_ok=True)
+
+    target_filename = f"book_{book_index}.pdf"
+    target_path = os.path.join(base_dir, target_filename)
+
+    sample_index = ((book_index - 1) % 11) + 1
+    sample_filename = f"sample{sample_index}.pdf"
+    sample_path = os.path.join(base_dir, sample_filename)
+
+    if not os.path.exists(target_path):
+        if os.path.exists(sample_path):
+            shutil.copyfile(sample_path, target_path)
+            logger.info(f"Copied {sample_filename} to {target_filename} for book #{book_index}")
+
+    page_count = 6
+    if os.path.exists(target_path):
+        try:
+            with open(target_path, "rb") as f:
+                content = f.read()
+            matches = re.findall(rb'/Type\s*/Page\b', content)
+            if matches:
+                page_count = len(matches)
+        except Exception as e:
+            logger.warning(f"Error reading PDF page count for {target_path}: {e}")
+
+    return f"storage/books/{target_filename}", page_count
+
+
+def assign_seed_cover_for_book(book_index: int) -> str:
+    """Ensures each book index gets a unique cover image in storage/covers/. Returns relative cover_path."""
+    base_dir = os.path.join(os.path.dirname(__file__), "storage", "covers")
+    os.makedirs(base_dir, exist_ok=True)
+
+    target_filename = f"cover_{book_index}.jpg"
+    target_path = os.path.join(base_dir, target_filename)
+
+    if not os.path.exists(target_path):
+        sample_names = ["beyond-good-and-evil.jpg", "quantum-mechanics.jpg", "the-silent-grove.jpg"]
+        sample_name = sample_names[(book_index - 1) % len(sample_names)]
+        sample_path = os.path.join(base_dir, sample_name)
+        if os.path.exists(sample_path):
+            shutil.copyfile(sample_path, target_path)
+            logger.info(f"Copied {sample_name} to {target_filename} for book #{book_index}")
+
+    return f"storage/covers/{target_filename}"
+
+
+def assign_seed_author_avatar(author_index: int) -> str:
+    """Ensures each author index gets a profile picture in storage/authors/. Returns relative avatar_path."""
+    base_dir = os.path.join(os.path.dirname(__file__), "storage", "authors")
+    os.makedirs(base_dir, exist_ok=True)
+
+    target_filename = f"author_{author_index}.jpg"
+    target_path = os.path.join(base_dir, target_filename)
+
+    if not os.path.exists(target_path):
+        covers_dir = os.path.join(os.path.dirname(__file__), "storage", "covers")
+        sample_path = os.path.join(covers_dir, "beyond-good-and-evil.jpg")
+        if os.path.exists(sample_path):
+            shutil.copyfile(sample_path, target_path)
+            logger.info(f"Assigned sample avatar for author #{author_index}")
+
+    return f"storage/authors/{target_filename}"
+
+
 DEFAULT_CATEGORIES: tuple[tuple[str, str], ...] = (
     (
-        "Fiction",
-        "Novels, short stories, and other fictional works.",
+        "Philosophy & Logic",
+        "Classical and modern philosophical texts, logic frameworks, and ethics.",
     ),
     (
-        "Non-Fiction",
-        "Books based on facts, real events, and real people.",
+        "Science & Physics",
+        "Quantum mechanics, physics, biology, astrophysics, and natural sciences.",
+    ),
+    (
+        "Fiction & Novels",
+        "Literary fiction, mystery, narrative prose, sci-fi, and drama.",
+    ),
+    (
+        "History & Society",
+        "World history, political science, anthropology, and social studies.",
     ),
     (
         "Technology",
-        "Books about technology and digital systems.",
+        "Cloud architecture, artificial intelligence, cybersecurity, and digital systems.",
     ),
     (
         "Programming",
-        "Software development and programming books.",
+        "Python, TypeScript, software engineering, algorithms, and system design.",
     ),
     (
-        "Science",
-        "Books covering scientific subjects and discoveries.",
+        "Business & Economy",
+        "Microeconomics, finance, startup entrepreneurship, and global trade.",
     ),
     (
-        "Business",
-        "Business, entrepreneurship, and management books.",
-    ),
-    (
-        "Design",
-        "Books about visual, product, and creative design.",
+        "Art & Design",
+        "Visual design, typography, architecture, user experience, and aesthetics.",
     ),
     (
         "Personal Growth",
-        "Self-development and personal improvement books.",
+        "Self-help, mindfulness, leadership, productivity, and personal resilience.",
     ),
     (
-        "History",
-        "Books about historical periods, people, and events.",
-    ),
-    (
-        "Philosophy",
-        "Books about philosophy, reasoning, and ethics.",
+        "Sci-Fi",
+        "Futuristic speculative fiction, space exploration, and cybernetic adventures.",
     ),
 )
 
@@ -290,10 +363,38 @@ async def seed_demo_records(session: AsyncSession) -> None:
     if settings.app_env.lower() != "development":
         return
 
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta
 
-    from orm_models.book import Book, BookStatus
+    from orm_models.book import Book
     from orm_models.user import AuthorProfile
+
+    # ===========================================================================
+    # ADMIN STAFF (4 admins)
+    # ===========================================================================
+
+    _admin_staff = [
+        ("Alexander Wright", "alexanderw", "alexander.wright@bookhive.com", UserRole.SUPER_ADMIN, "Super Admin", "Executive Governance", True, AccountStatus.ACTIVE),
+        ("Samantha Reed", "samanthar", "samantha.reed@bookhive.com", UserRole.ADMIN, "Senior Editor", "Editorial & Curation", True, AccountStatus.ACTIVE),
+        ("Marcus Vance", "marcusv", "marcus.vance@bookhive.com", UserRole.ADMIN, "Manuscript Moderator", "Author Compliance", False, AccountStatus.ACTIVE),
+        ("Elena Rostova", "elenar", "elena.rostova@bookhive.com", UserRole.ADMIN, "Support Lead", "Community & Help Desk", False, AccountStatus.PENDING),
+    ]
+
+    for full_name, username, email, role, role_title, dept, two_fa, status in _admin_staff:
+        existing = await get_user_by_email(session, email)
+        if existing is None:
+            session.add(User(
+                full_name=full_name,
+                username=username,
+                email=email,
+                password_hash=hash_password("Password123!"),
+                email_verified=True,
+                role=role,
+                role_title=role_title,
+                department=dept,
+                two_factor_enabled=two_fa,
+                account_status=status,
+            ))
+    await session.flush()
 
     # ===========================================================================
     # DEMO READERS (8 active readers)
@@ -310,9 +411,11 @@ async def seed_demo_records(session: AsyncSession) -> None:
         ("Carlos Reyes", "carlosr", "carlos.reyes@mail.com", "Mexico"),
     ]
 
-    for full_name, username, email, _country in _readers_data:
+    reader_date_offsets = [5, 25, 55, 85, 115, 145, 175, 205, 235, 265]
+    for idx, (full_name, username, email, _country) in enumerate(_readers_data):
         existing = await get_user_by_email(session, email)
         if existing is None:
+            days_ago = reader_date_offsets[idx % len(reader_date_offsets)]
             session.add(User(
                 full_name=full_name,
                 username=username,
@@ -321,6 +424,7 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 email_verified=True,
                 role=UserRole.READER,
                 account_status=AccountStatus.ACTIVE,
+                created_at=datetime.now(UTC) - timedelta(days=days_ago),
             ))
     await session.flush()
 
@@ -347,7 +451,11 @@ async def seed_demo_records(session: AsyncSession) -> None:
     ]
 
     author_users: dict[str, User] = {}
+    author_counter = 0
+
     for full_name, username, email, pen_name, country, language, bio in _approved_authors:
+        author_counter += 1
+        avatar_path = assign_seed_author_avatar(author_counter)
         user = await get_user_by_email(session, email)
         if user is None:
             user = User(
@@ -367,6 +475,7 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 country=country,
                 preferred_language=language,
                 short_bio=bio,
+                profile_image_path=avatar_path,
             ))
             await session.flush()
         author_users[email] = user
@@ -387,6 +496,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
     ]
 
     for full_name, username, email, pen_name, country, bio in _pending_authors:
+        author_counter += 1
+        avatar_path = assign_seed_author_avatar(author_counter)
         user = await get_user_by_email(session, email)
         if user is None:
             user = User(
@@ -405,6 +516,7 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 pen_name=pen_name,
                 country=country,
                 short_bio=bio,
+                profile_image_path=avatar_path,
             ))
             await session.flush()
         author_users[email] = user
@@ -421,6 +533,8 @@ async def seed_demo_records(session: AsyncSession) -> None:
     ]
 
     for full_name, username, email, pen_name, country, bio in _rejected_authors:
+        author_counter += 1
+        avatar_path = assign_seed_author_avatar(author_counter)
         user = await get_user_by_email(session, email)
         if user is None:
             user = User(
@@ -439,6 +553,7 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 pen_name=pen_name,
                 country=country,
                 short_bio=bio,
+                profile_image_path=avatar_path,
             ))
             await session.flush()
 
@@ -446,20 +561,22 @@ async def seed_demo_records(session: AsyncSession) -> None:
     # FETCH ALL CATEGORIES
     # ===========================================================================
 
-    fiction = await get_category_by_name(session, "Fiction")
-    non_fiction = await get_category_by_name(session, "Non-Fiction")
+    philosophy = await get_category_by_name(session, "Philosophy & Logic")
+    science = await get_category_by_name(session, "Science & Physics")
+    fiction = await get_category_by_name(session, "Fiction & Novels")
+    history = await get_category_by_name(session, "History & Society")
     technology = await get_category_by_name(session, "Technology")
     programming = await get_category_by_name(session, "Programming")
-    science = await get_category_by_name(session, "Science")
-    business = await get_category_by_name(session, "Business")
-    design = await get_category_by_name(session, "Design")
+    business = await get_category_by_name(session, "Business & Economy")
+    design = await get_category_by_name(session, "Art & Design")
     personal_growth = await get_category_by_name(session, "Personal Growth")
-    history = await get_category_by_name(session, "History")
-    philosophy = await get_category_by_name(session, "Philosophy")
+    await get_category_by_name(session, "Sci-Fi")
 
     # Convenience: author lookup by email
     def _author(email: str) -> User | None:
         return author_users.get(email)
+
+    book_counter = 0
 
     # ===========================================================================
     # BOOKS — PUBLISHED (8)
@@ -500,12 +617,22 @@ async def seed_demo_records(session: AsyncSession) -> None:
          "English", "Advanced", "storage/covers/quantum-mechanics.jpg"),
     ]
 
-    for title, author_email, cat, desc, lang, level, cover in _published_books:
+    published_dates_offsets = [15, 45, 75, 105, 135, 165, 195, 225]
+    views_counts = [12402, 10115, 9842, 8530, 7210, 6100, 5400, 4800]
+    downloads_counts = [4200, 3100, 2800, 2100, 1800, 1500, 1200, 950]
+
+    for idx, (title, author_email, cat, desc, lang, level, _cover) in enumerate(_published_books):
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
+        cover_path = assign_seed_cover_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
+            days_ago = published_dates_offsets[idx % len(published_dates_offsets)]
+            views = views_counts[idx % len(views_counts)]
+            downloads = downloads_counts[idx % len(downloads_counts)]
             session.add(Book(
                 title=title,
                 author_id=author.id,
@@ -513,10 +640,15 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 description=desc,
                 language=lang,
                 reading_level=level,
-                cover_image_path=cover,
+                cover_image_path=cover_path,
+                pdf_path=pdf_path,
+                page_count=page_count,
+                view_count=views,
+                download_count=downloads,
                 status=BookStatus.PUBLISHED,
-                submitted_at=datetime.now(timezone.utc) - timedelta(days=30),
-                published_at=datetime.now(timezone.utc) - timedelta(days=20),
+                created_at=datetime.now(UTC) - timedelta(days=days_ago + 10),
+                submitted_at=datetime.now(UTC) - timedelta(days=days_ago + 5),
+                published_at=datetime.now(UTC) - timedelta(days=days_ago),
             ))
 
     await session.flush()
@@ -548,10 +680,13 @@ async def seed_demo_records(session: AsyncSession) -> None:
          "English", "Beginner", None),
     ]
 
-    for title, author_email, cat, desc, lang, level, cover in _pending_books:
+    for title, author_email, cat, desc, lang, level, _cover in _pending_books:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
+        cover_path = assign_seed_cover_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
             session.add(Book(
@@ -561,9 +696,11 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 description=desc,
                 language=lang,
                 reading_level=level,
-                cover_image_path=cover,
+                cover_image_path=cover_path,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.PENDING_REVIEW,
-                submitted_at=datetime.now(timezone.utc) - timedelta(days=5),
+                submitted_at=datetime.now(UTC) - timedelta(days=5),
             ))
 
     await session.flush()
@@ -591,10 +728,13 @@ async def seed_demo_records(session: AsyncSession) -> None:
          "Italian", "Beginner", None),
     ]
 
-    for title, author_email, cat, desc, lang, level, cover in _draft_books:
+    for title, author_email, cat, desc, lang, level, _cover in _draft_books:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
+        cover_path = assign_seed_cover_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
             session.add(Book(
@@ -604,7 +744,9 @@ async def seed_demo_records(session: AsyncSession) -> None:
                 description=desc,
                 language=lang,
                 reading_level=level,
-                cover_image_path=cover,
+                cover_image_path=cover_path,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.DRAFT,
             ))
 
@@ -624,35 +766,88 @@ async def seed_demo_records(session: AsyncSession) -> None:
          "A rejected submission — duplicate content detected from prior publication.",
          "English", "Advanced", None),
         ("The Unfinished Symphony",
-         "amir.hassan@authorhub.com", non_fiction,
+         "amir.hassan@authorhub.com", history,
          "A rejected work — manuscript was incomplete at time of submission.",
          "Arabic", "Intermediate", None),
     ]
 
-    for title, author_email, cat, desc, lang, level, cover in _rejected_books:
+    for title, author_email, cat, desc, lang, level, _cover in _rejected_books:
         author = _author(author_email)
         if cat is None or author is None:
             continue
+        book_counter += 1
+        pdf_path, page_count = assign_seed_pdf_for_book(book_counter)
+        cover_path = assign_seed_cover_for_book(book_counter)
         result = await session.execute(select(Book).where(Book.title == title))
         if result.scalar_one_or_none() is None:
-            session.add(Book(
+            rejected_b = Book(
                 title=title,
                 author_id=author.id,
                 category_id=cat.id,
                 description=desc,
                 language=lang,
                 reading_level=level,
-                cover_image_path=cover,
+                cover_image_path=cover_path,
+                pdf_path=pdf_path,
+                page_count=page_count,
                 status=BookStatus.REJECTED,
-                submitted_at=datetime.now(timezone.utc) - timedelta(days=60),
+                submitted_at=datetime.now(UTC) - timedelta(days=60),
+            )
+            session.add(rejected_b)
+            await session.flush()
+            from orm_models.book_rejection_log import BookRejectionLog
+            session.add(BookRejectionLog(
+                book_id=rejected_b.id,
+                reason=desc,
+                created_at=datetime.now(UTC) - timedelta(days=58),
             ))
 
     await session.flush()
+    await seed_demo_reviews(session)
     logger.info(
         "Demo records seeded: 8 readers, 11 authors "
         "(5 approved, 4 pending, 2 rejected), 20 books "
-        "(8 published, 5 pending, 4 draft, 3 rejected)."
+        "(8 published, 5 pending, 4 draft, 3 rejected), and dynamic reviews."
     )
+
+
+SAMPLE_REVIEWS = [
+    (5, "An exceptional read! Highly recommended for anyone interested in this discipline. The logical structure and clear narrative make complex ideas digestible."),
+    (4, "Thorough research and well-crafted chapters. A valuable contribution to modern literature and technical analysis."),
+    (5, "A masterpiece of clarity and vision. Dense concepts are transformed into intuitive, captivating insights."),
+    (5, "Captivating from start to finish! The author clearly knows their craft and presents the material seamlessly."),
+    (4, "Insightful perspective with solid practical examples. Looking forward to more releases from this author."),
+    (3, "Good introductory overview, though some chapters could explore deeper nuances."),
+    (5, "Brilliant execution and formatting. Highly inspiring reading material!")
+]
+
+
+async def seed_demo_reviews(session: AsyncSession) -> None:
+    """Seed dynamic reader reviews for each seeded book."""
+    from datetime import datetime, timedelta
+    books = (await session.execute(select(Book))).scalars().all()
+    readers = (await session.execute(select(User).where(User.role == UserRole.READER))).scalars().all()
+
+    if not books or not readers:
+        return
+
+    for book in books:
+        existing_res = await session.execute(select(func.count(Review.id)).where(Review.book_id == book.id))
+        if (existing_res.scalar_one_or_none() or 0) > 0:
+            continue
+
+        num_reviews = 2 + (book.id % 2)
+        for i in range(num_reviews):
+            reader = readers[(book.id + i) % len(readers)]
+            rating, comment = SAMPLE_REVIEWS[(book.id + i) % len(SAMPLE_REVIEWS)]
+            session.add(Review(
+                book_id=book.id,
+                user_id=reader.id,
+                rating=rating,
+                comment=comment,
+                created_at=datetime.now(UTC) - timedelta(days=(book.id * 3 + i * 2))
+            ))
+    await session.flush()
 
 
 async def seed_database(session: AsyncSession) -> None:

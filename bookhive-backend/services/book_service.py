@@ -133,7 +133,7 @@ class BookService:
         has_pdf = pdf_url is not None
 
         reviews = (
-            await self.review_repository.get_visible_reviews_for_book(
+            await self.review_repository.get_reviews_for_book(
                 session=session,
                 book_id=book.id,
             )
@@ -167,10 +167,9 @@ class BookService:
             reviews=[
                 PublicReviewResponse(
                     id=review.id,
-                    reader_name=review.reader.username,
+                    reader_name=review.user.username,
                     rating=review.rating,
                     comment=review.comment,
-                    helpful_count=review.helpful_count,
                     created_at=review.created_at,
                 )
                 for review in reviews

@@ -8,20 +8,17 @@ from orm_models.review import Review
 
 
 class ReviewRepository:
-    async def get_visible_reviews_for_book(
+    async def get_reviews_for_book(
         self,
         session: AsyncSession,
         book_id: int,
     ) -> list[Review]:
-        """Return public reviews for a Book, newest first."""
+        """Return reviews for a Book, newest first."""
 
         query = (
             select(Review)
-            .options(selectinload(Review.reader))
-            .where(
-                Review.book_id == book_id,
-                Review.is_visible.is_(True),
-            )
+            .options(selectinload(Review.user))
+            .where(Review.book_id == book_id)
             .order_by(Review.created_at.desc())
         )
 

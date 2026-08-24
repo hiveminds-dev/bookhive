@@ -5,17 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import (
-    Boolean,
-    CheckConstraint,
-    DateTime,
-    ForeignKey,
-    Integer,
-    Text,
-    UniqueConstraint,
-    func,
-    true,
-)
+from sqlalchemy import DateTime, ForeignKey, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -27,21 +17,6 @@ if TYPE_CHECKING:
 
 class Review(Base):
     __tablename__ = "reviews"
-    __table_args__ = (
-        CheckConstraint(
-            "rating >= 1 AND rating <= 5",
-            name="ck_reviews_rating_range",
-        ),
-        CheckConstraint(
-            "helpful_count >= 0",
-            name="ck_reviews_helpful_count_non_negative",
-        ),
-        UniqueConstraint(
-            "book_id",
-            "reader_id",
-            name="uq_reviews_book_reader",
-        ),
-    )
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -55,7 +30,7 @@ class Review(Base):
         index=True,
     )
 
-    reader_id: Mapped[int] = mapped_column(
+    user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -64,26 +39,12 @@ class Review(Base):
     rating: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
+        default=5,
     )
 
-    comment: Mapped[str] = mapped_column(
+    comment: Mapped[str | None] = mapped_column(
         Text,
-        nullable=False,
-    )
-
-    helpful_count: Mapped[int] = mapped_column(
-        Integer,
-        default=0,
-        server_default="0",
-        nullable=False,
-    )
-
-    is_visible: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True,
-        server_default=true(),
-        nullable=False,
-        index=True,
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -104,7 +65,8 @@ class Review(Base):
         back_populates="reviews",
     )
 
-    reader: Mapped[User] = relationship(
+    user: Mapped[User] = relationship(
         "User",
         back_populates="reviews",
+        lazy="selectin",
     )

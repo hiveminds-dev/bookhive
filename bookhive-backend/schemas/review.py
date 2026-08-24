@@ -9,6 +9,5 @@ class PublicReviewResponse(BaseModel):
     id: int
     reader_name: str
     rating: int = Field(ge=1, le=5)
-    comment: str
-    helpful_count: int = Field(ge=0)
+    comment: str | None
     created_at: datetime
