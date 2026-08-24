@@ -696,6 +696,26 @@ ACCOUNT TYPE
   text-transform: uppercase;
 }
 
+.step1-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  background: #fff0f0;
+  border: 1px solid #f5c2c2;
+  border-radius: 10px;
+  color: #c0392b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  .error-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+}
+
 .account-options {
   display: grid;
 

@@ -1,6 +1,8 @@
 import {
-  Component
+  Component,
+  inject,
 } from '@angular/core';
+import { Auth } from '../../../../../core/services/auth';
 
 export interface ContactDetail {
   id: number;
@@ -25,42 +27,51 @@ export interface SocialLink {
   styleUrl: './profile-information.scss'
 })
 export class ProfileInformation {
+  private readonly auth = inject(Auth);
+  readonly currentUser = this.auth.currentUser;
 
-  readonly contactDetails: ContactDetail[] = [
-    {
-      id: 1,
-      icon: '✉',
-      label: 'Email',
-      value: 'j.barnes@aurelius.com',
-      link: 'mailto:j.barnes@aurelius.com'
-    },
-    {
-      id: 2,
-      icon: '⌕',
-      label: 'Phone',
-      value: '+44 20 7946 0958',
-      link: 'tel:+442079460958'
-    },
-    {
-      id: 3,
-      icon: '⌖',
-      label: 'Country',
-      value: 'United Kingdom'
-    },
-    {
-      id: 4,
-      icon: '◎',
-      label: 'Language',
-      value: 'English (UK)'
-    }
-  ];
+  get emailValue(): string {
+    return this.currentUser()?.email ?? 'author@bookhive.com';
+  }
+
+  get contactDetails(): ContactDetail[] {
+    const email = this.emailValue;
+    return [
+      {
+        id: 1,
+        icon: '✉',
+        label: 'Email',
+        value: email,
+        link: `mailto:${email}`
+      },
+      {
+        id: 2,
+        icon: '⌕',
+        label: 'Phone',
+        value: '+1 (555) 019-2834',
+        link: 'tel:+15550192834'
+      },
+      {
+        id: 3,
+        icon: '⌖',
+        label: 'Country',
+        value: 'International'
+      },
+      {
+        id: 4,
+        icon: '◎',
+        label: 'Language',
+        value: 'English'
+      }
+    ];
+  }
 
   readonly socialLinks: SocialLink[] = [
     {
       id: 1,
       icon: '●',
       label: 'Web',
-      url: 'https://example.com'
+      url: 'https://bookhive.com'
     },
     {
       id: 2,
@@ -77,5 +88,5 @@ export class ProfileInformation {
   ];
 
   readonly biography =
-    'Julian Barnes, writing under the prestigious pen name J.B. Aurelius, is a contemporary novelist and essayist whose work explores the intricate intersections of memory, historical truth, and the human condition. With over a decade of dedication to the craft, his narratives often weave together philosophical inquiry with a deeply empathetic understanding of his characters.';
+    'Published author dedicated to compelling storytelling, insightful literature, and enriching the BookHive reading community with quality manuscripts.';
 }

@@ -11,6 +11,8 @@ import {
   Validators
 } from '@angular/forms';
 
+import { Auth } from '../../../../../../core/services/auth';
+
 export interface PersonalDetailsValue {
   fullName: string;
   penName: string;
@@ -34,6 +36,8 @@ export class PersonalDetails {
 
   private readonly formBuilder =
     inject(FormBuilder);
+  private readonly auth =
+    inject(Auth);
 
   @Output()
   readonly detailsChanged =
@@ -70,15 +74,15 @@ export class PersonalDetails {
   readonly detailsForm =
     this.formBuilder.nonNullable.group({
       fullName: [
-        'Julian Barnes',
+        this.auth.currentUser()?.full_name || 'Author',
         [
           Validators.required,
-          Validators.minLength(3)
+          Validators.minLength(2)
         ]
       ],
 
       penName: [
-        'J.B. Aurelius',
+        this.auth.currentUser()?.username || 'Author Pen Name',
         [
           Validators.required,
           Validators.minLength(2)
@@ -86,7 +90,7 @@ export class PersonalDetails {
       ],
 
       email: [
-        'j.barnes@aurelius.com',
+        this.auth.currentUser()?.email || 'author@bookhive.com',
         [
           Validators.required,
           Validators.email
@@ -94,7 +98,7 @@ export class PersonalDetails {
       ],
 
       phone: [
-        '+44 20 7946 0958',
+        '+1 555 019 2834',
         [
           Validators.required,
           Validators.minLength(7)

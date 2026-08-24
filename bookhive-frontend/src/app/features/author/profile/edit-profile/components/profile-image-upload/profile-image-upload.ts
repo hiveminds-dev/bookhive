@@ -16,7 +16,7 @@ export class ProfileImageUpload {
 
   @Input()
   imageUrl =
-    'images/author/profile/julian-barnes.jpg';
+    'images/author/profile/profile-placeholder.jpg';
 
   @Output()
   readonly imageChanged =

@@ -31,23 +31,63 @@ describe('BookCardComponent', () => {
 
     fixture = TestBed.createComponent(BookCardComponent);
     component = fixture.componentInstance;
-
-    component.book = testBook;
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput('book', testBook);
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should receive the test book', () => {
+  it('should receive the test book with full metadata', () => {
+    fixture.componentRef.setInput('book', testBook);
+    fixture.detectChanges();
+
     expect(component.book).toEqual(testBook);
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('4.9');
+    expect(compiled.textContent).toContain('(124)');
+    expect(compiled.textContent).toContain('342 Pages');
+  });
+
+  it('should render Not rated and omit pages when metadata is missing', () => {
+    const unratedBook: Book = {
+      id: 2,
+      title: 'Unrated Book',
+      author: 'Unknown Author',
+      category: 'General',
+      language: 'English',
+      cover: 'cover.jpg',
+      description: 'A book without ratings.',
+      rating: null,
+      reviews: 0,
+      pages: null,
+    };
+    fixture.componentRef.setInput('book', unratedBook);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Not rated');
+    expect(compiled.textContent).not.toContain('Pages');
+  });
+
+  it('should use the singular page label for a one-page book', () => {
+    fixture.componentRef.setInput('book', {
+      ...testBook,
+      pages: 1,
+    });
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('1 Page');
+    expect(compiled.textContent).not.toContain('1 Pages');
   });
 
   it('should emit the book when Read Now is selected', () => {
-    let emittedBook: Book | undefined;
+    fixture.componentRef.setInput('book', testBook);
+    fixture.detectChanges();
 
+    let emittedBook: Book | undefined;
     component.readBook.subscribe(book => {
       emittedBook = book;
     });
@@ -58,8 +98,10 @@ describe('BookCardComponent', () => {
   });
 
   it('should emit the book when Preview is selected', () => {
-    let emittedBook: Book | undefined;
+    fixture.componentRef.setInput('book', testBook);
+    fixture.detectChanges();
 
+    let emittedBook: Book | undefined;
     component.previewBook.subscribe(book => {
       emittedBook = book;
     });
@@ -70,6 +112,9 @@ describe('BookCardComponent', () => {
   });
 
   it('should activate the placeholder when the image fails', () => {
+    fixture.componentRef.setInput('book', testBook);
+    fixture.detectChanges();
+
     component.onImageError();
 
     expect(component.imageLoadFailed).toBe(true);

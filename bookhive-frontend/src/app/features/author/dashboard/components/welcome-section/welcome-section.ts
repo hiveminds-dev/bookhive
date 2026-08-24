@@ -14,7 +14,7 @@ import {
 })
 export class WelcomeSectionComponent {
 
-  @Input() authorName = 'Julian';
+  @Input() authorName = 'Author';
   @Input() newReviewCount = 2;
   @Input() readyManuscriptCount = 1;
 

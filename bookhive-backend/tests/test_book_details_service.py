@@ -49,6 +49,8 @@ def make_published_book():
             "storage/covers/book-cover.jpg"
         ),
         pdf_path="storage/books/book.pdf",
+        page_count=250,
+        estimated_reading_time="8 hours 20 mins",
         status=BookStatus.PUBLISHED,
         published_at=datetime.now(UTC),
         author=author,
@@ -109,6 +111,8 @@ async def test_published_book_details_are_mapped():
 
     assert result.can_read is True
     assert result.can_download is True
+    assert result.page_count == 250
+    assert result.estimated_reading_time == "8 hours 20 mins"
     assert result.average_rating == 4.5
     assert result.review_count == 2
     assert len(result.reviews) == 2

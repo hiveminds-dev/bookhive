@@ -29,10 +29,10 @@ describe('WelcomeSectionComponent', () => {
   });
 
   it('should receive the author information', () => {
-    component.authorName = 'Julian';
+    component.authorName = 'Eleanor';
     component.newReviewCount = 2;
 
-    expect(component.authorName).toBe('Julian');
+    expect(component.authorName).toBe('Eleanor');
     expect(component.newReviewCount).toBe(2);
   });
 

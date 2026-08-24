@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export interface ExploreFilterValues {
@@ -18,6 +18,13 @@ export interface ExploreFilterValues {
 export class ExploreFiltersComponent {
 
   @Output() filtersChanged = new EventEmitter<ExploreFilterValues>();
+
+  @Input()
+  set search(value: string) {
+    if (value !== this.searchTerm) {
+      this.searchTerm = value || '';
+    }
+  }
 
   searchTerm = '';
   selectedLanguage = '';

@@ -176,9 +176,53 @@
     margin-bottom: 12px;
   }
 
-  app-book-content {
-    display: block;
+  .reader-pdf-container {
     width: 100%;
+    height: 780px;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .reader-pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .reader-content-unavailable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    background: #ffffff;
+    border-radius: 8px;
+    text-align: center;
+    min-height: 400px;
+    border: 1px dashed #d1cac0;
+
+    .unavailable-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #292621;
+      margin: 0 0 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #756f66;
+      max-width: 400px;
+      margin: 0 0 20px;
+      line-height: 1.5;
+    }
   }
 }
 
@@ -349,3 +393,86 @@ app-page-navigation {
     padding-left: 8px;
   }
 }
+
+.reader-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 420px;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px 24px;
+  background: #ffffff;
+  border: 1px solid #e7e4de;
+  border-radius: 9px;
+
+  .reader-error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #292621;
+    margin: 0 0 10px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #756f66;
+    line-height: 1.5;
+    margin: 0 0 24px;
+  }
+
+  .reader-error-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    border-radius: 6px;
+    background: #856800;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #614c00;
+    }
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    border-radius: 6px;
+    background: #eeeae1;
+    color: #292621;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #ddd6c7;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #e2ded5;
+    }
+  }
+}
+

@@ -1,23 +1,9 @@
-import {
-  signal
-} from '@angular/core';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-
-import {
-  provideRouter
-} from '@angular/router';
-
-import {
-  AuthorLayoutComponent
-} from './author-layout';
-
-import {
-  Auth
-} from '../../core/services/auth';
+import { Auth } from '../../core/services/auth';
+import { AuthorLayoutComponent } from './author-layout';
 
 describe('AuthorLayoutComponent', () => {
   let component: AuthorLayoutComponent;
@@ -26,12 +12,12 @@ describe('AuthorLayoutComponent', () => {
   beforeEach(async () => {
     const currentUser = signal({
       id: 1,
-      full_name: 'Julian Barnes',
-      username: 'julian',
-      email: 'julian@example.com',
+      full_name: 'Eleanor Vance',
+      username: 'eleanorv',
+      email: 'eleanor.v@lumina.com',
       role: 'author' as const,
       account_status: 'approved',
-      email_verified: true
+      email_verified: true,
     });
 
     await TestBed.configureTestingModule({
@@ -42,16 +28,13 @@ describe('AuthorLayoutComponent', () => {
           provide: Auth,
           useValue: {
             currentUser: currentUser.asReadonly(),
-            logout: () => ({ subscribe: () => undefined })
-          }
-        }
-      ]
+            logout: () => ({ subscribe: () => undefined }),
+          },
+        },
+      ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(
-      AuthorLayoutComponent
-    );
-
+    fixture = TestBed.createComponent(AuthorLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -86,8 +69,8 @@ describe('AuthorLayoutComponent', () => {
     expect(component.avatarLoadFailed).toBe(true);
   });
 
-  it('should show the logged-in author name', () => {
-    expect(component.authorName()).toBe('Julian Barnes');
-    expect(component.avatarInitials()).toBe('JB');
+  it('should show the logged-in author name and initials', () => {
+    expect(component.authorName()).toBe('Eleanor Vance');
+    expect(component.avatarInitials()).toBe('EV');
   });
 });

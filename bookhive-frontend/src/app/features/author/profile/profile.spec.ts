@@ -1,118 +1,72 @@
-import {
-  signal
-} from '@angular/core';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { vi } from 'vitest';
 
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { Auth } from '../../../core/services/auth';
+import { AuthenticatedUser } from '../../auth/models/login';
+import { Profile } from './profile';
 
-import {
-  provideRouter,
-  Router
-} from '@angular/router';
+describe('Profile', () => {
+  let component: Profile;
+  let fixture: ComponentFixture<Profile>;
+  let router: Router;
+  let currentUserSignal: ReturnType<typeof signal<AuthenticatedUser | null>>;
 
-import {
-  vi
-} from 'vitest';
-
-import {
-  Auth
-} from '../../../core/services/auth';
-
-import {
-  Profile
-} from './profile';
-
-describe(
-  'Profile',
-  () => {
-
-    let component: Profile;
-
-    let fixture:
-      ComponentFixture<Profile>;
-
-    let router: Router;
-
-    beforeEach(async () => {
-      const currentUser = signal({
-        id: 1,
-        full_name: 'Julian Barnes',
-        username: 'julian',
-        email: 'julian@example.com',
-        role: 'author' as const,
-        account_status: 'approved',
-        email_verified: true
-      });
-
-      await TestBed.configureTestingModule({
-        imports: [
-          Profile
-        ],
-        providers: [
-          provideRouter([]),
-          {
-            provide: Auth,
-            useValue: {
-              currentUser: currentUser.asReadonly()
-            }
-          }
-        ]
-      }).compileComponents();
-
-      fixture =
-        TestBed.createComponent(
-          Profile
-        );
-
-      component = fixture.componentInstance;
-
-      router = TestBed.inject(Router);
-
-      fixture.detectChanges();
+  beforeEach(async () => {
+    currentUserSignal = signal<AuthenticatedUser | null>({
+      id: 1,
+      full_name: 'Eleanor Vance',
+      username: 'eleanorv',
+      email: 'eleanor.v@lumina.com',
+      role: 'author' as const,
+      account_status: 'approved',
+      email_verified: true,
     });
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+    await TestBed.configureTestingModule({
+      imports: [Profile],
+      providers: [
+        provideRouter([]),
+        {
+          provide: Auth,
+          useValue: {
+            currentUser: currentUserSignal.asReadonly(),
+          },
+        },
+      ],
+    }).compileComponents();
 
-    it(
-      'should contain author name',
-      () => {
-        expect(component.authorName())
-          .toBe('Julian Barnes');
-      }
-    );
+    fixture = TestBed.createComponent(Profile);
+    component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    fixture.detectChanges();
+  });
 
-    it(
-      'should navigate to edit profile',
-      () => {
-        const navigateSpy =
-          vi.spyOn(router, 'navigate');
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.editProfile();
+  it('should contain author name from authenticated session', () => {
+    expect(component.authorName()).toBe('Eleanor Vance');
+    expect(component.penName()).toBe('@eleanorv');
+  });
 
-        expect(navigateSpy)
-          .toHaveBeenCalledWith([
-            '/author/profile/edit'
-          ]);
-      }
-    );
+  it('should navigate to edit profile', () => {
+    const navigateSpy = vi.spyOn(router, 'navigate');
 
-    it(
-      'should navigate to change password',
-      () => {
-        const navigateSpy =
-          vi.spyOn(router, 'navigate');
+    component.editProfile();
 
-        component.changePassword();
+    expect(navigateSpy).toHaveBeenCalledWith(['/author/profile/edit']);
+  });
 
-        expect(navigateSpy)
-          .toHaveBeenCalledWith([
-            '/author/profile/change-password'
-          ]);
-      }
-    );
-  }
-);
+  it('should navigate to change password', () => {
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    component.changePassword();
+
+    expect(navigateSpy).toHaveBeenCalledWith([
+      '/author/profile/change-password',
+    ]);
+  });
+});

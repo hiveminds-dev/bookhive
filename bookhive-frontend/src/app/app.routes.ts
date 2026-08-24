@@ -111,9 +111,12 @@ export const routes: Routes = [
   {
     path: 'author',
     component: AuthorLayoutComponent,
-    // canActivate: [
-    //   authorGuard
-    // ],
+    canActivate: [
+      authorGuard
+    ],
+    canActivateChild: [
+      authorGuard
+    ],
 
     children: [
 
