@@ -1,4 +1,4 @@
-"""Provides authenticated Author Book endpoints."""
+"""Provides Book API endpoints."""
 
 from typing import Annotated
 
@@ -7,6 +7,7 @@ from fastapi import (
     Depends,
     File,
     HTTPException,
+    Path,
     Query,
     UploadFile,
     status,
@@ -17,6 +18,7 @@ from orm_models.book import BookStatus
 from orm_models.user import User
 from schemas.book import (
     BookCreateRequest,
+    BookDetailsResultResponse,
     BookListResultResponse,
     BookResultResponse,
     BookStatusResultResponse,
@@ -62,6 +64,11 @@ BookStatusFilter = Annotated[
     Query(alias="status"),
 ]
 
+BookIdPath = Annotated[
+    int,
+    Path(gt=0),
+]
+
 OffsetQuery = Annotated[
     int,
     Query(ge=0),
@@ -73,7 +80,9 @@ LimitQuery = Annotated[
 ]
 
 
-def map_book_error(exc: ValueError) -> HTTPException:
+def map_book_error(
+    exc: ValueError,
+) -> HTTPException:
     if isinstance(exc, BookNotFoundError):
         return HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -92,7 +101,9 @@ def map_book_error(exc: ValueError) -> HTTPException:
     )
 
 
-def map_upload_error(exc: FileUploadError) -> HTTPException:
+def map_upload_error(
+    exc: FileUploadError,
+) -> HTTPException:
     if isinstance(exc, FileTooLargeError):
         return HTTPException(
             status_code=status.HTTP_413_CONTENT_TOO_LARGE,
@@ -165,6 +176,33 @@ async def list_my_books(
     return {
         "message": "Author books retrieved successfully",
         "data": books,
+    }
+
+
+@router.get(
+    "/{book_id}",
+    response_model=BookDetailsResultResponse,
+)
+async def get_public_book_details(
+    book_id: BookIdPath,
+    session: DbSession,
+):
+    """Return public details for a published book."""
+
+    try:
+        book_details = (
+            await book_service.get_public_book_details(
+                session=session,
+                book_id=book_id,
+            )
+        )
+
+    except BookNotFoundError as exc:
+        raise map_book_error(exc) from exc
+
+    return {
+        "message": "Book details retrieved successfully",
+        "data": book_details,
     }
 
 
@@ -291,7 +329,9 @@ async def submit_book(
         raise map_book_error(exc) from exc
 
     return {
-        "message": "Book submitted for review successfully",
+        "message": (
+            "Book submitted for review successfully"
+        ),
         "data": book,
     }
 

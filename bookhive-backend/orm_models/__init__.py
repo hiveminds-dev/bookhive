@@ -25,6 +25,7 @@ __all__ = [
     "PasswordResetToken",
     "Review",
     "RevokedAccessToken",
+    "Review",
     "User",
     "UserRole",
 ]
