@@ -30,6 +30,10 @@ import {
   authorGuard
 } from './core/guards/author-guard';
 
+import {
+  readerGuard
+} from './core/guards/reader-guard';
+
 export const routes: Routes = [
 
   // ==========================================
@@ -92,6 +96,14 @@ export const routes: Routes = [
     component: VerificationSuccess
   },
 
+  {
+    path: 'auth/reset-password',
+    loadComponent: () =>
+      import('./features/auth/pages/reset-password/reset-password').then(
+        module => module.ResetPassword
+      )
+  },
+
   // ==========================================
   // AUTHOR STUDIO
   // ==========================================
@@ -99,20 +111,20 @@ export const routes: Routes = [
   {
     path: 'author',
     component: AuthorLayoutComponent,
-
     // canActivate: [
     //   authorGuard
     // ],
 
     children: [
 
+      // /author
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
 
-      // Author Dashboard
+      // /author/dashboard
       {
         path: 'dashboard',
 
@@ -125,7 +137,7 @@ export const routes: Routes = [
           )
       },
 
-      // Book Management
+      // /author/books
       {
         path: 'books',
 
@@ -138,7 +150,7 @@ export const routes: Routes = [
           )
       },
 
-      // Upload Book
+      // /author/books/upload
       {
         path: 'books/upload',
 
@@ -151,7 +163,7 @@ export const routes: Routes = [
           )
       },
 
-      // Edit Book
+      // /author/books/edit/1
       {
         path: 'books/edit/:id',
 
@@ -164,7 +176,7 @@ export const routes: Routes = [
           )
       },
 
-      // Book Requests
+      // /author/requests
       {
         path: 'requests',
 
@@ -177,7 +189,7 @@ export const routes: Routes = [
           )
       },
 
-      // Analytics
+      // /author/analytics
       {
         path: 'analytics',
 
@@ -190,7 +202,33 @@ export const routes: Routes = [
           )
       },
 
-      // Profile
+      // /author/profile/edit
+      {
+        path: 'profile/edit',
+
+        loadComponent: () =>
+          import(
+            './features/author/profile/edit-profile/edit-profile'
+            ).then(
+            module =>
+              module.EditProfile
+          )
+      },
+
+      // /author/profile/change-password
+      {
+        path: 'profile/change-password',
+
+        loadComponent: () =>
+          import(
+            './features/author/profile/change-password/change-password'
+            ).then(
+            module =>
+              module.ChangePassword
+          )
+      },
+
+      // /author/profile
       {
         path: 'profile',
 
@@ -213,19 +251,16 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayout,
-
     canActivate: [
       adminGuard
     ],
 
     children: [
-
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
-
       {
         path: 'dashboard',
 
@@ -236,8 +271,150 @@ export const routes: Routes = [
             module =>
               module.Dashboard
           )
-      }
+      },
+      {
+        path: 'books',
 
+        loadComponent: () =>
+          import(
+            './features/admin/books/book-management/book-management'
+            ).then(
+            module =>
+              module.BookManagement
+          )
+      },
+      {
+        path: 'books/upload',
+
+        loadComponent: () =>
+          import(
+            './features/admin/books/upload-book/upload-book'
+            ).then(
+            module =>
+              module.UploadBookComponent
+          )
+      },
+      {
+        path: 'publish-book',
+
+        loadComponent: () =>
+          import(
+            './features/admin/publish-book/publish-book'
+            ).then(
+            module =>
+              module.PublishBookComponent
+          )
+      },
+      {
+        path: 'books/:id/review',
+
+        loadComponent: () =>
+          import(
+            './features/admin/books/book-review/book-review'
+            ).then(
+            module =>
+              module.BookReviewComponent
+          )
+      },
+      {
+        path: 'categories',
+
+        loadComponent: () =>
+          import(
+            './features/admin/categories/categories'
+            ).then(
+            module =>
+              module.CategoriesComponent
+          )
+      },
+      {
+        path: 'readers/:id',
+
+        loadComponent: () =>
+          import(
+            './features/admin/readers/reader-detail/reader-detail'
+            ).then(
+            module =>
+              module.ReaderDetailComponent
+          )
+      },
+      {
+        path: 'authors/:id',
+
+        loadComponent: () =>
+          import(
+            './features/admin/authors/author-detail/author-detail'
+            ).then(
+            module =>
+              module.AuthorDetailComponent
+          )
+      },
+      {
+        path: 'support',
+
+        loadComponent: () =>
+          import(
+            './features/admin/support/support'
+            ).then(
+            module =>
+              module.SupportComponent
+          )
+      },
+      {
+        path: 'authors',
+
+        loadComponent: () =>
+          import(
+            './features/admin/authors/authors'
+            ).then(
+            module =>
+              module.AuthorsComponent
+          )
+      },
+      {
+        path: 'community',
+
+        loadComponent: () =>
+          import(
+            './features/admin/community/community'
+            ).then(
+            module =>
+              module.Community
+          )
+      },
+      {
+        path: 'statistics',
+
+        loadComponent: () =>
+          import(
+            './features/admin/statistics/statistics'
+            ).then(
+            module =>
+              module.AdminStatisticsComponent
+          )
+      },
+      {
+        path: 'profile',
+
+        loadComponent: () =>
+          import(
+            './features/admin/profile/profile'
+            ).then(
+            module =>
+              module.AdminProfile
+          )
+      },
+      {
+        path: 'admins',
+
+        loadComponent: () =>
+          import(
+            './features/admin/admin-management/admin-management'
+            ).then(
+            module =>
+              module.AdminManagementComponent
+          )
+      }
     ]
   },
 
@@ -250,8 +427,6 @@ export const routes: Routes = [
     component: MainLayoutComponent,
 
     children: [
-
-      // Home
       {
         path: 'home',
 
@@ -263,8 +438,20 @@ export const routes: Routes = [
               module.Home
           )
       },
+      {
+        path: 'profile',
+        canActivate: [
+          readerGuard
+        ],
 
-      // Explore
+        loadComponent: () =>
+          import(
+            './features/main/profile/profile'
+            ).then(
+            module =>
+              module.ReaderProfile
+          )
+      },
       {
         path: 'explore',
 
@@ -276,8 +463,6 @@ export const routes: Routes = [
               module.ExploreComponent
           )
       },
-
-      // Book Preview
       {
         path: 'explore/:id/preview',
 
@@ -289,8 +474,6 @@ export const routes: Routes = [
               module.BookPreviewComponent
           )
       },
-
-      // Book Reader
       {
         path: 'book-reader/:id',
 
@@ -302,8 +485,6 @@ export const routes: Routes = [
               module.BookReaderComponent
           )
       },
-
-      // Community
       {
         path: 'community',
 
@@ -315,8 +496,6 @@ export const routes: Routes = [
               module.Community
           )
       },
-
-      // About
       {
         path: 'about',
 
@@ -328,7 +507,6 @@ export const routes: Routes = [
               module.About
           )
       }
-
     ]
   },
 

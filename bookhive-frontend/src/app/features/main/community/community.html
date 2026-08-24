@@ -25,6 +25,7 @@
       <div class="main-column">
 
         <app-trending-discussions
+          [searchTerm]="searchTerm"
           (threadSelected)="onThreadSelected($event)"
           (discussionLiked)="onDiscussionLiked($event)"
         />

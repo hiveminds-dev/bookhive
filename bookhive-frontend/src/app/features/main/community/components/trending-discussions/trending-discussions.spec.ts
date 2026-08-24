@@ -96,4 +96,27 @@ describe('TrendingDiscussions', () => {
       ).toBe(previousLikes + 1);
     }
   );
+
+  it('should filter discussions by title, author, or tag', () => {
+    component.searchTerm = 'AI-assisted';
+    expect(component.filteredDiscussions.length).toBe(1);
+    expect(component.filteredDiscussions[0].id).toBe(2);
+
+    component.searchTerm = 'SinhalaLiterature';
+    expect(component.filteredDiscussions.length).toBe(1);
+    expect(component.filteredDiscussions[0].id).toBe(1);
+  });
+
+  it('should return no discussions for an unmatched search', () => {
+    fixture.componentRef.setInput(
+      'searchTerm',
+      'no matching discussion'
+    );
+    fixture.detectChanges();
+
+    expect(component.filteredDiscussions).toEqual([]);
+    expect(
+      fixture.nativeElement.querySelector('.empty-state')?.textContent
+    ).toContain('No discussions match');
+  });
 });
