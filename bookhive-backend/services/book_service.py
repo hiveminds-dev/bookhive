@@ -12,11 +12,11 @@ from repositories.book_repository import BookRepository
 from repositories.review_repository import ReviewRepository
 from schemas.book import (
     BookCreateRequest,
-    CatalogueBookResponse,
     BookDetailsAuthorResponse,
     BookDetailsCategoryResponse,
     BookDetailsResponse,
     BookUpdateRequest,
+    CatalogueBookResponse,
     PaginatedCatalogueResponse,
 )
 from schemas.review import PublicReviewResponse
