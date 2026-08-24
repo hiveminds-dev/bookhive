@@ -79,6 +79,7 @@
           type="search"
           name="navbarSearch"
           [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
           placeholder="Search books, authors, categories..."
           aria-label="Search books">
 

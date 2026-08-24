@@ -6,9 +6,9 @@ export interface Book {
   author: string;
   category: string;
   language: string;
-  rating: number;
-  reviews: number;
-  pages: number;
+  rating?: number | null;
+  reviews?: number | null;
+  pages?: number | null;
   cover: string;
   description: string;
   badge?: string;

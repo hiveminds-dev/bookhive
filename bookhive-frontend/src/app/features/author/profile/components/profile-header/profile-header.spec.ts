@@ -41,7 +41,7 @@ describe(
       'should display default author name',
       () => {
         expect(component.authorName)
-          .toBe('Julian Barnes');
+          .toBe('Author');
       }
     );
 

@@ -76,7 +76,8 @@ export class Register {
   // REGISTRATION STATE
   // =========================
 
-  accountType: 'reader' | 'author' = 'reader';
+  accountType: 'reader' | 'author' | null = null;
+  step1Error: string | null = null;
 
   currentStep = 1;
   readonly totalSteps = 4;
@@ -167,7 +168,7 @@ export class Register {
   // =========================
 
   get activeForm(): FormGroup {
-    return this.accountType === 'reader' ? this.readerForm : this.authorForm;
+    return this.accountType === 'author' ? this.authorForm : this.readerForm;
   }
 
   // =========================
@@ -210,9 +211,9 @@ export class Register {
 
   selectAccountType(type: 'reader' | 'author'): void {
     this.accountType = type;
+    this.step1Error = null;
     this.registrationError = null;
     this.registrationSuccess = null;
-
   }
 
   // =========================
@@ -221,7 +222,15 @@ export class Register {
 
   nextStep(): void {
     if (this.currentStep === 1) {
+      if (!this.accountType) {
+        this.step1Error = 'Please select an account type (Reader or Author) to continue.';
+        this.changeDetector.markForCheck();
+        this.focusAccountSelection();
+        return;
+      }
+      this.step1Error = null;
       this.currentStep = 2;
+      this.changeDetector.markForCheck();
       return;
     }
 
@@ -231,12 +240,21 @@ export class Register {
 
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
+      this.changeDetector.markForCheck();
     }
+  }
+
+  private focusAccountSelection(): void {
+    setTimeout(() => {
+      const firstOption = document.querySelector<HTMLElement>('.account-card');
+      firstOption?.focus();
+    }, 0);
   }
 
   previousStep(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
+      this.changeDetector.markForCheck();
     }
   }
 
@@ -247,6 +265,7 @@ export class Register {
 
     if (step < this.currentStep) {
       this.currentStep = step;
+      this.changeDetector.markForCheck();
     }
   }
 

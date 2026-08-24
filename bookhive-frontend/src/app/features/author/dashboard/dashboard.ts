@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Auth } from '../../../core/services/auth';
 
 import {
   WelcomeSectionComponent
@@ -41,8 +42,17 @@ import {
 export class AuthorDashboardComponent {
 
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
-  readonly authorFirstName = 'Julian';
+  readonly currentUser = this.auth.currentUser;
+
+  readonly authorFirstName = computed(() => {
+    const user = this.currentUser();
+    if (!user?.full_name) {
+      return 'Author';
+    }
+    return user.full_name.trim().split(/\s+/)[0] || 'Author';
+  });
 
   statistics: AuthorStatistic[] = [
     {
@@ -118,7 +128,7 @@ export class AuthorDashboardComponent {
       readerInitials: 'MK',
       rating: 4,
       comment:
-        'Sharp, insightful, and beautifully written. Julian’s work continues to push the boundaries of modern non-fiction.'
+        'Sharp, insightful, and beautifully written. The author’s work continues to push the boundaries of modern non-fiction.'
     }
   ];
 

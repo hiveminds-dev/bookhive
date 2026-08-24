@@ -138,17 +138,37 @@
 
       @if (currentStep === 1) {
         <div class="step-content account-step">
-          <label class="section-label"> HOW WILL YOU USE BOOKHIVE? </label>
+          <label class="section-label" id="account-type-heading"> HOW WILL YOU USE BOOKHIVE? </label>
 
-          <div class="account-options">
+          @if (step1Error) {
+            <div
+              id="account-selection-error"
+              class="step1-error-message"
+              role="alert"
+              aria-live="assertive"
+            >
+              <span class="error-icon" aria-hidden="true">⚠️</span>
+              <span>{{ step1Error }}</span>
+            </div>
+          }
+
+          <div
+            class="account-options"
+            role="radiogroup"
+            aria-labelledby="account-type-heading"
+            [attr.aria-invalid]="!!step1Error"
+            [attr.aria-errormessage]="step1Error ? 'account-selection-error' : null"
+          >
             <!-- ================================ -->
             <!-- READER -->
             <!-- ================================ -->
 
             <button
               type="button"
+              role="radio"
               class="account-card"
               [class.selected]="accountType === 'reader'"
+              [attr.aria-checked]="accountType === 'reader'"
               (click)="selectAccountType('reader')"
             >
               <div class="account-icon">
@@ -174,8 +194,10 @@
 
             <button
               type="button"
+              role="radio"
               class="account-card"
               [class.selected]="accountType === 'author'"
+              [attr.aria-checked]="accountType === 'author'"
               (click)="selectAccountType('author')"
             >
               <div class="account-icon">

@@ -7,6 +7,8 @@ import {
   Router
 } from '@angular/router';
 
+import { Auth } from '../../../../core/services/auth';
+
 import {
   ProfileImageUpload
 } from './components/profile-image-upload/profile-image-upload';
@@ -45,27 +47,30 @@ import {
 export class EditProfile {
 
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
+
+  readonly currentUser = this.auth.currentUser;
 
   profileImageUrl =
-    'images/author/profile/julian-barnes.jpg';
+    'images/author/profile/profile-placeholder.jpg';
 
   selectedImage: File | null = null;
 
   personalDetails: PersonalDetailsValue = {
-    fullName: 'Julian Barnes',
-    penName: 'J.B. Aurelius',
-    email: 'j.barnes@aurelius.com',
-    phone: '+44 20 7946 0958',
+    fullName: this.currentUser()?.full_name || 'Author',
+    penName: this.currentUser()?.username || 'Author Pen Name',
+    email: this.currentUser()?.email || 'author@bookhive.com',
+    phone: '+1 (555) 019-2834',
     country: 'United Kingdom',
     language: 'English (UK)',
     category: 'Fiction'
   };
 
   biography =
-    'Julian Barnes, writing under the prestigious pen name J.B. Aurelius, is a contemporary novelist and essayist whose work explores the intricate intersections of memory, historical truth, and the human condition.';
+    'Published author dedicated to compelling storytelling, insightful literature, and enriching the BookHive reading community with quality manuscripts.';
 
   socialLinks: SocialLinksValue = {
-    website: 'https://example.com',
+    website: 'https://bookhive.com',
     twitter: 'https://twitter.com',
     linkedin: 'https://linkedin.com'
   };

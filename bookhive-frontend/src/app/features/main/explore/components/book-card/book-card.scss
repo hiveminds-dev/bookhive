@@ -149,6 +149,19 @@ h3 {
     color: #4b473f;
     font-weight: 600;
   }
+
+  &.unrated {
+    color: #9c9589;
+
+    .unrated-star {
+      color: #c9c3b8;
+    }
+
+    .unrated-text {
+      font-size: 9px;
+      color: #8c867b;
+    }
+  }
 }
 
 .star {

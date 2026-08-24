@@ -3,7 +3,7 @@
   <div class="dashboard-container">
 
     <app-welcome-section
-      [authorName]="authorFirstName"
+      [authorName]="authorFirstName()"
       [newReviewCount]="2"
       [readyManuscriptCount]="1"
       (uploadBook)="goToUploadBook()">

@@ -15,12 +15,12 @@
     <span class="info-icon pages-icon" aria-hidden="true">▣</span>
 
     <div class="info-text">
-      <strong>{{ pages }}</strong>
+      <strong>{{ pages && pages > 0 ? pages : 'Not available' }}</strong>
       <span>Pages</span>
     </div>
   </div>
 
-  @if (readingTime) {
+  @if (readingTime && readingTime !== 'N/A') {
     <span class="divider" aria-hidden="true"></span>
 
     <div class="info-item">

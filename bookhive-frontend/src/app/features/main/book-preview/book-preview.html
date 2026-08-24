@@ -9,12 +9,12 @@
       <a routerLink="/explore">Explore Library</a>
       <span>›</span>
 
-      <span class="current">{{ book.title }}</span>
+      <span class="current">{{ book ? book.title : 'Book Preview' }}</span>
     </nav>
 
     @if (isLoading) {
 
-      <div class="loading-state">
+      <div class="loading-state" role="status" aria-live="polite">
         <div class="loading-cover shimmer"></div>
 
         <div class="loading-details">
@@ -25,7 +25,30 @@
         </div>
       </div>
 
-    } @else {
+    } @else if (notFound) {
+
+      <div class="error-card not-found-state" role="alert">
+        <div class="error-icon" aria-hidden="true">📖</div>
+        <h2>Book Not Found</h2>
+        <p>{{ errorMessage || 'The book you are looking for does not exist or has been removed.' }}</p>
+        <div class="error-actions">
+          <a routerLink="/explore" class="btn-primary">Back to Explore</a>
+        </div>
+      </div>
+
+    } @else if (hasServerError) {
+
+      <div class="error-card server-error-state" role="alert">
+        <div class="error-icon" aria-hidden="true">⚠️</div>
+        <h2>Unable to Load Book</h2>
+        <p>{{ errorMessage || 'An unexpected error occurred while loading this book.' }}</p>
+        <div class="error-actions">
+          <button type="button" class="btn-secondary" (click)="retry()">Try Again</button>
+          <a routerLink="/explore" class="btn-primary">Back to Explore</a>
+        </div>
+      </div>
+
+    } @else if (book) {
 
       <section class="book-hero">
 

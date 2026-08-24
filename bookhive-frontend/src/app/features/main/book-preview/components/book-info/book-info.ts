@@ -11,6 +11,6 @@ export class BookInfoComponent {
 
   @Input() rating = 0;
   @Input() reviews = 0;
-  @Input() pages = 0;
-  @Input() readingTime = '';
+  @Input() pages?: number | null = null;
+  @Input() readingTime?: string | null = null;
 }

@@ -15,19 +15,19 @@ import {
 export class ProfileHeader {
 
   @Input()
-  authorName = 'Julian Barnes';
+  authorName = 'Author';
 
   @Input()
-  penName = 'J.B. Aurelius';
+  penName = 'Author Profile';
 
   @Input()
   profileImage =
-    'images/author/profile/julian-barnes.jpg';
+    'images/author/profile/profile-placeholder.jpg';
 
   @Input()
   badges: string[] = [
-    'Bestselling Author',
-    'Fiction'
+    'Author',
+    'Active'
   ];
 
   @Output()

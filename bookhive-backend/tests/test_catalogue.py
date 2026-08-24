@@ -67,6 +67,7 @@ async def test_catalogue_service_maps_items_and_pagination():
         description="Science fiction",
         language="English",
         reading_level="Advanced",
+        page_count=412,
         published_at=datetime.now(UTC),
         cover_image_path="storage/covers/dune.jpg",
         author=SimpleNamespace(full_name="Frank Herbert"),
