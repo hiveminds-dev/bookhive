@@ -21,6 +21,19 @@ class CategoryService:
     def __init__(self) -> None:
         self.category_repository = CategoryRepository()
 
+    async def list_categories(
+        self,
+        session: AsyncSession,
+        *,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[Category], int]:
+        return await self.category_repository.list_categories(
+            session,
+            offset=(page - 1) * page_size,
+            limit=page_size,
+        )
+
     async def create_category(
         self,
         session: AsyncSession,

@@ -9,6 +9,27 @@ from orm_models.category import Category
 
 
 class CategoryRepository:
+    async def list_categories(
+        self,
+        session: AsyncSession,
+        *,
+        offset: int,
+        limit: int,
+    ) -> tuple[list[Category], int]:
+        items_result = await session.execute(
+            select(Category)
+            .order_by(Category.name.asc())
+            .offset(offset)
+            .limit(limit)
+        )
+        total_result = await session.execute(
+            select(func.count(Category.id))
+        )
+        return (
+            list(items_result.scalars().all()),
+            int(total_result.scalar_one()),
+        )
+
     async def get_by_id(
         self, session: AsyncSession, category_id: int
     ) -> Category | None:

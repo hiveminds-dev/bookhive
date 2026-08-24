@@ -2,7 +2,7 @@
 
 from datetime import UTC, datetime
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import ANY, AsyncMock
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -128,3 +128,33 @@ async def test_admin_can_patch_category(monkeypatch):
 
     assert response.status_code == 200
     assert response.json()["name"] == "History"
+
+
+@pytest.mark.asyncio
+async def test_category_list_uses_pagination(monkeypatch):
+    app.dependency_overrides[get_db_session] = override_database_session
+    now = datetime.now(UTC)
+    item = SimpleNamespace(
+        id=4,
+        name="History",
+        description=None,
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+    list_mock = AsyncMock(return_value=([item], 21))
+    monkeypatch.setattr(category_service, "list_categories", list_mock)
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        response = await client.get(
+            "/api/categories/?page=2&page_size=10"
+        )
+
+    assert response.status_code == 200
+    assert response.json()["items"][0]["name"] == "History"
+    assert response.json()["total"] == 21
+    list_mock.assert_awaited_once_with(
+        ANY, page=2, page_size=10
+    )
