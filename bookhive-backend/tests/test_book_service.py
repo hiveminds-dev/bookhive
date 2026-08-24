@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -30,8 +30,8 @@ def make_book(
         pdf_path="storage/books/test.pdf" if complete else None,
         cover_image_path="storage/covers/test.jpg" if complete else None,
         status=status,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
         submitted_at=None,
         published_at=None,
     )

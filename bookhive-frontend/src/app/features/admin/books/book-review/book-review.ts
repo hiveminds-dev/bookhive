@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -25,6 +25,9 @@ export interface BookDetailModel {
   language?: string;
   status?: string;
   pdfPath?: string;
+  authorAvatar?: string;
+  rejectionReason?: string;
+  rejectionLogs?: { id: number; reason: string; created_at: string }[];
 }
 
 export interface ChapterItem {
@@ -45,7 +48,7 @@ export interface ReaderReviewItem {
 @Component({
   selector: 'app-book-review',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule],
+  imports: [NgFor, NgIf, RouterLink, FormsModule, DatePipe],
   templateUrl: './book-review.html',
   styleUrl: './book-review.scss',
 })
@@ -65,24 +68,7 @@ export class BookReviewComponent implements OnInit {
   readonly zoomLevelSignal = signal<number>(100);
   readonly chaptersSignal = signal<ChapterItem[]>([]);
 
-  readonly readerReviewsSignal = signal<ReaderReviewItem[]>([
-    {
-      id: 1,
-      userName: 'Dr. Sarah Chen',
-      avatarLetter: 'S',
-      rating: 5,
-      date: '2 days ago',
-      comment: 'An exceptional read! Highly recommended for anyone interested in this discipline. The logical structure and clear narrative make complex ideas digestible.'
-    },
-    {
-      id: 2,
-      userName: 'Amir Hassan',
-      avatarLetter: 'A',
-      rating: 4,
-      date: '1 week ago',
-      comment: 'Thorough research and well-crafted chapters. A valuable contribution to modern philosophy and technical analysis.'
-    }
-  ]);
+  readonly readerReviewsSignal = signal<ReaderReviewItem[]>([]);
 
   rawPdfUrl = '';
 
@@ -137,8 +123,9 @@ export class BookReviewComponent implements OnInit {
   }
 
   private loadBookDetails(id: number): void {
-    this.adminApi.getBooks().subscribe({
-      next: (books) => {
+    this.adminApi.getBooks({ page_size: 100 }).subscribe({
+      next: (res) => {
+        const books = res.items || [];
         const found = books.find(b => b.id === id);
         if (found) {
           const pageCount = found.page_count || (180 + (found.id * 50) % 200);
@@ -155,6 +142,26 @@ export class BookReviewComponent implements OnInit {
           this.chaptersSignal.set([]);
           this.updatePdfViewerUrl();
 
+          const apiReviews = found.reviews || [];
+          this.readerReviewsSignal.set(
+            apiReviews.map(r => ({
+              id: r.id,
+              userName: r.user_name || 'Anonymous Reader',
+              avatarLetter: r.avatar_letter || (r.user_name ? r.user_name[0].toUpperCase() : 'A'),
+              rating: r.rating || 5,
+              date: r.created_at,
+              comment: r.comment || ''
+            }))
+          );
+
+          let calcAvg = found.average_rating ? found.average_rating.toFixed(1) : '4.8';
+          if (apiReviews.length > 0) {
+            const sum = apiReviews.reduce((acc, r) => acc + r.rating, 0);
+            calcAvg = (sum / apiReviews.length).toFixed(1);
+          }
+          const avgRating = `${calcAvg}/5`;
+          const revCount = `${apiReviews.length} reviews`;
+
           this.bookSignal.set({
             id: found.id,
             title: found.title,
@@ -162,17 +169,20 @@ export class BookReviewComponent implements OnInit {
             authorTitle: 'Official BookHive Author',
             authorBio: `${found.author_name} is a published creator on BookHive contributing to ${found.category_name}.`,
             category: found.category_name ? found.category_name.toUpperCase() : 'GENERAL',
-            rating: '4.8/5',
-            reviewsCount: '850 reviews',
+            rating: avgRating,
+            reviewsCount: revCount,
             readTime: readTimeStr,
             pages: `${pageCount} pages`,
-            cover: found.cover_image_path ? `/${found.cover_image_path}` : 'assets/images/book-covers/beyond-good-and-evil.jpg',
+            cover: found.cover_image_path ? (found.cover_image_path.startsWith('http') ? found.cover_image_path : `http://localhost:8000/${found.cover_image_path}`) : 'assets/images/book-covers/beyond-good-and-evil.jpg',
+            authorAvatar: (found as any).author_profile_image_path ? `http://localhost:8000/${(found as any).author_profile_image_path}` : 'assets/images/auth/sign_in_1.png',
             abstract: `"${found.title}" is a comprehensive work in ${found.category_name} written by ${found.author_name}. It offers in-depth exploration and rigorous insights tailored for curious minds.`,
-            reviewSnippet: `An exceptional read by ${found.author_name}. Highly recommended for anyone interested in ${found.category_name}.`,
+            reviewSnippet: apiReviews.length > 0 ? apiReviews[0].comment || 'Great read!' : `An exceptional read by ${found.author_name}.`,
             isbn: `978-${Math.floor(100000000 + (id * 1234567) % 900000000)}`,
             language: found.language || 'English',
             status: found.status,
-            pdfPath: pdfPath
+            pdfPath: pdfPath,
+            rejectionReason: (found as any).rejection_reason || undefined,
+            rejectionLogs: (found as any).rejection_logs || []
           });
         }
       }
@@ -314,10 +324,10 @@ export class BookReviewComponent implements OnInit {
   confirmReject(): void {
     const reason = this.rejectionReasonSignal().trim();
     this.showRejectConfirm.set(false);
-    this.bookSignal.update(b => ({ ...b, status: 'REJECTED' }));
+    this.bookSignal.update(b => ({ ...b, status: 'REJECTED', rejectionReason: reason }));
 
     if (this.book.id) {
-      this.adminApi.updateBookStatus(this.book.id, 'REJECTED').subscribe({
+      this.adminApi.updateBookStatus(this.book.id, 'REJECTED', reason).subscribe({
         next: () => {
           this.toastService.warning(`Submission for "${this.book.title}" was rejected.${reason ? ' Reason: ' + reason : ''}`, 'Submission Rejected');
         },

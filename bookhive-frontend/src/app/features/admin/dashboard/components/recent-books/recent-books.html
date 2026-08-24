@@ -9,7 +9,7 @@
 
   <article class="book-row" *ngFor="let book of filteredBooks">
     <div class="book-details">
-      <img [src]="book.cover_image_path ? '/' + book.cover_image_path : 'assets/images/book-covers/beyond-good-and-evil.jpg'" alt="">
+      <img [src]="book.cover_image_path ? (book.cover_image_path.startsWith('http') ? book.cover_image_path : 'http://localhost:8000/' + book.cover_image_path) : 'assets/images/book-covers/beyond-good-and-evil.jpg'" alt="">
       <div><strong>{{ book.title }}</strong><span>{{ book.author_name }}</span></div>
     </div>
     <span>{{ book.author_name }}</span>
