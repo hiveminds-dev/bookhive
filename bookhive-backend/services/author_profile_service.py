@@ -7,7 +7,7 @@ from schemas.author_profile import AuthorProfileCreate, AuthorProfileUpdate
 
 
 class AuthorProfileService:
-    def __init__(self):
+    def __init__(self) -> None:
         self.repository = AuthorProfileRepository()
 
     async def get_profile(self, session: AsyncSession, user_id: int):
@@ -19,7 +19,12 @@ class AuthorProfileService:
             )
         return profile
 
-    async def create_profile(self, session: AsyncSession, user_id: int, profile_data: AuthorProfileCreate):
+    async def create_profile(
+        self,
+        session: AsyncSession,
+        user_id: int,
+        profile_data: AuthorProfileCreate,
+    ):
         existing_profile = await self.repository.get_by_user_id(session, user_id)
         if existing_profile:
             raise HTTPException(
@@ -27,9 +32,23 @@ class AuthorProfileService:
                 detail="A profile already exists for this user."
             )
 
-        return await self.repository.create(session, user_id, profile_data)
+        try:
+            profile = await self.repository.create(
+                session, user_id, profile_data
+            )
+            await session.commit()
+            await session.refresh(profile)
+            return profile
+        except Exception:
+            await session.rollback()
+            raise
 
-    async def update_profile(self, session: AsyncSession, user_id: int, update_data: AuthorProfileUpdate):
+    async def update_profile(
+        self,
+        session: AsyncSession,
+        user_id: int,
+        update_data: AuthorProfileUpdate,
+    ):
         profile = await self.repository.get_by_user_id(session, user_id)
         if not profile:
             raise HTTPException(
@@ -37,4 +56,13 @@ class AuthorProfileService:
                 detail="Author profile not found."
             )
 
-        return await self.repository.update(session, profile, update_data)
+        try:
+            updated_profile = await self.repository.update(
+                session, profile, update_data
+            )
+            await session.commit()
+            await session.refresh(updated_profile)
+            return updated_profile
+        except Exception:
+            await session.rollback()
+            raise

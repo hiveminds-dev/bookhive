@@ -1,28 +1,45 @@
-from typing import Optional
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class AuthorProfileBase(BaseModel):
-    pen_name: str = Field(..., max_length=100, description="Author's pen name")
-    country: Optional[str] = Field(None, max_length=100)
-    preferred_language: Optional[str] = Field(None, max_length=50)
-    short_bio: Optional[str] = Field(None, max_length=500)
-    profile_image_path: Optional[str] = Field(None, max_length=255)
+    pen_name: str = Field(min_length=1, max_length=100)
+    country: str | None = Field(None, max_length=100)
+    preferred_language: str | None = Field(None, max_length=50)
+    short_bio: str | None = Field(None, max_length=500)
+    profile_image_path: str | None = Field(None, max_length=255)
+
+    @field_validator("pen_name")
+    @classmethod
+    def normalize_pen_name(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Pen name cannot be blank")
+        return normalized
 
 class AuthorProfileCreate(AuthorProfileBase):
     pass
 
+
 class AuthorProfileUpdate(BaseModel):
-    pen_name: Optional[str] = Field(None, max_length=100)
-    country: Optional[str] = Field(None, max_length=100)
-    preferred_language: Optional[str] = Field(None, max_length=50)
-    short_bio: Optional[str] = Field(None, max_length=500)
-    profile_image_path: Optional[str] = Field(None, max_length=255)
+    pen_name: str | None = Field(None, min_length=1, max_length=100)
+    country: str | None = Field(None, max_length=100)
+    preferred_language: str | None = Field(None, max_length=50)
+    short_bio: str | None = Field(None, max_length=500)
+    profile_image_path: str | None = Field(None, max_length=255)
+
+    @field_validator("pen_name")
+    @classmethod
+    def normalize_pen_name(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Pen name cannot be blank")
+        return normalized
+
 
 class AuthorProfileResponse(AuthorProfileBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: int
-
-    class Config:
-        from_attributes = True

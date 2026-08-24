@@ -17,12 +17,12 @@ from database import (
 from routers import health_router
 from routers.admin_router import router as admin_router
 from routers.auth_router import router as auth_router
+from routers.author_profile_router import router as author_profile_router
 from routers.author_router import router as author_router
 from routers.book_router import router as book_router
 from routers.catalogue_router import router as catalogue_router
 from routers.category_router import router as category_router
 from routers.user_router import router as user_router
-from routers.author_profile_router import router as author_profile_router
 
 logging.basicConfig(
     level=logging.INFO,
