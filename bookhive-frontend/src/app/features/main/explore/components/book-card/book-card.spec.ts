@@ -71,6 +71,18 @@ describe('BookCardComponent', () => {
     expect(compiled.textContent).not.toContain('Pages');
   });
 
+  it('should use the singular page label for a one-page book', () => {
+    fixture.componentRef.setInput('book', {
+      ...testBook,
+      pages: 1,
+    });
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('1 Page');
+    expect(compiled.textContent).not.toContain('1 Pages');
+  });
+
   it('should emit the book when Read Now is selected', () => {
     fixture.componentRef.setInput('book', testBook);
     fixture.detectChanges();

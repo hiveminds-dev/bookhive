@@ -53,7 +53,7 @@
 
       @if (book.pages && book.pages > 0) {
         <span class="detail-divider">•</span>
-        <span>{{ book.pages }} Pages</span>
+        <span>{{ book.pages }} {{ book.pages === 1 ? 'Page' : 'Pages' }}</span>
       }
     </div>
 
