@@ -13,21 +13,23 @@
         Back to Library
       </button>
 
-      <div
-        class="header-book-cover"
-        aria-hidden="true">
-        <span>▤</span>
-      </div>
+      @if (book) {
+        <div
+          class="header-book-cover"
+          aria-hidden="true">
+          <span>▤</span>
+        </div>
 
-      <div class="header-book-details">
-        <h1>{{ book.title }}</h1>
-        <p>By {{ book.author }}</p>
-      </div>
+        <div class="header-book-details">
+          <h1>{{ book.title }}</h1>
+          <p>By {{ book.author }}</p>
+        </div>
 
-      <div class="header-tags">
-        <span>{{ book.category }}</span>
-        <span>{{ book.language }}</span>
-      </div>
+        <div class="header-tags">
+          <span>{{ book.category }}</span>
+          <span>{{ book.language }}</span>
+        </div>
+      }
 
     </div>
 
@@ -35,12 +37,35 @@
 
   @if (isLoading) {
 
-    <div class="reader-loading">
+    <div class="reader-loading" role="status" aria-live="polite">
       <div class="loading-spinner"></div>
       <p>Loading your book...</p>
     </div>
 
-  } @else {
+  } @else if (notFound) {
+
+    <div class="reader-error-state not-found" role="alert">
+      <div class="reader-error-icon" aria-hidden="true">📖</div>
+      <h2>Book Not Found</h2>
+      <p>{{ errorMessage || 'The requested book does not exist or is no longer available.' }}</p>
+      <div class="reader-error-actions">
+        <button type="button" class="btn-primary" (click)="backToLibrary()">Back to Library</button>
+      </div>
+    </div>
+
+  } @else if (hasServerError) {
+
+    <div class="reader-error-state server-error" role="alert">
+      <div class="reader-error-icon" aria-hidden="true">⚠️</div>
+      <h2>Unable to Load Reader</h2>
+      <p>{{ errorMessage || 'A connection error occurred while loading this book.' }}</p>
+      <div class="reader-error-actions">
+        <button type="button" class="btn-secondary" (click)="retry()">Try Again</button>
+        <button type="button" class="btn-primary" (click)="backToLibrary()">Back to Library</button>
+      </div>
+    </div>
+
+  } @else if (book) {
 
     <section class="reader-workspace">
 
