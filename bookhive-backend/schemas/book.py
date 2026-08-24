@@ -139,3 +139,23 @@ class BookListResultResponse(BaseModel):
 class BookDetailsResultResponse(BaseModel):
     message: str
     data: BookDetailsResponse
+
+
+class CatalogueBookResponse(BaseModel):
+    id: int
+    title: str
+    description: str | None = None
+    language: str | None = None
+    reading_level: str | None = None
+    published_at: datetime | None = None
+    cover_url: str | None = None
+    author_name: str
+    category_name: str
+
+
+class PaginatedCatalogueResponse(BaseModel):
+    total_items: int = Field(ge=0)
+    total_pages: int = Field(ge=0)
+    current_page: int = Field(ge=1)
+    page_size: int = Field(ge=1)
+    items: list[CatalogueBookResponse]

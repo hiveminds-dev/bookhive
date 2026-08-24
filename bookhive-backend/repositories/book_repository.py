@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 
 from orm_models.book import Book, BookStatus
 from orm_models.category import Category
@@ -170,3 +170,73 @@ class BookRepository:
         )
 
         return list(result.scalars().all())
+
+    async def get_published_books_with_filters(
+        self,
+        session: AsyncSession,
+        *,
+        offset: int,
+        limit: int,
+        search_query: str | None = None,
+        category_id: int | None = None,
+        language: str | None = None,
+    ) -> list[Book]:
+        query = (
+            select(Book)
+            .options(joinedload(Book.author), joinedload(Book.category))
+            .where(Book.status == BookStatus.PUBLISHED)
+        )
+        query = self._apply_catalogue_filters(
+            query,
+            search_query=search_query,
+            category_id=category_id,
+            language=language,
+        )
+        result = await session.execute(
+            query.order_by(
+                Book.published_at.desc(), Book.id.desc()
+            )
+            .offset(offset)
+            .limit(limit)
+        )
+        return list(result.scalars().all())
+
+    async def get_published_books_count(
+        self,
+        session: AsyncSession,
+        *,
+        search_query: str | None = None,
+        category_id: int | None = None,
+        language: str | None = None,
+    ) -> int:
+        query = select(func.count(Book.id)).where(
+            Book.status == BookStatus.PUBLISHED
+        )
+        query = self._apply_catalogue_filters(
+            query,
+            search_query=search_query,
+            category_id=category_id,
+            language=language,
+        )
+        result = await session.execute(query)
+        return int(result.scalar_one())
+
+    @staticmethod
+    def _apply_catalogue_filters(
+        query,
+        *,
+        search_query: str | None,
+        category_id: int | None,
+        language: str | None,
+    ):
+        if search_query:
+            query = query.where(
+                Book.title.ilike(f"%{search_query.strip()}%")
+            )
+        if category_id is not None:
+            query = query.where(Book.category_id == category_id)
+        if language:
+            query = query.where(
+                func.lower(Book.language) == language.strip().lower()
+            )
+        return query
