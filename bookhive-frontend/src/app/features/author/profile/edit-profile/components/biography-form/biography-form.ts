@@ -34,7 +34,7 @@ export class BiographyForm {
   readonly biographyForm =
     this.formBuilder.nonNullable.group({
       biography: [
-        'Julian Barnes, writing under the prestigious pen name J.B. Aurelius, is a contemporary novelist and essayist whose work explores the intricate intersections of memory, historical truth, and the human condition. With over a decade of dedication to the craft, his narratives often weave together philosophical inquiry with a deeply empathetic understanding of his characters.',
+        'Published author dedicated to compelling storytelling, insightful literature, and enriching the BookHive reading community with quality manuscripts.',
         [
           Validators.required,
           Validators.minLength(50),
