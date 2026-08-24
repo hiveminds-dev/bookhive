@@ -7,7 +7,9 @@ export const authorGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (!auth.isAuthenticated()) {
-    return router.createUrlTree(['/login']);
+    return state?.url
+      ? router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } })
+      : router.createUrlTree(['/login']);
   }
 
   return auth.hasRole('author')

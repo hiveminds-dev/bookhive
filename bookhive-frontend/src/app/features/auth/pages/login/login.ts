@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideEye, LucideEyeOff } from '@lucide/angular';
 import { finalize } from 'rxjs';
 import { Auth } from '../../../../core/services/auth';
@@ -16,6 +16,7 @@ import { Auth } from '../../../../core/services/auth';
 export class Login {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private auth = inject(Auth);
   private changeDetector = inject(ChangeDetectorRef);
 
@@ -67,9 +68,14 @@ export class Login {
       )
       .subscribe({
         next: (response) => {
-          void this.router.navigateByUrl(
-            this.auth.getLandingRouteForRole(response.user.role),
-          );
+          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+          if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
+            void this.router.navigateByUrl(returnUrl);
+          } else {
+            void this.router.navigateByUrl(
+              this.auth.getLandingRouteForRole(response.user.role),
+            );
+          }
         },
         error: (error: HttpErrorResponse) => {
           this.loginError =
