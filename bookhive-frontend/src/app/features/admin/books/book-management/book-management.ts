@@ -26,10 +26,18 @@ export class BookManagement implements OnInit {
 
   currentPage = signal<number>(1);
   pageSize = signal<number>(5);
+  totalBooksSignal = signal<number>(0);
+  totalPagesSignal = signal<number>(1);
 
   readonly booksSignal = signal<any[]>([]);
 
   ngOnInit(): void {
+    this.loadBooks();
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+    this.currentPage.set(1);
     this.loadBooks();
   }
 
@@ -41,15 +49,24 @@ export class BookManagement implements OnInit {
       language_filter: this.filterLanguage() || undefined,
       timeframe_filter: this.filterTimeframe() || undefined,
       sort_by: this.filterSortBy() || undefined,
+      page: this.currentPage(),
+      page_size: this.pageSize(),
     };
 
     this.adminApi.getBooks(params).subscribe({
-      next: (data) => {
-        if (data && data.length > 0) {
-          const mapped = data.map(b => {
+      next: (res) => {
+        if (res && res.items) {
+          const mapped = res.items.map(b => {
             const isPub = b.status === 'PUBLISHED' || b.status === 'Published';
             const isDeact = b.status === 'DEACTIVATED' || b.status === 'Deactivated';
             const isRev = b.status === 'PENDING_REVIEW' || b.status === 'Review';
+            const pCount = b.page_count || (180 + (b.id * 50) % 200);
+            const totalMins = pCount * 2;
+            const hrs = Math.floor(totalMins / 60);
+            const mins = totalMins % 60;
+            const calcReadTime = hrs > 0 ? (mins > 0 ? `${hrs} hours ${mins} mins` : `${hrs} hours`) : `${mins} mins`;
+            const rTime = b.estimated_reading_time || calcReadTime;
+
             return {
               id: b.id,
               title: b.title,
@@ -57,6 +74,8 @@ export class BookManagement implements OnInit {
               author: b.author_name,
               category: b.category_name,
               language: b.language || 'English',
+              pageCount: pCount,
+              estimatedReadingTime: rTime,
               date: new Date(b.created_at).toLocaleDateString(),
               views: '1.2k',
               downloads: '450',
@@ -64,36 +83,23 @@ export class BookManagement implements OnInit {
               isActive: isPub,
               status: isPub ? 'Published' : (isDeact ? 'Deactivated' : (isRev ? 'Review' : 'Draft')),
               statusClass: isPub ? 'status-published' : (isDeact ? 'status-deactivated' : (isRev ? 'status-review' : 'status-draft')),
-              cover: b.cover_image_path ? `/${b.cover_image_path}` : 'assets/images/book-covers/beyond-good-and-evil.jpg'
+              cover: b.cover_image_path ? (b.cover_image_path.startsWith('http') ? b.cover_image_path : `http://localhost:8000/${b.cover_image_path}`) : 'assets/images/book-covers/beyond-good-and-evil.jpg'
             };
           });
           this.booksSignal.set(mapped);
+          this.totalBooksSignal.set(res.total);
+          this.totalPagesSignal.set(res.total_pages);
         } else {
-          this.booksSignal.set(this.filterLocalBooks(this.defaultBooks));
+          this.booksSignal.set([]);
+          this.totalBooksSignal.set(0);
+          this.totalPagesSignal.set(1);
         }
       },
       error: () => {
-        this.booksSignal.set(this.filterLocalBooks(this.defaultBooks));
+        this.booksSignal.set([]);
+        this.totalBooksSignal.set(0);
+        this.totalPagesSignal.set(1);
       }
-    });
-  }
-
-  private filterLocalBooks(list: any[]): any[] {
-    const q = this.searchQuery().toLowerCase().trim();
-    const cat = this.filterCategory().toLowerCase().trim();
-    const status = this.filterStatus().toLowerCase().trim();
-    const lang = this.filterLanguage().toLowerCase().trim();
-
-    return list.filter(b => {
-      const matchesQ = !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.isbn.toLowerCase().includes(q);
-      if (!matchesQ) return false;
-      const matchesCat = !cat || b.category.toLowerCase().includes(cat);
-      if (!matchesCat) return false;
-      const matchesStatus = !status || b.status.toLowerCase().includes(status);
-      if (!matchesStatus) return false;
-      const matchesLang = !lang || b.language.toLowerCase().includes(lang);
-      if (!matchesLang) return false;
-      return true;
     });
   }
 
@@ -102,12 +108,11 @@ export class BookManagement implements OnInit {
   }
 
   get totalPages(): number {
-    return Math.ceil(this.filteredBooks.length / this.pageSize()) || 1;
+    return this.totalPagesSignal();
   }
 
   get paginatedBooks(): any[] {
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return this.filteredBooks.slice(start, start + this.pageSize());
+    return this.booksSignal();
   }
 
   get pageNumbers(): number[] {
@@ -117,18 +122,21 @@ export class BookManagement implements OnInit {
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage.set(page);
+      this.loadBooks();
     }
   }
 
   nextPage(): void {
     if (this.currentPage() < this.totalPages) {
       this.currentPage.set(this.currentPage() + 1);
+      this.loadBooks();
     }
   }
 
   prevPage(): void {
     if (this.currentPage() > 1) {
       this.currentPage.set(this.currentPage() - 1);
+      this.loadBooks();
     }
   }
 

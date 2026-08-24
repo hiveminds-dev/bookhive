@@ -11,9 +11,9 @@
       <p>Review author applications, approve credentials, and manage creator profiles.</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn-primary" (click)="createCommunity()">
+      <button type="button" class="btn-primary" (click)="createAuthorModal()">
         <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Create Community
+        Create Author
       </button>
     </div>
   </header>
@@ -23,7 +23,7 @@
     <div class="search-primary-row">
       <div class="search-input-box">
         <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search authors by full name, pen name, or email...">
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" placeholder="Search authors by full name, pen name, or email...">
         <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
         </button>
@@ -98,10 +98,10 @@
         <div class="icon-box">
           <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
         </div>
-        <span class="trend-badge positive">+12%</span>
+        <span class="trend-badge positive">Pending</span>
       </div>
       <span class="stat-label">NEW APPLICATIONS</span>
-      <strong class="stat-value">24</strong>
+      <strong class="stat-value">{{ authorStatsSignal().new_applications }}</strong>
     </article>
 
     <article class="stat-card">
@@ -109,10 +109,10 @@
         <div class="icon-box">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
         </div>
-        <span class="trend-badge positive">+4%</span>
+        <span class="trend-badge positive">Active</span>
       </div>
-      <span class="stat-label">TOTAL AUTHORS</span>
-      <strong class="stat-value">1,208</strong>
+      <span class="stat-label">APPROVED AUTHORS</span>
+      <strong class="stat-value">{{ authorStatsSignal().total_authors }}</strong>
     </article>
 
     <article class="stat-card">
@@ -120,20 +120,20 @@
         <div class="icon-box">
           <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
         </div>
-        <span class="trend-badge high">High</span>
+        <span class="trend-badge high">In Review</span>
       </div>
       <span class="stat-label">BOOKS IN REVIEW</span>
-      <strong class="stat-value">42</strong>
+      <strong class="stat-value">{{ authorStatsSignal().books_in_review }}</strong>
     </article>
 
     <article class="stat-card highlight-card">
       <div class="stat-header">
         <div class="icon-box star-icon">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
       </div>
-      <span class="stat-label">PREMIUM CREDITS</span>
-      <strong class="stat-value">14.2k</strong>
+      <span class="stat-label">REJECTED APPLICATIONS</span>
+      <strong class="stat-value">{{ authorStatsSignal().total_rejected }}</strong>
     </article>
   </section>
 
@@ -167,7 +167,10 @@
       <tbody>
         <tr *ngFor="let author of filteredAuthors">
           <td>
-            <strong class="full-name">{{ author.full_name }}</strong>
+            <div class="author-name-cell" (click)="openAuthorProfile(author)" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px; white-space: nowrap;" title="Click to view Author Profile">
+              <img [src]="getAuthorAvatar(author)" [alt]="author.full_name" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0;" />
+              <strong class="full-name" style="color: #0f172a; font-size: 0.92rem; white-space: nowrap;">{{ author.full_name }}</strong>
+            </div>
           </td>
           <td>
             <span class="pen-name">{{ author.pen_name }}</span>
@@ -185,10 +188,14 @@
             <span class="status-badge" [class]="getStatusClass(author.account_status)">{{ author.account_status }}</span>
           </td>
           <td class="text-right">
-            <div class="action-buttons">
-              <button type="button" class="btn-icon" [routerLink]="['/admin/authors', author.user_id]" title="View Profile"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              <button type="button" class="btn-icon approve" title="Approve" (click)="approveAuthor(author)" [disabled]="author.account_status === 'approved'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-              <button type="button" class="btn-icon reject" title="Reject" (click)="rejectAuthor(author)" [disabled]="author.account_status === 'rejected'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 9l-6 6M9 9l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+            <div class="action-buttons" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+              <label class="switch-toggle" [title]="author.account_status === 'approved' ? 'Click to Deactivate Author' : 'Click to Approve Author'">
+                <input type="checkbox" [checked]="author.account_status === 'approved'" (change)="toggleAuthorStatus(author)" />
+                <span class="switch-slider"></span>
+              </label>
+              <button type="button" class="btn-icon" (click)="openAuthorProfile(author)" title="View Author Profile">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              </button>
             </div>
           </td>
         </tr>
@@ -199,4 +206,54 @@
       <span class="summary-text">Showing {{ filteredAuthors.length }} of {{ authorsSignal().length }} records</span>
     </footer>
   </section>
+
+  <!-- Author Profile Quick Detail Modal -->
+  <div class="modal-backdrop" *ngIf="selectedAuthorForProfile()" (click)="closeAuthorProfileModal()">
+    <div class="modal-card author-profile-modal" (click)="$event.stopPropagation()" style="max-width: 520px; border-radius: 20px; padding: 28px; background: #ffffff;">
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px;">
+        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Author Profile Details</h3>
+        <button type="button" class="close-btn" (click)="closeAuthorProfileModal()" style="border: none; background: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">✕</button>
+      </div>
+
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; align-items: center; gap: 16px; padding: 14px; background-color: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0;">
+          <img [src]="getAuthorAvatar(selectedAuthorForProfile())" [alt]="selectedAuthorForProfile()?.full_name" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2.5px solid #854d0e;" />
+          <div>
+            <h4 style="margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; color: #0f172a;">{{ selectedAuthorForProfile()?.full_name }}</h4>
+            <span style="font-size: 0.85rem; font-weight: 600; color: #854d0e; background-color: #fef3c7; padding: 2px 8px; border-radius: 6px;">Pen Name: {{ selectedAuthorForProfile()?.pen_name }}</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Email Address</span>
+            <strong style="font-size: 0.88rem; color: #0f172a; word-break: break-all;">{{ selectedAuthorForProfile()?.email }}</strong>
+          </div>
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Country / Region</span>
+            <strong style="font-size: 0.88rem; color: #0f172a;">{{ selectedAuthorForProfile()?.country || 'N/A' }}</strong>
+          </div>
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Account Status</span>
+            <span class="status-badge" [class]="getStatusClass(selectedAuthorForProfile()?.account_status || '')" style="margin-top: 4px; display: inline-block;">{{ selectedAuthorForProfile()?.account_status }}</span>
+          </div>
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Applied Date</span>
+            <strong style="font-size: 0.88rem; color: #0f172a;">{{ selectedAuthorForProfile()?.applied_date | date:'MMM d, y' }}</strong>
+          </div>
+        </div>
+
+        <div *ngIf="selectedAuthorForProfile()?.bio" style="padding: 12px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+          <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Author Bio</span>
+          <p style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.5;">{{ selectedAuthorForProfile()?.bio }}</p>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+        <button type="button" class="btn-cancel" (click)="closeAuthorProfileModal()" style="padding: 0.7rem 1.4rem; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; cursor: pointer;">Close</button>
+        <button type="button" *ngIf="selectedAuthorForProfile()?.account_status !== 'approved'" (click)="approveAuthor(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #166534; color: #ffffff; font-weight: 700; cursor: pointer;">Approve Author</button>
+        <button type="button" *ngIf="selectedAuthorForProfile()?.account_status === 'approved'" (click)="rejectAuthor(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #991b1b; color: #ffffff; font-weight: 700; cursor: pointer;">Deactivate / Reject</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -44,3 +44,24 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str = Field(min_length=20, max_length=256)
     new_password: str = Field(min_length=8, max_length=128)
+
+
+class UpdateProfileRequest(BaseModel):
+    full_name: str = Field(min_length=1, max_length=100)
+    email: EmailStr
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=6, max_length=128)
+
+
+class PasswordChangeOTPRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=6, max_length=128)
+
+
+class VerifyPasswordChangeOTPRequest(BaseModel):
+    otp_code: str = Field(min_length=6, max_length=6)
+    current_password: str
+    new_password: str = Field(min_length=6, max_length=128)

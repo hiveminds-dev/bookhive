@@ -7,11 +7,13 @@ from database import Base
 def test_all_orm_models_are_registered():
     assert set(Base.metadata.tables) == {
         "author_profiles",
+        "book_rejection_logs",
         "books",
         "categories",
         "email_verification_tokens",
         "password_reset_tokens",
         "revoked_access_tokens",
+        "reviews",
         "users",
     }
 

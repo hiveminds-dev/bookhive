@@ -9,8 +9,10 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
 if TYPE_CHECKING:
     from orm_models.book import Book
+    from orm_models.review import Review
 
 
 class UserRole(enum.StrEnum):
@@ -53,6 +55,19 @@ class User(Base):
         default=AccountStatus.INACTIVE,
         nullable=False,
     )
+    two_factor_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+    department: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+    role_title: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -73,9 +88,15 @@ class User(Base):
         uselist=False,
     )
 
-    books: Mapped[list["Book"]] = relationship(
+    books: Mapped[list[Book]] = relationship(
         "Book",
         back_populates="author",
+    )
+
+    reviews: Mapped[list[Review]] = relationship(
+        "Review",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     email_verification_tokens: Mapped[list[EmailVerificationToken]] = relationship(

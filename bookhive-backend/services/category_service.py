@@ -1,18 +1,24 @@
-"""Handles Category rules."""
+"""Handles Category business rules."""
 
 from __future__ import annotations
 
-from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
+from orm_models.category import Category
 from repositories.category_repository import CategoryRepository
 from schemas.category import CategoryCreate, CategoryUpdate
-from orm_models.category import Category
+
+
+class CategoryNotFoundError(ValueError):
+    pass
+
+
+class CategoryConflictError(ValueError):
+    pass
 
 
 class CategoryService:
-    def __init__(self) :
+    def __init__(self) -> None:
         self.category_repository = CategoryRepository()
 
     async def create_category(
@@ -20,46 +26,74 @@ class CategoryService:
         session: AsyncSession,
         category_data: CategoryCreate,
     ) -> Category:
-
-        existing_category = await self.category_repository.get_by_name(
-            session, category_data.name.strip()
-        )
-        if existing_category:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Category with this name already exists.",
+        name = category_data.name.strip()
+        description = self._normalize_optional_text(category_data.description)
+        if await self.category_repository.get_by_name(session, name):
+            raise CategoryConflictError(
+                "Category with this name already exists"
             )
 
-        return await self.category_repository.category_create(session, category_data)
+        try:
+            category = await self.category_repository.create(
+                session, name=name, description=description
+            )
+            await session.commit()
+            await session.refresh(category)
+            return category
+        except Exception:
+            await session.rollback()
+            raise
 
     async def update_category(
-            self,
-            session: AsyncSession,
-            category_id: int,
-            category_data: CategoryUpdate,
+        self,
+        session: AsyncSession,
+        category_id: int,
+        category_data: CategoryUpdate,
     ) -> Category:
+        category = await self.get_category_by_id(session, category_id)
+        updates = category_data.model_dump(exclude_unset=True)
 
-        category = await self.category_repository.get_by_id(session, category_id)
-        if not category:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Category with ID {category_id} not found"
+        if "name" in updates and updates["name"] is not None:
+            name = str(updates["name"]).strip()
+            if await self.category_repository.get_by_name(
+                session, name, exclude_id=category.id
+            ):
+                raise CategoryConflictError(
+                    "Category with this name already exists"
+                )
+            updates["name"] = name
+
+        if "description" in updates:
+            updates["description"] = self._normalize_optional_text(
+                updates["description"]
             )
 
+        try:
+            updated_category = await self.category_repository.update(
+                session, category, updates
+            )
+            await session.commit()
+            await session.refresh(updated_category)
+            return updated_category
+        except Exception:
+            await session.rollback()
+            raise
 
-        if category_data.name and category_data.name != category.name:
-            existing_category = await self.category_repository.get_by_name(session, category_data.name)
-            if existing_category:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Category with this name already exists"
-                )
-
-
-        return await self.category_repository.category_update(session, category, category_data)
-
-    async def get_category_by_id(self, session: AsyncSession, category_id: int) -> Category:
-        category = await self.category_repository.get_by_id(session, category_id)
-        if not category:
-            raise ValueError("Category not found")
+    async def get_category_by_id(
+        self,
+        session: AsyncSession,
+        category_id: int,
+    ) -> Category:
+        category = await self.category_repository.get_by_id(
+            session, category_id
+        )
+        if category is None:
+            raise CategoryNotFoundError("Category not found")
         return category
+
+    @staticmethod
+    def _normalize_optional_text(value: object) -> str | None:
+        if value is None:
+            return None
+        normalized = str(value).strip()
+        return normalized or None
