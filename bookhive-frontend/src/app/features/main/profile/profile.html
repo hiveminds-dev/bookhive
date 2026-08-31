@@ -1,39 +1,548 @@
-<main class="reader-profile">
-  <section class="profile-hero">
-    <div class="profile-avatar" aria-hidden="true">
-      {{ displayName().charAt(0).toUpperCase() }}
+<main class="reader-profile-page" aria-labelledby="profile-heading">
+  <div class="page-container">
+
+    <!-- Success Toast Banner -->
+    @if (successMessage()) {
+      <div class="feedback-banner success-banner" role="status" aria-live="polite">
+        <svg lucideCheckCircle class="feedback-icon" aria-hidden="true"></svg>
+        <span>{{ successMessage() }}</span>
+        <button type="button" class="close-banner-btn" aria-label="Dismiss message" (click)="successMessage.set(null)">
+          <svg lucideX class="close-icon"></svg>
+        </button>
+      </div>
+    }
+
+    <!-- Loading Skeleton -->
+    @if (isLoading()) {
+      <div class="profile-skeleton" role="status" aria-live="polite">
+        <div class="skeleton-hero">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-info">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line skeleton-subtitle"></div>
+            <div class="skeleton-badges">
+              <div class="skeleton-badge"></div>
+              <div class="skeleton-badge"></div>
+            </div>
+          </div>
+        </div>
+        <div class="skeleton-grid">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+    } @else if (errorMessage() && !profile()) {
+      <!-- Error Loading State -->
+      <div class="state-card error-card" role="alert">
+        <div class="state-icon-box" aria-hidden="true">
+          <svg lucideAlertCircle class="state-icon"></svg>
+        </div>
+        <h2>Unable to load profile</h2>
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="retry-btn" (click)="loadProfile()">
+          <svg lucideRotateCw class="retry-icon" aria-hidden="true"></svg>
+          Try Again
+        </button>
+      </div>
+    } @else if (profile(); as p) {
+      <!-- Main Profile View -->
+      <div class="profile-layout">
+
+        <!-- Profile Hero Card -->
+        <section class="profile-hero-card" aria-label="Reader Profile Header">
+          <div class="hero-main">
+            <div class="avatar-wrapper">
+              @if (hasAvatarImage()) {
+                <img
+                  [src]="p.profile_image_url"
+                  [alt]="p.full_name + ' profile avatar'"
+                  class="avatar-image"
+                  (error)="onAvatarError()" />
+              } @else {
+                <div class="avatar-initials" aria-hidden="true">
+                  {{ initials() }}
+                </div>
+              }
+              <button
+                type="button"
+                class="avatar-edit-overlay-btn"
+                (click)="openAvatarModal()"
+                title="Change profile avatar"
+                aria-label="Change profile avatar">
+                <svg lucideCamera class="camera-icon" aria-hidden="true"></svg>
+              </button>
+            </div>
+
+            <div class="hero-details">
+              <div class="badges-row">
+                <span class="role-badge">
+                  <svg lucideBookOpen class="badge-icon" aria-hidden="true"></svg>
+                  Reader
+                </span>
+
+                @if (p.account_status === 'active') {
+                  <span class="status-badge status-active">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    Active Account
+                  </span>
+                } @else {
+                  <span class="status-badge status-inactive">
+                    {{ p.account_status | titlecase }}
+                  </span>
+                }
+
+                @if (p.email_verified) {
+                  <span class="verified-badge verified">
+                    <svg lucideShieldCheck class="badge-icon" aria-hidden="true"></svg>
+                    Email Verified
+                  </span>
+                } @else {
+                  <span class="verified-badge unverified">
+                    <svg lucideAlertCircle class="badge-icon" aria-hidden="true"></svg>
+                    Unverified Email
+                  </span>
+                }
+              </div>
+
+              <h1 id="profile-heading" class="reader-name">{{ p.full_name }}</h1>
+              <p class="reader-handle">&#64;{{ p.username }}</p>
+
+              <div class="meta-row">
+                <span class="meta-item">
+                  <svg lucideCalendar class="meta-icon" aria-hidden="true"></svg>
+                  Member since {{ p.created_at | date: 'MMMM yyyy' }}
+                </span>
+                @if (p.country) {
+                  <span class="meta-separator" aria-hidden="true">•</span>
+                  <span class="meta-item">
+                    <svg lucideMapPin class="meta-icon" aria-hidden="true"></svg>
+                    {{ p.country }}
+                  </span>
+                }
+                @if (p.preferred_language) {
+                  <span class="meta-separator" aria-hidden="true">•</span>
+                  <span class="meta-item">
+                    <svg lucideGlobe class="meta-icon" aria-hidden="true"></svg>
+                    {{ p.preferred_language }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Action Buttons -->
+          <div class="hero-actions">
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="edit-profile-btn"
+              (click)="openEditModal()">
+              <svg lucideEdit3 class="btn-icon" aria-hidden="true"></svg>
+              <span>Edit Profile</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="change-avatar-btn"
+              (click)="openAvatarModal()">
+              <svg lucideCamera class="btn-icon" aria-hidden="true"></svg>
+              <span>Change Photo</span>
+            </button>
+
+            <a
+              routerLink="/auth/reset-password"
+              class="btn btn-secondary">
+              <svg lucideLock class="btn-icon" aria-hidden="true"></svg>
+              <span>Change Password</span>
+            </a>
+
+            <a
+              routerLink="/explore"
+              class="btn btn-secondary">
+              <svg lucideBookOpen class="btn-icon" aria-hidden="true"></svg>
+              <span>Explore Library</span>
+            </a>
+
+            <button
+              type="button"
+              class="btn btn-danger"
+              id="logout-btn"
+              (click)="onLogout()">
+              <svg lucideLogOut class="btn-icon" aria-hidden="true"></svg>
+              <span>Log Out</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Profile Content Grid -->
+        <div class="profile-grid">
+
+          <!-- Section 1: Account Information -->
+          <section class="profile-card" aria-labelledby="account-details-title">
+            <div class="card-header">
+              <h2 id="account-details-title" class="card-title">
+                <svg lucideUser class="section-icon" aria-hidden="true"></svg>
+                Account Details
+              </h2>
+              <button
+                type="button"
+                class="card-edit-btn"
+                (click)="openEditModal()"
+                aria-label="Edit account details">
+                <svg lucideEdit3 class="edit-icon" aria-hidden="true"></svg>
+                Edit
+              </button>
+            </div>
+
+            <div class="details-list">
+              <div class="detail-item">
+                <span class="detail-label">Full Name</span>
+                <span class="detail-value">{{ p.full_name }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Username</span>
+                <span class="detail-value">&#64;{{ p.username }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Email Address</span>
+                <div class="email-value-group">
+                  <span class="detail-value">{{ p.email }}</span>
+                  <span class="read-only-badge" title="Email is managed via security settings">Read-only</span>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Country / Region</span>
+                <span class="detail-value">{{ p.country || 'Not specified' }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Preferred Reading Language</span>
+                <span class="detail-value">{{ p.preferred_language || 'Not specified' }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Account Role</span>
+                <span class="detail-value">Reader (Standard Member)</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Profile Last Updated</span>
+                <span class="detail-value">{{ p.updated_at | date: 'mediumDate' }}</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 2: Biography & Reading Interests -->
+          <section class="profile-card" aria-labelledby="bio-title">
+            <div class="card-header">
+              <h2 id="bio-title" class="card-title">
+                <svg lucideSparkles class="section-icon" aria-hidden="true"></svg>
+                About Me
+              </h2>
+              <button
+                type="button"
+                class="card-edit-btn"
+                (click)="openEditModal()"
+                aria-label="Edit biography">
+                <svg lucideEdit3 class="edit-icon" aria-hidden="true"></svg>
+                Edit
+              </button>
+            </div>
+
+            <div class="bio-content">
+              @if (p.short_bio) {
+                <blockquote class="bio-quote">
+                  <p>{{ p.short_bio }}</p>
+                </blockquote>
+              } @else {
+                <div class="bio-empty-state">
+                  <p>No biography added yet.</p>
+                  <p class="bio-hint">Tell other BookHive readers about your favorite literary genres, research interests, and authors.</p>
+                  <button type="button" class="add-bio-btn" (click)="openEditModal()">
+                    Add a short bio
+                  </button>
+                </div>
+              }
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+    }
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- EDIT PROFILE MODAL -->
+  <!-- ========================================================================= -->
+  @if (isEditModalOpen()) {
+    <div class="modal-backdrop" (click)="closeEditModal()">
+      <div
+        class="modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-profile-modal-title"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h2 id="edit-profile-modal-title" class="modal-title">Edit Profile Information</h2>
+          <button
+            type="button"
+            class="modal-close-btn"
+            aria-label="Close edit profile modal"
+            [disabled]="isSaving()"
+            (click)="closeEditModal()">
+            <svg lucideX class="close-icon" aria-hidden="true"></svg>
+          </button>
+        </div>
+
+        <form [formGroup]="editForm" (ngSubmit)="onSaveProfile()">
+          <div class="modal-body">
+
+            @if (editFormError()) {
+              <div class="form-error-alert" role="alert">
+                <svg lucideAlertCircle class="alert-icon" aria-hidden="true"></svg>
+                <span>{{ editFormError() }}</span>
+              </div>
+            }
+
+            <div class="form-group">
+              <label for="edit-full-name" class="form-label">
+                Full Name <span class="required-star">*</span>
+              </label>
+              <input
+                id="edit-full-name"
+                type="text"
+                class="form-control"
+                formControlName="fullName"
+                placeholder="e.g. Liam Henderson"
+                [class.is-invalid]="editForm.get('fullName')?.invalid && editForm.get('fullName')?.touched" />
+              @if (editForm.get('fullName')?.invalid && editForm.get('fullName')?.touched) {
+                <span class="field-error">Full name is required (2-100 characters).</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="edit-username" class="form-label">
+                Username <span class="required-star">*</span>
+              </label>
+              <div class="input-prefix-group">
+                <span class="input-prefix">&#64;</span>
+                <input
+                  id="edit-username"
+                  type="text"
+                  class="form-control with-prefix"
+                  formControlName="username"
+                  placeholder="username"
+                  [class.is-invalid]="editForm.get('username')?.invalid && editForm.get('username')?.touched" />
+              </div>
+              @if (editForm.get('username')?.invalid && editForm.get('username')?.touched) {
+                <span class="field-error">
+                  Username must start with a letter and contain only letters, numbers, or underscores (3-50 chars).
+                </span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="edit-email" class="form-label">Email Address</label>
+              <input
+                id="edit-email"
+                type="email"
+                class="form-control form-control-disabled"
+                [value]="profile()?.email || ''"
+                disabled
+                readonly />
+              <span class="field-hint">Email address is read-only for security reasons.</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group half-width">
+                <label for="edit-country" class="form-label">Country / Region</label>
+                <input
+                  id="edit-country"
+                  type="text"
+                  class="form-control"
+                  formControlName="country"
+                  placeholder="e.g. United States, United Kingdom"
+                  maxlength="100" />
+              </div>
+
+              <div class="form-group half-width">
+                <label for="edit-language" class="form-label">Preferred Reading Language</label>
+                <input
+                  id="edit-language"
+                  type="text"
+                  class="form-control"
+                  formControlName="preferredLanguage"
+                  placeholder="e.g. English, French, Spanish"
+                  maxlength="50" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-counter">
+                <label for="edit-short-bio" class="form-label">Short Biography</label>
+                <span class="char-counter">
+                  {{ editForm.get('shortBio')?.value?.length || 0 }}/500
+                </span>
+              </div>
+              <textarea
+                id="edit-short-bio"
+                class="form-control textarea-control"
+                formControlName="shortBio"
+                rows="3"
+                placeholder="Share a few words about your reading interests or academic focus..."
+                maxlength="500"></textarea>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              [disabled]="isSaving()"
+              (click)="closeEditModal()">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="save-profile-btn"
+              [disabled]="editForm.invalid || isSaving()">
+              @if (isSaving()) {
+                <svg lucideRotateCw class="spinner-icon" aria-hidden="true"></svg>
+                <span>Saving...</span>
+              } @else {
+                <span>Save Changes</span>
+              }
+            </button>
+          </div>
+        </form>
+
+      </div>
     </div>
+  }
 
-    <div>
-      <span class="eyebrow">Reader Profile</span>
-      <h1>{{ displayName() }}</h1>
-      <p>{{ username() }}</p>
+  <!-- ========================================================================= -->
+  <!-- CHANGE AVATAR MODAL -->
+  <!-- ========================================================================= -->
+  @if (isAvatarModalOpen()) {
+    <div class="modal-backdrop" (click)="closeAvatarModal()">
+      <div
+        class="modal-dialog avatar-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="avatar-modal-title"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h2 id="avatar-modal-title" class="modal-title">Update Profile Photo</h2>
+          <button
+            type="button"
+            class="modal-close-btn"
+            aria-label="Close avatar modal"
+            [disabled]="isUploadingAvatar()"
+            (click)="closeAvatarModal()">
+            <svg lucideX class="close-icon" aria-hidden="true"></svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+
+          @if (avatarFormError()) {
+            <div class="form-error-alert" role="alert">
+              <svg lucideAlertCircle class="alert-icon" aria-hidden="true"></svg>
+              <span>{{ avatarFormError() }}</span>
+            </div>
+          }
+
+          <div class="avatar-preview-section">
+            @if (avatarPreviewUrl()) {
+              <div class="preview-box">
+                <img [src]="avatarPreviewUrl()" alt="Avatar preview" class="preview-image" />
+                <span class="preview-tag">New Photo Preview</span>
+              </div>
+            } @else if (hasAvatarImage()) {
+              <div class="preview-box">
+                <img [src]="profile()?.profile_image_url" alt="Current avatar" class="preview-image" />
+                <span class="preview-tag">Current Photo</span>
+              </div>
+            } @else {
+              <div class="preview-box initials-box">
+                <div class="avatar-initials large" aria-hidden="true">{{ initials() }}</div>
+                <span class="preview-tag">Current Default Avatar</span>
+              </div>
+            }
+          </div>
+
+          <div class="file-picker-group">
+            <label for="avatar-file-input" class="file-upload-label">
+              <svg lucideUpload class="upload-icon" aria-hidden="true"></svg>
+              <span>Choose Image File (JPG, PNG, WebP)</span>
+              <span class="file-size-hint">Maximum file size: 5 MB</span>
+            </label>
+            <input
+              id="avatar-file-input"
+              type="file"
+              class="hidden-file-input"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="onFileSelected($event)" />
+
+            @if (selectedAvatarFile(); as file) {
+              <div class="selected-file-info">
+                <span class="file-name">{{ file.name }}</span>
+                <span class="file-size">({{ (file.size / 1024 / 1024) | number:'1.1-2' }} MB)</span>
+              </div>
+            }
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          @if (hasAvatarImage()) {
+            <button
+              type="button"
+              class="btn btn-danger-outline"
+              id="delete-avatar-btn"
+              [disabled]="isUploadingAvatar()"
+              (click)="onDeleteAvatar()">
+              <svg lucideTrash2 class="btn-icon" aria-hidden="true"></svg>
+              <span>Remove Photo</span>
+            </button>
+          }
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="isUploadingAvatar()"
+            (click)="closeAvatarModal()">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="upload-avatar-btn"
+            [disabled]="!selectedAvatarFile() || isUploadingAvatar()"
+            (click)="onUploadAvatar()">
+            @if (isUploadingAvatar()) {
+              <svg lucideRotateCw class="spinner-icon" aria-hidden="true"></svg>
+              <span>Uploading...</span>
+            } @else {
+              <span>Upload Photo</span>
+            }
+          </button>
+        </div>
+
+      </div>
     </div>
-  </section>
+  }
 
-  <section class="profile-details" aria-label="Reader account details">
-    <article>
-      <span>Email</span>
-      <strong>{{ user()?.email ?? 'Not available' }}</strong>
-    </article>
-
-    <article>
-      <span>Role</span>
-      <strong>Reader</strong>
-    </article>
-
-    <article>
-      <span>Status</span>
-      <strong>{{ status() }}</strong>
-    </article>
-
-    <article>
-      <span>Email Verification</span>
-      <strong>{{ user()?.email_verified ? 'Verified' : 'Not verified' }}</strong>
-    </article>
-  </section>
-
-  <a class="primary-link" routerLink="/explore">
-    Continue Reading
-  </a>
 </main>

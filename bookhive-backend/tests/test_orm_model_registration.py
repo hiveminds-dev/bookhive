@@ -12,6 +12,7 @@ def test_all_orm_models_are_registered():
         "categories",
         "email_verification_tokens",
         "password_reset_tokens",
+        "reader_profiles",
         "revoked_access_tokens",
         "reviews",
         "users",

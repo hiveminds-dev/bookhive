@@ -33,8 +33,11 @@ coverage/
 *.tmp
 *.temp
 
-# Uploaded books and cover images
+# Uploaded books, cover images, and profile images
 bookhive-backend/storage/books/*
 bookhive-backend/storage/covers/*
+bookhive-backend/storage/profiles/*
+bookhive-backend/storage/*.zip
 !bookhive-backend/storage/books/.gitkeep
 !bookhive-backend/storage/covers/.gitkeep
+!bookhive-backend/storage/profiles/.gitkeep

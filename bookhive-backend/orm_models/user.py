@@ -88,6 +88,14 @@ class User(Base):
         uselist=False,
     )
 
+    reader_profile: Mapped[ReaderProfile | None] = relationship(
+        "ReaderProfile",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        uselist=False,
+    )
+
     books: Mapped[list[Book]] = relationship(
         "Book",
         back_populates="author",
@@ -116,6 +124,40 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+
+
+class ReaderProfile(Base):
+    __tablename__ = "reader_profiles"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    preferred_language: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    short_bio: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    profile_image_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    user: Mapped[User] = relationship(
+        "User",
+        back_populates="reader_profile",
+        lazy="joined",
+    )
+
 
 class AuthorProfile(Base):
     __tablename__ = "author_profiles"

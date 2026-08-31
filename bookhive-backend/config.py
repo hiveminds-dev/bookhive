@@ -60,8 +60,10 @@ class Settings(BaseSettings):
     storage_root: Path = BACKEND_DIR / "storage"
     book_storage_path: Path = BACKEND_DIR / "storage" / "books"
     cover_storage_path: Path = BACKEND_DIR / "storage" / "covers"
+    profile_image_storage_path: Path = BACKEND_DIR / "storage" / "profiles"
     max_book_size_mb: int = 50
     max_cover_size_mb: int = 5
+    max_profile_image_size_mb: int = 5
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -77,6 +79,8 @@ class Settings(BaseSettings):
             self.book_storage_path = (BACKEND_DIR / self.book_storage_path).resolve()
         if not self.cover_storage_path.is_absolute():
             self.cover_storage_path = (BACKEND_DIR / self.cover_storage_path).resolve()
+        if not self.profile_image_storage_path.is_absolute():
+            self.profile_image_storage_path = (BACKEND_DIR / self.profile_image_storage_path).resolve()
         return self
 
     @property
