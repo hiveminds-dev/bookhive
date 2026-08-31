@@ -1,9 +1,10 @@
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from orm_models.user import AccountStatus, User, UserRole
+from orm_models.user import AccountStatus, ReaderProfile, User, UserRole
 from schemas.author import AuthorRegistrationRequest
-from schemas.user import UserCreate
+from schemas.user import UserCreate, UserProfileUpdate
 from utils.security import hash_password
 
 
@@ -47,7 +48,14 @@ class UserRepository:
         return user
 
     async def get_by_id(self, session: AsyncSession, user_id: int) -> User | None:
-        result = await session.execute(select(User).where(User.id == user_id))
+        result = await session.execute(
+            select(User)
+            .options(
+                selectinload(User.reader_profile),
+                selectinload(User.author_profile),
+            )
+            .where(User.id == user_id)
+        )
         return result.scalar_one_or_none()
 
     async def get_by_email(self, session: AsyncSession, email: str) -> User | None:
@@ -69,3 +77,76 @@ class UserRepository:
         )
 
         return result.scalar_one_or_none()
+
+    async def get_reader_profile_by_user_id(
+        self,
+        session: AsyncSession,
+        user_id: int,
+    ) -> ReaderProfile | None:
+        result = await session.execute(
+            select(ReaderProfile).where(ReaderProfile.user_id == user_id)
+        )
+        return result.scalar_one_or_none()
+
+    async def get_or_create_reader_profile(
+        self,
+        session: AsyncSession,
+        user_id: int,
+    ) -> ReaderProfile:
+        profile = await self.get_reader_profile_by_user_id(session, user_id)
+        if profile is None:
+            profile = ReaderProfile(user_id=user_id)
+            session.add(profile)
+            await session.flush()
+            await session.refresh(profile)
+        return profile
+
+    async def update_user_profile(
+        self,
+        session: AsyncSession,
+        user: User,
+        update_data: UserProfileUpdate,
+    ) -> User:
+        update_dict = update_data.model_dump(exclude_unset=True)
+
+        if "full_name" in update_dict and update_dict["full_name"] is not None:
+            user.full_name = update_dict["full_name"]
+
+        if "username" in update_dict and update_dict["username"] is not None:
+            user.username = update_dict["username"]
+
+        profile_fields = {"country", "preferred_language", "short_bio"}
+        has_profile_updates = any(field in update_dict for field in profile_fields)
+
+        if has_profile_updates:
+            profile = await self.get_or_create_reader_profile(session, user.id)
+            for field in profile_fields:
+                if field in update_dict:
+                    setattr(profile, field, update_dict[field])
+
+        await session.flush()
+        return user
+
+    async def update_profile_image(
+        self,
+        session: AsyncSession,
+        user_id: int,
+        image_path: str,
+    ) -> ReaderProfile:
+        profile = await self.get_or_create_reader_profile(session, user_id)
+        profile.profile_image_path = image_path
+        await session.flush()
+        await session.refresh(profile)
+        return profile
+
+    async def remove_profile_image(
+        self,
+        session: AsyncSession,
+        user_id: int,
+    ) -> ReaderProfile | None:
+        profile = await self.get_reader_profile_by_user_id(session, user_id)
+        if profile is not None:
+            profile.profile_image_path = None
+            await session.flush()
+            await session.refresh(profile)
+        return profile

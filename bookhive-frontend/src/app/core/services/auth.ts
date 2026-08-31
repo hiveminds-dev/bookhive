@@ -44,6 +44,16 @@ export class Auth {
     );
   }
 
+  updateCurrentUserState(updates: Partial<AuthenticatedUser>): void {
+    const current = this.currentUserSignal();
+    if (current) {
+      const updated: AuthenticatedUser = { ...current, ...updates };
+      this.currentUserSignal.set(updated);
+      const persistent = localStorage.getItem(ACCESS_TOKEN_KEY) !== null;
+      this.storage.set(AUTH_USER_KEY, JSON.stringify(updated), persistent);
+    }
+  }
+
   updateProfile(fullName: string, email: string): Observable<AuthenticatedUser> {
     return this.http.put<AuthenticatedUser>('/api/auth/me', { full_name: fullName, email }).pipe(
       tap((user) => {

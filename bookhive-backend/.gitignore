@@ -12,5 +12,8 @@ htmlcov/
 
 storage/books/*
 storage/covers/*
+storage/profiles/*
+storage/*.zip
 !storage/books/.gitkeep
 !storage/covers/.gitkeep
+!storage/profiles/.gitkeep

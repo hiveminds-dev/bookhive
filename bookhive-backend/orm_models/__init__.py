@@ -9,6 +9,7 @@ from orm_models.user import (
     AuthorProfile,
     EmailVerificationToken,
     PasswordResetToken,
+    ReaderProfile,
     RevokedAccessToken,
     User,
     UserRole,
@@ -23,9 +24,9 @@ __all__ = [
     "Category",
     "EmailVerificationToken",
     "PasswordResetToken",
+    "ReaderProfile",
     "Review",
     "RevokedAccessToken",
-    "Review",
     "User",
     "UserRole",
 ]

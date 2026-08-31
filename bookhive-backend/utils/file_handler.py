@@ -34,6 +34,19 @@ COVER_EXTENSIONS = {
     ".png": "PNG",
 }
 
+PROFILE_IMAGE_CONTENT_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+
+PROFILE_IMAGE_EXTENSIONS = {
+    ".jpg": "JPEG",
+    ".jpeg": "JPEG",
+    ".png": "PNG",
+    ".webp": "WEBP",
+}
+
 
 class FileUploadError(ValueError):
     """Base error for invalid file uploads."""
@@ -113,6 +126,42 @@ async def save_cover(upload: UploadFile) -> str:
     )
 
 
+async def save_profile_image(upload: UploadFile) -> str:
+    """Validate and save a JPG, PNG, or WebP profile image."""
+
+    extension = _get_extension(upload)
+    expected_format = PROFILE_IMAGE_EXTENSIONS.get(extension)
+
+    if expected_format is None:
+        raise InvalidFileTypeError(
+            "Only JPG, JPEG, PNG, and WebP profile images are allowed"
+        )
+
+    if upload.content_type not in PROFILE_IMAGE_CONTENT_TYPES:
+        raise InvalidFileTypeError(
+            "The profile image must have an image/jpeg, image/png, or image/webp content type"
+        )
+
+    storage_directory = settings.profile_image_storage_path
+    filename = f"{uuid4().hex}{extension}"
+
+    async def validate_profile_image(path: Path) -> None:
+        await asyncio.to_thread(
+            _validate_cover,
+            path,
+            expected_format,
+        )
+
+    return await _save_upload(
+        upload=upload,
+        storage_directory=storage_directory,
+        public_directory=Path("storage/profiles"),
+        filename=filename,
+        max_size_mb=settings.max_profile_image_size_mb,
+        validator=validate_profile_image,
+    )
+
+
 async def delete_stored_file(relative_path: str | None) -> None:
     """Delete a previously stored BookHive upload safely."""
 
@@ -129,6 +178,7 @@ async def delete_stored_file(relative_path: str | None) -> None:
     allowed_directories = {
         settings.book_storage_path.resolve(),
         settings.cover_storage_path.resolve(),
+        settings.profile_image_storage_path.resolve(),
     }
 
     if resolved_path.parent not in allowed_directories:

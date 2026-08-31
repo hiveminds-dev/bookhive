@@ -118,6 +118,7 @@ app.include_router(
 settings.storage_root.mkdir(parents=True, exist_ok=True)
 settings.book_storage_path.mkdir(parents=True, exist_ok=True)
 settings.cover_storage_path.mkdir(parents=True, exist_ok=True)
+settings.profile_image_storage_path.mkdir(parents=True, exist_ok=True)
 
 app.mount(
     "/storage",
