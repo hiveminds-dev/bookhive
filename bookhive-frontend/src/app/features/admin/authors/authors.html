@@ -189,7 +189,7 @@
           </td>
           <td class="text-right">
             <div class="action-buttons" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
-              <label class="switch-toggle" [title]="author.account_status === 'approved' ? 'Click to Deactivate Author' : 'Click to Approve Author'">
+              <label class="switch-toggle" [title]="author.account_status === 'approved' ? 'Click to Reject Author' : 'Click to Approve Author'">
                 <input type="checkbox" [checked]="author.account_status === 'approved'" (change)="toggleAuthorStatus(author)" />
                 <span class="switch-slider"></span>
               </label>
@@ -247,12 +247,86 @@
           <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Author Bio</span>
           <p style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.5;">{{ selectedAuthorForProfile()?.bio }}</p>
         </div>
+
+        <div *ngIf="selectedAuthorForProfile()?.rejection_reason" style="padding: 12px 14px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;">
+          <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #991b1b; text-transform: uppercase; margin-bottom: 4px;">Latest Rejection Reason</span>
+          <p style="margin: 0; font-size: 0.88rem; color: #7f1d1d; line-height: 1.5;">{{ selectedAuthorForProfile()?.rejection_reason }}</p>
+        </div>
       </div>
 
       <div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
         <button type="button" class="btn-cancel" (click)="closeAuthorProfileModal()" style="padding: 0.7rem 1.4rem; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; cursor: pointer;">Close</button>
         <button type="button" *ngIf="selectedAuthorForProfile()?.account_status !== 'approved'" (click)="approveAuthor(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #166534; color: #ffffff; font-weight: 700; cursor: pointer;">Approve Author</button>
-        <button type="button" *ngIf="selectedAuthorForProfile()?.account_status === 'approved'" (click)="rejectAuthor(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #991b1b; color: #ffffff; font-weight: 700; cursor: pointer;">Deactivate / Reject</button>
+        <button type="button" *ngIf="selectedAuthorForProfile()?.account_status === 'approved'" (click)="openRejectModal(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #991b1b; color: #ffffff; font-weight: 700; cursor: pointer;">Deactivate / Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejection Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="authorToReject()" (click)="closeRejectModal()">
+    <div class="modal-card rejection-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="reject-modal-title">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-icon-badge danger">
+            <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h3 id="reject-modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Reject Author Application</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #64748b;">Please provide a mandatory reason for rejecting this author's application.</p>
+          </div>
+        </div>
+        <button type="button" class="close-btn" (click)="closeRejectModal()" [disabled]="isRejecting()" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="applicant-summary">
+          <img [src]="getAuthorAvatar(authorToReject())" [alt]="authorToReject()?.full_name" class="applicant-avatar" />
+          <div class="applicant-info">
+            <strong class="applicant-name">{{ authorToReject()?.full_name }}</strong>
+            <span class="applicant-meta">Pen Name: {{ authorToReject()?.pen_name }} • {{ authorToReject()?.email }}</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 16px;">
+          <div class="label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label for="rejection-reason-input" style="font-size: 0.86rem; font-weight: 700; color: #334155;">
+              Rejection Reason <span style="color: #dc2626;">*</span>
+            </label>
+            <span class="char-count" [class.limit-reached]="rejectionReason().length > 500" style="font-size: 0.75rem; color: #94a3b8;">
+              {{ rejectionReason().length }}/500
+            </span>
+          </div>
+
+          <textarea
+            id="rejection-reason-input"
+            class="rejection-textarea"
+            [ngModel]="rejectionReason()"
+            (ngModelChange)="onRejectionReasonChange($event)"
+            rows="4"
+            maxlength="500"
+            placeholder="Specify why this author application is being rejected (e.g. insufficient verification documents, identity mismatch)..."
+            [disabled]="isRejecting()"></textarea>
+
+          <div class="rejection-error-alert" *ngIf="rejectionError()">
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; flex-shrink: 0;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2"/></svg>
+            <span>{{ rejectionError() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeRejectModal()" [disabled]="isRejecting()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-confirm-reject"
+          id="confirm-reject-btn"
+          [disabled]="!rejectionReason().trim() || isRejecting()"
+          (click)="confirmRejectAuthor()">
+          <span *ngIf="!isRejecting()">Confirm Rejection</span>
+          <span *ngIf="isRejecting()">Rejecting...</span>
+        </button>
       </div>
     </div>
   </div>

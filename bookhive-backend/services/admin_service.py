@@ -4,6 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from orm_models.author_rejection_log import AuthorRejectionLog
 from orm_models.book import Book, BookStatus
 from orm_models.book_rejection_log import BookRejectionLog
 from orm_models.category import Category
@@ -15,6 +16,7 @@ from schemas.admin_schemas import (
     AdminStaffStatsResponse,
     AdminUserItemResponse,
     AuthorApplicationResponse,
+    AuthorRejectionLogItem,
     AuthorStatsResponse,
     BookAdminResponse,
     BookReviewItem,
@@ -235,32 +237,57 @@ class AdminService:
     async def get_author_applications(
         self, session: AsyncSession, status_filter: str | None = None
     ) -> list[AuthorApplicationResponse]:
-        query = select(User).where(User.role == UserRole.AUTHOR)
+        query = (
+            select(User)
+            .options(
+                selectinload(User.author_profile),
+                selectinload(User.author_rejection_logs),
+            )
+            .where(User.role == UserRole.AUTHOR)
+        )
 
         if status_filter:
-            if status_filter.lower() == "pending":
+            sf = status_filter.lower()
+            if sf == "pending":
                 query = query.where(User.account_status == AccountStatus.PENDING)
-            elif status_filter.lower() == "approved":
+            elif sf == "approved":
                 query = query.where(User.account_status == AccountStatus.APPROVED)
+            elif sf == "rejected":
+                query = query.where(User.account_status == AccountStatus.REJECTED)
 
         result = await session.execute(query)
         users = result.scalars().all()
 
-        return [
-            AuthorApplicationResponse(
-                id=u.id,
-                user_id=u.id,
-                full_name=u.full_name,
-                pen_name=u.author_profile.pen_name if u.author_profile else u.full_name,
-                email=u.email,
-                country=u.author_profile.country if u.author_profile else "N/A",
-                account_status=u.account_status.value if hasattr(u.account_status, "value") else str(u.account_status),
-                profile_image_path=u.author_profile.profile_image_path if u.author_profile else None,
-                bio=u.author_profile.short_bio if u.author_profile else None,
-                applied_date=u.created_at,
+        applications = []
+        for u in users:
+            rejection_logs = [
+                AuthorRejectionLogItem(
+                    id=log.id,
+                    reason=log.reason,
+                    created_at=log.created_at.isoformat() if hasattr(log.created_at, "isoformat") else str(log.created_at),
+                )
+                for log in (u.author_rejection_logs or [])
+            ]
+            latest_rejection_reason = rejection_logs[0].reason if rejection_logs else None
+
+            applications.append(
+                AuthorApplicationResponse(
+                    id=u.id,
+                    user_id=u.id,
+                    full_name=u.full_name,
+                    pen_name=u.author_profile.pen_name if u.author_profile else u.full_name,
+                    email=u.email,
+                    country=u.author_profile.country if u.author_profile else "N/A",
+                    account_status=u.account_status.value if hasattr(u.account_status, "value") else str(u.account_status),
+                    profile_image_path=u.author_profile.profile_image_path if u.author_profile else None,
+                    bio=u.author_profile.short_bio if u.author_profile else None,
+                    applied_date=u.created_at,
+                    rejection_reason=latest_rejection_reason,
+                    rejection_logs=rejection_logs,
+                )
             )
-            for u in users
-        ]
+
+        return applications
 
     async def approve_author(
         self, session: AsyncSession, user_id: int
@@ -268,19 +295,39 @@ class AdminService:
         user = await session.get(User, user_id)
         if user is None:
             return False
+        if user.role != UserRole.AUTHOR:
+            raise ValueError("User is not an author application.")
 
         user.account_status = AccountStatus.APPROVED
         await session.commit()
         return True
 
     async def reject_author(
-        self, session: AsyncSession, user_id: int
+        self,
+        session: AsyncSession,
+        user_id: int,
+        rejection_reason: str,
+        admin_id: int | None = None,
     ) -> bool:
         user = await session.get(User, user_id)
         if user is None:
             return False
+        if user.role != UserRole.AUTHOR:
+            raise ValueError("User is not an author application.")
+
+        cleaned_reason = rejection_reason.strip()
+        if not cleaned_reason:
+            raise ValueError("Rejection reason cannot be blank.")
+        if len(cleaned_reason) > 500:
+            raise ValueError("Rejection reason cannot exceed 500 characters.")
 
         user.account_status = AccountStatus.REJECTED
+        log_entry = AuthorRejectionLog(
+            author_id=user.id,
+            admin_id=admin_id,
+            reason=cleaned_reason,
+        )
+        session.add(log_entry)
         await session.commit()
         return True
 

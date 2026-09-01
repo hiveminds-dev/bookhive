@@ -84,6 +84,8 @@ export interface AuthorApplicationItem {
   profile_image_path?: string | null;
   bio?: string | null;
   applied_date: string;
+  rejection_reason?: string | null;
+  rejection_logs?: Array<{ id: number; reason: string; created_at: string }>;
 }
 
 export interface MonthlyUploadItem {
@@ -323,8 +325,10 @@ export class AdminApiService {
     return this.http.post<{ message: string }>(`/api/admin/authors/${userId}/approve`, {});
   }
 
-  rejectAuthor(userId: number): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`/api/admin/authors/${userId}/reject`, {});
+  rejectAuthor(userId: number, rejectionReason: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`/api/admin/authors/${userId}/reject`, {
+      rejection_reason: rejectionReason,
+    });
   }
 
   // ─── Readers ──────────────────────────────────────────────────────────────

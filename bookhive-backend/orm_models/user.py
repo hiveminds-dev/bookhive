@@ -11,6 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
 if TYPE_CHECKING:
+    from orm_models.author_rejection_log import AuthorRejectionLog
     from orm_models.book import Book
     from orm_models.review import Review
 
@@ -123,6 +124,14 @@ class User(Base):
         "PasswordResetToken",
         back_populates="user",
         cascade="all, delete-orphan",
+    )
+
+    author_rejection_logs: Mapped[list[AuthorRejectionLog]] = relationship(
+        "AuthorRejectionLog",
+        foreign_keys="[AuthorRejectionLog.author_id]",
+        back_populates="author",
+        cascade="all, delete-orphan",
+        order_by="AuthorRejectionLog.created_at.desc()",
     )
 
 
