@@ -22,6 +22,7 @@ from routers.author_router import router as author_router
 from routers.book_router import router as book_router
 from routers.catalogue_router import router as catalogue_router
 from routers.category_router import router as category_router
+from routers.review_router import router as review_router
 from routers.user_router import router as user_router
 
 logging.basicConfig(
@@ -112,7 +113,12 @@ app.include_router(
 
 app.include_router(
     author_profile_router,
-    prefix=settings.api_prefix
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    review_router,
+    prefix=settings.api_prefix,
 )
 
 settings.storage_root.mkdir(parents=True, exist_ok=True)

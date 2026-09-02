@@ -149,6 +149,12 @@ class BookService:
                         else book.author.full_name
                     ),
                     category_name=book.category.name,
+                    rating=(
+                        book.average_rating
+                        if book.reviews
+                        else None
+                    ),
+                    review_count=len(book.reviews),
                 )
                 for book in books
             ],
@@ -250,10 +256,13 @@ class BookService:
             reviews=[
                 PublicReviewResponse(
                     id=review.id,
-                    reader_name=review.user.username,
+                    book_id=getattr(review, "book_id", None),
+                    user_id=getattr(review, "user_id", None),
+                    reader_name=review.user.username if review.user else "Anonymous Reader",
                     rating=review.rating,
                     comment=review.comment,
                     created_at=review.created_at,
+                    updated_at=getattr(review, "updated_at", None),
                 )
                 for review in reviews
             ],

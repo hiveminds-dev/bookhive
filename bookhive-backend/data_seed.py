@@ -823,20 +823,36 @@ SAMPLE_REVIEWS = [
 
 
 async def seed_demo_reviews(session: AsyncSession) -> None:
-    """Seed dynamic reader reviews for each seeded book."""
+    """Seed dynamic reader reviews for published books, keeping at least one published book review-free."""
     from datetime import datetime, timedelta
-    books = (await session.execute(select(Book))).scalars().all()
-    readers = (await session.execute(select(User).where(User.role == UserRole.READER))).scalars().all()
+    published_books = (
+        await session.execute(
+            select(Book)
+            .where(Book.status == BookStatus.PUBLISHED)
+            .order_by(Book.id.asc())
+        )
+    ).scalars().all()
+    readers = (
+        await session.execute(
+            select(User).where(User.role == UserRole.READER)
+        )
+    ).scalars().all()
 
-    if not books or not readers:
+    if not published_books or not readers:
         return
 
-    for book in books:
-        existing_res = await session.execute(select(func.count(Review.id)).where(Review.book_id == book.id))
+    # Leave the last published book without reviews for testing create-review flow
+    books_to_review = published_books[:-1] if len(published_books) > 1 else published_books
+
+    for book in books_to_review:
+        existing_res = await session.execute(
+            select(func.count(Review.id)).where(Review.book_id == book.id)
+        )
         if (existing_res.scalar_one_or_none() or 0) > 0:
             continue
 
-        num_reviews = 2 + (book.id % 2)
+        num_reviews = min(2 + (book.id % 2), len(readers))
+        # Use a distinct slice of readers for this book to guarantee unique (book_id, user_id)
         for i in range(num_reviews):
             reader = readers[(book.id + i) % len(readers)]
             rating, comment = SAMPLE_REVIEWS[(book.id + i) % len(SAMPLE_REVIEWS)]

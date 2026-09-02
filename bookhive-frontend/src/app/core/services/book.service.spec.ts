@@ -189,4 +189,94 @@ describe('BookService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush({ message: 'Book deleted successfully' });
   });
+
+  it('should fetch catalogue with filters', () => {
+    const mockCatalogue: PaginatedCatalogue = {
+      total_items: 1,
+      total_pages: 1,
+      current_page: 1,
+      page_size: 10,
+      items: [
+        {
+          id: 1,
+          title: 'Filtered Title',
+          description: 'Desc',
+          language: 'English',
+          reading_level: 'All',
+          published_at: null,
+          cover_url: null,
+          author_name: 'Author Name',
+          category_name: 'Science',
+        },
+      ],
+    };
+
+    service
+      .getCatalogue({ page: 1, size: 10, search: 'Test', category_id: 3, language: 'English' })
+      .subscribe((res) => {
+        expect(res.total_items).toBe(1);
+        expect(res.items[0].title).toBe('Filtered Title');
+      });
+
+    const req = httpTesting.expectOne((r) =>
+      r.url === '/api/catalogue/books' &&
+      r.params.get('search') === 'Test' &&
+      r.params.get('category_id') === '3' &&
+      r.params.get('language') === 'English'
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCatalogue);
+  });
+
+  it('should create a review', () => {
+    service.createReview(10, { rating: 5, comment: 'Amazing' }).subscribe((rev) => {
+      expect(rev.id).toBe(1);
+      expect(rev.rating).toBe(5);
+    });
+
+    const req = httpTesting.expectOne('/api/books/10/reviews');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ rating: 5, comment: 'Amazing' });
+    req.flush({
+      message: 'Review submitted successfully',
+      data: { id: 1, rating: 5, comment: 'Amazing', reader_name: 'reader1', created_at: '2026-01-01' },
+    });
+  });
+
+  it('should update a review', () => {
+    service.updateReview(1, { rating: 4, comment: 'Good' }).subscribe((rev) => {
+      expect(rev.rating).toBe(4);
+    });
+
+    const req = httpTesting.expectOne('/api/reviews/1');
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ rating: 4, comment: 'Good' });
+    req.flush({
+      message: 'Review updated successfully',
+      data: { id: 1, rating: 4, comment: 'Good', reader_name: 'reader1', created_at: '2026-01-01' },
+    });
+  });
+
+  it('should delete a review', () => {
+    service.deleteReview(1).subscribe((res) => {
+      expect(res.message).toBe('Review deleted successfully');
+    });
+
+    const req = httpTesting.expectOne('/api/reviews/1');
+    expect(req.request.method).toBe('DELETE');
+    req.flush({ message: 'Review deleted successfully' });
+  });
+
+  it('should get reader review for a book', () => {
+    service.getMyBookReview(10).subscribe((rev) => {
+      expect(rev?.rating).toBe(5);
+    });
+
+    const req = httpTesting.expectOne('/api/books/10/reviews/mine');
+    expect(req.request.method).toBe('GET');
+    req.flush({
+      message: 'User review retrieved successfully',
+      data: { id: 1, rating: 5, comment: 'Amazing', reader_name: 'reader1', created_at: '2026-01-01' },
+    });
+  });
 });

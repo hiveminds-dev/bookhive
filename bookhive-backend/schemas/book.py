@@ -160,6 +160,8 @@ class CatalogueBookResponse(BaseModel):
     cover_url: str | None = None
     author_name: str
     category_name: str
+    rating: float | None = Field(default=None, ge=0, le=5)
+    review_count: int = Field(default=0, ge=0)
 
 
 class PaginatedCatalogueResponse(BaseModel):

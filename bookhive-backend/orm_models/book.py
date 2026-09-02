@@ -151,7 +151,7 @@ class Book(Base):
     def average_rating(self) -> float:
         """Calculates average rating dynamically from associated reviews."""
         if not self.reviews:
-            return 4.8
+            return 0.0
         total = sum(r.rating for r in self.reviews)
         return round(total / len(self.reviews), 1)
 

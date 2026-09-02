@@ -4,11 +4,35 @@ import { map, Observable } from 'rxjs';
 
 export interface PublicReview {
   id: number;
-  user_name: string;
-  avatar_letter: string;
+  book_id?: number;
+  user_id?: number;
+  reader_name?: string;
+  user_name?: string;
+  avatar_letter?: string;
   rating: number;
   comment: string | null;
   created_at: string;
+  updated_at?: string | null;
+}
+
+export interface CreateReviewPayload {
+  rating: number;
+  comment?: string | null;
+}
+
+export interface UpdateReviewPayload {
+  rating?: number;
+  comment?: string | null;
+}
+
+export interface ReviewResult {
+  message: string;
+  data: PublicReview;
+}
+
+export interface ReviewListResult {
+  message: string;
+  data: PublicReview[];
 }
 
 export interface BookAuthorDetails {
@@ -255,5 +279,33 @@ export class BookService {
 
   deleteAuthorBook(bookId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`/api/books/${bookId}`);
+  }
+
+  createReview(bookId: number, payload: CreateReviewPayload): Observable<PublicReview> {
+    return this.http
+      .post<ReviewResult>(`/api/books/${bookId}/reviews`, payload)
+      .pipe(map((res) => res.data));
+  }
+
+  updateReview(reviewId: number, payload: UpdateReviewPayload): Observable<PublicReview> {
+    return this.http
+      .patch<ReviewResult>(`/api/reviews/${reviewId}`, payload)
+      .pipe(map((res) => res.data));
+  }
+
+  deleteReview(reviewId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`/api/reviews/${reviewId}`);
+  }
+
+  getMyBookReview(bookId: number): Observable<PublicReview | null> {
+    return this.http
+      .get<ReviewResult>(`/api/books/${bookId}/reviews/mine`)
+      .pipe(map((res) => res?.data ?? null));
+  }
+
+  getBookReviews(bookId: number): Observable<PublicReview[]> {
+    return this.http
+      .get<ReviewListResult>(`/api/books/${bookId}/reviews`)
+      .pipe(map((res) => res.data));
   }
 }

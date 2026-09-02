@@ -279,6 +279,23 @@
     color: #817b71;
     font-size: 13px;
   }
+
+  .retry-btn {
+    margin-top: 16px;
+    padding: 8px 20px;
+    background: #5b4636;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #463426;
+    }
+  }
 }
 
 .pagination-wrapper {

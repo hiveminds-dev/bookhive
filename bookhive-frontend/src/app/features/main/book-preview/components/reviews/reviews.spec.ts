@@ -46,4 +46,16 @@ describe('ReviewsComponent', () => {
   it('should create five stars', () => {
     expect(component.getStars(5).length).toBe(5);
   });
+
+  it('should emit editReview event when onEditReview is called', () => {
+    const editSpy = vi.spyOn(component.editReview, 'emit');
+    component.onEditReview(component.reviews[0]);
+    expect(editSpy).toHaveBeenCalledWith(component.reviews[0]);
+  });
+
+  it('should emit deleteReview event when onDeleteReview is called', () => {
+    const deleteSpy = vi.spyOn(component.deleteReview, 'emit');
+    component.onDeleteReview(1);
+    expect(deleteSpy).toHaveBeenCalledWith(1);
+  });
 });
