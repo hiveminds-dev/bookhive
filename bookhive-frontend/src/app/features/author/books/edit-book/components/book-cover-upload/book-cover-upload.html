@@ -6,14 +6,14 @@
 
     <h2>
       <span aria-hidden="true">▤</span>
-      Book File
+      Book File (PDF)
       <strong>*</strong>
     </h2>
 
     <input
       #bookFileInput
       type="file"
-      accept=".pdf,.epub"
+      accept=".pdf,application/pdf"
       hidden
       (change)="onBookFileChange($event)">
 
@@ -21,7 +21,7 @@
       type="button"
       class="drop-zone"
       [class.drag-active]="isBookDragActive"
-      [class.has-file]="selectedBookFile"
+      [class.has-file]="selectedBookFile || initialBookFileName"
       (click)="bookFileInput.click()"
       (dragover)="onBookDragOver($event)"
       (dragleave)="onBookDragLeave($event)"
@@ -41,6 +41,20 @@
           Click to replace the book file
         </small>
 
+      } @else if (initialBookFileName) {
+
+        <span class="selected-icon" aria-hidden="true">
+          ✓
+        </span>
+
+        <strong class="selected-name">
+          {{ initialBookFileName }}
+        </strong>
+
+        <small>
+          Uploaded PDF on file. Click to upload a new version.
+        </small>
+
       } @else {
 
         <span class="upload-cloud" aria-hidden="true">
@@ -53,7 +67,7 @@
         </p>
 
         <small>
-          PDF, EPUB (Max 100MB)
+          PDF file only (Max 100MB)
         </small>
 
       }
@@ -65,7 +79,7 @@
         type="button"
         class="remove-button"
         (click)="removeBookFile()">
-        Remove file
+        Remove selected file
       </button>
     }
 
@@ -90,7 +104,7 @@
     <input
       #coverInput
       type="file"
-      accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+      accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
       hidden
       (change)="onCoverChange($event)">
 
@@ -98,7 +112,7 @@
       type="button"
       class="drop-zone cover-zone"
       [class.drag-active]="isCoverDragActive"
-      [class.has-file]="selectedCover"
+      [class.has-file]="selectedCover || coverPreview"
       (click)="coverInput.click()"
       (dragover)="onCoverDragOver($event)"
       (dragleave)="onCoverDragLeave($event)"
@@ -126,7 +140,7 @@
         </p>
 
         <small>
-          PNG, JPG (Max 10MB)
+          PNG, JPG, WebP (Max 10MB)
         </small>
 
       }
@@ -138,7 +152,7 @@
         type="button"
         class="remove-button"
         (click)="removeCover()">
-        Remove cover
+        Remove selected cover
       </button>
     }
 

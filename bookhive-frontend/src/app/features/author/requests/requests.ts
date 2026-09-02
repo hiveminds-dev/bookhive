@@ -1,11 +1,21 @@
 import {
   Component,
-  inject
+  inject,
+  OnInit
 } from '@angular/core';
 
 import {
   Router
 } from '@angular/router';
+
+import {
+  BookService,
+  AuthorBookItem
+} from '../../../core/services/book.service';
+
+import {
+  ToastService
+} from '../../../core/services/toast.service';
 
 import {
   RequestHeaderComponent
@@ -27,6 +37,7 @@ import {
 
 import {
   AuthorBookRequest,
+  BookRequestStatus,
   RequestActionEvent
 } from './components/request-row/request-row';
 
@@ -42,68 +53,82 @@ import {
   templateUrl: './requests.html',
   styleUrl: './requests.scss'
 })
-export class RequestsComponent {
+export class RequestsComponent implements OnInit {
 
   private readonly router = inject(Router);
+  private readonly bookService = inject(BookService);
+  private readonly toastService = inject(ToastService);
 
   selectedStatus: RequestFilterStatus = 'All';
-
   selectedSort: RequestSortOption = 'newest';
 
   currentPage = 1;
-
   readonly pageSize = 12;
-
-  readonly totalDatabaseRequests = 24;
+  isLoading = false;
 
   selectedRequest: AuthorBookRequest | null = null;
+  requests: AuthorBookRequest[] = [];
 
-  readonly requests: AuthorBookRequest[] = [
-    {
-      id: 1,
-      title: 'Echoes of Silence',
-      isbn: '978-3-16-148410-0',
-      cover:
-        'images/author-books/echoes-of-silence.jpg',
-      submissionDate: 'Oct 24, 2023',
-      status: 'Pending',
-      adminFeedback:
-        'Awaiting editorial board review.'
-    },
-    {
-      id: 2,
-      title: 'The Golden Hour',
-      isbn: '978-1-56-123456-7',
-      cover:
-        'images/author-books/golden-hour.jpg',
-      submissionDate: 'Oct 18, 2023',
-      status: 'Approved',
-      adminFeedback:
-        'Excellent formatting and presentation.'
-    },
-    {
-      id: 3,
-      title: 'Binary Dreams',
-      isbn: '978-0-12-345678-9',
-      cover:
-        'images/author-books/binary-dreams.jpg',
-      submissionDate: 'Oct 12, 2023',
-      status: 'Rejected',
-      adminFeedback:
-        'Cover resolution too low; please upload a higher-quality cover.'
-    },
-    {
-      id: 4,
-      title: 'The Arctic Path',
-      isbn: '978-5-88-999000-1',
-      cover:
-        'images/author-books/arctic-path.jpg',
-      submissionDate: 'Oct 10, 2023',
-      status: 'Pending',
-      adminFeedback:
-        'In final editorial review.'
+  ngOnInit(): void {
+    this.loadRequests();
+  }
+
+  loadRequests(): void {
+    this.isLoading = true;
+    this.bookService.getAuthorBooks().subscribe({
+      next: (items) => {
+        this.isLoading = false;
+        // Filter out drafts from requests table if needed, or include them with status
+        this.requests = items
+          .filter((item) => item.status !== 'DRAFT')
+          .map((item) => this.mapToAuthorBookRequest(item));
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toastService.warning('Failed to load submission requests.', 'Notice');
+      }
+    });
+  }
+
+  private mapToAuthorBookRequest(item: AuthorBookItem): AuthorBookRequest {
+    let status: BookRequestStatus = 'Pending';
+    const s = item.status.toUpperCase();
+    if (s === 'PUBLISHED') {
+      status = 'Approved';
+    } else if (s === 'REJECTED') {
+      status = 'Rejected';
+    } else {
+      status = 'Pending';
     }
-  ];
+
+    const cover = item.cover_url || (item.cover_image_path ? `/${item.cover_image_path}` : 'images/author-books/default-cover.jpg');
+
+    const dateField = item.submitted_at || item.created_at;
+    const submissionDate = dateField
+      ? new Date(dateField).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })
+      : '';
+
+    let adminFeedback = 'Awaiting editorial board review.';
+    if (status === 'Rejected') {
+      adminFeedback = item.rejection_reason || 'Please review your book submission and update the required details.';
+    } else if (status === 'Approved') {
+      adminFeedback = 'Your book has been approved and published to the BookHive catalogue.';
+    }
+
+    return {
+      id: item.id,
+      title: item.title,
+      isbn: item.category_name || 'General',
+      cover,
+      submissionDate,
+      status,
+      adminFeedback
+    };
+  }
 
   get filteredRequests(): AuthorBookRequest[] {
     let result = [...this.requests];
@@ -151,20 +176,10 @@ export class RequestsComponent {
   }
 
   get totalPages(): number {
-    if (this.selectedStatus !== 'All') {
-      return Math.max(
-        1,
-        Math.ceil(
-          this.filteredRequests.length /
-          this.pageSize
-        )
-      );
-    }
-
     return Math.max(
       1,
       Math.ceil(
-        this.totalDatabaseRequests /
+        this.filteredRequests.length /
         this.pageSize
       )
     );
@@ -182,21 +197,14 @@ export class RequestsComponent {
   }
 
   get showingTo(): number {
-    const total =
-      this.selectedStatus === 'All'
-        ? this.totalDatabaseRequests
-        : this.filteredRequests.length;
-
     return Math.min(
       this.currentPage * this.pageSize,
-      total
+      this.filteredRequests.length
     );
   }
 
   get displayedTotalRequests(): number {
-    return this.selectedStatus === 'All'
-      ? this.totalDatabaseRequests
-      : this.filteredRequests.length;
+    return this.filteredRequests.length;
   }
 
   onStatusChanged(

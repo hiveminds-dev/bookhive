@@ -2,7 +2,15 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { BookDetailsResult, BookService, PaginatedCatalogue } from './book.service';
+import {
+  AuthorBookItem,
+  AuthorBookListResult,
+  AuthorBookResult,
+  AuthorBookStatusResult,
+  BookDetailsResult,
+  BookService,
+  PaginatedCatalogue
+} from './book.service';
 
 describe('BookService', () => {
   let service: BookService;
@@ -74,67 +82,111 @@ describe('BookService', () => {
     req.flush(mockResponse);
   });
 
-  it('should fetch catalogue with filter parameters including category_id', () => {
-    const mockCatalogue: PaginatedCatalogue = {
-      total_items: 1,
-      total_pages: 1,
-      current_page: 1,
-      page_size: 10,
-      items: [
-        {
-          id: 1,
-          title: 'Filtered Book',
-          description: 'Desc',
-          language: 'English',
-          reading_level: 'Beginner',
-          published_at: '2026-01-01',
-          cover_url: '/storage/covers/cover_1.jpg',
-          author_name: 'Author',
-          category_name: 'Tech',
-        },
-      ],
+  it('should create a draft book', () => {
+    const mockBook: AuthorBookItem = {
+      id: 10,
+      author_id: 1,
+      category_id: 2,
+      title: 'New Draft',
+      description: 'Draft description',
+      language: 'English',
+      reading_level: 'Beginner',
+      pdf_path: null,
+      cover_image_path: null,
+      status: 'DRAFT',
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: '2026-01-01T00:00:00Z',
+      submitted_at: null,
+      published_at: null,
     };
 
-    service.getCatalogue({ page: 2, size: 8, search: 'logic', category_id: 3 }).subscribe((res) => {
-      expect(res.items.length).toBe(1);
-      expect(res.items[0].title).toBe('Filtered Book');
-      expect(res.items[0].cover_url).toBe('/storage/covers/cover_1.jpg');
+    const mockResponse: AuthorBookResult = {
+      message: 'Draft book created successfully',
+      data: mockBook,
+    };
+
+    service
+      .createDraftBook({
+        title: 'New Draft',
+        category_id: 2,
+        description: 'Draft description',
+      })
+      .subscribe((data) => {
+        expect(data.id).toBe(10);
+        expect(data.title).toBe('New Draft');
+        expect(data.status).toBe('DRAFT');
+      });
+
+    const req = httpTesting.expectOne('/api/books/');
+    expect(req.request.method).toBe('POST');
+    req.flush(mockResponse);
+  });
+
+  it('should submit a book for review', () => {
+    const mockResponse: AuthorBookStatusResult = {
+      message: 'Book submitted for review successfully',
+      data: {
+        id: 10,
+        title: 'New Draft',
+        status: 'PENDING_REVIEW',
+        submitted_at: '2026-01-01T12:00:00Z',
+      },
+    };
+
+    service.submitBook(10).subscribe((data) => {
+      expect(data.id).toBe(10);
+      expect(data.status).toBe('PENDING_REVIEW');
+    });
+
+    const req = httpTesting.expectOne('/api/books/10/submit');
+    expect(req.request.method).toBe('PATCH');
+    req.flush(mockResponse);
+  });
+
+  it('should fetch author books from /api/books/mine', () => {
+    const mockBooks: AuthorBookItem[] = [
+      {
+        id: 1,
+        author_id: 1,
+        category_id: 2,
+        title: 'Book One',
+        description: 'Desc',
+        language: 'English',
+        reading_level: 'Beginner',
+        pdf_path: null,
+        cover_image_path: null,
+        status: 'PUBLISHED',
+        created_at: '2026-01-01T00:00:00Z',
+        updated_at: '2026-01-01T00:00:00Z',
+        submitted_at: null,
+        published_at: '2026-01-01T00:00:00Z',
+      },
+    ];
+
+    const mockResponse: AuthorBookListResult = {
+      message: 'Author books retrieved successfully',
+      data: mockBooks,
+    };
+
+    service.getAuthorBooks('Published').subscribe((books) => {
+      expect(books.length).toBe(1);
+      expect(books[0].title).toBe('Book One');
     });
 
     const req = httpTesting.expectOne(
-      (request) =>
-        request.url === '/api/catalogue/books' &&
-        request.params.get('page') === '2' &&
-        request.params.get('size') === '8' &&
-        request.params.get('search') === 'logic' &&
-        request.params.get('category_id') === '3',
+      (r) => r.url === '/api/books/mine' && r.params.get('status') === 'PUBLISHED'
     );
     expect(req.request.method).toBe('GET');
-    req.flush(mockCatalogue);
+    req.flush(mockResponse);
   });
 
-  it('should fetch categories with pagination parameters', () => {
-    const mockCategories = {
-      items: [
-        {
-          id: 1,
-          name: 'Technology',
-          description: 'Tech books',
-          is_active: true,
-        },
-      ],
-      total: 1,
-      page: 1,
-      page_size: 20,
-    };
-
-    service.getCategories(1, 20).subscribe((res) => {
-      expect(res.items.length).toBe(1);
-      expect(res.items[0].name).toBe('Technology');
+  it('should delete author book', () => {
+    service.deleteAuthorBook(5).subscribe((res) => {
+      expect(res.message).toBe('Book deleted successfully');
     });
 
-    const req = httpTesting.expectOne('/api/categories/?page=1&page_size=20');
-    expect(req.request.method).toBe('GET');
-    req.flush(mockCategories);
+    const req = httpTesting.expectOne('/api/books/5');
+    expect(req.request.method).toBe('DELETE');
+    req.flush({ message: 'Book deleted successfully' });
   });
 });

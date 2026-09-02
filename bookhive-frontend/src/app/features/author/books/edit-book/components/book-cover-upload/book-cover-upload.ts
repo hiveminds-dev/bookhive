@@ -1,7 +1,10 @@
 import {
   Component,
   EventEmitter,
-  Output
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
 } from '@angular/core';
 
 @Component({
@@ -11,7 +14,10 @@ import {
   templateUrl: './book-cover-upload.html',
   styleUrl: './book-cover-upload.scss'
 })
-export class BookCoverUploadComponent {
+export class BookCoverUploadComponent implements OnChanges {
+
+  @Input() initialCoverUrl?: string | null;
+  @Input() initialBookFileName?: string | null;
 
   @Output() bookFileSelected =
     new EventEmitter<File>();
@@ -23,6 +29,7 @@ export class BookCoverUploadComponent {
   selectedCover?: File;
 
   coverPreview = '';
+  existingCoverUrl = '';
 
   bookFileError = '';
   coverError = '';
@@ -35,6 +42,13 @@ export class BookCoverUploadComponent {
 
   readonly maximumCoverSize =
     10 * 1024 * 1024;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialCoverUrl'] && this.initialCoverUrl && !this.selectedCover) {
+      this.existingCoverUrl = this.initialCoverUrl;
+      this.coverPreview = this.initialCoverUrl;
+    }
+  }
 
   onBookFileChange(event: Event): void {
     const input =
@@ -113,7 +127,7 @@ export class BookCoverUploadComponent {
 
   removeCover(): void {
     this.selectedCover = undefined;
-    this.coverPreview = '';
+    this.coverPreview = this.existingCoverUrl || '';
     this.coverError = '';
   }
 
@@ -123,12 +137,9 @@ export class BookCoverUploadComponent {
     const extension =
       file.name.split('.').pop()?.toLowerCase();
 
-    if (
-      extension !== 'pdf' &&
-      extension !== 'epub'
-    ) {
+    if (extension !== 'pdf') {
       this.bookFileError =
-        'Only PDF and EPUB files are allowed.';
+        'Only PDF files are allowed.';
       return;
     }
 
@@ -145,12 +156,18 @@ export class BookCoverUploadComponent {
   private processCover(file: File): void {
     this.coverError = '';
 
-    if (
-      file.type !== 'image/png' &&
-      file.type !== 'image/jpeg'
-    ) {
+    const validTypes = [
+      'image/png',
+      'image/jpeg',
+      'image/jpg',
+      'image/webp'
+    ];
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const validExts = ['png', 'jpg', 'jpeg', 'webp'];
+
+    if (!validTypes.includes(file.type) && !validExts.includes(extension || '')) {
       this.coverError =
-        'Only PNG and JPG images are allowed.';
+        'Only PNG, JPG, JPEG, and WebP images are allowed.';
       return;
     }
 

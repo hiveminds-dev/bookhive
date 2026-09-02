@@ -180,6 +180,31 @@ async def list_my_books(
 
 
 @router.get(
+    "/mine/{book_id}",
+    response_model=BookResultResponse,
+)
+async def get_my_book_details(
+    book_id: int,
+    session: DbSession,
+    current_author: ApprovedAuthor,
+):
+    """Return full details for a book owned by the author."""
+    try:
+        book = await book_service.get_author_book(
+            session=session,
+            author_id=current_author.id,
+            book_id=book_id,
+        )
+    except (BookNotFoundError, BookPermissionError) as exc:
+        raise map_book_error(exc) from exc
+
+    return {
+        "message": "Author book retrieved successfully",
+        "data": book,
+    }
+
+
+@router.get(
     "/{book_id}",
     response_model=BookDetailsResultResponse,
 )
@@ -361,4 +386,31 @@ async def get_book_status(
     return {
         "message": "Book status retrieved successfully",
         "data": book,
+    }
+
+
+@router.delete(
+    "/{book_id}",
+)
+async def delete_my_book(
+    book_id: int,
+    session: DbSession,
+    current_author: ApprovedAuthor,
+):
+    """Delete a draft or rejected book owned by the author."""
+    try:
+        await book_service.delete_book(
+            session=session,
+            author_id=current_author.id,
+            book_id=book_id,
+        )
+    except (
+        BookNotFoundError,
+        BookPermissionError,
+        BookValidationError,
+    ) as exc:
+        raise map_book_error(exc) from exc
+
+    return {
+        "message": "Book deleted successfully",
     }

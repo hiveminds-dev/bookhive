@@ -39,7 +39,12 @@ class BookRepository:
         book_id: int,
     ) -> Book | None:
         result = await session.execute(
-            select(Book).where(
+            select(Book)
+            .options(
+                selectinload(Book.category),
+                selectinload(Book.rejection_logs),
+            )
+            .where(
                 Book.id == book_id,
             )
         )
@@ -77,8 +82,15 @@ class BookRepository:
         offset: int,
         limit: int,
     ) -> list[Book]:
-        query = select(Book).where(
-            Book.author_id == author_id
+        query = (
+            select(Book)
+            .options(
+                selectinload(Book.category),
+                selectinload(Book.rejection_logs),
+            )
+            .where(
+                Book.author_id == author_id
+            )
         )
 
         if book_status is not None:
@@ -94,6 +106,36 @@ class BookRepository:
         )
 
         return list(result.scalars().all())
+
+    async def get_author_book_by_id(
+        self,
+        session: AsyncSession,
+        author_id: int,
+        book_id: int,
+    ) -> Book | None:
+        """Return an author's book by ID with category and rejection logs."""
+        query = (
+            select(Book)
+            .options(
+                selectinload(Book.category),
+                selectinload(Book.rejection_logs),
+            )
+            .where(
+                Book.id == book_id,
+                Book.author_id == author_id,
+            )
+        )
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def delete_book(
+        self,
+        session: AsyncSession,
+        book: Book,
+    ) -> None:
+        """Delete a book from database."""
+        await session.delete(book)
+        await session.flush()
 
     async def get_active_category(
         self,

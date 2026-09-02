@@ -66,8 +66,18 @@ class BookService:
             )
 
             await session.commit()
-            await session.refresh(book)
-            return book
+            hydrated_book = (
+                await self.book_repository.get_author_book_by_id(
+                    session=session,
+                    author_id=author_id,
+                    book_id=book.id,
+                )
+            )
+            if hydrated_book is None:
+                raise BookNotFoundError(
+                    "Created book could not be reloaded"
+                )
+            return hydrated_book
 
         except Exception:
             await session.rollback()
@@ -296,8 +306,18 @@ class BookService:
             )
 
             await session.commit()
-            await session.refresh(updated_book)
-            return updated_book
+            hydrated_book = (
+                await self.book_repository.get_author_book_by_id(
+                    session=session,
+                    author_id=author_id,
+                    book_id=updated_book.id,
+                )
+            )
+            if hydrated_book is None:
+                raise BookNotFoundError(
+                    "Updated book could not be reloaded"
+                )
+            return hydrated_book
 
         except Exception:
             await session.rollback()
@@ -429,6 +449,48 @@ class BookService:
             book_id,
         )
 
+    async def get_author_book(
+        self,
+        session: AsyncSession,
+        author_id: int,
+        book_id: int,
+    ) -> Book:
+        """Return a single book owned by the author with full details."""
+        return await self._get_owned_book(
+            session,
+            author_id,
+            book_id,
+        )
+
+    async def delete_book(
+        self,
+        session: AsyncSession,
+        author_id: int,
+        book_id: int,
+    ) -> None:
+        """Delete a draft or rejected book owned by the author and clean up files."""
+        book = await self._get_owned_book(
+            session,
+            author_id,
+            book_id,
+        )
+        self._ensure_book_is_editable(book)
+
+        pdf_path = book.pdf_path
+        cover_path = book.cover_image_path
+
+        try:
+            await self.book_repository.delete_book(session, book)
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+        if pdf_path:
+            await self._delete_upload_quietly(pdf_path)
+        if cover_path:
+            await self._delete_upload_quietly(cover_path)
+
     async def _save_uploaded_path(
         self,
         *,
@@ -452,7 +514,17 @@ class BookService:
             )
 
             await session.commit()
-            await session.refresh(updated_book)
+            hydrated_book = (
+                await self.book_repository.get_author_book_by_id(
+                    session=session,
+                    author_id=book.author_id,
+                    book_id=updated_book.id,
+                )
+            )
+            if hydrated_book is None:
+                raise BookNotFoundError(
+                    "Uploaded book could not be reloaded"
+                )
 
         except Exception:
             await session.rollback()
@@ -466,7 +538,7 @@ class BookService:
                 old_path
             )
 
-        return updated_book
+        return hydrated_book
 
     async def _delete_upload_quietly(
         self,

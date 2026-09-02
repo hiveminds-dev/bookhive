@@ -35,6 +35,13 @@
       <span>{{ book.language }}</span>
     </p>
 
+    @if (book.status === 'Rejected' && book.rejectionReason) {
+      <div class="card-rejection-reason" style="margin: 8px 0; padding: 8px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 0.8rem; color: #991b1b; line-height: 1.4;">
+        <strong style="display: block; font-weight: 700;">Rejection Reason:</strong>
+        <span>{{ book.rejectionReason }}</span>
+      </div>
+    }
+
     <div class="book-statistics">
 
       <span>

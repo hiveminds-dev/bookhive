@@ -22,6 +22,7 @@ export interface ManagedBook {
   views: number;
   downloads: number;
   uploadedDate: string;
+  rejectionReason?: string | null;
 }
 
 @Component({
