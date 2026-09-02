@@ -3,10 +3,19 @@ from pathlib import Path
 from typing import Self
 from urllib.parse import quote_plus
 
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parent
+
+INSECURE_SECRET_KEYS: set[str] = {
+    "change_me",
+    "changeme",
+    "secret",
+    "password",
+    "your-secret-key",
+    "replace_with_a_secure_random_secret",
+}
 
 
 class Settings(BaseSettings):
@@ -15,7 +24,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     api_prefix: str = "/api"
     frontend_url: str = "http://localhost:4200"
-    secret_key: str = "change_me"
+    secret_key: str = "replace_with_a_secure_random_secret"
     access_token_expire_minutes: int = 30
     jwt_algorithm: str = "HS256"
 
@@ -69,7 +78,39 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        hide_input_in_errors=True,
     )
+
+    @field_validator("secret_key", mode="before")
+    @classmethod
+    def validate_secret_key(cls, value: str | None) -> str:
+        if value is None:
+            raise ValueError(
+                "SECRET_KEY must not be empty. "
+                "Generate a secure secret using: openssl rand -hex 32"
+            )
+
+        cleaned = value.strip() if isinstance(value, str) else str(value).strip()
+
+        if not cleaned:
+            raise ValueError(
+                "SECRET_KEY must not be empty. "
+                "Generate a secure secret using: openssl rand -hex 32"
+            )
+
+        if cleaned.lower() in INSECURE_SECRET_KEYS:
+            raise ValueError(
+                "SECRET_KEY must not use an insecure placeholder value. "
+                "Generate a secure secret using: openssl rand -hex 32"
+            )
+
+        if len(cleaned) < 32:
+            raise ValueError(
+                "SECRET_KEY must contain at least 32 characters. "
+                "Generate a secure secret using: openssl rand -hex 32"
+            )
+
+        return cleaned
 
     @model_validator(mode="after")
     def resolve_storage_paths(self) -> Self:

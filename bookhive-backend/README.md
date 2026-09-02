@@ -51,3 +51,47 @@ SMTP_USE_TLS=true
 Restart Uvicorn after changing `.env`. A successful registration sends the
 verification link to the supplied address. When SMTP is disabled in development,
 the same link is written to the backend log for local testing.
+
+## JWT Secret Configuration
+
+BookHive uses JSON Web Tokens (JWT) signed with `HS256` for authenticating Readers,
+Authors, and Administrators.
+
+### Generating a Secure Secret Key
+
+The `SECRET_KEY` must contain at least 32 characters and must not use obvious
+placeholder values (such as `change_me` or `replace_with_a_secure_random_secret`).
+
+Generate a cryptographically secure random key using OpenSSL:
+
+```bash
+openssl rand -hex 32
+```
+
+Or using Python's built-in `secrets` module:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+### Setting the Secret in `.env`
+
+Copy `.env.example` to `.env` if you haven't already:
+
+```bash
+cp .env.example .env
+```
+
+Add your generated key to your local `.env`:
+
+```env
+SECRET_KEY=your_generated_64_character_hex_key_here
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+### Security Notes
+
+- **Never commit `.env`**: The `.env` file contains sensitive environment secrets and must remain in `.gitignore`. Never commit real secrets to source control.
+- **Token Invalidation**: Changing or rotating the `SECRET_KEY` immediately invalidates all previously issued JWT access tokens, requiring all active users to sign in again.
+- **Startup Validation**: The backend validates `SECRET_KEY` at configuration load time. If the secret is missing, empty, shorter than 32 characters, or uses a known placeholder, the application will fail fast on startup with an informative error message.
+
