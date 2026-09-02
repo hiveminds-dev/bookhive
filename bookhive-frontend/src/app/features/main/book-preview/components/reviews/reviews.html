@@ -10,7 +10,7 @@
       type="button"
       class="write-review-button"
       (click)="onWriteReview()">
-      Write a Review
+      {{ hasUserReviewed ? 'Edit My Review' : 'Write a Review' }}
       <span aria-hidden="true">✎</span>
     </button>
   </div>
@@ -18,7 +18,7 @@
   <div class="reviews-list">
 
     @for (review of reviews; track review.id) {
-      <article class="review-card">
+      <article class="review-card" [class.own-review]="review.isOwnReview">
 
         <div class="review-top">
 
@@ -36,7 +36,12 @@
             }
 
             <div>
-              <h3>{{ review.readerName }}</h3>
+              <div class="reader-name-row">
+                <h3>{{ review.readerName }}</h3>
+                @if (review.isOwnReview) {
+                  <span class="you-badge">You</span>
+                }
+              </div>
 
               <div class="review-rating">
                 @for (star of getStars(review.rating); track star) {
@@ -47,7 +52,28 @@
 
           </div>
 
-          <time>{{ review.date }}</time>
+          <div class="review-top-right">
+            <time>{{ review.date }}</time>
+
+            @if (review.isOwnReview) {
+              <div class="review-owner-actions">
+                <button
+                  type="button"
+                  class="action-btn edit-btn"
+                  title="Edit review"
+                  (click)="onEditReview(review)">
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="action-btn delete-btn"
+                  title="Delete review"
+                  (click)="onDeleteReview(review.id)">
+                  Delete
+                </button>
+              </div>
+            }
+          </div>
 
         </div>
 

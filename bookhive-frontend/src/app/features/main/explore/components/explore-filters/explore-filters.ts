@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+export interface CategoryOption {
+  id?: number;
+  name: string;
+  selected: boolean;
+}
+
 export interface ExploreFilterValues {
   search: string;
   categories: string[];
@@ -16,7 +22,6 @@ export interface ExploreFilterValues {
   styleUrl: './explore-filters.scss'
 })
 export class ExploreFiltersComponent {
-
   @Output() filtersChanged = new EventEmitter<ExploreFilterValues>();
 
   @Input()
@@ -26,12 +31,23 @@ export class ExploreFiltersComponent {
     }
   }
 
+  @Input()
+  set initialCategories(cats: { id?: number; name: string }[]) {
+    if (cats && cats.length > 0) {
+      this.categories = cats.map((c) => ({
+        id: c.id,
+        name: c.name,
+        selected: false
+      }));
+    }
+  }
+
   searchTerm = '';
   selectedLanguage = '';
-  minimumRating = 4;
+  minimumRating = 1;
 
-  categories = [
-    { name: 'Technology', selected: true },
+  categories: CategoryOption[] = [
+    { name: 'Technology', selected: false },
     { name: 'Business', selected: false },
     { name: 'Programming', selected: false },
     { name: 'Design', selected: false },
@@ -60,11 +76,11 @@ export class ExploreFiltersComponent {
   resetFilters(): void {
     this.searchTerm = '';
     this.selectedLanguage = '';
-    this.minimumRating = 4;
+    this.minimumRating = 1;
 
-    this.categories = this.categories.map((category, index) => ({
+    this.categories = this.categories.map((category) => ({
       ...category,
-      selected: index === 0
+      selected: false
     }));
 
     this.onFilterChange();

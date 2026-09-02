@@ -26,8 +26,8 @@ describe('ExploreFiltersComponent', () => {
   it('should use the default filter values', () => {
     expect(component.searchTerm).toBe('');
     expect(component.selectedLanguage).toBe('');
-    expect(component.minimumRating).toBe(4);
-    expect(component.categories[0].selected).toBe(true);
+    expect(component.minimumRating).toBe(1);
+    expect(component.categories[0].selected).toBe(false);
   });
 
   it('should emit the selected filters', () => {
@@ -45,7 +45,7 @@ describe('ExploreFiltersComponent', () => {
 
     expect(emittedFilters).toEqual({
       search: 'Clean Code',
-      categories: ['Technology'],
+      categories: [],
       language: 'English',
       minimumRating: 4
     });
@@ -61,8 +61,8 @@ describe('ExploreFiltersComponent', () => {
 
     expect(component.searchTerm).toBe('');
     expect(component.selectedLanguage).toBe('');
-    expect(component.minimumRating).toBe(4);
-    expect(component.categories[0].selected).toBe(true);
+    expect(component.minimumRating).toBe(1);
+    expect(component.categories[0].selected).toBe(false);
     expect(component.categories[1].selected).toBe(false);
   });
 });

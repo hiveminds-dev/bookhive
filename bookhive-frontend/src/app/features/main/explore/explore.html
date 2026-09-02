@@ -5,6 +5,7 @@
     <aside class="filters-column">
       <app-explore-filters
         [search]="activeFilters.search"
+        [initialCategories]="categoryList"
         (filtersChanged)="onFiltersChanged($event)">
       </app-explore-filters>
     </aside>
@@ -17,7 +18,13 @@
           <h1>Explore Library</h1>
 
           <p>
-            32,587 high-quality books found across all categories
+            @if (isLoading) {
+              Loading books...
+            } @else if (hasError) {
+              Unable to load catalogue
+            } @else {
+              {{ totalBooksCount }} {{ totalBooksCount === 1 ? 'high-quality book' : 'high-quality books' }} found
+            }
           </p>
         </div>
 
@@ -63,7 +70,38 @@
 
       </header>
 
-      @if (filteredBooks.length > 0) {
+      @if (isLoading) {
+
+        <div
+          class="books-container"
+          [class.grid-view]="viewMode === 'grid'"
+          [class.list-view]="viewMode === 'list'">
+
+          @for (skeleton of skeletonCards; track skeleton) {
+            <article class="skeleton-card" aria-hidden="true">
+              <div class="skeleton-cover shimmer"></div>
+              <div class="skeleton-content">
+                <span class="skeleton-line line-small shimmer"></span>
+                <span class="skeleton-line line-large shimmer"></span>
+                <span class="skeleton-line line-medium shimmer"></span>
+                <span class="skeleton-line line-large shimmer"></span>
+                <span class="skeleton-line line-description shimmer"></span>
+              </div>
+            </article>
+          }
+
+        </div>
+
+      } @else if (hasError) {
+
+        <div class="empty-state error-state">
+          <div class="empty-icon">⚠️</div>
+          <h2>Something went wrong</h2>
+          <p>{{ errorMessage }}</p>
+          <button type="button" class="retry-btn" (click)="retry()">Try Again</button>
+        </div>
+
+      } @else if (filteredBooks.length > 0) {
 
         <div
           class="books-container"
@@ -78,25 +116,17 @@
             </app-book-card>
           }
 
-          @if (viewMode === 'grid') {
-            @for (skeleton of skeletonCards; track skeleton) {
-              <article class="skeleton-card" aria-hidden="true">
-
-                <div class="skeleton-cover shimmer"></div>
-
-                <div class="skeleton-content">
-                  <span class="skeleton-line line-small shimmer"></span>
-                  <span class="skeleton-line line-large shimmer"></span>
-                  <span class="skeleton-line line-medium shimmer"></span>
-                  <span class="skeleton-line line-large shimmer"></span>
-                  <span class="skeleton-line line-description shimmer"></span>
-                </div>
-
-              </article>
-            }
-          }
-
         </div>
+
+        @if (totalPages > 1) {
+          <div class="pagination-wrapper">
+            <app-pagination
+              [currentPage]="currentPage"
+              [totalPages]="totalPages"
+              (pageChanged)="onPageChanged($event)">
+            </app-pagination>
+          </div>
+        }
 
       } @else {
 
@@ -107,14 +137,6 @@
         </div>
 
       }
-
-      <div class="pagination-wrapper">
-        <app-pagination
-          [currentPage]="currentPage"
-          [totalPages]="totalPages"
-          (pageChanged)="onPageChanged($event)">
-        </app-pagination>
-      </div>
 
     </section>
 

@@ -97,7 +97,11 @@
 
           <app-reviews
             [reviews]="readerReviews"
-            (writeReview)="onWriteReview()">
+            [currentUserId]="currentUserId"
+            [hasUserReviewed]="hasUserReviewed"
+            (writeReview)="onWriteReview()"
+            (editReview)="openEditReview($event)"
+            (deleteReview)="openDeleteReview($event)">
           </app-reviews>
 
         </div>
@@ -123,5 +127,97 @@
     }
 
   </div>
+
+  <!-- Review Modal -->
+  @if (showReviewModal) {
+    <div class="modal-backdrop" (click)="closeReviewModal()">
+      <div class="modal-dialog review-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2>{{ isEditingReview ? 'Edit Your Review' : 'Write a Review' }}</h2>
+          <button type="button" class="close-btn" (click)="closeReviewModal()" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          @if (reviewFormError) {
+            <div class="alert alert-error" role="alert">
+              {{ reviewFormError }}
+            </div>
+          }
+
+          <div class="form-group">
+            <label class="form-label">Your Rating</label>
+            <div class="star-rating-picker" role="radiogroup" aria-label="Rating">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <button
+                  type="button"
+                  class="star-btn"
+                  [class.active]="star <= reviewRating"
+                  (click)="setReviewRating(star)"
+                  [title]="star + ' star' + (star > 1 ? 's' : '')">
+                  ★
+                </button>
+              }
+              <span class="rating-label">{{ reviewRating }} out of 5 stars</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="review-comment">Review Comment</label>
+            <textarea
+              id="review-comment"
+              class="form-textarea"
+              rows="4"
+              maxlength="2000"
+              [(ngModel)]="reviewComment"
+              placeholder="Share your thoughts about this book...">
+            </textarea>
+            <span class="char-counter">{{ reviewComment.length }} / 2000 characters</span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeReviewModal()" [disabled]="isSubmittingReview">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-submit"
+            (click)="submitReviewModal()"
+            [disabled]="isSubmittingReview">
+            {{ isSubmittingReview ? 'Submitting...' : (isEditingReview ? 'Save Changes' : 'Submit Review') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteConfirmModal) {
+    <div class="modal-backdrop" (click)="closeDeleteConfirmModal()">
+      <div class="modal-dialog delete-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2>Delete Review</h2>
+          <button type="button" class="close-btn" (click)="closeDeleteConfirmModal()" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <p>Are you sure you want to delete your review? This action cannot be undone.</p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeDeleteConfirmModal()" [disabled]="isDeletingReview">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-danger"
+            (click)="confirmDeleteReview()"
+            [disabled]="isDeletingReview">
+            {{ isDeletingReview ? 'Deleting...' : 'Delete Review' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 
 </main>

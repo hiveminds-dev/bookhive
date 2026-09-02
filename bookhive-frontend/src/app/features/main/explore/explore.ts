@@ -45,6 +45,10 @@ export class ExploreComponent implements OnInit, OnDestroy {
   totalPages = 1;
   totalBooksCount = 0;
   isLoading = false;
+  hasError = false;
+  errorMessage = '';
+
+  categoryList: { id?: number; name: string }[] = [];
 
   activeFilters: ExploreFilterValues = {
     search: '',
@@ -53,56 +57,23 @@ export class ExploreComponent implements OnInit, OnDestroy {
     minimumRating: 1
   };
 
-  readonly skeletonCards = [1, 2, 3];
+  readonly skeletonCards = [1, 2, 3, 4, 5, 6];
 
-  readonly defaultBooks: Book[] = [
-    {
-      id: 1,
-      title: 'The Architecture of Logic',
-      author: 'Jonathan Sterling',
-      category: 'Technology',
-      language: 'English',
-      rating: 4.9,
-      reviews: 124,
-      pages: 342,
-      cover: 'images/explore/architecture-of-logic.jpg',
-      description:
-        'Explore the foundational structures of human thought and modern logical systems.',
-      badge: 'Premium'
-    },
-    {
-      id: 2,
-      title: 'Quantum Leadership',
-      author: 'Sarah Valerius',
-      category: 'Business',
-      language: 'English',
-      rating: 4.7,
-      reviews: 98,
-      pages: 280,
-      cover: 'images/explore/quantum-leadership.jpg',
-      description:
-        'Redefining organizational dynamics through the lens of modern leadership.',
-      badge: 'Free'
-    },
-    {
-      id: 3,
-      title: 'The Visual Narrative',
-      author: 'Marcus Thorne',
-      category: 'Design',
-      language: 'English',
-      rating: 5,
-      reviews: 156,
-      pages: 416,
-      cover: 'images/explore/visual-narrative.jpg',
-      description:
-        'A comprehensive guide to visual storytelling, design and creative communication.',
-      badge: 'Premium'
-    }
-  ];
-
-  books: Book[] = [...this.defaultBooks];
+  books: Book[] = [];
 
   ngOnInit(): void {
+    this.bookService.getCategories(1, 100).subscribe({
+      next: (res) => {
+        if (res?.items) {
+          this.categoryList = res.items.map(c => ({ id: c.id, name: c.name }));
+          this.changeDetector.markForCheck();
+        }
+      },
+      error: () => {
+        // Fallback to default categories if API fails
+      }
+    });
+
     // URL query parameters are the single authoritative source of truth for catalogue requests
     this.routeSubscription = this.route.queryParams
       .pipe(
@@ -112,30 +83,41 @@ export class ExploreComponent implements OnInit, OnDestroy {
           const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
           const rawCategoryId = Number(params['category_id'] ?? params['categoryId']);
           const categoryId = Number.isInteger(rawCategoryId) && rawCategoryId > 0 ? rawCategoryId : undefined;
-          return { search, page, categoryId };
+          const language = (params['language'] ?? '').trim();
+          return { search, page, categoryId, language };
         }),
-        distinctUntilChanged((prev, curr) => prev.search === curr.search && prev.page === curr.page && prev.categoryId === curr.categoryId),
+        distinctUntilChanged((prev, curr) =>
+          prev.search === curr.search &&
+          prev.page === curr.page &&
+          prev.categoryId === curr.categoryId &&
+          prev.language === curr.language
+        ),
         debounceTime(150),
-        switchMap(({ search, page, categoryId }) => {
+        switchMap(({ search, page, categoryId, language }) => {
           this.activeFilters = {
             ...this.activeFilters,
-            search
+            search,
+            language: language || this.activeFilters.language,
           };
           this.currentPage = page;
           this.isLoading = true;
+          this.hasError = false;
+          this.errorMessage = '';
           this.changeDetector.markForCheck();
 
           return this.bookService.getCatalogue({
             page,
             size: 12,
             search: search || undefined,
-            category_id: categoryId
+            category_id: categoryId,
+            language: language || undefined,
           });
         })
       )
       .subscribe({
         next: (catalogue: PaginatedCatalogue) => {
           this.isLoading = false;
+          this.hasError = false;
           if (catalogue.items && catalogue.items.length > 0) {
             this.books = catalogue.items.map((item) => ({
               id: item.id,
@@ -153,21 +135,22 @@ export class ExploreComponent implements OnInit, OnDestroy {
             this.totalPages = Math.max(1, catalogue.total_pages);
             this.totalBooksCount = catalogue.total_items;
           } else {
-            if (this.activeFilters.search) {
-              this.books = [];
-              this.totalPages = 1;
-              this.totalBooksCount = 0;
-            } else {
-              this.books = [...this.defaultBooks];
-              this.totalPages = 1;
-              this.totalBooksCount = this.defaultBooks.length;
-            }
+            this.books = [];
+            this.totalPages = 1;
+            this.totalBooksCount = 0;
           }
           this.changeDetector.markForCheck();
         },
-        error: () => {
+        error: (err) => {
           this.isLoading = false;
-          this.books = this.activeFilters.search ? [] : [...this.defaultBooks];
+          this.hasError = true;
+          this.books = [];
+          this.totalBooksCount = 0;
+          this.totalPages = 1;
+          this.errorMessage =
+            err?.status === 0
+              ? 'Unable to connect to BookHive server. Please check your connection.'
+              : 'Failed to retrieve books from the catalogue. Please try again.';
           this.changeDetector.markForCheck();
         }
       });
@@ -198,13 +181,15 @@ export class ExploreComponent implements OnInit, OnDestroy {
 
     if (this.activeFilters.language) {
       result = result.filter(book =>
-        book.language === this.activeFilters.language
+        book.language.toLowerCase() === this.activeFilters.language.toLowerCase()
       );
     }
 
     if (this.activeFilters.minimumRating > 1) {
       result = result.filter(book =>
-        book.rating !== undefined && book.rating !== null ? book.rating >= this.activeFilters.minimumRating : true
+        book.rating !== undefined &&
+        book.rating !== null &&
+        book.rating >= this.activeFilters.minimumRating
       );
     }
 
@@ -222,6 +207,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
       relativeTo: this.route,
       queryParams: {
         search: search || null,
+        language: filters.language || null,
         page: null
       },
       queryParamsHandling: 'merge'
@@ -249,6 +235,10 @@ export class ExploreComponent implements OnInit, OnDestroy {
       top: 0,
       behavior: 'smooth'
     });
+  }
+
+  retry(): void {
+    this.onFiltersChanged(this.activeFilters);
   }
 
   onReadBook(book: Book): void {

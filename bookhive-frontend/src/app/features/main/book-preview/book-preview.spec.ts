@@ -173,4 +173,64 @@ describe('BookPreviewComponent', () => {
 
     expect(routerSpy).not.toHaveBeenCalled();
   });
+
+  it('should redirect anonymous user to login when clicking write review', () => {
+    const authService = (component as any).auth;
+    vi.spyOn(authService, 'isAuthenticated').mockReturnValue(false);
+    const routerSpy = vi.spyOn((component as any).router, 'navigate');
+
+    component.onWriteReview();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/login'], expect.objectContaining({ queryParams: expect.anything() }));
+  });
+
+  it('should open review modal for authenticated reader', () => {
+    const authService = (component as any).auth;
+    vi.spyOn(authService, 'isAuthenticated').mockReturnValue(true);
+    vi.spyOn(authService, 'currentUser').mockReturnValue({
+      id: 99,
+      username: 'reader99',
+      role: 'reader',
+      email: 'reader@test.com',
+      full_name: 'Reader Test',
+      email_verified: true,
+      account_status: 'active',
+      two_factor_enabled: false,
+    } as any);
+
+    component.onWriteReview();
+
+    expect(component.showReviewModal).toBe(true);
+    expect(component.isEditingReview).toBe(false);
+  });
+
+  it('should open edit review modal with existing rating and comment', () => {
+    const authService = (component as any).auth;
+    vi.spyOn(authService, 'isAuthenticated').mockReturnValue(true);
+
+    component.openEditReview({
+      id: 1,
+      readerName: 'Reader',
+      rating: 4,
+      date: '2026-01-01',
+      comment: 'Nice book',
+      helpfulCount: 0,
+    });
+
+    expect(component.showReviewModal).toBe(true);
+    expect(component.isEditingReview).toBe(true);
+    expect(component.editingReviewId).toBe(1);
+    expect(component.reviewRating).toBe(4);
+    expect(component.reviewComment).toBe('Nice book');
+  });
+
+  it('should open and close delete confirmation modal', () => {
+    component.openDeleteReview(10);
+    expect(component.showDeleteConfirmModal).toBe(true);
+    expect(component.deletingReviewId).toBe(10);
+
+    component.closeDeleteConfirmModal();
+    expect(component.showDeleteConfirmModal).toBe(false);
+    expect(component.deletingReviewId).toBeNull();
+  });
 });

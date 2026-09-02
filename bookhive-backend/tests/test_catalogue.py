@@ -72,6 +72,8 @@ async def test_catalogue_service_maps_items_and_pagination():
         cover_image_path="storage/covers/dune.jpg",
         author=SimpleNamespace(full_name="Frank Herbert"),
         category=SimpleNamespace(name="Science Fiction"),
+        reviews=[SimpleNamespace(rating=5), SimpleNamespace(rating=4)],
+        average_rating=4.5,
     )
     service.book_repository.get_published_books_count = AsyncMock(
         return_value=21
@@ -91,6 +93,8 @@ async def test_catalogue_service_maps_items_and_pagination():
     assert result.total_pages == 3
     assert result.current_page == 2
     assert result.items[0].cover_url == "/storage/covers/dune.jpg"
+    assert result.items[0].rating == 4.5
+    assert result.items[0].review_count == 2
     service.book_repository.get_published_books_with_filters.assert_awaited_once_with(
         session=session,
         offset=10,

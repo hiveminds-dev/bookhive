@@ -2,13 +2,13 @@
 
 from datetime import datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from orm_models.book import Book, BookStatus
 from orm_models.category import Category
-from orm_models.user import User
+from orm_models.user import AuthorProfile, User
 
 
 class BookRepository:
@@ -228,6 +228,7 @@ class BookRepository:
             .options(
                 joinedload(Book.author).joinedload(User.author_profile),
                 joinedload(Book.category),
+                selectinload(Book.reviews),
             )
             .where(Book.status == BookStatus.PUBLISHED)
         )
@@ -254,7 +255,7 @@ class BookRepository:
         category_id: int | None = None,
         language: str | None = None,
     ) -> int:
-        query = select(func.count(Book.id)).where(
+        query = select(func.count(Book.id.distinct())).where(
             Book.status == BookStatus.PUBLISHED
         )
         query = self._apply_catalogue_filters(
@@ -275,8 +276,18 @@ class BookRepository:
         language: str | None,
     ):
         if search_query:
-            query = query.where(
-                Book.title.ilike(f"%{search_query.strip()}%")
+            term = f"%{search_query.strip()}%"
+            query = (
+                query.join(Book.author)
+                .outerjoin(User.author_profile)
+                .where(
+                    or_(
+                        Book.title.ilike(term),
+                        User.full_name.ilike(term),
+                        User.username.ilike(term),
+                        AuthorProfile.pen_name.ilike(term),
+                    )
+                )
             )
         if category_id is not None:
             query = query.where(Book.category_id == category_id)

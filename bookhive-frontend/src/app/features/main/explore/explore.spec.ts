@@ -10,7 +10,10 @@ describe('ExploreComponent', () => {
   let component: ExploreComponent;
   let fixture: ComponentFixture<ExploreComponent>;
   let queryParamsSubject: BehaviorSubject<Record<string, string>>;
-  let mockBookService: { getCatalogue: ReturnType<typeof vi.fn> };
+  let mockBookService: {
+    getCatalogue: ReturnType<typeof vi.fn>;
+    getCategories: ReturnType<typeof vi.fn>;
+  };
 
   const sampleCatalogue: PaginatedCatalogue = {
     total_items: 3,
@@ -68,6 +71,7 @@ describe('ExploreComponent', () => {
     queryParamsSubject = new BehaviorSubject<Record<string, string>>({});
     mockBookService = {
       getCatalogue: vi.fn().mockReturnValue(of(sampleCatalogue)),
+      getCategories: vi.fn().mockReturnValue(of({ items: [], total: 0, page: 1, page_size: 50 })),
     };
 
     await TestBed.configureTestingModule({
@@ -195,5 +199,17 @@ describe('ExploreComponent', () => {
     expect(book2?.pages).toBeNull();
     expect(book2?.rating).toBeNull();
     expect(book2?.reviews).toBe(0);
+  });
+
+  it('should exclude unrated books when a minimum rating is selected', () => {
+    vi.advanceTimersByTime(200);
+    component.activeFilters = {
+      search: '',
+      categories: [],
+      language: '',
+      minimumRating: 4,
+    };
+
+    expect(component.filteredBooks.map((book) => book.id)).toEqual([3, 1]);
   });
 });
