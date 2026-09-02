@@ -356,3 +356,34 @@ class BookStatusUpdateRequest(BaseModel):
         if not stripped:
             raise ValueError("Status cannot be empty.")
         return stripped
+
+
+class AccountStatusUpdateRequest(BaseModel):
+    status: str
+
+    @field_validator("status")
+    @classmethod
+    def validate_account_status(cls, value: str) -> str:
+        stripped = value.strip().lower()
+        if not stripped:
+            raise ValueError("Account status cannot be empty.")
+        return stripped
+
+
+class RequestChangesRequest(BaseModel):
+    feedback: str
+
+    @field_validator("feedback")
+    @classmethod
+    def validate_feedback(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Feedback cannot be empty.")
+        if len(stripped) > 500:
+            raise ValueError("Feedback cannot exceed 500 characters.")
+        return stripped
+
+
+class AdminActionSuccessResponse(BaseModel):
+    success: bool = True
+    message: str

@@ -1,3 +1,4 @@
+import logging
 import math
 from datetime import UTC, datetime, timedelta
 
@@ -15,6 +16,7 @@ from orm_models.user import AccountStatus, User, UserRole
 from schemas.admin_schemas import (
     ActiveAuthorItem,
     ActiveReaderItem,
+    AdminActionSuccessResponse,
     AdminCreateRequest,
     AdminStaffStatsResponse,
     AdminUserItemResponse,
@@ -43,6 +45,10 @@ from schemas.admin_schemas import (
     SystemLogResponse,
     TopCategoryStatItem,
 )
+from services.email_sender import EmailDeliveryError
+from services.password_reset_service import PasswordResetService
+
+logger = logging.getLogger(__name__)
 
 
 class AdminService:
@@ -357,12 +363,12 @@ class AdminService:
         cleaned_reason = rejection_reason.strip() if rejection_reason else ""
         if not cleaned_reason:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Rejection reason cannot be blank or whitespace only.",
             )
         if len(cleaned_reason) > 500:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Rejection reason cannot exceed 500 characters.",
             )
 
@@ -428,12 +434,12 @@ class AdminService:
         cleaned_reason = rejection_reason.strip() if rejection_reason else ""
         if not cleaned_reason:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Rejection reason is required when rejecting a book submission.",
             )
         if len(cleaned_reason) > 500:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Rejection reason cannot exceed 500 characters.",
             )
 
@@ -441,6 +447,60 @@ class AdminService:
         session.add(BookRejectionLog(book_id=book.id, reason=cleaned_reason))
         await session.commit()
         return True
+
+    async def request_book_changes(
+        self, session: AsyncSession, book_id: int, admin_id: int | None, feedback: str
+    ) -> AdminActionSuccessResponse:
+        book = await session.get(Book, book_id)
+        if book is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Book not found.",
+            )
+
+        if book.status != BookStatus.PENDING_REVIEW:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Cannot request changes for book with status '{book.status.value}'. Only books in 'PENDING_REVIEW' can receive change requests.",
+            )
+
+        cleaned_feedback = feedback.strip() if feedback else ""
+        if not cleaned_feedback:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Feedback is required when requesting changes for a book.",
+            )
+        if len(cleaned_feedback) > 500:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Feedback cannot exceed 500 characters.",
+            )
+
+        book.status = BookStatus.DRAFT
+        session.add(
+            BookRejectionLog(
+                book_id=book.id,
+                admin_id=admin_id,
+                reason=f"Changes Requested: {cleaned_feedback}",
+            )
+        )
+        try:
+            await session.commit()
+        except HTTPException:
+            await session.rollback()
+            raise
+        except Exception as exc:
+            await session.rollback()
+            logger.error("Database commit failed during request_book_changes for book %s: %s", book_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to save change request due to a database error.",
+            ) from exc
+
+        return AdminActionSuccessResponse(
+            success=True,
+            message=f"Change request sent to author for '{book.title}'.",
+        )
 
     async def update_book_status(
         self, session: AsyncSession, book_id: int, new_status: str, rejection_reason: str | None = None
@@ -455,7 +515,7 @@ class AdminService:
         status_upper = new_status.strip().upper()
         if status_upper not in [s.value for s in BookStatus]:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=f"Invalid target book status '{new_status}'.",
             )
 
@@ -490,12 +550,12 @@ class AdminService:
             cleaned_reason = rejection_reason.strip() if rejection_reason else ""
             if not cleaned_reason:
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                     detail="Rejection reason is required when setting status to REJECTED.",
                 )
             if len(cleaned_reason) > 500:
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                     detail="Rejection reason cannot exceed 500 characters.",
                 )
             book.status = BookStatus.REJECTED
@@ -577,6 +637,82 @@ class AdminService:
             short_bio=user.reader_profile.short_bio if user.reader_profile else None,
             review_count=len(reviews_list),
             reviews=reviews_list,
+        )
+
+    async def update_reader_status(
+        self, session: AsyncSession, user_id: int, new_status: str
+    ) -> AdminActionSuccessResponse:
+        user = await session.get(User, user_id)
+        if user is None or user.role != UserRole.READER:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Reader not found.",
+            )
+
+        target = new_status.strip().lower()
+        if target not in {"active", "suspended"}:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"Invalid reader status '{new_status}'. Allowed values are 'active' or 'suspended'.",
+            )
+
+        target_enum = AccountStatus.ACTIVE if target == "active" else AccountStatus.SUSPENDED
+        if user.account_status == target_enum:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Reader account is already {target}.",
+            )
+
+        user.account_status = target_enum
+        try:
+            await session.commit()
+        except HTTPException:
+            await session.rollback()
+            raise
+        except Exception as exc:
+            await session.rollback()
+            logger.error("Database commit failed during update_reader_status for user %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update reader account status due to a database error.",
+            ) from exc
+
+        return AdminActionSuccessResponse(
+            success=True,
+            message=f"Reader account has been {'suspended' if target == 'suspended' else 'reactivated'}.",
+        )
+
+    async def send_reader_password_reset(
+        self, session: AsyncSession, user_id: int
+    ) -> AdminActionSuccessResponse:
+        user = await session.get(User, user_id)
+        if user is None or user.role != UserRole.READER:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Reader not found.",
+            )
+
+        password_reset_svc = PasswordResetService()
+        try:
+            await password_reset_svc.request_reset(session, user.email)
+        except EmailDeliveryError as exc:
+            logger.error("Failed to deliver password reset email for reader %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to send password reset email due to a mail delivery error.",
+            ) from exc
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.error("Failed to process password reset request for reader %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to process password reset request.",
+            ) from exc
+
+        return AdminActionSuccessResponse(
+            success=True,
+            message=f"Password reset instructions have been emailed to {user.email}.",
         )
 
     async def get_author_detail(
@@ -674,6 +810,89 @@ class AdminService:
             rejection_logs=rejection_logs,
         )
 
+    async def update_author_status(
+        self, session: AsyncSession, user_id: int, new_status: str
+    ) -> AdminActionSuccessResponse:
+        user = await session.get(User, user_id)
+        if user is None or user.role != UserRole.AUTHOR:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Author not found.",
+            )
+
+        target = new_status.strip().lower()
+        if target not in {"approved", "active", "suspended"}:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"Invalid author status '{new_status}'. Allowed values are 'approved' or 'suspended'.",
+            )
+
+        target_enum = AccountStatus.SUSPENDED if target == "suspended" else AccountStatus.APPROVED
+
+        if user.account_status in {AccountStatus.PENDING, AccountStatus.REJECTED}:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Cannot suspend an author application that is pending review or rejected. Please use the application approval/rejection workflow.",
+            )
+
+        if user.account_status == target_enum:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Author account is already {user.account_status.value}.",
+            )
+
+        user.account_status = target_enum
+        try:
+            await session.commit()
+        except HTTPException:
+            await session.rollback()
+            raise
+        except Exception as exc:
+            await session.rollback()
+            logger.error("Database commit failed during update_author_status for user %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update author account status due to a database error.",
+            ) from exc
+
+        return AdminActionSuccessResponse(
+            success=True,
+            message=f"Author account has been {'suspended' if target == 'suspended' else 'reactivated'}.",
+        )
+
+    async def send_author_password_reset(
+        self, session: AsyncSession, user_id: int
+    ) -> AdminActionSuccessResponse:
+        user = await session.get(User, user_id)
+        if user is None or user.role != UserRole.AUTHOR:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Author not found.",
+            )
+
+        password_reset_svc = PasswordResetService()
+        try:
+            await password_reset_svc.request_reset(session, user.email)
+        except EmailDeliveryError as exc:
+            logger.error("Failed to deliver password reset email for author %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to send password reset email due to a mail delivery error.",
+            ) from exc
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.error("Failed to process password reset request for author %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to process password reset request.",
+            ) from exc
+
+        return AdminActionSuccessResponse(
+            success=True,
+            message=f"Password reset instructions have been emailed to {user.email}.",
+        )
+
     async def get_dashboard_recent(
         self, session: AsyncSession
     ) -> DashboardRecentResponse:
@@ -764,7 +983,7 @@ class AdminService:
         cleaned_name = name.strip() if name else ""
         if not cleaned_name:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Category name cannot be blank.",
             )
 

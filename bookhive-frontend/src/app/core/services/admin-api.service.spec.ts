@@ -153,4 +153,62 @@ describe('AdminApiService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockAuthor);
   });
+
+  it('should request book changes via requestBookChanges', () => {
+    service.requestBookChanges(5, 'Please fix typos').subscribe((res) => {
+      expect(res.success).toBe(true);
+      expect(res.message).toBe('Change request sent.');
+    });
+
+    const req = httpMock.expectOne('/api/admin/books/5/request-changes');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ feedback: 'Please fix typos' });
+    req.flush({ success: true, message: 'Change request sent.' });
+  });
+
+  it('should update reader status via updateReaderStatus', () => {
+    service.updateReaderStatus(7, 'suspended').subscribe((res) => {
+      expect(res.success).toBe(true);
+      expect(res.message).toBe('Reader suspended.');
+    });
+
+    const req = httpMock.expectOne('/api/admin/readers/7/status');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ status: 'suspended' });
+    req.flush({ success: true, message: 'Reader suspended.' });
+  });
+
+  it('should send reader password reset via resetReaderPassword', () => {
+    service.resetReaderPassword(7).subscribe((res) => {
+      expect(res.success).toBe(true);
+      expect(res.message).toBe('Password reset email sent.');
+    });
+
+    const req = httpMock.expectOne('/api/admin/readers/7/reset-password');
+    expect(req.request.method).toBe('POST');
+    req.flush({ success: true, message: 'Password reset email sent.' });
+  });
+
+  it('should update author status via updateAuthorStatus', () => {
+    service.updateAuthorStatus(12, 'suspended').subscribe((res) => {
+      expect(res.success).toBe(true);
+      expect(res.message).toBe('Author suspended.');
+    });
+
+    const req = httpMock.expectOne('/api/admin/authors/12/status');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ status: 'suspended' });
+    req.flush({ success: true, message: 'Author suspended.' });
+  });
+
+  it('should send author password reset via resetAuthorPassword', () => {
+    service.resetAuthorPassword(12).subscribe((res) => {
+      expect(res.success).toBe(true);
+      expect(res.message).toBe('Password reset email sent.');
+    });
+
+    const req = httpMock.expectOne('/api/admin/authors/12/reset-password');
+    expect(req.request.method).toBe('POST');
+    req.flush({ success: true, message: 'Password reset email sent.' });
+  });
 });

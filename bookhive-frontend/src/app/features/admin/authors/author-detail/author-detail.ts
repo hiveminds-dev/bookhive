@@ -19,6 +19,8 @@ export class AuthorDetailComponent implements OnInit {
   readonly author = signal<AuthorDetailAdminResponse | null>(null);
   readonly loading = signal<boolean>(true);
   readonly isProcessing = signal<boolean>(false);
+  readonly showConfirmModal = signal<boolean>(false);
+  readonly confirmActionType = signal<'suspend' | 'reactivate' | 'reset-password' | null>(null);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.params['id']);
@@ -34,10 +36,12 @@ export class AuthorDetailComponent implements OnInit {
     this.adminApi.getAuthorDetail(id).subscribe({
       next: (data) => {
         this.loading.set(false);
+        this.isProcessing.set(false);
         this.author.set(data);
       },
       error: (err) => {
         this.loading.set(false);
+        this.isProcessing.set(false);
         this.toastService.error(err.error?.detail || 'Failed to load author portfolio.', 'Error');
       },
     });
@@ -62,9 +66,8 @@ export class AuthorDetailComponent implements OnInit {
     this.isProcessing.set(true);
     this.adminApi.approveAuthor(a.id).subscribe({
       next: () => {
-        this.isProcessing.set(false);
-        this.author.update(curr => curr ? { ...curr, account_status: 'approved' } : null);
         this.toastService.success(`Approved author credentials for ${a.full_name}.`, 'Author Approved');
+        this.loadAuthorDetail(a.id);
       },
       error: (err) => {
         this.isProcessing.set(false);
@@ -73,10 +76,67 @@ export class AuthorDetailComponent implements OnInit {
     });
   }
 
-  suspendAuthor(): void {
+  promptSuspend(): void {
+    this.confirmActionType.set('suspend');
+    this.showConfirmModal.set(true);
+  }
+
+  promptReactivate(): void {
+    this.confirmActionType.set('reactivate');
+    this.showConfirmModal.set(true);
+  }
+
+  promptResetPassword(): void {
+    this.confirmActionType.set('reset-password');
+    this.showConfirmModal.set(true);
+  }
+
+  cancelConfirm(): void {
+    if (this.isProcessing()) return;
+    this.showConfirmModal.set(false);
+    this.confirmActionType.set(null);
+  }
+
+  confirmAction(): void {
     const a = this.author();
-    if (a) {
-      this.toastService.warning(`Suspended author account for ${a.full_name}.`, 'Author Suspended');
+    const action = this.confirmActionType();
+    if (!a || !action || this.isProcessing()) return;
+
+    this.isProcessing.set(true);
+
+    if (action === 'suspend' || action === 'reactivate') {
+      const newStatus = action === 'suspend' ? 'suspended' : 'approved';
+      this.adminApi.updateAuthorStatus(a.id, newStatus).subscribe({
+        next: (res) => {
+          this.showConfirmModal.set(false);
+          this.confirmActionType.set(null);
+          this.toastService.success(
+            res.message || `Author account successfully ${action === 'suspend' ? 'suspended' : 'reactivated'}.`,
+            action === 'suspend' ? 'Account Suspended' : 'Account Reactivated'
+          );
+          this.loadAuthorDetail(a.id);
+        },
+        error: (err) => {
+          this.isProcessing.set(false);
+          this.toastService.error(err.error?.detail || 'Failed to update author account status.', 'Status Error');
+        },
+      });
+    } else if (action === 'reset-password') {
+      this.adminApi.resetAuthorPassword(a.id).subscribe({
+        next: (res) => {
+          this.isProcessing.set(false);
+          this.showConfirmModal.set(false);
+          this.confirmActionType.set(null);
+          this.toastService.success(
+            res.message || `Password reset instructions sent to ${a.email}.`,
+            'Reset Email Sent'
+          );
+        },
+        error: (err) => {
+          this.isProcessing.set(false);
+          this.toastService.error(err.error?.detail || 'Failed to send password reset email.', 'Reset Failed');
+        },
+      });
     }
   }
 }

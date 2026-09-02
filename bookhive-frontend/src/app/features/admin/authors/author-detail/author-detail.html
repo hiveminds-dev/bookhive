@@ -42,10 +42,41 @@
       </div>
 
       <div class="card-actions">
-        <button type="button" class="btn-approve" (click)="approveAuthor()" [disabled]="author()?.account_status === 'approved' || isProcessing()">
-          {{ author()?.account_status === 'approved' ? 'Author Approved' : 'Approve Credentials' }}
+        <button
+          *ngIf="author()?.account_status === 'pending'"
+          type="button"
+          class="btn-approve"
+          (click)="approveAuthor()"
+          [disabled]="isProcessing()"
+        >
+          Approve Credentials
         </button>
-        <button type="button" class="btn-danger" (click)="suspendAuthor()" [disabled]="isProcessing()">Suspend Account</button>
+        <button
+          *ngIf="author()?.account_status === 'approved'"
+          type="button"
+          class="btn-danger"
+          (click)="promptSuspend()"
+          [disabled]="isProcessing()"
+        >
+          Suspend Account
+        </button>
+        <button
+          *ngIf="author()?.account_status === 'suspended'"
+          type="button"
+          class="btn-primary"
+          (click)="promptReactivate()"
+          [disabled]="isProcessing()"
+        >
+          Reactivate Account
+        </button>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="promptResetPassword()"
+          [disabled]="isProcessing()"
+        >
+          Reset Password
+        </button>
       </div>
     </div>
 
@@ -142,6 +173,38 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showConfirmModal()">
+    <div class="modal-card">
+      <h3 *ngIf="confirmActionType() === 'suspend'">Suspend Author Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reactivate'">Reactivate Author Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reset-password'">Send Password Reset Email?</h3>
+
+      <p *ngIf="confirmActionType() === 'suspend'">
+        Are you sure you want to suspend <strong>{{ author()?.full_name }}</strong>? The author will be immediately prevented from accessing creator studio features or publishing books.
+      </p>
+      <p *ngIf="confirmActionType() === 'reactivate'">
+        Are you sure you want to reactivate <strong>{{ author()?.full_name }}</strong>? Their full author studio access will be restored immediately.
+      </p>
+      <p *ngIf="confirmActionType() === 'reset-password'">
+        A secure password reset link will be sent to <strong>{{ author()?.email }}</strong>.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelConfirm()" [disabled]="isProcessing()">Cancel</button>
+        <button
+          type="button"
+          [class.btn-danger]="confirmActionType() === 'suspend'"
+          [class.btn-primary]="confirmActionType() === 'reactivate' || confirmActionType() === 'reset-password'"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          {{ isProcessing() ? 'Processing...' : (confirmActionType() === 'suspend' ? 'Confirm Suspension' : (confirmActionType() === 'reactivate' ? 'Confirm Reactivation' : 'Send Reset Email')) }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

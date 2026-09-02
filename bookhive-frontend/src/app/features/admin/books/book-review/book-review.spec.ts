@@ -72,16 +72,18 @@ describe('BookReviewComponent', () => {
     expect(component.book?.status).toBe('PENDING_REVIEW');
   });
 
-  it('should approve book successfully', () => {
-    vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
+  it('should approve book successfully and reload details', () => {
+    const getBookSpy = vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
     vi.spyOn(adminApi, 'approveBook').mockReturnValue(of({ message: 'Approved' }));
     vi.spyOn(toastService, 'success');
 
     component.ngOnInit();
+    expect(getBookSpy).toHaveBeenCalledTimes(1);
+
     component.approvePublication();
 
     expect(adminApi.approveBook).toHaveBeenCalledWith(10);
-    expect(component.book?.status).toBe('PUBLISHED');
+    expect(getBookSpy).toHaveBeenCalledTimes(2);
     expect(toastService.success).toHaveBeenCalled();
   });
 
@@ -102,18 +104,104 @@ describe('BookReviewComponent', () => {
     );
   });
 
-  it('should reject book successfully when reason provided', () => {
-    vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
+  it('should reject book successfully and reload details when reason provided', () => {
+    const getBookSpy = vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
     vi.spyOn(adminApi, 'rejectBook').mockReturnValue(of({ message: 'Rejected' }));
     vi.spyOn(toastService, 'warning');
 
     component.ngOnInit();
+    expect(getBookSpy).toHaveBeenCalledTimes(1);
+
     component.promptReject();
     component.rejectionReasonSignal.set('Incomplete manuscript formatting');
     component.confirmReject();
 
     expect(adminApi.rejectBook).toHaveBeenCalledWith(10, 'Incomplete manuscript formatting');
-    expect(component.book?.status).toBe('REJECTED');
+    expect(getBookSpy).toHaveBeenCalledTimes(2);
     expect(toastService.warning).toHaveBeenCalled();
+  });
+
+  it('should require feedback when requesting changes', () => {
+    vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
+    vi.spyOn(adminApi, 'requestBookChanges');
+    vi.spyOn(toastService, 'error');
+
+    component.ngOnInit();
+    component.promptRequestChanges();
+    expect(component.showChangesModal()).toBe(true);
+
+    component.changesFeedbackSignal.set('');
+    component.confirmRequestChanges();
+
+    expect(adminApi.requestBookChanges).not.toHaveBeenCalled();
+    expect(toastService.error).toHaveBeenCalledWith(
+      'Feedback is required when requesting changes.',
+      'Validation Error'
+    );
+  });
+
+  it('should send revision request successfully and reload book details from backend', () => {
+    const draftBook = {
+      ...sampleBook,
+      status: 'DRAFT',
+      rejection_reason: 'Changes Requested: Please revise Chapter 3 diagrams and citations.',
+      rejection_logs: [
+        {
+          id: 1,
+          reason: 'Changes Requested: Please revise Chapter 3 diagrams and citations.',
+          created_at: '2026-09-02T12:00:00Z',
+        },
+      ],
+    };
+
+    const getBookSpy = vi.spyOn(adminApi, 'getBookById')
+      .mockReturnValueOnce(of(sampleBook))
+      .mockReturnValueOnce(of(draftBook));
+
+    const reqChangesSpy = vi.spyOn(adminApi, 'requestBookChanges').mockReturnValue(
+      of({ success: true, message: 'Change request sent to author.' })
+    );
+    vi.spyOn(toastService, 'success');
+
+    component.ngOnInit();
+    expect(getBookSpy).toHaveBeenCalledTimes(1);
+
+    component.promptRequestChanges();
+    component.changesFeedbackSignal.set('Please revise Chapter 3 diagrams and citations.');
+    component.confirmRequestChanges();
+
+    expect(reqChangesSpy).toHaveBeenCalledWith(10, 'Please revise Chapter 3 diagrams and citations.');
+    expect(getBookSpy).toHaveBeenCalledTimes(2);
+    expect(component.book?.status).toBe('DRAFT');
+    expect(component.book?.rejectionReason).toContain('Please revise Chapter 3 diagrams');
+    expect(component.book?.rejectionLogs?.length).toBe(1);
+    expect(component.showChangesModal()).toBe(false);
+    expect(toastService.success).toHaveBeenCalled();
+  });
+
+  it('should handle error when refreshing book details fails', () => {
+    vi.spyOn(adminApi, 'getBookById')
+      .mockReturnValueOnce(of(sampleBook))
+      .mockReturnValueOnce(throwError(() => ({ error: { detail: 'Server unavailable' } })));
+
+    vi.spyOn(adminApi, 'requestBookChanges').mockReturnValue(
+      of({ success: true, message: 'Change request sent to author.' })
+    );
+    const toastErrorSpy = vi.spyOn(toastService, 'error');
+
+    component.ngOnInit();
+    component.promptRequestChanges();
+    component.changesFeedbackSignal.set('Need update');
+    component.confirmRequestChanges();
+
+    expect(toastErrorSpy).toHaveBeenCalledWith('Server unavailable', 'Error');
+    expect(component.isProcessing()).toBe(false);
+  });
+
+  it('should cancel request changes modal cleanly', () => {
+    component.promptRequestChanges();
+    expect(component.showChangesModal()).toBe(true);
+    component.cancelRequestChanges();
+    expect(component.showChangesModal()).toBe(false);
   });
 });

@@ -230,6 +230,11 @@ export interface AdminUserItem {
   avatar: string;
 }
 
+export interface AdminActionSuccessResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface ReaderItem {
   id: number;
   full_name: string;
@@ -350,6 +355,13 @@ export class AdminApiService {
     });
   }
 
+  requestBookChanges(bookId: number, feedback: string): Observable<AdminActionSuccessResponse> {
+    this.invalidateDashboardRecent();
+    return this.http.post<AdminActionSuccessResponse>(`/api/admin/books/${bookId}/request-changes`, {
+      feedback,
+    });
+  }
+
   updateBookStatus(bookId: number, status: string, rejectionReason?: string): Observable<{ message: string }> {
     this.invalidateDashboardRecent();
     return this.http.put<{ message: string }>(`/api/admin/books/${bookId}/status`, {
@@ -415,6 +427,15 @@ export class AdminApiService {
     });
   }
 
+  updateAuthorStatus(userId: number, status: 'approved' | 'suspended'): Observable<AdminActionSuccessResponse> {
+    this.invalidateDashboardRecent();
+    return this.http.put<AdminActionSuccessResponse>(`/api/admin/authors/${userId}/status`, { status });
+  }
+
+  resetAuthorPassword(userId: number): Observable<AdminActionSuccessResponse> {
+    return this.http.post<AdminActionSuccessResponse>(`/api/admin/authors/${userId}/reset-password`, {});
+  }
+
   // ─── Readers ──────────────────────────────────────────────────────────────
 
   getReaders(): Observable<ReaderItem[]> {
@@ -423,6 +444,14 @@ export class AdminApiService {
 
   getReaderDetail(userId: number): Observable<ReaderDetailAdminResponse> {
     return this.http.get<ReaderDetailAdminResponse>(`/api/admin/readers/${userId}`);
+  }
+
+  updateReaderStatus(userId: number, status: 'active' | 'suspended'): Observable<AdminActionSuccessResponse> {
+    return this.http.put<AdminActionSuccessResponse>(`/api/admin/readers/${userId}/status`, { status });
+  }
+
+  resetReaderPassword(userId: number): Observable<AdminActionSuccessResponse> {
+    return this.http.post<AdminActionSuccessResponse>(`/api/admin/readers/${userId}/reset-password`, {});
   }
 
   // ─── System Logs ──────────────────────────────────────────────────────────

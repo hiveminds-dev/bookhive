@@ -108,11 +108,12 @@ export class BookReviewComponent implements OnInit {
     }
   }
 
-  private loadBookDetails(id: number): void {
+  loadBookDetails(id: number): void {
     this.loading.set(true);
     this.adminApi.getBookById(id).subscribe({
       next: (found: AdminBookItem) => {
         this.loading.set(false);
+        this.isProcessing.set(false);
         const pageCount = found.page_count && found.page_count > 0 ? found.page_count : null;
         const readTimeStr = found.estimated_reading_time || (pageCount ? `${pageCount * 2} mins` : 'Not available');
 
@@ -174,6 +175,7 @@ export class BookReviewComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
+        this.isProcessing.set(false);
         this.toastService.error(err.error?.detail || 'Failed to load book details.', 'Error');
       },
     });
@@ -258,13 +260,13 @@ export class BookReviewComponent implements OnInit {
   approvePublication(): void {
     const currentBook = this.book;
     if (!currentBook?.id) return;
+    const bookId = currentBook.id;
 
     this.isProcessing.set(true);
-    this.adminApi.approveBook(currentBook.id).subscribe({
+    this.adminApi.approveBook(bookId).subscribe({
       next: () => {
-        this.isProcessing.set(false);
-        this.bookSignal.update((b) => (b ? { ...b, status: 'PUBLISHED' } : null));
         this.toastService.success(`"${currentBook.title}" was approved and published!`, 'Book Published');
+        this.loadBookDetails(bookId);
       },
       error: (err) => {
         this.isProcessing.set(false);
@@ -274,8 +276,50 @@ export class BookReviewComponent implements OnInit {
     });
   }
 
-  requestChanges(): void {
-    this.toastService.info(`Revision request sent to author ${this.book?.author}.`, 'Changes Requested');
+  readonly showChangesModal = signal<boolean>(false);
+  readonly changesFeedbackSignal = signal<string>('');
+
+  promptRequestChanges(): void {
+    this.changesFeedbackSignal.set('');
+    this.showChangesModal.set(true);
+  }
+
+  cancelRequestChanges(): void {
+    if (this.isProcessing()) return;
+    this.showChangesModal.set(false);
+  }
+
+  confirmRequestChanges(): void {
+    const feedback = this.changesFeedbackSignal().trim();
+    if (!feedback) {
+      this.toastService.error('Feedback is required when requesting changes.', 'Validation Error');
+      return;
+    }
+    if (feedback.length > 500) {
+      this.toastService.error('Feedback cannot exceed 500 characters.', 'Validation Error');
+      return;
+    }
+
+    const currentBook = this.book;
+    if (!currentBook?.id) return;
+    const bookId = currentBook.id;
+
+    this.isProcessing.set(true);
+    this.adminApi.requestBookChanges(bookId, feedback).subscribe({
+      next: (res) => {
+        this.showChangesModal.set(false);
+        this.toastService.success(
+          res.message || `Revision request sent to author ${currentBook.author}.`,
+          'Changes Requested'
+        );
+        this.loadBookDetails(bookId);
+      },
+      error: (err) => {
+        this.isProcessing.set(false);
+        const errorMsg = err.error?.detail || 'Failed to send revision request.';
+        this.toastService.error(errorMsg, 'Request Failed');
+      },
+    });
   }
 
   promptReject(): void {
@@ -284,6 +328,7 @@ export class BookReviewComponent implements OnInit {
   }
 
   cancelReject(): void {
+    if (this.isProcessing()) return;
     this.showRejectConfirm.set(false);
   }
 
@@ -293,19 +338,21 @@ export class BookReviewComponent implements OnInit {
       this.toastService.error('A rejection reason is mandatory when rejecting a book submission.', 'Validation Error');
       return;
     }
+    if (reason.length > 500) {
+      this.toastService.error('Rejection reason cannot exceed 500 characters.', 'Validation Error');
+      return;
+    }
 
     const currentBook = this.book;
     if (!currentBook?.id) return;
+    const bookId = currentBook.id;
 
     this.isProcessing.set(true);
-    this.adminApi.rejectBook(currentBook.id, reason).subscribe({
+    this.adminApi.rejectBook(bookId, reason).subscribe({
       next: () => {
-        this.isProcessing.set(false);
         this.showRejectConfirm.set(false);
-        this.bookSignal.update((b) =>
-          b ? { ...b, status: 'REJECTED', rejectionReason: reason } : null
-        );
         this.toastService.warning(`Submission for "${currentBook.title}" was rejected.`, 'Submission Rejected');
+        this.loadBookDetails(bookId);
       },
       error: (err) => {
         this.isProcessing.set(false);
