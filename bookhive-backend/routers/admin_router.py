@@ -9,8 +9,10 @@ from schemas.admin_schemas import (
     AdminStaffStatsResponse,
     AdminUserItemResponse,
     AuthorApplicationResponse,
+    AuthorDetailAdminResponse,
     AuthorRejectionRequest,
     AuthorStatsResponse,
+    BookAdminResponse,
     BookStatusUpdateRequest,
     CategoryAdminItem,
     CategoryCreateRequest,
@@ -19,6 +21,7 @@ from schemas.admin_schemas import (
     PaginatedBookAdminResponse,
     PlatformStatisticsResponse,
     ReaderAdminResponse,
+    ReaderDetailAdminResponse,
     SystemLogResponse,
 )
 from services.admin_service import AdminService
@@ -64,6 +67,22 @@ async def get_all_books(
     )
 
 
+@router.get("/books/{book_id}", response_model=BookAdminResponse)
+async def get_book_by_id(
+    book_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Retrieve single book details for manuscript inspector."""
+    book = await admin_service.get_book_by_id(session, book_id)
+    if book is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Book not found.",
+        )
+    return book
+
+
 @router.get("/staff/stats", response_model=AdminStaffStatsResponse)
 async def get_admin_staff_stats(
     session: AsyncSession = Depends(get_db_session),
@@ -101,7 +120,10 @@ async def toggle_admin_staff_status(
     """Toggle active/suspended status for an admin user."""
     success = await admin_service.toggle_admin_staff_status(session, user_id)
     if not success:
-        raise HTTPException(status_code=400, detail="Cannot modify Super Admin status or admin not found.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot modify Super Admin status or admin not found.",
+        )
     return {"message": "Admin status toggled successfully."}
 
 
@@ -114,7 +136,10 @@ async def delete_admin_staff(
     """Revoke admin staff access."""
     success = await admin_service.delete_admin_staff(session, user_id)
     if not success:
-        raise HTTPException(status_code=400, detail="Cannot delete Super Admin or admin not found.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete Super Admin or admin not found.",
+        )
     return {"message": "Admin credentials revoked successfully."}
 
 
@@ -145,6 +170,22 @@ async def get_author_applications(
 ):
     """Retrieve author applications for approval/rejection."""
     return await admin_service.get_author_applications(session, status_filter=status_filter)
+
+
+@router.get("/authors/{user_id}", response_model=AuthorDetailAdminResponse)
+async def get_author_detail(
+    user_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Retrieve author profile, pen name, and all submitted manuscripts."""
+    author = await admin_service.get_author_detail(session, user_id)
+    if author is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Author not found.",
+        )
+    return author
 
 
 @router.post("/authors/{user_id}/approve")
@@ -204,12 +245,7 @@ async def approve_book(
     admin_user: User = Depends(require_admin),
 ):
     """Approve a manuscript book submission."""
-    success = await admin_service.approve_book(session, book_id)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Book not found.",
-        )
+    await admin_service.approve_book(session, book_id)
     return {"message": "Book approved and published."}
 
 
@@ -221,13 +257,8 @@ async def reject_book(
     admin_user: User = Depends(require_admin),
 ):
     """Reject a manuscript book submission."""
-    reason = req.rejection_reason if req else None
-    success = await admin_service.reject_book(session, book_id, rejection_reason=reason)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Book not found.",
-        )
+    reason = req.rejection_reason if req else ""
+    await admin_service.reject_book(session, book_id, rejection_reason=reason or "")
     return {"message": "Book rejected."}
 
 
@@ -239,14 +270,10 @@ async def update_book_status(
     admin_user: User = Depends(require_admin),
 ):
     """Update status of a book (PUBLISHED, DEACTIVATED, DRAFT, REJECTED, etc.)."""
-    success = await admin_service.update_book_status(session, book_id, req.status, req.rejection_reason)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Book not found.",
-        )
+    await admin_service.update_book_status(
+        session, book_id, req.status, req.rejection_reason
+    )
     return {"message": f"Book status updated to {req.status}."}
-
 
 
 @router.get("/system-logs", response_model=list[SystemLogResponse])
@@ -264,6 +291,22 @@ async def get_all_readers(
 ):
     """Retrieve all registered reader accounts."""
     return await admin_service.get_all_readers(session)
+
+
+@router.get("/readers/{user_id}", response_model=ReaderDetailAdminResponse)
+async def get_reader_detail(
+    user_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Retrieve reader details and reading/reviews activity."""
+    reader = await admin_service.get_reader_detail(session, user_id)
+    if reader is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Reader not found.",
+        )
+    return reader
 
 
 @router.get("/dashboard/recent", response_model=DashboardRecentResponse)
@@ -302,11 +345,6 @@ async def toggle_category_status(
 ):
     """Toggle active/inactive status of a category."""
     success, is_active = await admin_service.toggle_category_status(session, category_id)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Category not found.",
-        )
     return {"message": "Category status toggled.", "is_active": is_active}
 
 
@@ -317,10 +355,5 @@ async def delete_category(
     admin_user: User = Depends(require_admin),
 ):
     """Delete a category from DB."""
-    success = await admin_service.delete_category(session, category_id)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Category not found.",
-        )
+    await admin_service.delete_category(session, category_id)
     return {"message": "Category deleted successfully."}

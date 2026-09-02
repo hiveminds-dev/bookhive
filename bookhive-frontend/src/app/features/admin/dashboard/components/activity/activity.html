@@ -12,13 +12,4 @@
     </button>
   </section>
 
-  <section class="health panel">
-    <h2>Platform Health</h2>
-    <p class="online"><i></i> All systems functional</p>
-    <p class="description">Storage capacity at 64%. All services are responding within normal parameters.</p>
-    <button type="button" class="logs-link-btn" (click)="openLogs()">System Logs <span>→</span></button>
-  </section>
-
-  <app-system-logs-modal *ngIf="showLogsModalSignal()" (close)="closeLogs()" />
 </div>
-

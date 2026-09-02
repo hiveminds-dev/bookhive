@@ -15,8 +15,16 @@ class DashboardStatsResponse(BaseModel):
 
 
 class CategoryCreateRequest(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=100)
     description: str | None = None
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Category name cannot be blank.")
+        return stripped
 
 
 class CategoryAdminItem(BaseModel):
@@ -65,7 +73,10 @@ class BookAdminResponse(BaseModel):
     page_count: int | None = None
     rejection_reason: str | None = None
     estimated_reading_time: str | None = None
-    average_rating: float | None = 4.8
+    view_count: int = 0
+    download_count: int = 0
+    isbn: str | None = None
+    average_rating: float | None = 0.0
     review_count: int | None = 0
     reviews: list[BookReviewItem] = []
     rejection_logs: list[BookRejectionLogItem] = []
@@ -225,6 +236,76 @@ class ReaderAdminResponse(BaseModel):
     joined_at: datetime
 
 
+class ReaderReviewAdminItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    book_id: int
+    book_title: str
+    book_cover_url: str | None = None
+    book_author: str
+    rating: int
+    comment: str | None = None
+    created_at: str
+
+
+class ReaderDetailAdminResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    full_name: str
+    username: str
+    email: EmailStr
+    account_status: str
+    email_verified: bool
+    joined_at: datetime
+    country: str | None = None
+    short_bio: str | None = None
+    review_count: int = 0
+    reviews: list[ReaderReviewAdminItem] = []
+
+
+class AuthorBookAdminSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    category_name: str
+    status: str
+    cover_image_path: str | None = None
+    view_count: int = 0
+    download_count: int = 0
+    average_rating: float = 0.0
+    rejection_reason: str | None = None
+    created_at: datetime
+    published_at: datetime | None = None
+
+
+class AuthorDetailAdminResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    full_name: str
+    username: str
+    email: EmailStr
+    account_status: str
+    email_verified: bool
+    created_at: datetime
+    pen_name: str
+    country: str | None = None
+    short_bio: str | None = None
+    profile_image_path: str | None = None
+    total_books: int = 0
+    total_views: int = 0
+    total_downloads: int = 0
+    average_rating: float = 0.0
+    published_books: list[AuthorBookAdminSummary] = []
+    pending_books: list[AuthorBookAdminSummary] = []
+    rejected_books: list[AuthorBookAdminSummary] = []
+    draft_books: list[AuthorBookAdminSummary] = []
+    rejection_logs: list[AuthorRejectionLogItem] = []
+
+
 class RecentBookItem(BaseModel):
     id: int
     title: str
@@ -251,7 +332,6 @@ class RecentAuthorRequestItem(BaseModel):
     created_at: datetime | None = None
 
 
-
 class DashboardRecentResponse(BaseModel):
     recent_books: list[RecentBookItem]
     recent_readers: list[RecentReaderItem]
@@ -269,3 +349,10 @@ class BookStatusUpdateRequest(BaseModel):
     status: str
     rejection_reason: str | None = None
 
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, value: str) -> str:
+        stripped = value.strip().upper()
+        if not stripped:
+            raise ValueError("Status cannot be empty.")
+        return stripped

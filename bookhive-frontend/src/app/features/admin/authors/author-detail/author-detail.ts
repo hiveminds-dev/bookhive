@@ -1,44 +1,82 @@
-import { Component, inject } from '@angular/core';
-import { NgFor } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { NgFor, NgIf, DatePipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
+import { AdminApiService, AuthorDetailAdminResponse } from '../../../../core/services/admin-api.service';
 
 @Component({
   selector: 'app-author-detail',
   standalone: true,
-  imports: [NgFor, RouterLink],
+  imports: [NgFor, NgIf, RouterLink, DatePipe],
   templateUrl: './author-detail.html',
   styleUrl: './author-detail.scss',
 })
-export class AuthorDetailComponent {
+export class AuthorDetailComponent implements OnInit {
   private readonly toastService = inject(ToastService);
+  private readonly adminApi = inject(AdminApiService);
+  private readonly route = inject(ActivatedRoute);
 
-  readonly author = {
-    id: 201,
-    fullName: 'Eleanor Vance',
-    penName: 'E. V. Sterling',
-    email: 'eleanor.v@lumina.com',
-    role: 'Verified Author',
-    status: 'Approved',
-    country: 'United Kingdom',
-    appliedDate: 'Oct 12, 2023',
-    bio: 'Author of classical and dark philosophy literature focusing on the intersection of ancient reason and modern logic systems.',
-    totalBooks: 4,
-    totalDownloads: '12.4k',
-    rating: '4.9/5',
-    avatar: 'assets/images/auth/sign_in_1.png'
-  };
+  readonly author = signal<AuthorDetailAdminResponse | null>(null);
+  readonly loading = signal<boolean>(true);
+  readonly isProcessing = signal<boolean>(false);
 
-  readonly publishedBooks = [
-    { title: 'Beyond Good and Evil', category: 'Philosophy', reads: '8.4k', status: 'Published', cover: 'assets/images/book-covers/beyond-good-and-evil.jpg' },
-    { title: 'The Silent Grove', category: 'Fiction', reads: '4.0k', status: 'Published', cover: 'assets/images/book-covers/the-silent-grove.jpg' },
-  ];
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.params['id']);
+    if (id) {
+      this.loadAuthorDetail(id);
+    } else {
+      this.loading.set(false);
+    }
+  }
+
+  loadAuthorDetail(id: number): void {
+    this.loading.set(true);
+    this.adminApi.getAuthorDetail(id).subscribe({
+      next: (data) => {
+        this.loading.set(false);
+        this.author.set(data);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.toastService.error(err.error?.detail || 'Failed to load author portfolio.', 'Error');
+      },
+    });
+  }
+
+  get formattedViews(): string {
+    const views = this.author()?.total_views || 0;
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}k`;
+    return views.toString();
+  }
+
+  get formattedDownloads(): string {
+    const dls = this.author()?.total_downloads || 0;
+    if (dls >= 1000) return `${(dls / 1000).toFixed(1)}k`;
+    return dls.toString();
+  }
 
   approveAuthor(): void {
-    this.toastService.success(`Approved author credentials for ${this.author.fullName}.`, 'Author Approved');
+    const a = this.author();
+    if (!a) return;
+
+    this.isProcessing.set(true);
+    this.adminApi.approveAuthor(a.id).subscribe({
+      next: () => {
+        this.isProcessing.set(false);
+        this.author.update(curr => curr ? { ...curr, account_status: 'approved' } : null);
+        this.toastService.success(`Approved author credentials for ${a.full_name}.`, 'Author Approved');
+      },
+      error: (err) => {
+        this.isProcessing.set(false);
+        this.toastService.error(err.error?.detail || 'Failed to approve author credentials.', 'Error');
+      }
+    });
   }
 
   suspendAuthor(): void {
-    this.toastService.warning(`Suspended author account for ${this.author.fullName}.`, 'Author Suspended');
+    const a = this.author();
+    if (a) {
+      this.toastService.warning(`Suspended author account for ${a.full_name}.`, 'Author Suspended');
+    }
   }
 }

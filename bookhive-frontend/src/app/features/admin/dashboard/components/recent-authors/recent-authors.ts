@@ -1,10 +1,11 @@
 import { Component, Input, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AdminApiService, RecentReaderItem } from '../../../../../core/services/admin-api.service';
 
 @Component({
   selector: 'app-recent-authors',
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, RouterLink],
   templateUrl: './recent-authors.html',
   styleUrl: './recent-authors.scss',
 })
@@ -72,4 +73,3 @@ export class RecentAuthors implements OnInit {
     return `Joined ${date.toLocaleDateString()}`;
   }
 }
-

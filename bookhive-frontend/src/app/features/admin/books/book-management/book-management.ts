@@ -3,7 +3,26 @@ import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
-import { AdminApiService } from '../../../../core/services/admin-api.service';
+import { AdminApiService, AdminBookItem } from '../../../../core/services/admin-api.service';
+
+export interface AdminBookTableItem {
+  id: number;
+  title: string;
+  isbn: string;
+  author: string;
+  category: string;
+  language: string;
+  pageCount: number | null;
+  estimatedReadingTime: string;
+  date: string;
+  views: string;
+  downloads: string;
+  dlTrend: string;
+  isActive: boolean;
+  status: string;
+  statusClass: string;
+  cover: string | null;
+}
 
 @Component({
   selector: 'app-book-management',
@@ -29,7 +48,10 @@ export class BookManagement implements OnInit {
   totalBooksSignal = signal<number>(0);
   totalPagesSignal = signal<number>(1);
 
-  readonly booksSignal = signal<any[]>([]);
+  readonly booksSignal = signal<AdminBookTableItem[]>([]);
+  readonly loadingSignal = signal<boolean>(false);
+
+  selectedBookForView = signal<AdminBookTableItem | null>(null);
 
   ngOnInit(): void {
     this.loadBooks();
@@ -42,6 +64,7 @@ export class BookManagement implements OnInit {
   }
 
   loadBooks(): void {
+    this.loadingSignal.set(true);
     const params = {
       search_query: this.searchQuery() || undefined,
       category_filter: this.filterCategory() || undefined,
@@ -55,35 +78,54 @@ export class BookManagement implements OnInit {
 
     this.adminApi.getBooks(params).subscribe({
       next: (res) => {
+        this.loadingSignal.set(false);
         if (res && res.items) {
-          const mapped = res.items.map(b => {
-            const isPub = b.status === 'PUBLISHED' || b.status === 'Published';
-            const isDeact = b.status === 'DEACTIVATED' || b.status === 'Deactivated';
-            const isRev = b.status === 'PENDING_REVIEW' || b.status === 'Review';
-            const pCount = b.page_count || (180 + (b.id * 50) % 200);
-            const totalMins = pCount * 2;
-            const hrs = Math.floor(totalMins / 60);
-            const mins = totalMins % 60;
-            const calcReadTime = hrs > 0 ? (mins > 0 ? `${hrs} hours ${mins} mins` : `${hrs} hours`) : `${mins} mins`;
-            const rTime = b.estimated_reading_time || calcReadTime;
+          const mapped: AdminBookTableItem[] = res.items.map((b: AdminBookItem) => {
+            const rawStatus = (b.status || '').toUpperCase();
+            const isPub = rawStatus === 'PUBLISHED';
+            const isDeact = rawStatus === 'DEACTIVATED';
+            const isRev = rawStatus === 'PENDING_REVIEW';
+            const isRej = rawStatus === 'REJECTED';
+
+            let displayStatus = 'Draft';
+            let statusClass = 'status-draft';
+            if (isPub) {
+              displayStatus = 'Published';
+              statusClass = 'status-published';
+            } else if (isDeact) {
+              displayStatus = 'Deactivated';
+              statusClass = 'status-deactivated';
+            } else if (isRev) {
+              displayStatus = 'Under Review';
+              statusClass = 'status-review';
+            } else if (isRej) {
+              displayStatus = 'Rejected';
+              statusClass = 'status-rejected';
+            }
+
+            const coverUrl = b.cover_image_path
+              ? (b.cover_image_path.startsWith('http')
+                  ? b.cover_image_path
+                  : '/' + b.cover_image_path.replace(/^\/+/, ''))
+              : null;
 
             return {
               id: b.id,
               title: b.title,
-              isbn: `978-${Math.floor(100000000 + (b.id * 7654321) % 900000000)}`,
+              isbn: b.isbn || 'Not available',
               author: b.author_name,
               category: b.category_name,
               language: b.language || 'English',
-              pageCount: pCount,
-              estimatedReadingTime: rTime,
-              date: new Date(b.created_at).toLocaleDateString(),
-              views: '1.2k',
-              downloads: '450',
-              dlTrend: 'up',
+              pageCount: b.page_count && b.page_count > 0 ? b.page_count : null,
+              estimatedReadingTime: b.estimated_reading_time || (b.page_count && b.page_count > 0 ? `${b.page_count * 2} mins` : 'Not available'),
+              date: b.created_at ? new Date(b.created_at).toLocaleDateString() : 'N/A',
+              views: (b.view_count || 0).toLocaleString(),
+              downloads: (b.download_count || 0).toLocaleString(),
+              dlTrend: 'neutral',
               isActive: isPub,
-              status: isPub ? 'Published' : (isDeact ? 'Deactivated' : (isRev ? 'Review' : 'Draft')),
-              statusClass: isPub ? 'status-published' : (isDeact ? 'status-deactivated' : (isRev ? 'status-review' : 'status-draft')),
-              cover: b.cover_image_path ? (b.cover_image_path.startsWith('http') ? b.cover_image_path : `http://localhost:8000/${b.cover_image_path}`) : 'assets/images/book-covers/beyond-good-and-evil.jpg'
+              status: displayStatus,
+              statusClass: statusClass,
+              cover: coverUrl,
             };
           });
           this.booksSignal.set(mapped);
@@ -96,14 +138,15 @@ export class BookManagement implements OnInit {
         }
       },
       error: () => {
+        this.loadingSignal.set(false);
         this.booksSignal.set([]);
         this.totalBooksSignal.set(0);
         this.totalPagesSignal.set(1);
-      }
+      },
     });
   }
 
-  get filteredBooks(): any[] {
+  get filteredBooks(): AdminBookTableItem[] {
     return this.booksSignal();
   }
 
@@ -111,7 +154,7 @@ export class BookManagement implements OnInit {
     return this.totalPagesSignal();
   }
 
-  get paginatedBooks(): any[] {
+  get paginatedBooks(): AdminBookTableItem[] {
     return this.booksSignal();
   }
 
@@ -141,7 +184,7 @@ export class BookManagement implements OnInit {
   }
 
   toggleAdvanceSearch(): void {
-    this.showAdvanceSearch.update(v => !v);
+    this.showAdvanceSearch.update((v) => !v);
   }
 
   clearSearch(): void {
@@ -168,60 +211,7 @@ export class BookManagement implements OnInit {
     this.toastService.info('All search filters reset.', 'Filters Reset');
   }
 
-  private readonly defaultBooks = [
-    {
-      id: 1,
-      title: 'Beyond Good and Evil',
-      isbn: '978-0140449235',
-      author: 'F. Nietzsche',
-      category: 'Philosophy',
-      language: 'English',
-      date: 'Oct 12, 2023',
-      views: '2.4k',
-      downloads: '842',
-      dlTrend: 'down',
-      isActive: true,
-      status: 'Published',
-      statusClass: 'status-published',
-      cover: 'assets/images/book-covers/beyond-good-and-evil.jpg'
-    },
-    {
-      id: 2,
-      title: 'Quantum Mechanics',
-      isbn: '978-0521897839',
-      author: 'Dr. Sarah Chen',
-      category: 'Science',
-      language: 'English',
-      date: 'Nov 02, 2023',
-      views: '1.1k',
-      downloads: '156',
-      dlTrend: 'up',
-      isActive: true,
-      status: 'Under Review',
-      statusClass: 'status-review',
-      cover: 'assets/images/book-covers/quantum-mechanics.jpg'
-    },
-    {
-      id: 3,
-      title: 'The Silent Grove',
-      isbn: '978-1501160837',
-      author: 'Elena Rossi',
-      category: 'Fiction',
-      language: 'Spanish',
-      date: 'Jan 15, 2024',
-      views: '450',
-      downloads: '24',
-      dlTrend: 'flat',
-      isActive: false,
-      status: 'Draft',
-      statusClass: 'status-draft',
-      cover: 'assets/images/book-covers/the-silent-grove.jpg'
-    }
-  ];
-
-  selectedBookForView = signal<any | null>(null);
-
-  openViewModal(book: any): void {
+  openViewModal(book: AdminBookTableItem): void {
     this.selectedBookForView.set(book);
   }
 
@@ -229,42 +219,35 @@ export class BookManagement implements OnInit {
     this.selectedBookForView.set(null);
   }
 
-  toggleBookActive(book: any): void {
+  toggleBookActive(book: AdminBookTableItem): void {
     const nextStatus = book.isActive ? 'DEACTIVATED' : 'PUBLISHED';
-
-    // 1. Immediately update reactive state so template live updates right now
     const newActiveState = !book.isActive;
-    this.booksSignal.update(list =>
-      list.map(b => {
-        if (b.id === book.id) {
-          return {
-            ...b,
-            isActive: newActiveState,
-            status: newActiveState ? 'Published' : 'Deactivated',
-            statusClass: newActiveState ? 'status-published' : 'status-deactivated'
-          };
-        }
-        return b;
-      })
-    );
 
-    // 2. Persist to Backend Database
     this.adminApi.updateBookStatus(book.id, nextStatus).subscribe({
       next: () => {
+        this.booksSignal.update((list) =>
+          list.map((b) => {
+            if (b.id === book.id) {
+              return {
+                ...b,
+                isActive: newActiveState,
+                status: newActiveState ? 'Published' : 'Deactivated',
+                statusClass: newActiveState ? 'status-published' : 'status-deactivated',
+              };
+            }
+            return b;
+          })
+        );
         if (newActiveState) {
           this.toastService.success(`"${book.title}" status saved as Published in DB!`, 'Live Updated');
         } else {
           this.toastService.warning(`"${book.title}" status saved as Deactivated in DB.`, 'Live Updated');
         }
       },
-      error: () => {
-        if (newActiveState) {
-          this.toastService.success(`"${book.title}" status updated to Published.`, 'Live Updated');
-        } else {
-          this.toastService.warning(`"${book.title}" status updated to Deactivated.`, 'Live Updated');
-        }
-      }
+      error: (err) => {
+        const msg = err.error?.detail || `Failed to update status for "${book.title}".`;
+        this.toastService.error(msg, 'Status Update Failed');
+      },
     });
   }
 }
-

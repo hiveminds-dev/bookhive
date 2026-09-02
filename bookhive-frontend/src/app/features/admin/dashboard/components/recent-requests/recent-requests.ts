@@ -1,10 +1,11 @@
 import { Component, Input, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AdminApiService, RecentAuthorRequestItem } from '../../../../../core/services/admin-api.service';
 
 @Component({
   selector: 'app-recent-requests',
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, RouterLink],
   templateUrl: './recent-requests.html',
   styleUrl: './recent-requests.scss',
 })
@@ -62,4 +63,3 @@ export class RecentRequests implements OnInit {
       .join('');
   }
 }
-

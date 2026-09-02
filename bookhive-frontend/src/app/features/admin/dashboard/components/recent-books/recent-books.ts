@@ -1,10 +1,11 @@
 import { Component, Input, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AdminApiService, RecentBookItem } from '../../../../../core/services/admin-api.service';
 
 @Component({
   selector: 'app-recent-books',
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, RouterLink],
   templateUrl: './recent-books.html',
   styleUrl: './recent-books.scss',
 })
@@ -72,4 +73,3 @@ export class RecentBooks implements OnInit {
     }
   }
 }
-

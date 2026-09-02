@@ -14,7 +14,7 @@
           <span class="dot"></span>
           All Systems Operational
         </div>
-        <span class="capacity-info">Storage: 64% used</span>
+        <span class="capacity-info">MVP Diagnostics</span>
       </div>
 
       <!-- Loading state -->
@@ -29,7 +29,9 @@
 
       <!-- Live log data -->
       <div class="logs-table-wrapper" *ngIf="!loading() && !error()">
-        <div class="logs-empty" *ngIf="logs().length === 0">No log entries available.</div>
+        <div class="logs-empty" *ngIf="logs().length === 0" style="padding: 24px; text-align: center; color: #64748b; font-size: 0.9rem;">
+          Persistent system logs are not available in the current MVP.
+        </div>
         <table class="logs-table" *ngIf="logs().length > 0">
           <thead>
             <tr>
