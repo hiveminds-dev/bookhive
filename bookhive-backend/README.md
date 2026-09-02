@@ -94,4 +94,3 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 - **Never commit `.env`**: The `.env` file contains sensitive environment secrets and must remain in `.gitignore`. Never commit real secrets to source control.
 - **Token Invalidation**: Changing or rotating the `SECRET_KEY` immediately invalidates all previously issued JWT access tokens, requiring all active users to sign in again.
 - **Startup Validation**: The backend validates `SECRET_KEY` at configuration load time. If the secret is missing, empty, shorter than 32 characters, or uses a known placeholder, the application will fail fast on startup with an informative error message.
-
