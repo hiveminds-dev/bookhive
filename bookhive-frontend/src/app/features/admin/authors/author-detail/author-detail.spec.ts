@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthorDetailComponent } from './author-detail';
 import { AdminApiService } from '../../../../core/services/admin-api.service';
@@ -88,16 +88,128 @@ describe('AuthorDetailComponent', () => {
     expect(component.formattedDownloads).toBe('1.2k');
   });
 
-  it('should approve author credentials and update state', () => {
-    vi.spyOn(adminApi, 'getAuthorDetail').mockReturnValue(of(sampleAuthor));
+  it('should approve author credentials, show toast, and reload author details', () => {
+    const approvedAuthor = { ...sampleAuthor, account_status: 'approved' };
+    const getAuthorSpy = vi.spyOn(adminApi, 'getAuthorDetail')
+      .mockReturnValueOnce(of(sampleAuthor))
+      .mockReturnValueOnce(of(approvedAuthor));
+
     vi.spyOn(adminApi, 'approveAuthor').mockReturnValue(of({ message: 'Author approved' }));
     vi.spyOn(toastService, 'success');
 
     component.ngOnInit();
+    expect(getAuthorSpy).toHaveBeenCalledTimes(1);
+
     component.approveAuthor();
 
     expect(adminApi.approveAuthor).toHaveBeenCalledWith(15);
+    expect(getAuthorSpy).toHaveBeenCalledTimes(2);
     expect(component.author()?.account_status).toBe('approved');
     expect(toastService.success).toHaveBeenCalled();
+  });
+
+  it('should prompt confirmation modal and suspend author on confirm, then reload author details', () => {
+    const approvedAuthor = { ...sampleAuthor, account_status: 'approved' };
+    const suspendedAuthor = { ...sampleAuthor, account_status: 'suspended' };
+    const getAuthorSpy = vi.spyOn(adminApi, 'getAuthorDetail')
+      .mockReturnValueOnce(of(approvedAuthor))
+      .mockReturnValueOnce(of(suspendedAuthor));
+
+    const updateSpy = vi.spyOn(adminApi, 'updateAuthorStatus').mockReturnValue(
+      of({ success: true, message: 'Author account has been suspended.' })
+    );
+
+    component.ngOnInit();
+    expect(getAuthorSpy).toHaveBeenCalledTimes(1);
+
+    component.promptSuspend();
+    expect(component.showConfirmModal()).toBe(true);
+    expect(component.confirmActionType()).toBe('suspend');
+
+    component.confirmAction();
+    expect(updateSpy).toHaveBeenCalledWith(15, 'suspended');
+    expect(getAuthorSpy).toHaveBeenCalledTimes(2);
+    expect(component.author()?.account_status).toBe('suspended');
+    expect(component.showConfirmModal()).toBe(false);
+  });
+
+  it('should prompt confirmation modal and reactivate author on confirm, then reload author details', () => {
+    const suspendedAuthor = { ...sampleAuthor, account_status: 'suspended' };
+    const approvedAuthor = { ...sampleAuthor, account_status: 'approved' };
+    const getAuthorSpy = vi.spyOn(adminApi, 'getAuthorDetail')
+      .mockReturnValueOnce(of(suspendedAuthor))
+      .mockReturnValueOnce(of(approvedAuthor));
+
+    const updateSpy = vi.spyOn(adminApi, 'updateAuthorStatus').mockReturnValue(
+      of({ success: true, message: 'Author account has been reactivated.' })
+    );
+
+    component.ngOnInit();
+    expect(getAuthorSpy).toHaveBeenCalledTimes(1);
+
+    component.promptReactivate();
+    expect(component.showConfirmModal()).toBe(true);
+    expect(component.confirmActionType()).toBe('reactivate');
+
+    component.confirmAction();
+    expect(updateSpy).toHaveBeenCalledWith(15, 'approved');
+    expect(getAuthorSpy).toHaveBeenCalledTimes(2);
+    expect(component.author()?.account_status).toBe('approved');
+    expect(component.showConfirmModal()).toBe(false);
+  });
+
+  it('should send author password reset email on confirm', () => {
+    vi.spyOn(adminApi, 'getAuthorDetail').mockReturnValue(of(sampleAuthor));
+    const resetSpy = vi.spyOn(adminApi, 'resetAuthorPassword').mockReturnValue(
+      of({ success: true, message: 'Password reset instructions sent.' })
+    );
+
+    component.ngOnInit();
+    component.promptResetPassword();
+    expect(component.showConfirmModal()).toBe(true);
+    expect(component.confirmActionType()).toBe('reset-password');
+
+    component.confirmAction();
+    expect(resetSpy).toHaveBeenCalledWith(15);
+    expect(component.showConfirmModal()).toBe(false);
+  });
+
+  it('should handle error when author password reset fails and allow retry', () => {
+    vi.spyOn(adminApi, 'getAuthorDetail').mockReturnValue(of(sampleAuthor));
+    vi.spyOn(adminApi, 'resetAuthorPassword').mockReturnValue(
+      throwError(() => ({ error: { detail: 'Mail delivery failed' } }))
+    );
+    const toastErrorSpy = vi.spyOn(toastService, 'error');
+
+    component.ngOnInit();
+    component.promptResetPassword();
+    component.confirmAction();
+
+    expect(toastErrorSpy).toHaveBeenCalledWith('Mail delivery failed', 'Reset Failed');
+    expect(component.isProcessing()).toBe(false);
+    expect(component.showConfirmModal()).toBe(true);
+  });
+
+  it('should handle error when author status update fails', () => {
+    vi.spyOn(adminApi, 'getAuthorDetail').mockReturnValue(of(sampleAuthor));
+    vi.spyOn(adminApi, 'updateAuthorStatus').mockReturnValue(
+      throwError(() => ({ error: { detail: 'Cannot modify status' } }))
+    );
+    const toastErrorSpy = vi.spyOn(toastService, 'error');
+
+    component.ngOnInit();
+    component.promptSuspend();
+    component.confirmAction();
+
+    expect(toastErrorSpy).toHaveBeenCalledWith('Cannot modify status', 'Status Error');
+    expect(component.isProcessing()).toBe(false);
+  });
+
+  it('should cancel confirmation modal cleanly', () => {
+    component.promptSuspend();
+    expect(component.showConfirmModal()).toBe(true);
+    component.cancelConfirm();
+    expect(component.showConfirmModal()).toBe(false);
+    expect(component.confirmActionType()).toBeNull();
   });
 });

@@ -40,8 +40,15 @@
       </div>
 
       <div class="card-actions">
-        <button type="button" class="btn-secondary" (click)="resetPassword()">Reset Password</button>
-        <button type="button" class="btn-danger" (click)="suspendAccount()">Suspend Account</button>
+        <button type="button" class="btn-secondary" (click)="promptResetPassword()" [disabled]="isProcessing()">
+          Reset Password
+        </button>
+        <button *ngIf="reader()?.account_status === 'active'" type="button" class="btn-danger" (click)="promptSuspend()" [disabled]="isProcessing()">
+          Suspend Account
+        </button>
+        <button *ngIf="reader()?.account_status === 'suspended'" type="button" class="btn-primary" (click)="promptReactivate()" [disabled]="isProcessing()">
+          Reactivate Account
+        </button>
       </div>
     </div>
 
@@ -80,6 +87,38 @@
         <div *ngIf="(reader()?.reviews?.length || 0) === 0" style="padding: 2rem; text-align: center; color: #94a3b8; font-style: italic;">
           No reader reviews or activity recorded for this user yet.
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showConfirmModal()">
+    <div class="modal-card">
+      <h3 *ngIf="confirmActionType() === 'suspend'">Suspend Reader Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reactivate'">Reactivate Reader Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reset-password'">Send Password Reset Email?</h3>
+
+      <p *ngIf="confirmActionType() === 'suspend'">
+        Are you sure you want to suspend <strong>{{ reader()?.full_name }}</strong>? The user will be immediately blocked from signing in or accessing reader services.
+      </p>
+      <p *ngIf="confirmActionType() === 'reactivate'">
+        Are you sure you want to reactivate <strong>{{ reader()?.full_name }}</strong>? Their account access will be restored immediately.
+      </p>
+      <p *ngIf="confirmActionType() === 'reset-password'">
+        A secure password reset link will be sent to <strong>{{ reader()?.email }}</strong>.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelConfirm()" [disabled]="isProcessing()">Cancel</button>
+        <button
+          type="button"
+          [class.btn-danger]="confirmActionType() === 'suspend'"
+          [class.btn-primary]="confirmActionType() === 'reactivate' || confirmActionType() === 'reset-password'"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          {{ isProcessing() ? 'Processing...' : (confirmActionType() === 'suspend' ? 'Confirm Suspension' : (confirmActionType() === 'reactivate' ? 'Confirm Reactivation' : 'Send Reset Email')) }}
+        </button>
       </div>
     </div>
   </div>

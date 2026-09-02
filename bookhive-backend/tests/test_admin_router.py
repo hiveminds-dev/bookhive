@@ -204,7 +204,7 @@ async def test_reject_book_success_and_missing_reason_validation():
         "routers.admin_router.admin_service.reject_book",
         new=AsyncMock(
             side_effect=HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Rejection reason is required when rejecting a book submission.",
             )
         ),

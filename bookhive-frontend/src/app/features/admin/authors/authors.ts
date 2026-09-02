@@ -267,6 +267,6 @@ export class AuthorsComponent implements OnInit {
   }
 
   createAuthorModal(): void {
-    this.toastService.info('Opening Create Author modal...', 'Create Author');
+    this.toastService.info('Direct author creation is coming soon. Authors currently apply via the registration portal.', 'Coming Soon');
   }
 }

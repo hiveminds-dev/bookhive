@@ -5,6 +5,8 @@ from database import get_db_session
 from dependencies import require_admin
 from orm_models.user import User
 from schemas.admin_schemas import (
+    AccountStatusUpdateRequest,
+    AdminActionSuccessResponse,
     AdminCreateRequest,
     AdminStaffStatsResponse,
     AdminUserItemResponse,
@@ -22,6 +24,7 @@ from schemas.admin_schemas import (
     PlatformStatisticsResponse,
     ReaderAdminResponse,
     ReaderDetailAdminResponse,
+    RequestChangesRequest,
     SystemLogResponse,
 )
 from services.admin_service import AdminService
@@ -262,6 +265,19 @@ async def reject_book(
     return {"message": "Book rejected."}
 
 
+@router.post("/books/{book_id}/request-changes", response_model=AdminActionSuccessResponse)
+async def request_book_changes(
+    book_id: int,
+    req: RequestChangesRequest,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Request editorial changes for a pending manuscript."""
+    return await admin_service.request_book_changes(
+        session, book_id, admin_user.id, req.feedback
+    )
+
+
 @router.put("/books/{book_id}/status")
 async def update_book_status(
     book_id: int,
@@ -307,6 +323,48 @@ async def get_reader_detail(
             detail="Reader not found.",
         )
     return reader
+
+
+@router.put("/readers/{user_id}/status", response_model=AdminActionSuccessResponse)
+async def update_reader_status(
+    user_id: int,
+    req: AccountStatusUpdateRequest,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Suspend or reactivate a reader account."""
+    return await admin_service.update_reader_status(session, user_id, req.status)
+
+
+@router.post("/readers/{user_id}/reset-password", response_model=AdminActionSuccessResponse)
+async def send_reader_password_reset(
+    user_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Send a password reset email to a reader."""
+    return await admin_service.send_reader_password_reset(session, user_id)
+
+
+@router.put("/authors/{user_id}/status", response_model=AdminActionSuccessResponse)
+async def update_author_status(
+    user_id: int,
+    req: AccountStatusUpdateRequest,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Suspend or reactivate an author account."""
+    return await admin_service.update_author_status(session, user_id, req.status)
+
+
+@router.post("/authors/{user_id}/reset-password", response_model=AdminActionSuccessResponse)
+async def send_author_password_reset(
+    user_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    admin_user: User = Depends(require_admin),
+):
+    """Send a password reset email to an author."""
+    return await admin_service.send_author_password_reset(session, user_id)
 
 
 @router.get("/dashboard/recent", response_model=DashboardRecentResponse)
