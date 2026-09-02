@@ -429,6 +429,48 @@ class BookService:
             book_id,
         )
 
+    async def get_author_book(
+        self,
+        session: AsyncSession,
+        author_id: int,
+        book_id: int,
+    ) -> Book:
+        """Return a single book owned by the author with full details."""
+        return await self._get_owned_book(
+            session,
+            author_id,
+            book_id,
+        )
+
+    async def delete_book(
+        self,
+        session: AsyncSession,
+        author_id: int,
+        book_id: int,
+    ) -> None:
+        """Delete a draft or rejected book owned by the author and clean up files."""
+        book = await self._get_owned_book(
+            session,
+            author_id,
+            book_id,
+        )
+        self._ensure_book_is_editable(book)
+
+        pdf_path = book.pdf_path
+        cover_path = book.cover_image_path
+
+        try:
+            await self.book_repository.delete_book(session, book)
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+        if pdf_path:
+            await self._delete_upload_quietly(pdf_path)
+        if cover_path:
+            await self._delete_upload_quietly(cover_path)
+
     async def _save_uploaded_path(
         self,
         *,

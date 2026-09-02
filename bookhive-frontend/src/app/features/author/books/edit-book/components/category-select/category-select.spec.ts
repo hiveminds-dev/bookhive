@@ -35,6 +35,11 @@ describe('CategorySelectComponent', () => {
       )
     });
 
+    component.categories = [
+      { id: 1, name: 'Fiction' },
+      { id: 2, name: 'Mystery' }
+    ];
+
     fixture.detectChanges();
   });
 
@@ -42,18 +47,18 @@ describe('CategorySelectComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should contain available categories', () => {
-    expect(component.categories.length)
-      .toBeGreaterThan(0);
+  it('should accept and display categories', () => {
+    expect(component.categories.length).toBe(2);
+    expect(component.categories[0].name).toBe('Fiction');
   });
 
   it('should allow a category selection', () => {
     component.form
       .get('category')
-      ?.setValue('Fiction');
+      ?.setValue(1);
 
     expect(
       component.form.get('category')?.value
-    ).toBe('Fiction');
+    ).toBe(1);
   });
 });

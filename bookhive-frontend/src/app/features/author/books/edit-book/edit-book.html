@@ -43,6 +43,26 @@
 
     </header>
 
+    <!-- REJECTION REASON BANNER (IF APPLICABLE) -->
+    @if (rejectionReason) {
+      <div class="message rejection-banner" style="background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 14px; padding: 18px 22px; margin-bottom: 24px; color: #991b1b;">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <span style="font-size: 1.3rem; line-height: 1;">⚠️</span>
+          <div>
+            <strong style="display: block; font-size: 1rem; font-weight: 800; margin-bottom: 4px; color: #7f1d1d;">
+              Submission Rejected by Editorial Review
+            </strong>
+            <p style="margin: 0; font-size: 0.92rem; color: #991b1b; line-height: 1.5;">
+              <strong>Admin Feedback:</strong> {{ rejectionReason }}
+            </p>
+            <small style="display: block; margin-top: 8px; color: #b91c1c; font-weight: 600;">
+              Please adjust the book details, upload corrected files if necessary, and click "Submit for review" to resubmit.
+            </small>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- STATUS MESSAGE -->
 
     @if (successMessage) {
@@ -59,79 +79,90 @@
       </div>
     }
 
-    <!-- BASIC DETAILS -->
+    @if (isLoading) {
+      <div class="loading-state" style="text-align: center; padding: 40px; color: #64748b; font-weight: 600;">
+        Loading book details...
+      </div>
+    } @else {
 
-    <div class="basic-details-wrapper">
+      <!-- BASIC DETAILS -->
 
-      <app-author-book-form
-        [form]="bookForm">
-      </app-author-book-form>
+      <div class="basic-details-wrapper">
 
-      <app-author-category-select
-        [form]="bookForm">
-      </app-author-category-select>
+        <app-author-book-form
+          [form]="bookForm">
+        </app-author-book-form>
 
-    </div>
+        <app-author-category-select
+          [form]="bookForm"
+          [categories]="categories">
+        </app-author-category-select>
 
-    <!-- FILE UPLOAD -->
+      </div>
 
-    <div class="file-upload-wrapper">
+      <!-- FILE UPLOAD -->
 
-      <app-author-book-cover-upload
-        (bookFileSelected)="
-          onBookFileSelected($event)
-        "
-        (coverSelected)="
-          onCoverSelected($event)
-        ">
-      </app-author-book-cover-upload>
+      <div class="file-upload-wrapper">
 
-      @if (
-        bookFileRequiredError ||
-        coverRequiredError
-        ) {
-        <div class="file-errors">
+        <app-author-book-cover-upload
+          [initialCoverUrl]="existingCoverUrl"
+          [initialBookFileName]="existingPdfName"
+          (bookFileSelected)="
+            onBookFileSelected($event)
+          "
+          (coverSelected)="
+            onCoverSelected($event)
+          ">
+        </app-author-book-cover-upload>
 
-          @if (bookFileRequiredError) {
-            <small>
-              Book file is required.
-            </small>
-          }
+        @if (
+          bookFileRequiredError ||
+          coverRequiredError
+          ) {
+          <div class="file-errors">
 
-          @if (coverRequiredError) {
-            <small>
-              Book cover is required.
-            </small>
-          }
+            @if (bookFileRequiredError) {
+              <small>
+                Book PDF file is required.
+              </small>
+            }
 
-        </div>
-      }
+            @if (coverRequiredError) {
+              <small>
+                Book cover image is required.
+              </small>
+            }
 
-    </div>
+          </div>
+        }
 
-    <!-- EXTRA DETAILS -->
+      </div>
 
-    <div class="details-wrapper">
+      <!-- EXTRA DETAILS -->
 
-      <app-author-book-details
-        [form]="bookForm">
-      </app-author-book-details>
+      <div class="details-wrapper">
 
-    </div>
+        <app-author-book-details
+          [form]="bookForm">
+        </app-author-book-details>
 
-    <!-- SAVE BUTTONS -->
+      </div>
 
-    <div class="actions-wrapper">
+      <!-- SAVE BUTTONS -->
 
-      <app-author-save-actions
-        [isSavingDraft]="isSavingDraft"
-        [isSubmitting]="isSubmitting"
-        [submitDisabled]="false"
-        (saveDraft)="saveDraft()"
-        (submitForReview)="submitForReview()">
-      </app-author-save-actions>
+      <div class="actions-wrapper">
 
-    </div>
+        <app-author-save-actions
+          [isSavingDraft]="isSavingDraft"
+          [isSubmitting]="isSubmitting"
+          [submitDisabled]="false"
+          (saveDraft)="saveDraft()"
+          (submitForReview)="submitForReview()">
+        </app-author-save-actions>
+
+      </div>
+
+    }
 
   </div>
 

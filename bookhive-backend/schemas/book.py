@@ -67,16 +67,21 @@ class BookResponse(BaseModel):
     author_id: int
     category_id: int
     title: str
-    description: str | None
-    language: str | None
-    reading_level: str | None
-    pdf_path: str | None
-    cover_image_path: str | None
+    description: str | None = None
+    language: str | None = None
+    reading_level: str | None = None
+    pdf_path: str | None = None
+    cover_image_path: str | None = None
     status: BookStatus
     created_at: datetime
     updated_at: datetime
-    submitted_at: datetime | None
-    published_at: datetime | None
+    submitted_at: datetime | None = None
+    published_at: datetime | None = None
+    page_count: int | None = None
+    category_name: str | None = None
+    rejection_reason: str | None = None
+    cover_url: str | None = None
+    pdf_url: str | None = None
 
 
 class BookStatusResponse(BaseModel):
@@ -87,6 +92,7 @@ class BookStatusResponse(BaseModel):
     status: BookStatus
     submitted_at: datetime | None = None
     published_at: datetime | None = None
+    rejection_reason: str | None = None
 
 
 class BookDetailsAuthorResponse(BaseModel):

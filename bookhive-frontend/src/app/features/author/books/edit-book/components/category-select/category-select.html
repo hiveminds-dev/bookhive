@@ -16,15 +16,15 @@
         formControlName="category">
 
         <option value="" disabled>
-          Search categories...
+          Select a category...
         </option>
 
         @for (
           category of categories;
-          track category
+          track category.id
           ) {
-          <option [value]="category">
-            {{ category }}
+          <option [value]="category.id">
+            {{ category.name }}
           </option>
         }
 

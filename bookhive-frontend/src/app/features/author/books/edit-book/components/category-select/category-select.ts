@@ -8,6 +8,11 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 
+export interface CategoryOption {
+  id: number;
+  name: string;
+}
+
 @Component({
   selector: 'app-author-category-select',
   standalone: true,
@@ -20,24 +25,8 @@ export class CategorySelectComponent {
   @Input({ required: true })
   form!: FormGroup;
 
-  readonly categories = [
-    'Fiction',
-    'Mystery',
-    'Thriller',
-    'Romance',
-    'Science Fiction',
-    'Fantasy',
-    'History',
-    'Philosophy',
-    'Business',
-    'Technology',
-    'Programming',
-    'Design',
-    'Personal Growth',
-    'Biography',
-    'Poetry',
-    'Non-Fiction'
-  ];
+  @Input()
+  categories: CategoryOption[] = [];
 
   hasRequiredError(): boolean {
     const category =

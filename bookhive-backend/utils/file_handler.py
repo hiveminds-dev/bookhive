@@ -26,12 +26,14 @@ PDF_CONTENT_TYPES = {
 COVER_CONTENT_TYPES = {
     "image/jpeg",
     "image/png",
+    "image/webp",
 }
 
 COVER_EXTENSIONS = {
     ".jpg": "JPEG",
     ".jpeg": "JPEG",
     ".png": "PNG",
+    ".webp": "WEBP",
 }
 
 PROFILE_IMAGE_CONTENT_TYPES = {
@@ -98,12 +100,12 @@ async def save_cover(upload: UploadFile) -> str:
 
     if expected_format is None:
         raise InvalidFileTypeError(
-            "Only JPG, JPEG, and PNG cover images are allowed"
+            "Only JPG, JPEG, PNG, and WebP cover images are allowed"
         )
 
     if upload.content_type not in COVER_CONTENT_TYPES:
         raise InvalidFileTypeError(
-            "The cover must have an image/jpeg or image/png content type"
+            "The cover must have an image/jpeg, image/png, or image/webp content type"
         )
 
     storage_directory = settings.cover_storage_path

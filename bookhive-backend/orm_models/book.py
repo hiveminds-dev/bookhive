@@ -105,6 +105,33 @@ class Book(Base):
         return None
 
     @property
+    def category_name(self) -> str | None:
+        """Returns category name if category relationship is loaded."""
+        if getattr(self, "category", None) is not None and self.category:
+            return self.category.name
+        return None
+
+    @property
+    def cover_url(self) -> str | None:
+        """Returns the public URL for the cover image."""
+        if not self.cover_image_path:
+            return None
+        path = self.cover_image_path.strip().replace("\\", "/").lstrip("/")
+        if path.startswith(("http://", "https://")):
+            return path
+        return f"/{path}"
+
+    @property
+    def pdf_url(self) -> str | None:
+        """Returns the URL for the PDF file."""
+        if not self.pdf_path:
+            return None
+        path = self.pdf_path.strip().replace("\\", "/").lstrip("/")
+        if path.startswith(("http://", "https://")):
+            return path
+        return f"/{path}"
+
+    @property
     def estimated_reading_time(self) -> str:
         """Returns estimated reading time string based on page count (~2 mins/page)."""
         pages = self.page_count or 0

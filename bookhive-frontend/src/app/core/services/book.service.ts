@@ -97,6 +97,66 @@ export interface CatalogueFilterParams {
   language?: string;
 }
 
+export interface AuthorBookItem {
+  id: number;
+  author_id: number;
+  category_id: number;
+  title: string;
+  description: string | null;
+  language: string | null;
+  reading_level: string | null;
+  pdf_path: string | null;
+  cover_image_path: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  submitted_at: string | null;
+  published_at: string | null;
+  page_count?: number | null;
+  category_name?: string | null;
+  rejection_reason?: string | null;
+  cover_url?: string | null;
+  pdf_url?: string | null;
+}
+
+export interface AuthorBookResult {
+  message: string;
+  data: AuthorBookItem;
+}
+
+export interface AuthorBookListResult {
+  message: string;
+  data: AuthorBookItem[];
+}
+
+export interface AuthorBookStatusResult {
+  message: string;
+  data: {
+    id: number;
+    title: string;
+    status: string;
+    submitted_at?: string | null;
+    published_at?: string | null;
+    rejection_reason?: string | null;
+  };
+}
+
+export interface BookCreatePayload {
+  category_id: number;
+  title: string;
+  description?: string | null;
+  language?: string | null;
+  reading_level?: string | null;
+}
+
+export interface BookUpdatePayload {
+  category_id?: number | null;
+  title?: string | null;
+  description?: string | null;
+  language?: string | null;
+  reading_level?: string | null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -133,11 +193,67 @@ export class BookService {
     });
   }
 
-  getCategories(page = 1, pageSize = 20): Observable<CategoryListResponse> {
+  getCategories(page = 1, pageSize = 50): Observable<CategoryListResponse> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
 
     return this.http.get<CategoryListResponse>('/api/categories/', { params });
+  }
+
+  createDraftBook(payload: BookCreatePayload): Observable<AuthorBookItem> {
+    return this.http
+      .post<AuthorBookResult>('/api/books/', payload)
+      .pipe(map((res) => res.data));
+  }
+
+  updateBook(bookId: number, payload: BookUpdatePayload): Observable<AuthorBookItem> {
+    return this.http
+      .patch<AuthorBookResult>(`/api/books/${bookId}`, payload)
+      .pipe(map((res) => res.data));
+  }
+
+  uploadBookPdf(bookId: number, file: File): Observable<AuthorBookItem> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<AuthorBookResult>(`/api/books/${bookId}/upload/pdf`, formData)
+      .pipe(map((res) => res.data));
+  }
+
+  uploadBookCover(bookId: number, file: File): Observable<AuthorBookItem> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<AuthorBookResult>(`/api/books/${bookId}/upload/cover`, formData)
+      .pipe(map((res) => res.data));
+  }
+
+  submitBook(bookId: number): Observable<AuthorBookStatusResult['data']> {
+    return this.http
+      .patch<AuthorBookStatusResult>(`/api/books/${bookId}/submit`, {})
+      .pipe(map((res) => res.data));
+  }
+
+  getAuthorBooks(status?: string, offset = 0, limit = 50): Observable<AuthorBookItem[]> {
+    let params = new HttpParams()
+      .set('offset', offset.toString())
+      .set('limit', limit.toString());
+    if (status && status !== 'All') {
+      params = params.set('status', status.toUpperCase());
+    }
+    return this.http
+      .get<AuthorBookListResult>('/api/books/mine', { params })
+      .pipe(map((res) => res.data));
+  }
+
+  getAuthorBookById(bookId: number): Observable<AuthorBookItem> {
+    return this.http
+      .get<AuthorBookResult>(`/api/books/mine/${bookId}`)
+      .pipe(map((res) => res.data));
+  }
+
+  deleteAuthorBook(bookId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`/api/books/${bookId}`);
   }
 }
