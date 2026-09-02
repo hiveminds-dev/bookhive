@@ -2,7 +2,6 @@
   <article class="stat-card" *ngFor="let card of cards">
     <div class="stat-top">
       <span class="stat-icon"><svg viewBox="0 0 24 24"><path [attr.d]="card.path"/></svg></span>
-      <span class="trend" [class]="card.trendClass">{{ card.trend }} <small>↗</small></span>
     </div>
     <span class="label">{{ card.label }}</span>
     <strong>{{ card.value }}</strong>

@@ -81,8 +81,8 @@ export class SupportComponent {
     },
     {
       id: 4,
-      question: 'How are platform system logs collected?',
-      answer: 'Platform system logs track real-time security events, storage diagnostics, and API transactions. Click "System Logs ->" on the Platform Health card to inspect.',
+      question: 'Where can I report a technical issue?',
+      answer: 'Use the support ticket form on this page and include the steps that caused the issue, the expected result, and any error message shown.',
       isOpen: false
     }
   ]);

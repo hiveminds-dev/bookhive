@@ -4,18 +4,39 @@
     <h1>Reader Profile Details</h1>
   </header>
 
-  <div class="profile-grid">
+  <div *ngIf="loading()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Loading reader details...</p>
+  </div>
+
+  <div *ngIf="!loading() && !reader()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Reader not found.</p>
+    <a routerLink="/admin/dashboard" class="btn-secondary" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Return to Dashboard</a>
+  </div>
+
+  <div class="profile-grid" *ngIf="!loading() && reader()">
     <!-- Left Column: User Card -->
     <div class="user-card">
-      <div class="avatar-large">MW</div>
-      <h2>{{ reader.name }}</h2>
-      <span class="role-badge">{{ reader.role }}</span>
-      <span class="status-badge active">{{ reader.status }}</span>
+      <div class="avatar-large">{{ getInitials(reader()?.full_name || '') }}</div>
+      <h2>{{ reader()?.full_name }}</h2>
+      <span class="role-badge">Reader</span>
+      <span class="status-badge" [class.active]="reader()?.account_status === 'active'">
+        {{ reader()?.account_status }}
+      </span>
 
       <div class="info-list">
-        <div class="info-item"><span>Email</span><strong>{{ reader.email }}</strong></div>
-        <div class="info-item"><span>Joined</span><strong>{{ reader.joined }}</strong></div>
-        <div class="info-item"><span>Location</span><strong>{{ reader.location }}</strong></div>
+        <div class="info-item"><span>Username</span><strong>{{ reader()?.username }}</strong></div>
+        <div class="info-item"><span>Email</span><strong>{{ reader()?.email }}</strong></div>
+        <div class="info-item">
+          <span>Email Verified</span>
+          <strong>{{ reader()?.email_verified ? 'Verified' : 'Unverified' }}</strong>
+        </div>
+        <div class="info-item"><span>Joined</span><strong>{{ reader()?.joined_at | date:'mediumDate' }}</strong></div>
+        <div class="info-item"><span>Location</span><strong>{{ reader()?.country || 'Not specified' }}</strong></div>
+      </div>
+
+      <div class="bio-box" *ngIf="reader()?.short_bio" style="margin-top: 1rem; padding: 0.8rem; background: #f8fafc; border-radius: 8px;">
+        <h4 style="margin: 0 0 0.4rem; font-size: 0.85rem; color: #64748b;">Bio</h4>
+        <p style="margin: 0; font-size: 0.9rem; color: #1e293b;">{{ reader()?.short_bio }}</p>
       </div>
 
       <div class="card-actions">
@@ -24,34 +45,40 @@
       </div>
     </div>
 
-    <!-- Right Column: Reading Activity -->
+    <!-- Right Column: Reading & Reviews Activity -->
     <div class="activity-column">
       <div class="stats-row">
         <div class="stat-box">
-          <span>COMPLETED BOOKS</span>
-          <strong>{{ reader.completedBooksCount }}</strong>
+          <span>TOTAL REVIEWS</span>
+          <strong>{{ reader()?.review_count || 0 }}</strong>
         </div>
         <div class="stat-box">
-          <span>READING TIME</span>
-          <strong>{{ reader.totalReadTime }}</strong>
+          <span>ACCOUNT STATUS</span>
+          <strong style="text-transform: capitalize;">{{ reader()?.account_status }}</strong>
         </div>
         <div class="stat-box">
-          <span>SAVED BOOKS</span>
-          <strong>{{ reader.savedBooksCount }}</strong>
+          <span>VERIFICATION</span>
+          <strong>{{ reader()?.email_verified ? 'Verified' : 'Pending' }}</strong>
         </div>
       </div>
 
       <div class="section-card">
-        <h3>Reading History</h3>
-        <div class="history-list">
-          <div class="history-item" *ngFor="let item of readingHistory">
-            <img [src]="item.cover" [alt]="item.title" class="history-cover" />
+        <h3>Reviews &amp; Reading Activity</h3>
+        <div class="history-list" *ngIf="(reader()?.reviews?.length || 0) > 0">
+          <div class="history-item" *ngFor="let item of reader()?.reviews">
+            <img *ngIf="item.book_cover_url" [src]="item.book_cover_url" [alt]="item.book_title" class="history-cover" />
+            <div *ngIf="!item.book_cover_url" style="width: 48px; height: 64px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px; font-size: 1.2rem;">📖</div>
             <div class="history-info">
-              <strong>{{ item.title }}</strong>
-              <small>by {{ item.author }}</small>
+              <strong>{{ item.book_title }}</strong>
+              <small>by {{ item.book_author }} · {{ item.created_at | date:'mediumDate' }}</small>
+              <p *ngIf="item.comment" style="margin: 4px 0 0; font-size: 0.85rem; color: #475569;">"{{ item.comment }}"</p>
             </div>
-            <span class="status-pill">{{ item.status }} ({{ item.progress }})</span>
+            <span class="status-pill" style="margin-left: auto;">★ {{ item.rating }}/5</span>
           </div>
+        </div>
+
+        <div *ngIf="(reader()?.reviews?.length || 0) === 0" style="padding: 2rem; text-align: center; color: #94a3b8; font-style: italic;">
+          No reader reviews or activity recorded for this user yet.
         </div>
       </div>
     </div>

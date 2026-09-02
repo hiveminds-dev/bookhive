@@ -1,6 +1,8 @@
-from datetime import UTC, datetime
+import math
+from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import func, select
+from fastapi import HTTPException, status
+from sqlalchemy import String, cast, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -8,6 +10,7 @@ from orm_models.author_rejection_log import AuthorRejectionLog
 from orm_models.book import Book, BookStatus
 from orm_models.book_rejection_log import BookRejectionLog
 from orm_models.category import Category
+from orm_models.review import Review
 from orm_models.user import AccountStatus, User, UserRole
 from schemas.admin_schemas import (
     ActiveAuthorItem,
@@ -16,9 +19,12 @@ from schemas.admin_schemas import (
     AdminStaffStatsResponse,
     AdminUserItemResponse,
     AuthorApplicationResponse,
+    AuthorBookAdminSummary,
+    AuthorDetailAdminResponse,
     AuthorRejectionLogItem,
     AuthorStatsResponse,
     BookAdminResponse,
+    BookRejectionLogItem,
     BookReviewItem,
     CategoryAdminItem,
     DashboardRecentResponse,
@@ -29,6 +35,8 @@ from schemas.admin_schemas import (
     PaginatedBookAdminResponse,
     PlatformStatisticsResponse,
     ReaderAdminResponse,
+    ReaderDetailAdminResponse,
+    ReaderReviewAdminItem,
     RecentAuthorRequestItem,
     RecentBookItem,
     RecentReaderItem,
@@ -85,6 +93,57 @@ class AdminService:
             author_requests=author_requests,
         )
 
+    def _map_book_to_admin_response(self, b: Book) -> BookAdminResponse:
+        reviews_list = [
+            BookReviewItem(
+                id=rev.id,
+                user_name=rev.user.full_name if rev.user else "Anonymous",
+                avatar_letter=rev.user.full_name[0].upper() if (rev.user and rev.user.full_name) else "A",
+                rating=rev.rating,
+                comment=rev.comment,
+                created_at=rev.created_at.isoformat() if rev.created_at else "",
+            )
+            for rev in (getattr(b, "reviews", []) or [])
+        ]
+
+        rejection_logs_list = [
+            BookRejectionLogItem(
+                id=log.id,
+                reason=log.reason,
+                created_at=log.created_at.isoformat() if log.created_at else "",
+            )
+            for log in (getattr(b, "rejection_logs", []) or [])
+        ]
+
+        return BookAdminResponse(
+            id=b.id,
+            title=b.title,
+            author_name=b.author.full_name if b.author else "Unknown",
+            category_name=b.category.name if b.category else "General",
+            language=b.language,
+            reading_level=b.reading_level,
+            status=b.status.value if hasattr(b.status, "value") else str(b.status),
+            cover_image_path=b.cover_image_path,
+            pdf_path=b.pdf_path,
+            author_profile_image_path=(
+                b.author.author_profile.profile_image_path
+                if (b.author and getattr(b.author, "author_profile", None))
+                else None
+            ),
+            page_count=b.page_count,
+            rejection_reason=b.rejection_reason,
+            estimated_reading_time=b.estimated_reading_time if b.page_count else None,
+            view_count=b.view_count or 0,
+            download_count=b.download_count or 0,
+            isbn=None,
+            average_rating=b.average_rating if hasattr(b, "average_rating") else 0.0,
+            review_count=b.review_count if hasattr(b, "review_count") else len(reviews_list),
+            reviews=reviews_list,
+            rejection_logs=rejection_logs_list,
+            created_at=b.created_at,
+            published_at=b.published_at,
+        )
+
     async def get_all_books(
         self,
         session: AsyncSession,
@@ -97,15 +156,6 @@ class AdminService:
         page: int = 1,
         page_size: int = 5,
     ) -> PaginatedBookAdminResponse:
-        import math
-        from datetime import timedelta
-
-        from sqlalchemy import String, cast, or_
-
-        from orm_models.category import Category
-        from orm_models.review import Review
-        from schemas.admin_schemas import BookRejectionLogItem
-
         query = (
             select(Book)
             .options(
@@ -152,15 +202,17 @@ class AdminService:
             query = query.order_by(Book.created_at.asc())
         elif sort_by == "title":
             query = query.order_by(Book.title.asc())
+        elif sort_by == "views":
+            query = query.order_by(Book.view_count.desc(), Book.created_at.desc())
+        elif sort_by == "downloads":
+            query = query.order_by(Book.download_count.desc(), Book.created_at.desc())
         else:
             query = query.order_by(Book.created_at.desc())
 
-        # Count total matching records before offset/limit
         count_subquery = query.order_by(None).subquery()
         total_res = await session.execute(select(func.count()).select_from(count_subquery))
         total_count = total_res.scalar() or 0
 
-        # Apply server-side pagination offset & limit
         page = max(1, page)
         page_size = max(1, page_size)
         paginated_query = query.offset((page - 1) * page_size).limit(page_size)
@@ -168,61 +220,7 @@ class AdminService:
         result = await session.execute(paginated_query)
         books = result.scalars().all()
 
-        def get_book_pages(b: Book) -> int:
-            if getattr(b, "page_count", None) and b.page_count > 0:
-                return b.page_count
-            return 180 + (b.id * 50) % 200
-
-        res: list[BookAdminResponse] = []
-        for b in books:
-            p_count = get_book_pages(b)
-            r_time = b.estimated_reading_time
-
-            reviews_list = [
-                BookReviewItem(
-                    id=rev.id,
-                    user_name=rev.user.full_name if rev.user else "Anonymous",
-                    avatar_letter=rev.user.full_name[0].upper() if (rev.user and rev.user.full_name) else "A",
-                    rating=rev.rating,
-                    comment=rev.comment,
-                    created_at=rev.created_at.isoformat() if rev.created_at else ""
-                )
-                for rev in (getattr(b, "reviews", []) or [])
-            ]
-
-            rejection_logs_list = [
-                BookRejectionLogItem(
-                    id=log.id,
-                    reason=log.reason,
-                    created_at=log.created_at.isoformat() if log.created_at else ""
-                )
-                for log in (getattr(b, "rejection_logs", []) or [])
-            ]
-
-            res.append(
-                BookAdminResponse(
-                    id=b.id,
-                    title=b.title,
-                    author_name=b.author.full_name if b.author else "Unknown",
-                    category_name=b.category.name if b.category else "General",
-                    language=b.language,
-                    reading_level=b.reading_level,
-                    status=b.status.value if hasattr(b.status, "value") else str(b.status),
-                    cover_image_path=b.cover_image_path,
-                    pdf_path=b.pdf_path,
-                    author_profile_image_path=b.author.author_profile.profile_image_path if (b.author and getattr(b.author, "author_profile", None)) else None,
-                    page_count=p_count,
-                    rejection_reason=b.rejection_reason,
-                    estimated_reading_time=r_time,
-                    average_rating=getattr(b, "average_rating", 4.8),
-                    review_count=getattr(b, "review_count", len(reviews_list)),
-                    reviews=reviews_list,
-                    rejection_logs=rejection_logs_list,
-                    created_at=b.created_at,
-                    published_at=b.published_at,
-                )
-            )
-
+        res = [self._map_book_to_admin_response(b) for b in books]
         total_pages = math.ceil(total_count / page_size) if total_count > 0 else 1
         return PaginatedBookAdminResponse(
             items=res,
@@ -233,6 +231,25 @@ class AdminService:
             has_next=page < total_pages,
             has_prev=page > 1,
         )
+
+    async def get_book_by_id(
+        self, session: AsyncSession, book_id: int
+    ) -> BookAdminResponse | None:
+        query = (
+            select(Book)
+            .options(
+                selectinload(Book.author).selectinload(User.author_profile),
+                selectinload(Book.category),
+                selectinload(Book.reviews).selectinload(Review.user),
+                selectinload(Book.rejection_logs),
+            )
+            .where(Book.id == book_id)
+        )
+        result = await session.execute(query)
+        book = result.scalar_one_or_none()
+        if book is None:
+            return None
+        return self._map_book_to_admin_response(book)
 
     async def get_author_applications(
         self, session: AsyncSession, status_filter: str | None = None
@@ -294,9 +311,20 @@ class AdminService:
     ) -> bool:
         user = await session.get(User, user_id)
         if user is None:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Author user not found.",
+            )
         if user.role != UserRole.AUTHOR:
-            raise ValueError("User is not an author application.")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User is not an author application.",
+            )
+        if user.account_status == AccountStatus.APPROVED:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Author is already approved.",
+            )
 
         user.account_status = AccountStatus.APPROVED
         await session.commit()
@@ -311,15 +339,32 @@ class AdminService:
     ) -> bool:
         user = await session.get(User, user_id)
         if user is None:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Author user not found.",
+            )
         if user.role != UserRole.AUTHOR:
-            raise ValueError("User is not an author application.")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User is not an author application.",
+            )
+        if user.account_status == AccountStatus.REJECTED:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Author is already rejected.",
+            )
 
-        cleaned_reason = rejection_reason.strip()
+        cleaned_reason = rejection_reason.strip() if rejection_reason else ""
         if not cleaned_reason:
-            raise ValueError("Rejection reason cannot be blank.")
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Rejection reason cannot be blank or whitespace only.",
+            )
         if len(cleaned_reason) > 500:
-            raise ValueError("Rejection reason cannot exceed 500 characters.")
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Rejection reason cannot exceed 500 characters.",
+            )
 
         user.account_status = AccountStatus.REJECTED
         log_entry = AuthorRejectionLog(
@@ -336,7 +381,22 @@ class AdminService:
     ) -> bool:
         book = await session.get(Book, book_id)
         if book is None:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Book not found.",
+            )
+
+        if book.status == BookStatus.PUBLISHED:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Book is already published.",
+            )
+
+        if book.status != BookStatus.PENDING_REVIEW:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Cannot approve book with status '{book.status.value}'. Only books in 'PENDING_REVIEW' can be approved.",
+            )
 
         book.status = BookStatus.PUBLISHED
         book.published_at = datetime.now(UTC)
@@ -344,15 +404,41 @@ class AdminService:
         return True
 
     async def reject_book(
-        self, session: AsyncSession, book_id: int, rejection_reason: str | None = None
+        self, session: AsyncSession, book_id: int, rejection_reason: str
     ) -> bool:
         book = await session.get(Book, book_id)
         if book is None:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Book not found.",
+            )
+
+        if book.status == BookStatus.REJECTED:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Book is already rejected.",
+            )
+
+        if book.status != BookStatus.PENDING_REVIEW:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Cannot reject book with status '{book.status.value}'. Only books in 'PENDING_REVIEW' can be rejected.",
+            )
+
+        cleaned_reason = rejection_reason.strip() if rejection_reason else ""
+        if not cleaned_reason:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Rejection reason is required when rejecting a book submission.",
+            )
+        if len(cleaned_reason) > 500:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Rejection reason cannot exceed 500 characters.",
+            )
 
         book.status = BookStatus.REJECTED
-        if rejection_reason and rejection_reason.strip():
-            session.add(BookRejectionLog(book_id=book.id, reason=rejection_reason.strip()))
+        session.add(BookRejectionLog(book_id=book.id, reason=cleaned_reason))
         await session.commit()
         return True
 
@@ -361,43 +447,72 @@ class AdminService:
     ) -> bool:
         book = await session.get(Book, book_id)
         if book is None:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Book not found.",
+            )
 
         status_upper = new_status.strip().upper()
-        if status_upper == "DEACTIVATED":
-            book.status = BookStatus.DEACTIVATED
-        elif status_upper in ["PUBLISHED", "ACTIVE"]:
+        if status_upper not in [s.value for s in BookStatus]:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Invalid target book status '{new_status}'.",
+            )
+
+        target_status = BookStatus(status_upper)
+        current_status = book.status
+
+        if target_status == current_status:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Book is already in '{current_status.value}' status.",
+            )
+
+        if current_status == BookStatus.DRAFT:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Cannot change status of a DRAFT book directly from Admin. Author must submit for review first.",
+            )
+
+        if current_status == BookStatus.REJECTED and target_status == BookStatus.PUBLISHED:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Cannot publish a REJECTED book directly. Author must edit and resubmit for review first.",
+            )
+
+        if current_status == BookStatus.PUBLISHED and target_status == BookStatus.REJECTED:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Cannot reject a PUBLISHED book. Deactivate the book instead.",
+            )
+
+        if target_status == BookStatus.REJECTED:
+            cleaned_reason = rejection_reason.strip() if rejection_reason else ""
+            if not cleaned_reason:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Rejection reason is required when setting status to REJECTED.",
+                )
+            if len(cleaned_reason) > 500:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Rejection reason cannot exceed 500 characters.",
+                )
+            book.status = BookStatus.REJECTED
+            session.add(BookRejectionLog(book_id=book.id, reason=cleaned_reason))
+        elif target_status == BookStatus.PUBLISHED:
             book.status = BookStatus.PUBLISHED
             if not book.published_at:
                 book.published_at = datetime.now(UTC)
-        elif status_upper == "REJECTED":
-            book.status = BookStatus.REJECTED
-            if rejection_reason and rejection_reason.strip():
-                session.add(BookRejectionLog(book_id=book.id, reason=rejection_reason.strip()))
-        elif status_upper == "PENDING_REVIEW":
-            book.status = BookStatus.PENDING_REVIEW
         else:
-            book.status = BookStatus.DRAFT
+            book.status = target_status
 
         await session.commit()
         return True
 
-
     async def get_system_logs(self) -> list[SystemLogResponse]:
-        from datetime import timedelta
-        now = datetime.now(UTC)
-        def ts(delta_secs: int) -> str:
-            return (now - timedelta(seconds=delta_secs)).strftime("%Y-%m-%d %H:%M:%S UTC")
-        return [
-            SystemLogResponse(timestamp=ts(0),   level="INFO",    module="AuthService",     message="Admin session authenticated successfully."),
-            SystemLogResponse(timestamp=ts(120),  level="SUCCESS", module="BookRepository",  message="Book status updated to PUBLISHED."),
-            SystemLogResponse(timestamp=ts(300),  level="WARN",    module="StorageService",  message="Storage utilization reached 64% — consider cleanup."),
-            SystemLogResponse(timestamp=ts(480),  level="INFO",    module="AuthorService",   message="Author application approved by admin."),
-            SystemLogResponse(timestamp=ts(720),  level="SUCCESS", module="SeedService",     message="Demo data seeded successfully into database."),
-            SystemLogResponse(timestamp=ts(900),  level="INFO",    module="CategoryService", message="Book categories fetched (10 total)."),
-            SystemLogResponse(timestamp=ts(1200), level="WARN",    module="CacheService",    message="Cache miss rate exceeds 15% — review hot paths."),
-            SystemLogResponse(timestamp=ts(1800), level="INFO",    module="AdminService",    message="Dashboard statistics compiled successfully."),
-        ]
+        # Return an honest empty list in MVP since persistent backend logging is not stored
+        return []
 
     async def get_all_readers(
         self, session: AsyncSession
@@ -420,10 +535,149 @@ class AdminService:
             for u in users
         ]
 
+    async def get_reader_detail(
+        self, session: AsyncSession, user_id: int
+    ) -> ReaderDetailAdminResponse | None:
+        query = (
+            select(User)
+            .options(
+                selectinload(User.reader_profile),
+                selectinload(User.reviews).selectinload(Review.book).selectinload(Book.author),
+            )
+            .where(User.id == user_id, User.role == UserRole.READER)
+        )
+        result = await session.execute(query)
+        user = result.scalar_one_or_none()
+        if user is None:
+            return None
+
+        reviews_list = [
+            ReaderReviewAdminItem(
+                id=rev.id,
+                book_id=rev.book_id,
+                book_title=rev.book.title if rev.book else "Unknown Book",
+                book_cover_url=rev.book.cover_url if rev.book else None,
+                book_author=rev.book.author.full_name if (rev.book and rev.book.author) else "Unknown Author",
+                rating=rev.rating,
+                comment=rev.comment,
+                created_at=rev.created_at.isoformat() if rev.created_at else "",
+            )
+            for rev in (user.reviews or [])
+        ]
+
+        return ReaderDetailAdminResponse(
+            id=user.id,
+            full_name=user.full_name,
+            username=user.username,
+            email=user.email,
+            account_status=user.account_status.value if hasattr(user.account_status, "value") else str(user.account_status),
+            email_verified=user.email_verified,
+            joined_at=user.created_at,
+            country=user.reader_profile.country if user.reader_profile else None,
+            short_bio=user.reader_profile.short_bio if user.reader_profile else None,
+            review_count=len(reviews_list),
+            reviews=reviews_list,
+        )
+
+    async def get_author_detail(
+        self, session: AsyncSession, user_id: int
+    ) -> AuthorDetailAdminResponse | None:
+        query = (
+            select(User)
+            .options(
+                selectinload(User.author_profile),
+                selectinload(User.author_rejection_logs),
+                selectinload(User.books).selectinload(Book.category),
+                selectinload(User.books).selectinload(Book.reviews),
+                selectinload(User.books).selectinload(Book.rejection_logs),
+            )
+            .where(User.id == user_id, User.role == UserRole.AUTHOR)
+        )
+        result = await session.execute(query)
+        user = result.scalar_one_or_none()
+        if user is None:
+            return None
+
+        published_books: list[AuthorBookAdminSummary] = []
+        pending_books: list[AuthorBookAdminSummary] = []
+        rejected_books: list[AuthorBookAdminSummary] = []
+        draft_books: list[AuthorBookAdminSummary] = []
+
+        total_views = 0
+        total_downloads = 0
+        all_published_reviews_ratings: list[int] = []
+
+        for b in (user.books or []):
+            total_views += b.view_count or 0
+            total_downloads += b.download_count or 0
+
+            summary = AuthorBookAdminSummary(
+                id=b.id,
+                title=b.title,
+                category_name=b.category.name if b.category else "General",
+                status=b.status.value if hasattr(b.status, "value") else str(b.status),
+                cover_image_path=b.cover_image_path,
+                view_count=b.view_count or 0,
+                download_count=b.download_count or 0,
+                average_rating=b.average_rating if hasattr(b, "average_rating") else 0.0,
+                rejection_reason=b.rejection_reason,
+                created_at=b.created_at,
+                published_at=b.published_at,
+            )
+
+            if b.status == BookStatus.PUBLISHED:
+                published_books.append(summary)
+                if b.reviews:
+                    all_published_reviews_ratings.extend(r.rating for r in b.reviews)
+            elif b.status == BookStatus.PENDING_REVIEW:
+                pending_books.append(summary)
+            elif b.status == BookStatus.REJECTED:
+                rejected_books.append(summary)
+            elif b.status == BookStatus.DRAFT:
+                draft_books.append(summary)
+
+        avg_rating = (
+            round(sum(all_published_reviews_ratings) / len(all_published_reviews_ratings), 1)
+            if all_published_reviews_ratings
+            else 0.0
+        )
+
+        rejection_logs = [
+            AuthorRejectionLogItem(
+                id=log.id,
+                reason=log.reason,
+                created_at=log.created_at.isoformat() if hasattr(log.created_at, "isoformat") else str(log.created_at),
+            )
+            for log in (user.author_rejection_logs or [])
+        ]
+
+        return AuthorDetailAdminResponse(
+            id=user.id,
+            full_name=user.full_name,
+            username=user.username,
+            email=user.email,
+            account_status=user.account_status.value if hasattr(user.account_status, "value") else str(user.account_status),
+            email_verified=user.email_verified,
+            created_at=user.created_at,
+            pen_name=user.author_profile.pen_name if user.author_profile else user.full_name,
+            country=user.author_profile.country if user.author_profile else None,
+            short_bio=user.author_profile.short_bio if user.author_profile else None,
+            profile_image_path=user.author_profile.profile_image_path if user.author_profile else None,
+            total_books=len(user.books or []),
+            total_views=total_views,
+            total_downloads=total_downloads,
+            average_rating=avg_rating,
+            published_books=published_books,
+            pending_books=pending_books,
+            rejected_books=rejected_books,
+            draft_books=draft_books,
+            rejection_logs=rejection_logs,
+        )
+
     async def get_dashboard_recent(
         self, session: AsyncSession
     ) -> DashboardRecentResponse:
-        # Last 5 books — eagerly load author + category to avoid async lazy-load errors
+        # Last 5 books
         books_res = await session.execute(
             select(Book)
             .options(selectinload(Book.author), selectinload(Book.category))
@@ -460,7 +714,7 @@ class AdminService:
             for u in readers_res.scalars().all()
         ]
 
-        # Pending author requests — author_profile is lazy="selectin" on User so it loads automatically
+        # Pending author requests
         pending_res = await session.execute(
             select(User)
             .where(User.role == UserRole.AUTHOR, User.account_status == AccountStatus.PENDING)
@@ -507,7 +761,27 @@ class AdminService:
     async def create_category(
         self, session: AsyncSession, name: str, description: str | None = None
     ) -> CategoryAdminItem:
-        cat = Category(name=name.strip(), description=description.strip() if description else None, is_active=True)
+        cleaned_name = name.strip() if name else ""
+        if not cleaned_name:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Category name cannot be blank.",
+            )
+
+        existing_res = await session.execute(
+            select(Category).where(func.lower(Category.name) == func.lower(cleaned_name))
+        )
+        if existing_res.scalar_one_or_none() is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Category '{cleaned_name}' already exists.",
+            )
+
+        cat = Category(
+            name=cleaned_name,
+            description=description.strip() if description else None,
+            is_active=True,
+        )
         session.add(cat)
         await session.commit()
         await session.refresh(cat)
@@ -525,7 +799,10 @@ class AdminService:
     ) -> tuple[bool, bool]:
         cat = await session.get(Category, category_id)
         if cat is None:
-            return False, False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Category not found.",
+            )
 
         cat.is_active = not cat.is_active
         await session.commit()
@@ -534,7 +811,21 @@ class AdminService:
     async def delete_category(self, session: AsyncSession, category_id: int) -> bool:
         cat = await session.get(Category, category_id)
         if cat is None:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Category not found.",
+            )
+
+        # Verify no books reference this category
+        book_count_res = await session.execute(
+            select(func.count(Book.id)).where(Book.category_id == category_id)
+        )
+        book_count = book_count_res.scalar_one_or_none() or 0
+        if book_count > 0:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Cannot delete category '{cat.name}' because {book_count} book(s) reference it.",
+            )
 
         await session.delete(cat)
         await session.commit()
@@ -592,41 +883,69 @@ class AdminService:
         total_downloads = format_num(sum_downloads_raw)
         total_views = format_num(sum_views_raw)
 
-        # 1. Dynamic Monthly Uploads from DB (grouped by created_at month)
-        month_names = {1: "JAN", 2: "FEB", 3: "MAR", 4: "APR", 5: "MAY", 6: "JUN", 7: "JUL", 8: "AUG", 9: "SEP", 10: "OCT", 11: "NOV", 12: "DEC"}
-        monthly_uploads = []
-        for month_num in range(1, 7):
-            m_label = month_names[month_num]
+        # 1. Monthly Uploads from DB (Past 6 months based on actual year & month)
+        now = datetime.now(UTC)
+        month_labels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+
+        months_window = []
+        for i in range(5, -1, -1):
+            m_idx = now.month - 1 - i
+            y = now.year + (m_idx // 12)
+            m = (m_idx % 12) + 1
+            months_window.append((y, m))
+
+        upload_counts = []
+        for (y, m) in months_window:
+            label = month_labels[m - 1]
             pub_res = await session.execute(
                 select(func.count()).select_from(Book)
-                .where(Book.status == BookStatus.PUBLISHED, func.extract('month', Book.created_at) == month_num)
+                .where(
+                    Book.status == BookStatus.PUBLISHED,
+                    func.extract('year', Book.created_at) == y,
+                    func.extract('month', Book.created_at) == m,
+                )
             )
             pub_cnt = pub_res.scalar() or 0
 
             draft_res = await session.execute(
                 select(func.count()).select_from(Book)
-                .where(Book.status != BookStatus.PUBLISHED, func.extract('month', Book.created_at) == month_num)
+                .where(
+                    Book.status != BookStatus.PUBLISHED,
+                    func.extract('year', Book.created_at) == y,
+                    func.extract('month', Book.created_at) == m,
+                )
             )
             draft_cnt = draft_res.scalar() or 0
+            upload_counts.append((label, pub_cnt, draft_cnt))
 
-            # Scale heights for UI chart presentation
-            dark_val = min(100, max(15, pub_cnt * 12 + (month_num * 6)))
-            light_val = min(100, max(10, draft_cnt * 10 + 15))
-            monthly_uploads.append(MonthlyUploadItem(month=m_label, dark=dark_val, light=light_val))
+        max_upload_total = max([pub + draft for _, pub, draft in upload_counts] + [1])
+        monthly_uploads = []
+        for label, pub_cnt, draft_cnt in upload_counts:
+            dark_val = int((pub_cnt / max_upload_total) * 100) if pub_cnt > 0 else 0
+            light_val = int((draft_cnt / max_upload_total) * 100) if draft_cnt > 0 else 0
+            monthly_uploads.append(MonthlyUploadItem(month=label, dark=dark_val, light=light_val))
 
-        # 2. Dynamic Monthly Registrations from DB (grouped by User created_at month)
-        monthly_registrations = []
-        for month_num in range(1, 7):
-            m_label = month_names[month_num]
+        # 2. Monthly Registrations from DB (Past 6 months with correct year & month)
+        reg_counts = []
+        for (y, m) in months_window:
+            label = month_labels[m - 1]
             u_res = await session.execute(
                 select(func.count()).select_from(User)
-                .where(func.extract('month', User.created_at) == month_num)
+                .where(
+                    func.extract('year', User.created_at) == y,
+                    func.extract('month', User.created_at) == m,
+                )
             )
             u_cnt = u_res.scalar() or 0
-            val = min(100, max(20, u_cnt * 25 + (month_num * 5)))
-            monthly_registrations.append(MonthlyRegistrationItem(month=m_label, val=val))
+            reg_counts.append((label, u_cnt))
 
-        # 3. Dynamic Top Categories from DB
+        max_reg = max([cnt for _, cnt in reg_counts] + [1])
+        monthly_registrations = []
+        for label, u_cnt in reg_counts:
+            val = int((u_cnt / max_reg) * 100) if u_cnt > 0 else 0
+            monthly_registrations.append(MonthlyRegistrationItem(month=label, val=val))
+
+        # 3. Top Categories from DB
         cats_res = await session.execute(select(Category).options(selectinload(Category.books)))
         all_cats = cats_res.scalars().all()
         top_cats = []
@@ -637,7 +956,7 @@ class AdminService:
         top_cats.sort(key=lambda x: x.pct, reverse=True)
         top_categories = top_cats[:4]
 
-        # 4. Dynamic Most Read Books from DB (Sorted by view_count DESC)
+        # 4. Most Read Books from DB (Sorted by view_count DESC, real values, no fake trend)
         most_read_res = await session.execute(
             select(Book).options(selectinload(Book.author), selectinload(Book.category), selectinload(Book.reviews))
             .where(Book.status == BookStatus.PUBLISHED)
@@ -645,13 +964,12 @@ class AdminService:
         )
         top_books_db = most_read_res.scalars().all()
         most_read_books = []
-        for idx, b in enumerate(top_books_db):
-            cover = f"http://localhost:8000/{b.cover_image_path}" if b.cover_image_path else None
+        for b in top_books_db:
+            cover = f"/{b.cover_image_path.lstrip('/')}" if b.cover_image_path else None
             author_name = b.author.full_name if b.author else "Unknown Author"
             cat_name = b.category.name if b.category else "General"
             reads_str = f"{b.view_count:,}" if b.view_count else "0"
-            rating_val = f"{b.average_rating:.1f}" if hasattr(b, "average_rating") else "4.8"
-            trend_val = f"+{(5.2 + idx * 2.1):.1f}%" if idx % 2 == 0 else f"-{(1.2 + idx):.1f}%"
+            rating_val = f"{b.average_rating:.1f}" if (hasattr(b, "average_rating") and b.reviews) else "Not rated"
 
             most_read_books.append(MostReadBookItem(
                 id=b.id,
@@ -660,46 +978,56 @@ class AdminService:
                 category=cat_name,
                 totalReads=reads_str,
                 rating=rating_val,
-                trend=trend_val,
+                trend="N/A",
                 cover=cover,
             ))
 
-        # 5. Dynamic Most Active Authors from DB
+        # 5. Most Active Authors from DB (Sorted by published count and views, real ratings)
         authors_res = await session.execute(
-            select(User).options(selectinload(User.books), selectinload(User.author_profile))
-            .where(User.role == UserRole.AUTHOR, User.account_status == AccountStatus.APPROVED).limit(4)
+            select(User).options(
+                selectinload(User.books).selectinload(Book.reviews),
+                selectinload(User.author_profile)
+            )
+            .where(User.role == UserRole.AUTHOR, User.account_status == AccountStatus.APPROVED)
         )
-        top_authors_db = authors_res.scalars().all()
-        active_authors = []
-        for u in top_authors_db:
-            b_cnt = len(u.books)
-            total_author_views = sum(b.view_count or 0 for b in u.books)
-            score_num = round(min(99.9, max(75.0, (b_cnt * 15.0) + (total_author_views / 500.0))), 1)
-            avatar = f"http://localhost:8000/{u.author_profile.profile_image_path}" if (u.author_profile and u.author_profile.profile_image_path) else "assets/images/auth/sign_in_1.png"
-            active_authors.append(ActiveAuthorItem(
-                name=u.full_name,
-                booksCount=b_cnt,
-                score=f"{score_num:.1f}",
-                avatar=avatar,
-            ))
+        all_authors_db = authors_res.scalars().all()
+        active_authors_list = []
+        for u in all_authors_db:
+            pub_books = [b for b in (u.books or []) if b.status == BookStatus.PUBLISHED]
+            b_cnt = len(pub_books)
+            author_views = sum(b.view_count or 0 for b in (u.books or []))
+            all_ratings = [r.rating for b in pub_books for r in (b.reviews or [])]
+            avg_rating = round(sum(all_ratings) / len(all_ratings), 1) if all_ratings else 0.0
+            avatar = f"/{u.author_profile.profile_image_path.lstrip('/')}" if (u.author_profile and u.author_profile.profile_image_path) else None
+            score_str = f"★ {avg_rating:.1f}" if all_ratings else "★ 0.0"
 
-        # 6. Dynamic Most Active Readers from DB
+            active_authors_list.append((u.full_name, b_cnt, score_str, avatar, author_views))
+
+        active_authors_list.sort(key=lambda x: (x[1], x[4]), reverse=True)
+        active_authors = [
+            ActiveAuthorItem(name=name, booksCount=b_cnt, score=score_str, avatar=avatar)
+            for name, b_cnt, score_str, avatar, _ in active_authors_list[:4]
+        ]
+
+        # 6. Most Active Readers from DB (Sorted by real reviews submitted)
         readers_res = await session.execute(
-            select(User).where(User.role == UserRole.READER).order_by(User.created_at.asc()).limit(4)
+            select(User).options(selectinload(User.reviews))
+            .where(User.role == UserRole.READER)
         )
-        top_readers_db = readers_res.scalars().all()
-        active_readers = []
-        for idx, r in enumerate(top_readers_db):
+        all_readers_db = readers_res.scalars().all()
+        active_readers_list = []
+        for r in all_readers_db:
             parts = r.full_name.split()
             initials = "".join([p[0].upper() for p in parts[:2]]) if parts else "RD"
-            joined_str = f"Joined {r.created_at.strftime('%b %Y')}" if r.created_at else "Joined Jan 2026"
-            total_reads_val = (idx + 1) * 120 + 135
-            active_readers.append(ActiveReaderItem(
-                name=r.full_name,
-                joined=joined_str,
-                totalReads=total_reads_val,
-                initials=initials,
-            ))
+            joined_str = f"Joined {r.created_at.strftime('%b %Y')}" if r.created_at else "Joined"
+            rev_cnt = len(r.reviews) if r.reviews else 0
+            active_readers_list.append((r.full_name, joined_str, rev_cnt, initials, r.created_at))
+
+        active_readers_list.sort(key=lambda x: (x[2], x[4]), reverse=True)
+        active_readers = [
+            ActiveReaderItem(name=name, joined=joined_str, totalReads=rev_cnt, initials=initials)
+            for name, joined_str, rev_cnt, initials, _ in active_readers_list[:4]
+        ]
 
         return PlatformStatisticsResponse(
             total_books=total_books,
@@ -784,15 +1112,13 @@ class AdminService:
         return result
 
     async def create_admin_staff(self, session: AsyncSession, data: AdminCreateRequest) -> AdminUserItemResponse:
-        from fastapi import HTTPException, status
-
         from utils.security import hash_password
 
         # Check existing email
         email_res = await session.execute(select(User).where(User.email == data.email))
         if email_res.scalar_one_or_none() is not None:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_409_CONFLICT,
                 detail=f"An account with email '{data.email}' already exists.",
             )
 
@@ -800,7 +1126,7 @@ class AdminService:
         u_res = await session.execute(select(User).where(User.username == data.username))
         if u_res.scalar_one_or_none() is not None:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_409_CONFLICT,
                 detail=f"Username '{data.username}' is already taken.",
             )
 

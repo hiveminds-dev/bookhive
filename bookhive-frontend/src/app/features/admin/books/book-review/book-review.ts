@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastService } from '../../../../core/services/toast.service';
-import { AdminApiService } from '../../../../core/services/admin-api.service';
-import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal';
+import { AdminApiService, AdminBookItem } from '../../../../core/services/admin-api.service';
 
 export interface BookDetailModel {
   id?: number;
@@ -18,14 +17,14 @@ export interface BookDetailModel {
   reviewsCount: string;
   readTime: string;
   pages: string;
-  cover: string;
+  cover: string | null;
   abstract: string;
   reviewSnippet: string;
   isbn?: string;
   language?: string;
   status?: string;
   pdfPath?: string;
-  authorAvatar?: string;
+  authorAvatar?: string | null;
   rejectionReason?: string;
   rejectionLogs?: { id: number; reason: string; created_at: string }[];
 }
@@ -64,33 +63,19 @@ export class BookReviewComponent implements OnInit {
   readonly pdfViewerUrlSignal = signal<SafeResourceUrl | null>(null);
 
   readonly currentPageSignal = signal<number>(1);
-  readonly totalPagesSignal = signal<number>(6);
+  readonly totalPagesSignal = signal<number>(1);
   readonly zoomLevelSignal = signal<number>(100);
   readonly chaptersSignal = signal<ChapterItem[]>([]);
 
   readonly readerReviewsSignal = signal<ReaderReviewItem[]>([]);
+  readonly loading = signal<boolean>(true);
+  readonly isProcessing = signal<boolean>(false);
 
   rawPdfUrl = '';
 
-  readonly bookSignal = signal<BookDetailModel>({
-    title: 'Beyond Good and Evil',
-    author: 'Eleanor Vance',
-    authorTitle: 'Official BookHive Author',
-    authorBio: 'Eleanor Vance is a published creator on BookHive contributing to Philosophy.',
-    category: 'PHILOSOPHY & SCIENCE',
-    rating: '4.8/5',
-    reviewsCount: '850 reviews',
-    readTime: '12 hours',
-    pages: '342 pages',
-    cover: 'assets/images/book-covers/beyond-good-and-evil.jpg',
-    abstract: 'A profound exploration into the structural foundations of human reasoning and moral judgment. This work dissects how traditional paradigms form spatial frameworks through which we interpret reality.',
-    reviewSnippet: 'A masterpiece of clarity and vision. Dense philosophical concepts are transformed into intuitive, captivating insights.',
-    isbn: '978-0140449235',
-    language: 'English',
-    status: 'PENDING'
-  });
+  readonly bookSignal = signal<BookDetailModel | null>(null);
 
-  get book(): BookDetailModel {
+  get book(): BookDetailModel | null {
     return this.bookSignal();
   }
 
@@ -101,91 +86,96 @@ export class BookReviewComponent implements OnInit {
   }
 
   get currentStatusInfo(): { label: string; class: string; nextStep: string } {
-    const status = (this.book.status || 'PENDING').toUpperCase();
+    const status = (this.book?.status || 'PENDING_REVIEW').toUpperCase();
     if (status === 'PUBLISHED') {
       return { label: 'Published & Active', class: 'status-published', nextStep: 'Live on Public Catalog' };
     } else if (status === 'REJECTED') {
-      return { label: 'Rejected', class: 'status-rejected', nextStep: 'Returned for Revisions' };
+      return { label: 'Rejected', class: 'status-rejected', nextStep: 'Returned to Author with Reason' };
+    } else if (status === 'DEACTIVATED') {
+      return { label: 'Deactivated', class: 'status-deactivated', nextStep: 'Hidden from Catalogue' };
     } else if (status === 'DRAFT') {
       return { label: 'Draft', class: 'status-draft', nextStep: 'Awaiting Author Submission' };
     }
     return { label: 'Under Editorial Review', class: 'status-pending', nextStep: 'Approve & Publish' };
   }
+
   ngOnInit(): void {
     const bookId = Number(this.route.snapshot.params['id']);
     if (bookId) {
       this.loadBookDetails(bookId);
     } else {
-      this.chaptersSignal.set([]);
-      this.rawPdfUrl = 'http://localhost:8000/storage/books/sample1.pdf';
-      this.updatePdfViewerUrl();
+      this.loading.set(false);
     }
   }
 
   private loadBookDetails(id: number): void {
-    this.adminApi.getBooks({ page_size: 100 }).subscribe({
-      next: (res) => {
-        const books = res.items || [];
-        const found = books.find(b => b.id === id);
-        if (found) {
-          const pageCount = found.page_count || (180 + (found.id * 50) % 200);
-          const totalMins = pageCount * 2;
-          const hrs = Math.floor(totalMins / 60);
-          const mins = totalMins % 60;
-          const calcReadTime = hrs > 0 ? (mins > 0 ? `${hrs} hours ${mins} mins` : `${hrs} hours`) : `${mins} mins`;
-          const readTimeStr = found.estimated_reading_time || calcReadTime;
+    this.loading.set(true);
+    this.adminApi.getBookById(id).subscribe({
+      next: (found: AdminBookItem) => {
+        this.loading.set(false);
+        const pageCount = found.page_count && found.page_count > 0 ? found.page_count : null;
+        const readTimeStr = found.estimated_reading_time || (pageCount ? `${pageCount * 2} mins` : 'Not available');
 
-          const pdfPath = (found as any).pdf_path || `storage/books/book_${found.id}.pdf`;
-          this.rawPdfUrl = `http://localhost:8000/${pdfPath}`;
-          this.totalPagesSignal.set(pageCount);
-          this.currentPageSignal.set(1);
-          this.chaptersSignal.set([]);
-          this.updatePdfViewerUrl();
+        const pdfUrl = found.cover_image_path && (found as any).pdf_path
+          ? ((found as any).pdf_path.startsWith('http') ? (found as any).pdf_path : '/' + (found as any).pdf_path.replace(/^\/+/, ''))
+          : ((found as any).pdf_path ? ((found as any).pdf_path.startsWith('http') ? (found as any).pdf_path : '/' + (found as any).pdf_path.replace(/^\/+/, '')) : '');
 
-          const apiReviews = found.reviews || [];
-          this.readerReviewsSignal.set(
-            apiReviews.map(r => ({
-              id: r.id,
-              userName: r.user_name || 'Anonymous Reader',
-              avatarLetter: r.avatar_letter || (r.user_name ? r.user_name[0].toUpperCase() : 'A'),
-              rating: r.rating || 5,
-              date: r.created_at,
-              comment: r.comment || ''
-            }))
-          );
+        this.rawPdfUrl = pdfUrl;
+        this.totalPagesSignal.set(pageCount || 1);
+        this.currentPageSignal.set(1);
+        this.chaptersSignal.set([]);
+        this.updatePdfViewerUrl();
 
-          let calcAvg = found.average_rating ? found.average_rating.toFixed(1) : '4.8';
-          if (apiReviews.length > 0) {
-            const sum = apiReviews.reduce((acc, r) => acc + r.rating, 0);
-            calcAvg = (sum / apiReviews.length).toFixed(1);
-          }
-          const avgRating = `${calcAvg}/5`;
-          const revCount = `${apiReviews.length} reviews`;
+        const apiReviews = found.reviews || [];
+        this.readerReviewsSignal.set(
+          apiReviews.map((r) => ({
+            id: r.id,
+            userName: r.user_name || 'Anonymous Reader',
+            avatarLetter: r.avatar_letter || (r.user_name ? r.user_name[0].toUpperCase() : 'A'),
+            rating: r.rating || 5,
+            date: r.created_at,
+            comment: r.comment || '',
+          }))
+        );
 
-          this.bookSignal.set({
-            id: found.id,
-            title: found.title,
-            author: found.author_name,
-            authorTitle: 'Official BookHive Author',
-            authorBio: `${found.author_name} is a published creator on BookHive contributing to ${found.category_name}.`,
-            category: found.category_name ? found.category_name.toUpperCase() : 'GENERAL',
-            rating: avgRating,
-            reviewsCount: revCount,
-            readTime: readTimeStr,
-            pages: `${pageCount} pages`,
-            cover: found.cover_image_path ? (found.cover_image_path.startsWith('http') ? found.cover_image_path : `http://localhost:8000/${found.cover_image_path}`) : 'assets/images/book-covers/beyond-good-and-evil.jpg',
-            authorAvatar: (found as any).author_profile_image_path ? `http://localhost:8000/${(found as any).author_profile_image_path}` : 'assets/images/auth/sign_in_1.png',
-            abstract: `"${found.title}" is a comprehensive work in ${found.category_name} written by ${found.author_name}. It offers in-depth exploration and rigorous insights tailored for curious minds.`,
-            reviewSnippet: apiReviews.length > 0 ? apiReviews[0].comment || 'Great read!' : `An exceptional read by ${found.author_name}.`,
-            isbn: `978-${Math.floor(100000000 + (id * 1234567) % 900000000)}`,
-            language: found.language || 'English',
-            status: found.status,
-            pdfPath: pdfPath,
-            rejectionReason: (found as any).rejection_reason || undefined,
-            rejectionLogs: (found as any).rejection_logs || []
-          });
-        }
-      }
+        const avgRating = found.average_rating ? `${found.average_rating.toFixed(1)}/5` : '0.0/5';
+        const revCount = `${found.review_count || apiReviews.length} reviews`;
+
+        const coverUrl = found.cover_image_path
+          ? (found.cover_image_path.startsWith('http') ? found.cover_image_path : '/' + found.cover_image_path.replace(/^\/+/, ''))
+          : null;
+
+        const authorAvatarUrl = found.author_profile_image_path
+          ? (found.author_profile_image_path.startsWith('http') ? found.author_profile_image_path : '/' + found.author_profile_image_path.replace(/^\/+/, ''))
+          : null;
+
+        this.bookSignal.set({
+          id: found.id,
+          title: found.title,
+          author: found.author_name,
+          authorTitle: 'Official BookHive Author',
+          authorBio: `${found.author_name} is a registered author on BookHive.`,
+          category: found.category_name ? found.category_name.toUpperCase() : 'GENERAL',
+          rating: avgRating,
+          reviewsCount: revCount,
+          readTime: readTimeStr,
+          pages: pageCount ? `${pageCount} pages` : 'Not available',
+          cover: coverUrl,
+          authorAvatar: authorAvatarUrl,
+          abstract: `"${found.title}" is a manuscript submission in ${found.category_name} by ${found.author_name}.`,
+          reviewSnippet: apiReviews.length > 0 ? (apiReviews[0].comment || 'Reader review recorded.') : 'No public reader reviews submitted yet.',
+          isbn: found.isbn || 'Not available',
+          language: found.language || 'English',
+          status: found.status,
+          pdfPath: pdfUrl,
+          rejectionReason: found.rejection_reason || undefined,
+          rejectionLogs: found.rejection_logs || [],
+        });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.toastService.error(err.error?.detail || 'Failed to load book details.', 'Error');
+      },
     });
   }
 
@@ -194,6 +184,8 @@ export class BookReviewComponent implements OnInit {
       const page = this.currentPageSignal();
       const fullUrl = `${this.rawPdfUrl}#page=${page}`;
       this.pdfViewerUrlSignal.set(this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl));
+    } else {
+      this.pdfViewerUrlSignal.set(null);
     }
   }
 
@@ -206,10 +198,13 @@ export class BookReviewComponent implements OnInit {
     this.currentPageSignal.set(page);
 
     if (this.chaptersSignal().length > 0) {
-      this.chaptersSignal.update(chList =>
-        chList.map(ch => ({
+      this.chaptersSignal.update((chList) =>
+        chList.map((ch) => ({
           ...ch,
-          active: ch.page === page || (ch.page <= page && (ch === chList[chList.length - 1] || chList[chList.indexOf(ch) + 1].page > page))
+          active:
+            ch.page === page ||
+            (ch.page <= page &&
+              (ch === chList[chList.length - 1] || chList[chList.indexOf(ch) + 1].page > page)),
         }))
       );
     }
@@ -231,47 +226,14 @@ export class BookReviewComponent implements OnInit {
 
   zoomIn(): void {
     if (this.zoomLevelSignal() < 250) {
-      this.zoomLevelSignal.update(z => z + 25);
+      this.zoomLevelSignal.update((z) => z + 25);
     }
   }
 
   zoomOut(): void {
     if (this.zoomLevelSignal() > 50) {
-      this.zoomLevelSignal.update(z => z - 25);
+      this.zoomLevelSignal.update((z) => z - 25);
     }
-  }
-
-  readonly isDraggingSignal = signal<boolean>(false);
-  private startX = 0;
-  private startY = 0;
-  private scrollLeft = 0;
-  private scrollTop = 0;
-
-  onMouseDown(event: MouseEvent): void {
-    const container = event.currentTarget as HTMLElement;
-    if (!container) return;
-    this.isDraggingSignal.set(true);
-    this.startX = event.pageX - container.offsetLeft;
-    this.startY = event.pageY - container.offsetTop;
-    this.scrollLeft = container.scrollLeft;
-    this.scrollTop = container.scrollTop;
-  }
-
-  onMouseLeaveOrUp(): void {
-    this.isDraggingSignal.set(false);
-  }
-
-  onMouseMove(event: MouseEvent): void {
-    if (!this.isDraggingSignal()) return;
-    event.preventDefault();
-    const container = event.currentTarget as HTMLElement;
-    if (!container) return;
-    const x = event.pageX - container.offsetLeft;
-    const y = event.pageY - container.offsetTop;
-    const walkX = (x - this.startX) * 1.5;
-    const walkY = (y - this.startY) * 1.5;
-    container.scrollLeft = this.scrollLeft - walkX;
-    container.scrollTop = this.scrollTop - walkY;
   }
 
   downloadPdf(): void {
@@ -279,11 +241,13 @@ export class BookReviewComponent implements OnInit {
       const link = document.createElement('a');
       link.href = this.rawPdfUrl;
       link.target = '_blank';
-      link.download = `${this.book.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+      link.download = `${(this.book?.title || 'manuscript').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      this.toastService.success(`Downloading manuscript for "${this.book.title}"...`, 'File Download');
+      this.toastService.success(`Downloading manuscript for "${this.book?.title}"...`, 'File Download');
+    } else {
+      this.toastService.info('No manuscript PDF file attached to this book.', 'Notice');
     }
   }
 
@@ -292,24 +256,26 @@ export class BookReviewComponent implements OnInit {
   }
 
   approvePublication(): void {
-    this.bookSignal.update(b => ({ ...b, status: 'PUBLISHED' }));
+    const currentBook = this.book;
+    if (!currentBook?.id) return;
 
-    if (this.book.id) {
-      this.adminApi.updateBookStatus(this.book.id, 'PUBLISHED').subscribe({
-        next: () => {
-          this.toastService.success(`"${this.book.title}" was approved and published!`, 'Book Published');
-        },
-        error: () => {
-          this.toastService.success(`"${this.book.title}" was approved and published!`, 'Book Published');
-        }
-      });
-    } else {
-      this.toastService.success(`"${this.book.title}" was approved and published!`, 'Book Published');
-    }
+    this.isProcessing.set(true);
+    this.adminApi.approveBook(currentBook.id).subscribe({
+      next: () => {
+        this.isProcessing.set(false);
+        this.bookSignal.update((b) => (b ? { ...b, status: 'PUBLISHED' } : null));
+        this.toastService.success(`"${currentBook.title}" was approved and published!`, 'Book Published');
+      },
+      error: (err) => {
+        this.isProcessing.set(false);
+        const errorMsg = err.error?.detail || 'Failed to approve book.';
+        this.toastService.error(errorMsg, 'Approval Failed');
+      },
+    });
   }
 
   requestChanges(): void {
-    this.toastService.info(`Revision request sent to author ${this.book.author}.`, 'Changes Requested');
+    this.toastService.info(`Revision request sent to author ${this.book?.author}.`, 'Changes Requested');
   }
 
   promptReject(): void {
@@ -323,20 +289,29 @@ export class BookReviewComponent implements OnInit {
 
   confirmReject(): void {
     const reason = this.rejectionReasonSignal().trim();
-    this.showRejectConfirm.set(false);
-    this.bookSignal.update(b => ({ ...b, status: 'REJECTED', rejectionReason: reason }));
-
-    if (this.book.id) {
-      this.adminApi.updateBookStatus(this.book.id, 'REJECTED', reason).subscribe({
-        next: () => {
-          this.toastService.warning(`Submission for "${this.book.title}" was rejected.${reason ? ' Reason: ' + reason : ''}`, 'Submission Rejected');
-        },
-        error: () => {
-          this.toastService.warning(`Submission for "${this.book.title}" was rejected.`, 'Submission Rejected');
-        }
-      });
-    } else {
-      this.toastService.warning(`Submission for "${this.book.title}" was rejected.`, 'Submission Rejected');
+    if (!reason) {
+      this.toastService.error('A rejection reason is mandatory when rejecting a book submission.', 'Validation Error');
+      return;
     }
+
+    const currentBook = this.book;
+    if (!currentBook?.id) return;
+
+    this.isProcessing.set(true);
+    this.adminApi.rejectBook(currentBook.id, reason).subscribe({
+      next: () => {
+        this.isProcessing.set(false);
+        this.showRejectConfirm.set(false);
+        this.bookSignal.update((b) =>
+          b ? { ...b, status: 'REJECTED', rejectionReason: reason } : null
+        );
+        this.toastService.warning(`Submission for "${currentBook.title}" was rejected.`, 'Submission Rejected');
+      },
+      error: (err) => {
+        this.isProcessing.set(false);
+        const errorMsg = err.error?.detail || 'Failed to reject book.';
+        this.toastService.error(errorMsg, 'Rejection Failed');
+      },
+    });
   }
 }

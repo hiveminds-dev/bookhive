@@ -1,5 +1,5 @@
 <section class="panel">
-  <header><h2>Recent Book Uploads</h2><a href="#">View All</a></header>
+  <header><h2>Recent Book Uploads</h2><a routerLink="/admin/books">View All</a></header>
   <div class="table-head"><span>Book Details</span><span>Author</span><span>Category</span><span>Status</span></div>
 
   <div class="loading-row" *ngIf="loading()">Loading...</div>
@@ -17,5 +17,4 @@
     <span class="status" [class]="getStatusClass(book.status)"><i></i>{{ getStatusLabel(book.status) }}</span>
   </article>
 </section>
-
 

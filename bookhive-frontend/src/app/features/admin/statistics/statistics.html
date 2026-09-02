@@ -199,8 +199,8 @@
             <td><strong class="reads-text">{{ b.totalReads }}</strong></td>
             <td><span class="rating-text">★ {{ b.rating }}</span></td>
             <td>
-              <span class="trend-cell" [class.pos]="b.trend.startsWith('+')" [class.neg]="b.trend.startsWith('-')">
-                {{ b.trend }}
+              <span class="trend-cell" [class.pos]="b.trend && b.trend.startsWith('+')" [class.neg]="b.trend && b.trend.startsWith('-')">
+                {{ b.trend || 'N/A' }}
               </span>
             </td>
           </tr>
@@ -224,7 +224,7 @@
           </div>
           <div class="score-badge">
             <strong class="score">{{ a.score }}</strong>
-            <span class="sub-label">ACTIVITY SCORE</span>
+            <span class="sub-label">AVG RATING</span>
           </div>
         </div>
       </div>
@@ -243,7 +243,7 @@
           </div>
           <div class="score-badge">
             <strong class="score">{{ r.totalReads }}</strong>
-            <span class="sub-label">TOTAL READS</span>
+            <span class="sub-label">REVIEWS WRITTEN</span>
           </div>
         </div>
       </div>

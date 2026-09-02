@@ -35,8 +35,12 @@ export interface AdminBookItem {
   reading_level: string | null;
   status: string;
   cover_image_path: string | null;
-  page_count?: number;
-  estimated_reading_time?: string;
+  pdf_path?: string | null;
+  page_count?: number | null;
+  estimated_reading_time?: string | null;
+  view_count?: number;
+  download_count?: number;
+  isbn?: string | null;
   average_rating?: number;
   review_count?: number;
   reviews?: BookReviewItem[];
@@ -86,6 +90,68 @@ export interface AuthorApplicationItem {
   applied_date: string;
   rejection_reason?: string | null;
   rejection_logs?: Array<{ id: number; reason: string; created_at: string }>;
+}
+
+export interface ReaderReviewAdminItem {
+  id: number;
+  book_id: number;
+  book_title: string;
+  book_cover_url?: string | null;
+  book_author: string;
+  rating: number;
+  comment?: string | null;
+  created_at: string;
+}
+
+export interface ReaderDetailAdminResponse {
+  id: number;
+  full_name: string;
+  username: string;
+  email: string;
+  account_status: string;
+  email_verified: boolean;
+  joined_at: string;
+  country?: string | null;
+  short_bio?: string | null;
+  review_count: number;
+  reviews: ReaderReviewAdminItem[];
+}
+
+export interface AuthorBookAdminSummary {
+  id: number;
+  title: string;
+  category_name: string;
+  status: string;
+  cover_image_path?: string | null;
+  view_count: number;
+  download_count: number;
+  average_rating: number;
+  rejection_reason?: string | null;
+  created_at: string;
+  published_at?: string | null;
+}
+
+export interface AuthorDetailAdminResponse {
+  id: number;
+  full_name: string;
+  username: string;
+  email: string;
+  account_status: string;
+  email_verified: boolean;
+  created_at: string;
+  pen_name: string;
+  country?: string | null;
+  short_bio?: string | null;
+  profile_image_path?: string | null;
+  total_books: number;
+  total_views: number;
+  total_downloads: number;
+  average_rating: number;
+  published_books: AuthorBookAdminSummary[];
+  pending_books: AuthorBookAdminSummary[];
+  rejected_books: AuthorBookAdminSummary[];
+  draft_books: AuthorBookAdminSummary[];
+  rejection_logs: Array<{ id: number; reason: string; created_at: string }>;
 }
 
 export interface MonthlyUploadItem {
@@ -267,17 +333,29 @@ export class AdminApiService {
     return this.http.get<PaginatedBookAdminResponse>(`/api/admin/books${queryString}`);
   }
 
+  getBookById(bookId: number): Observable<AdminBookItem> {
+    return this.http.get<AdminBookItem>(`/api/admin/books/${bookId}`);
+  }
+
   approveBook(bookId: number): Observable<{ message: string }> {
+    this.invalidateDashboardRecent();
     return this.http.post<{ message: string }>(`/api/admin/books/${bookId}/approve`, {});
   }
 
-  rejectBook(bookId: number, rejectionReason?: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`/api/admin/books/${bookId}/reject`, { status: 'REJECTED', rejection_reason: rejectionReason });
+  rejectBook(bookId: number, rejectionReason: string): Observable<{ message: string }> {
+    this.invalidateDashboardRecent();
+    return this.http.post<{ message: string }>(`/api/admin/books/${bookId}/reject`, {
+      status: 'REJECTED',
+      rejection_reason: rejectionReason,
+    });
   }
 
   updateBookStatus(bookId: number, status: string, rejectionReason?: string): Observable<{ message: string }> {
     this.invalidateDashboardRecent();
-    return this.http.put<{ message: string }>(`/api/admin/books/${bookId}/status`, { status, rejection_reason: rejectionReason });
+    return this.http.put<{ message: string }>(`/api/admin/books/${bookId}/status`, {
+      status,
+      rejection_reason: rejectionReason,
+    });
   }
 
   // ─── Admin Governance Staff ────────────────────────────────────────────────
@@ -321,11 +399,17 @@ export class AdminApiService {
     return this.http.get<AuthorApplicationItem[]>(url);
   }
 
+  getAuthorDetail(userId: number): Observable<AuthorDetailAdminResponse> {
+    return this.http.get<AuthorDetailAdminResponse>(`/api/admin/authors/${userId}`);
+  }
+
   approveAuthor(userId: number): Observable<{ message: string }> {
+    this.invalidateDashboardRecent();
     return this.http.post<{ message: string }>(`/api/admin/authors/${userId}/approve`, {});
   }
 
   rejectAuthor(userId: number, rejectionReason: string): Observable<{ message: string }> {
+    this.invalidateDashboardRecent();
     return this.http.post<{ message: string }>(`/api/admin/authors/${userId}/reject`, {
       rejection_reason: rejectionReason,
     });
@@ -335,6 +419,10 @@ export class AdminApiService {
 
   getReaders(): Observable<ReaderItem[]> {
     return this.http.get<ReaderItem[]>('/api/admin/readers');
+  }
+
+  getReaderDetail(userId: number): Observable<ReaderDetailAdminResponse> {
+    return this.http.get<ReaderDetailAdminResponse>(`/api/admin/readers/${userId}`);
   }
 
   // ─── System Logs ──────────────────────────────────────────────────────────
@@ -361,4 +449,3 @@ export class AdminApiService {
     return this.http.delete<{ message: string }>(`/api/admin/categories/${categoryId}`);
   }
 }
-

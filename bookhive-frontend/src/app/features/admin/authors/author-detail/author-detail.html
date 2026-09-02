@@ -4,30 +4,48 @@
     <h1>Author Profile &amp; Portfolio</h1>
   </header>
 
-  <div class="profile-grid">
+  <div *ngIf="loading()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Loading author profile &amp; manuscripts...</p>
+  </div>
+
+  <div *ngIf="!loading() && !author()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Author not found.</p>
+    <a routerLink="/admin/authors" class="btn-secondary" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Return to Authors List</a>
+  </div>
+
+  <div class="profile-grid" *ngIf="!loading() && author()">
     <!-- Left Column: Author Bio Card -->
     <div class="author-card">
       <div class="avatar-wrapper">
-        <img [src]="author.avatar" [alt]="author.fullName" class="avatar-img" />
+        <img *ngIf="author()?.profile_image_path" [src]="author()?.profile_image_path" [alt]="author()?.full_name" class="avatar-img" />
+        <div *ngIf="!author()?.profile_image_path" style="width: 80px; height: 80px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 2rem;">✍️</div>
       </div>
-      <h2>{{ author.fullName }}</h2>
-      <span class="pen-name">Pen Name: <strong>{{ author.penName }}</strong></span>
-      <span class="status-badge approved">{{ author.status }}</span>
+      <h2>{{ author()?.full_name }}</h2>
+      <span class="pen-name">Pen Name: <strong>{{ author()?.pen_name }}</strong></span>
+      <span class="status-badge" [class.approved]="author()?.account_status === 'approved'" [class.rejected]="author()?.account_status === 'rejected'">
+        {{ author()?.account_status }}
+      </span>
 
       <div class="info-list">
-        <div class="info-item"><span>Email</span><strong>{{ author.email }}</strong></div>
-        <div class="info-item"><span>Country</span><strong>{{ author.country }}</strong></div>
-        <div class="info-item"><span>Applied Date</span><strong>{{ author.appliedDate }}</strong></div>
+        <div class="info-item"><span>Email</span><strong>{{ author()?.email }}</strong></div>
+        <div class="info-item">
+          <span>Email Verified</span>
+          <strong>{{ author()?.email_verified ? 'Verified' : 'Unverified' }}</strong>
+        </div>
+        <div class="info-item"><span>Country</span><strong>{{ author()?.country || 'Not specified' }}</strong></div>
+        <div class="info-item"><span>Registered</span><strong>{{ author()?.created_at | date:'mediumDate' }}</strong></div>
       </div>
 
       <div class="bio-box">
         <h4>Biography</h4>
-        <p>{{ author.bio }}</p>
+        <p>{{ author()?.short_bio || 'No biography provided by the author.' }}</p>
       </div>
 
       <div class="card-actions">
-        <button type="button" class="btn-approve" (click)="approveAuthor()">Re-Approve Credentials</button>
-        <button type="button" class="btn-danger" (click)="suspendAuthor()">Suspend Account</button>
+        <button type="button" class="btn-approve" (click)="approveAuthor()" [disabled]="author()?.account_status === 'approved' || isProcessing()">
+          {{ author()?.account_status === 'approved' ? 'Author Approved' : 'Approve Credentials' }}
+        </button>
+        <button type="button" class="btn-danger" (click)="suspendAuthor()" [disabled]="isProcessing()">Suspend Account</button>
       </div>
     </div>
 
@@ -36,34 +54,94 @@
       <div class="stats-row">
         <div class="stat-box">
           <span>PUBLISHED BOOKS</span>
-          <strong>{{ author.totalBooks }}</strong>
+          <strong>{{ author()?.published_books?.length || 0 }}</strong>
         </div>
         <div class="stat-box">
-          <span>TOTAL READS</span>
-          <strong>{{ author.totalDownloads }}</strong>
+          <span>TOTAL VIEWS</span>
+          <strong>{{ formattedViews }}</strong>
         </div>
         <div class="stat-box">
           <span>AVERAGE RATING</span>
-          <strong>★ {{ author.rating }}</strong>
+          <strong>★ {{ author()?.average_rating?.toFixed(1) || '0.0' }}</strong>
         </div>
       </div>
 
+      <!-- Published Works -->
       <div class="section-card">
-        <h3>Published Works</h3>
-        <div class="books-list">
-          <div class="book-item" *ngFor="let b of publishedBooks">
-            <img [src]="b.cover" [alt]="b.title" class="book-cover" />
+        <h3>Published Works ({{ author()?.published_books?.length || 0 }})</h3>
+        <div class="books-list" *ngIf="(author()?.published_books?.length || 0) > 0">
+          <div class="book-item" *ngFor="let b of author()?.published_books">
+            <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px; font-size: 1.2rem;">📖</div>
             <div class="book-info">
               <strong>{{ b.title }}</strong>
-              <small>Category: {{ b.category }}</small>
+              <small>Category: {{ b.category_name }} · Published {{ b.published_at | date:'mediumDate' }}</small>
             </div>
             <div class="book-meta">
-              <span class="reads-text">{{ b.reads }} Reads</span>
-              <span class="status-pill">{{ b.status }}</span>
+              <span class="reads-text">{{ b.view_count.toLocaleString() }} Views</span>
+              <span class="status-pill status-published">Published</span>
+              <a [routerLink]="['/admin/books', b.id, 'review']" class="btn-secondary" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">Inspect</a>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="(author()?.published_books?.length || 0) === 0" style="padding: 1.5rem; text-align: center; color: #94a3b8; font-style: italic;">
+          No published books yet.
+        </div>
+      </div>
+
+      <!-- Pending Manuscripts -->
+      <div class="section-card" *ngIf="(author()?.pending_books?.length || 0) > 0" style="margin-top: 1.5rem;">
+        <h3>Pending Review ({{ author()?.pending_books?.length }})</h3>
+        <div class="books-list">
+          <div class="book-item" *ngFor="let b of author()?.pending_books">
+            <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px; font-size: 1.2rem;">📖</div>
+            <div class="book-info">
+              <strong>{{ b.title }}</strong>
+              <small>Category: {{ b.category_name }} · Submitted {{ b.created_at | date:'mediumDate' }}</small>
+            </div>
+            <div class="book-meta">
+              <span class="status-pill status-pending">Under Review</span>
+              <a [routerLink]="['/admin/books', b.id, 'review']" class="btn-primary" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">Review</a>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Rejected Submissions -->
+      <div class="section-card" *ngIf="(author()?.rejected_books?.length || 0) > 0" style="margin-top: 1.5rem; border: 1px solid #fecaca; background: #fffbfb;">
+        <h3 style="color: #991b1b;">Rejected Submissions ({{ author()?.rejected_books?.length }})</h3>
+        <div class="books-list">
+          <div class="book-item" *ngFor="let b of author()?.rejected_books">
+            <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #fee2e2; border-radius: 4px; font-size: 1.2rem;">📖</div>
+            <div class="book-info">
+              <strong>{{ b.title }}</strong>
+              <small>Category: {{ b.category_name }}</small>
+              <p *ngIf="b.rejection_reason" style="margin: 4px 0 0; font-size: 0.82rem; color: #dc2626;">Reason: {{ b.rejection_reason }}</p>
+            </div>
+            <div class="book-meta">
+              <span class="status-pill status-rejected">Rejected</span>
+              <a [routerLink]="['/admin/books', b.id, 'review']" class="btn-secondary" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">Inspect</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Author Rejection Audit Logs -->
+      <div class="section-card" *ngIf="(author()?.rejection_logs?.length || 0) > 0" style="margin-top: 1.5rem; border: 1px solid #fed7aa; background: #fffaf5;">
+        <h3 style="color: #9a3412;">Author Application Rejection History ({{ author()?.rejection_logs?.length }})</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+          <div *ngFor="let log of author()?.rejection_logs; let i = index" style="padding: 10px; background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #ea580c; font-weight: 700;">
+              <span>Application Rejection #{{ (author()?.rejection_logs?.length || 0) - i }}</span>
+              <span style="color: #94a3b8; font-weight: normal;">{{ log.created_at | date:'mediumDate' }}</span>
+            </div>
+            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #475569;">{{ log.reason }}</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

@@ -163,8 +163,9 @@ export class CategoriesComponent implements OnInit {
           this.loadCategories();
           this.toastService.warning(`Permanently deleted category "${cat.name}".`, 'Category Deleted');
         },
-        error: () => {
-          this.toastService.error('Failed to delete category.', 'Delete Error');
+        error: (err) => {
+          const msg = err.error?.detail || 'Failed to delete category.';
+          this.toastService.error(msg, 'Delete Error');
         }
       });
     }
