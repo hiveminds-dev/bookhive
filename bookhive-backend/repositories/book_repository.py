@@ -39,7 +39,12 @@ class BookRepository:
         book_id: int,
     ) -> Book | None:
         result = await session.execute(
-            select(Book).where(
+            select(Book)
+            .options(
+                selectinload(Book.category),
+                selectinload(Book.rejection_logs),
+            )
+            .where(
                 Book.id == book_id,
             )
         )

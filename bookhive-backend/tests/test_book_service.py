@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from orm_models.book import BookStatus
-from schemas.book import BookUpdateRequest
+from schemas.book import BookCreateRequest, BookUpdateRequest
 from services.book_service import (
     BookPermissionError,
     BookService,
@@ -50,6 +50,43 @@ def make_book(
         updated_at=datetime.now(UTC),
         submitted_at=None,
         published_at=None,
+    )
+
+
+@pytest.mark.asyncio
+async def test_create_draft_reloads_response_relationships():
+    service = BookService()
+    session = AsyncMock()
+    created_book = make_book()
+    hydrated_book = make_book()
+    hydrated_book.category_name = "Technology"
+
+    service._validate_category = AsyncMock()
+    service.book_repository.create_book = AsyncMock(
+        return_value=created_book,
+    )
+    service.book_repository.get_author_book_by_id = AsyncMock(
+        return_value=hydrated_book,
+    )
+
+    result = await service.create_draft(
+        session=session,
+        author_id=7,
+        book_data=BookCreateRequest(
+            category_id=1,
+            title="Test Book",
+            description="A complete description",
+            language="English",
+            reading_level="Beginner",
+        ),
+    )
+
+    assert result is hydrated_book
+    session.commit.assert_awaited_once()
+    service.book_repository.get_author_book_by_id.assert_awaited_once_with(
+        session=session,
+        author_id=7,
+        book_id=created_book.id,
     )
 
 
@@ -165,6 +202,9 @@ async def test_pdf_upload_updates_owned_draft_book(
     service.book_repository.update_book = AsyncMock(
         return_value=book,
     )
+    service.book_repository.get_author_book_by_id = AsyncMock(
+        return_value=book,
+    )
 
     save_pdf_mock = AsyncMock(
         return_value="storage/books/new.pdf",
@@ -200,7 +240,11 @@ async def test_pdf_upload_updates_owned_draft_book(
     )
 
     session.commit.assert_awaited_once()
-    session.refresh.assert_awaited_once_with(book)
+    service.book_repository.get_author_book_by_id.assert_awaited_once_with(
+        session=session,
+        author_id=book.author_id,
+        book_id=book.id,
+    )
 
     delete_file_mock.assert_awaited_once_with(
         "storage/books/old.pdf"

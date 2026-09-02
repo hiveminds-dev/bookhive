@@ -66,8 +66,18 @@ class BookService:
             )
 
             await session.commit()
-            await session.refresh(book)
-            return book
+            hydrated_book = (
+                await self.book_repository.get_author_book_by_id(
+                    session=session,
+                    author_id=author_id,
+                    book_id=book.id,
+                )
+            )
+            if hydrated_book is None:
+                raise BookNotFoundError(
+                    "Created book could not be reloaded"
+                )
+            return hydrated_book
 
         except Exception:
             await session.rollback()
@@ -296,8 +306,18 @@ class BookService:
             )
 
             await session.commit()
-            await session.refresh(updated_book)
-            return updated_book
+            hydrated_book = (
+                await self.book_repository.get_author_book_by_id(
+                    session=session,
+                    author_id=author_id,
+                    book_id=updated_book.id,
+                )
+            )
+            if hydrated_book is None:
+                raise BookNotFoundError(
+                    "Updated book could not be reloaded"
+                )
+            return hydrated_book
 
         except Exception:
             await session.rollback()
@@ -494,7 +514,17 @@ class BookService:
             )
 
             await session.commit()
-            await session.refresh(updated_book)
+            hydrated_book = (
+                await self.book_repository.get_author_book_by_id(
+                    session=session,
+                    author_id=book.author_id,
+                    book_id=updated_book.id,
+                )
+            )
+            if hydrated_book is None:
+                raise BookNotFoundError(
+                    "Uploaded book could not be reloaded"
+                )
 
         except Exception:
             await session.rollback()
@@ -508,7 +538,7 @@ class BookService:
                 old_path
             )
 
-        return updated_book
+        return hydrated_book
 
     async def _delete_upload_quietly(
         self,
