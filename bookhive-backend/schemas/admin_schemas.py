@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class DashboardStatsResponse(BaseModel):
@@ -175,6 +175,28 @@ class AdminCreateRequest(BaseModel):
     department: str
 
 
+class AuthorRejectionRequest(BaseModel):
+    rejection_reason: str = Field(..., min_length=1, max_length=500)
+
+    @field_validator("rejection_reason")
+    @classmethod
+    def validate_rejection_reason(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Rejection reason cannot be blank or whitespace only.")
+        if len(stripped) > 500:
+            raise ValueError("Rejection reason cannot exceed 500 characters.")
+        return stripped
+
+
+class AuthorRejectionLogItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    reason: str
+    created_at: str
+
+
 class AuthorApplicationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -188,6 +210,8 @@ class AuthorApplicationResponse(BaseModel):
     profile_image_path: str | None = None
     bio: str | None = None
     applied_date: datetime
+    rejection_reason: str | None = None
+    rejection_logs: list[AuthorRejectionLogItem] = []
 
 
 class ReaderAdminResponse(BaseModel):

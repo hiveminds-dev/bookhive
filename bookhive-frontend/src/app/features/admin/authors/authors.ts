@@ -26,6 +26,14 @@ export class AuthorsComponent implements OnInit {
   readonly authorsSignal = signal<AuthorApplicationItem[]>([]);
   readonly loading = signal(true);
   readonly selectedAuthorForProfile = signal<AuthorApplicationItem | null>(null);
+
+  // Author rejection modal state
+  readonly authorToReject = signal<AuthorApplicationItem | null>(null);
+  readonly rejectionReason = signal('');
+  readonly rejectionError = signal<string | null>(null);
+  readonly isRejecting = signal(false);
+  readonly isApproving = signal(false);
+
   readonly authorStatsSignal = signal({
     new_applications: 0,
     total_authors: 0,
@@ -41,17 +49,21 @@ export class AuthorsComponent implements OnInit {
     this.searchQuery.set(value);
   }
 
-  loadAuthors(): void {
-    const status = this.filterStatus() || undefined;
-    this.loading.set(true);
-
+  refreshStats(): void {
     this.adminApi.getAuthorStats().subscribe({
       next: (stats) => {
         if (stats) {
           this.authorStatsSignal.set(stats);
         }
-      }
+      },
     });
+  }
+
+  loadAuthors(): void {
+    const status = this.filterStatus() || undefined;
+    this.loading.set(true);
+
+    this.refreshStats();
 
     this.adminApi.getAuthorApplications(status).subscribe({
       next: (data) => {
@@ -61,7 +73,7 @@ export class AuthorsComponent implements OnInit {
       error: () => {
         this.toastService.info('Could not load author list — check your connection.', 'Notice');
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -90,8 +102,9 @@ export class AuthorsComponent implements OnInit {
     const sortBy = this.filterSortBy();
     const now = new Date().getTime();
 
-    let list = this.authorsSignal().filter(a => {
-      const matchesSearch = !q ||
+    let list = this.authorsSignal().filter((a) => {
+      const matchesSearch =
+        !q ||
         a.full_name.toLowerCase().includes(q) ||
         a.pen_name.toLowerCase().includes(q) ||
         a.email.toLowerCase().includes(q);
@@ -124,7 +137,7 @@ export class AuthorsComponent implements OnInit {
   }
 
   toggleAdvanceSearch(): void {
-    this.showAdvanceSearch.update(v => !v);
+    this.showAdvanceSearch.update((v) => !v);
   }
 
   clearSearch(): void {
@@ -149,52 +162,107 @@ export class AuthorsComponent implements OnInit {
   toggleAuthorStatus(author: AuthorApplicationItem): void {
     const isCurrentlyApproved = author.account_status.toLowerCase() === 'approved';
     if (isCurrentlyApproved) {
-      this.rejectAuthor(author);
+      this.openRejectModal(author);
     } else {
       this.approveAuthor(author);
     }
   }
 
   approveAuthor(author: AuthorApplicationItem): void {
+    if (this.isApproving()) return;
+    this.isApproving.set(true);
+
     this.adminApi.approveAuthor(author.user_id).subscribe({
       next: () => {
-        this.authorsSignal.update(list =>
-          list.map(a => (a.user_id === author.user_id ? { ...a, account_status: 'approved' } : a))
+        this.isApproving.set(false);
+        this.authorsSignal.update((list) =>
+          list.map((a) => (a.user_id === author.user_id ? { ...a, account_status: 'approved' } : a))
         );
         if (this.selectedAuthorForProfile()?.user_id === author.user_id) {
-          this.selectedAuthorForProfile.update(a => a ? { ...a, account_status: 'approved' } : null);
+          this.selectedAuthorForProfile.update((a) => (a ? { ...a, account_status: 'approved' } : null));
         }
+        this.refreshStats();
         this.toastService.success(`Approved ${author.full_name} as an official Author!`, 'Request Approved');
       },
-      error: () => {
-        this.toastService.warning('Failed to approve author. Please try again.', 'Error');
-      }
+      error: (err) => {
+        this.isApproving.set(false);
+        const msg = err.error?.detail || 'Failed to approve author. Please try again.';
+        this.toastService.warning(msg, 'Error');
+      },
     });
   }
 
-  rejectAuthor(author: AuthorApplicationItem): void {
-    this.adminApi.rejectAuthor(author.user_id).subscribe({
+  openRejectModal(author: AuthorApplicationItem): void {
+    this.authorToReject.set(author);
+    this.rejectionReason.set('');
+    this.rejectionError.set(null);
+    this.isRejecting.set(false);
+  }
+
+  closeRejectModal(): void {
+    if (this.isRejecting()) return;
+    this.authorToReject.set(null);
+    this.rejectionReason.set('');
+    this.rejectionError.set(null);
+  }
+
+  onRejectionReasonChange(value: string): void {
+    this.rejectionReason.set(value);
+    if (this.rejectionError() && value.trim().length > 0) {
+      this.rejectionError.set(null);
+    }
+  }
+
+  confirmRejectAuthor(): void {
+    const author = this.authorToReject();
+    if (!author || this.isRejecting()) return;
+
+    const reason = this.rejectionReason().trim();
+    if (!reason) {
+      this.rejectionError.set('A rejection reason is required.');
+      return;
+    }
+    if (reason.length > 500) {
+      this.rejectionError.set('Rejection reason cannot exceed 500 characters.');
+      return;
+    }
+
+    this.isRejecting.set(true);
+    this.rejectionError.set(null);
+
+    this.adminApi.rejectAuthor(author.user_id, reason).subscribe({
       next: () => {
-        this.authorsSignal.update(list =>
-          list.map(a => (a.user_id === author.user_id ? { ...a, account_status: 'rejected' } : a))
+        this.isRejecting.set(false);
+        this.authorsSignal.update((list) =>
+          list.map((a) => (a.user_id === author.user_id ? { ...a, account_status: 'rejected', rejection_reason: reason } : a))
         );
         if (this.selectedAuthorForProfile()?.user_id === author.user_id) {
-          this.selectedAuthorForProfile.update(a => a ? { ...a, account_status: 'rejected' } : null);
+          this.selectedAuthorForProfile.update((a) =>
+            a ? { ...a, account_status: 'rejected', rejection_reason: reason } : null
+          );
         }
+        this.refreshStats();
+        this.closeRejectModal();
         this.toastService.warning(`Rejected application for ${author.full_name}.`, 'Request Rejected');
       },
-      error: () => {
-        this.toastService.warning('Failed to reject author. Please try again.', 'Error');
-      }
+      error: (err) => {
+        this.isRejecting.set(false);
+        const msg = err.error?.detail || 'Failed to reject author. Please check your connection and try again.';
+        this.rejectionError.set(msg);
+      },
     });
   }
 
   getStatusClass(status: string): string {
     switch (status.toLowerCase()) {
-      case 'approved': return 'status-approved';
-      case 'pending': return 'status-pending';
-      case 'rejected': return 'status-rejected';
-      default: return 'status-inactive';
+      case 'approved':
+        return 'status-approved';
+      case 'pending':
+        return 'status-pending';
+      case 'rejected':
+        return 'status-rejected';
+      default:
+        return 'status-inactive';
     }
   }
 
@@ -202,4 +270,3 @@ export class AuthorsComponent implements OnInit {
     this.toastService.info('Opening Create Author modal...', 'Create Author');
   }
 }
-

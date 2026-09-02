@@ -9,6 +9,7 @@ from schemas.admin_schemas import (
     AdminStaffStatsResponse,
     AdminUserItemResponse,
     AuthorApplicationResponse,
+    AuthorRejectionRequest,
     AuthorStatsResponse,
     BookStatusUpdateRequest,
     CategoryAdminItem,
@@ -153,29 +154,47 @@ async def approve_author(
     admin_user: User = Depends(require_admin),
 ):
     """Approve an author application."""
-    success = await admin_service.approve_author(session, user_id)
-    if not success:
+    try:
+        success = await admin_service.approve_author(session, user_id)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Author user not found.",
+            )
+        return {"message": "Author approved successfully."}
+    except ValueError as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Author user not found.",
-        )
-    return {"message": "Author approved successfully."}
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
 
 
 @router.post("/authors/{user_id}/reject")
 async def reject_author(
     user_id: int,
+    rejection_data: AuthorRejectionRequest,
     session: AsyncSession = Depends(get_db_session),
     admin_user: User = Depends(require_admin),
 ):
     """Reject an author application."""
-    success = await admin_service.reject_author(session, user_id)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Author user not found.",
+    try:
+        success = await admin_service.reject_author(
+            session,
+            user_id,
+            rejection_data.rejection_reason,
+            admin_id=admin_user.id,
         )
-    return {"message": "Author rejected."}
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Author user not found.",
+            )
+        return {"message": "Author rejected successfully."}
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
 
 
 @router.post("/books/{book_id}/approve")
