@@ -212,7 +212,7 @@
     <div class="modal-card author-profile-modal" (click)="$event.stopPropagation()" style="max-width: 520px; border-radius: 20px; padding: 28px; background: #ffffff;">
       <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px;">
         <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Author Profile Details</h3>
-        <button type="button" class="close-btn" (click)="closeAuthorProfileModal()" style="border: none; background: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">✕</button>
+        <button type="button" class="close-btn" (click)="closeAuthorProfileModal()" style="border: none; background: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
 
       <div class="modal-body" style="display: flex; flex-direction: column; gap: 18px;">
@@ -275,7 +275,7 @@
             <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #64748b;">Please provide a mandatory reason for rejecting this author's application.</p>
           </div>
         </div>
-        <button type="button" class="close-btn" (click)="closeRejectModal()" [disabled]="isRejecting()" aria-label="Close modal">✕</button>
+        <button type="button" class="close-btn" (click)="closeRejectModal()" [disabled]="isRejecting()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
 
       <div class="modal-body">

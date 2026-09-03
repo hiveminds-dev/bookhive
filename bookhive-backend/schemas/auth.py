@@ -65,3 +65,8 @@ class VerifyPasswordChangeOTPRequest(BaseModel):
     otp_code: str = Field(min_length=6, max_length=6)
     current_password: str
     new_password: str = Field(min_length=6, max_length=128)
+
+
+class EmailCheckResponse(BaseModel):
+    available: bool
+    message: str | None = None

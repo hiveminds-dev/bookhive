@@ -26,4 +26,13 @@ export class RegistrationService {
   ): Observable<AuthorRegistrationResult> {
     return this.http.post<AuthorRegistrationResult>('/api/authors/register', request);
   }
+
+  checkEmailAvailability(
+    email: string,
+  ): Observable<{ available: boolean; message?: string }> {
+    return this.http.get<{ available: boolean; message?: string }>(
+      '/api/auth/check-email',
+      { params: { email: email.trim() } },
+    );
+  }
 }

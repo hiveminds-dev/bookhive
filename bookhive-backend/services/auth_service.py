@@ -185,3 +185,12 @@ class AuthService:
             raise AuthenticationError("Incorrect current password")
         user.password_hash = hash_password(new_pass)
         await session.commit()
+
+    async def is_email_available(
+        self,
+        session: AsyncSession,
+        email: str,
+    ) -> bool:
+        normalized_email = email.strip().lower()
+        user = await self.user_repository.get_by_email(session, normalized_email)
+        return user is None

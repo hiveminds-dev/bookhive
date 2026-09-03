@@ -93,7 +93,10 @@
         </div>
         <div class="stat-box">
           <span>AVERAGE RATING</span>
-          <strong>★ {{ author()?.average_rating?.toFixed(1) || '0.0' }}</strong>
+          <strong style="display: flex; align-items: center; gap: 4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#eab308"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            {{ author()?.average_rating?.toFixed(1) || '0.0' }}
+          </strong>
         </div>
       </div>
 
@@ -103,7 +106,9 @@
         <div class="books-list" *ngIf="(author()?.published_books?.length || 0) > 0">
           <div class="book-item" *ngFor="let b of author()?.published_books">
             <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
-            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px; font-size: 1.2rem;">📖</div>
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
             <div class="book-info">
               <strong>{{ b.title }}</strong>
               <small>Category: {{ b.category_name }} · Published {{ b.published_at | date:'mediumDate' }}</small>
@@ -126,7 +131,9 @@
         <div class="books-list">
           <div class="book-item" *ngFor="let b of author()?.pending_books">
             <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
-            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px; font-size: 1.2rem;">📖</div>
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
             <div class="book-info">
               <strong>{{ b.title }}</strong>
               <small>Category: {{ b.category_name }} · Submitted {{ b.created_at | date:'mediumDate' }}</small>
@@ -145,7 +152,9 @@
         <div class="books-list">
           <div class="book-item" *ngFor="let b of author()?.rejected_books">
             <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
-            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #fee2e2; border-radius: 4px; font-size: 1.2rem;">📖</div>
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #fee2e2; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dc2626" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
             <div class="book-info">
               <strong>{{ b.title }}</strong>
               <small>Category: {{ b.category_name }}</small>

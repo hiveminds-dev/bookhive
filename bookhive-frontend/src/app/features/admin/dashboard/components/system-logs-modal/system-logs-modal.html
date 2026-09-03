@@ -22,9 +22,9 @@
         <span class="spinner"></span> Fetching live system logs...
       </div>
 
-      <!-- Error state -->
-      <div class="logs-error" *ngIf="error()">
-        ⚠ Could not fetch live logs. Please check backend connectivity.
+      <div class="logs-error" *ngIf="error()" style="display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Could not fetch live logs. Please check backend connectivity.</span>
       </div>
 
       <!-- Live log data -->
