@@ -28,19 +28,19 @@
     <div class="floating-books">
       <div class="book-card book-card-one">
         <div class="book-cover">
-          <img src="/images/auth/sign_in_1.png" alt="Book1" />
+          <img src="/images/auth/sign_in_1.png" alt="" aria-hidden="true" />
         </div>
       </div>
 
       <div class="book-card book-card-two">
         <div class="book-cover light">
-          <img src="/images/auth/sign_in_2.png" alt="Book2" />
+          <img src="/images/auth/sign_in_2.png" alt="" aria-hidden="true" />
         </div>
       </div>
 
       <div class="book-card book-card-three">
         <div class="mini-book">
-          <img src="/images/auth/sign_in_3.png" alt="Book3" />
+          <img src="/images/auth/sign_in_3.png" alt="" aria-hidden="true" />
         </div>
       </div>
     </div>
@@ -147,7 +147,9 @@
               role="alert"
               aria-live="assertive"
             >
-              <span class="error-icon" aria-hidden="true">⚠️</span>
+              <span class="error-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span>
               <span>{{ step1Error }}</span>
             </div>
           }
@@ -163,59 +165,77 @@
             <!-- READER -->
             <!-- ================================ -->
 
-            <button
-              type="button"
-              role="radio"
+            <div
               class="account-card"
-              [class.selected]="accountType === 'reader'"
+              tabindex="0"
+              role="radio"
               [attr.aria-checked]="accountType === 'reader'"
+              [class.selected]="accountType === 'reader'"
               (click)="selectAccountType('reader')"
+              (keydown.enter)="selectAccountType('reader')"
+              (keydown.space)="selectAccountType('reader')"
             >
-              <div class="account-icon">
+              <div class="card-icon">
                 <svg lucideBookOpen aria-hidden="true"></svg>
               </div>
 
-              <div class="account-info">
-                <strong> Reader </strong>
+              <div class="card-content">
+                <div class="card-header">
+                  <h3>Reader Account</h3>
 
-                <span> Discover books, track your reading and join communities. </span>
-              </div>
+                  @if (accountType === 'reader') {
+                    <span class="check-indicator">
+                      <svg lucideCheck aria-hidden="true"></svg>
+                    </span>
+                  }
+                </div>
 
-              <div class="radio-circle">
-                @if (accountType === 'reader') {
-                  <span></span>
-                }
+                <p>
+                  Discover endless books, write reviews, create personal reading lists, and track your
+                  reading goals.
+                </p>
+
+                <div class="card-badge">Free Forever</div>
               </div>
-            </button>
+            </div>
 
             <!-- ================================ -->
             <!-- AUTHOR -->
             <!-- ================================ -->
 
-            <button
-              type="button"
-              role="radio"
+            <div
               class="account-card"
-              [class.selected]="accountType === 'author'"
+              tabindex="0"
+              role="radio"
               [attr.aria-checked]="accountType === 'author'"
+              [class.selected]="accountType === 'author'"
               (click)="selectAccountType('author')"
+              (keydown.enter)="selectAccountType('author')"
+              (keydown.space)="selectAccountType('author')"
             >
-              <div class="account-icon">
+              <div class="card-icon">
                 <svg lucidePenLine aria-hidden="true"></svg>
               </div>
 
-              <div class="account-info">
-                <strong> Author / Publisher </strong>
+              <div class="card-content">
+                <div class="card-header">
+                  <h3>Author Account</h3>
 
-                <span> Publish your stories and connect with your readers. </span>
-              </div>
+                  @if (accountType === 'author') {
+                    <span class="check-indicator">
+                      <svg lucideCheck aria-hidden="true"></svg>
+                    </span>
+                  }
+                </div>
 
-              <div class="radio-circle">
-                @if (accountType === 'author') {
-                  <span></span>
-                }
+                <p>
+                  Publish your works, reach enthusiastic readers worldwide, access analytics, and grow
+                  your audience.
+                </p>
+
+                <div class="card-badge">Author Studio</div>
               </div>
-            </button>
+            </div>
           </div>
         </div>
       }
@@ -226,11 +246,7 @@
 
       @if (currentStep === 2) {
         <form [formGroup]="activeForm" class="step-content" (submit)="$event.preventDefault()">
-          <!-- ===================================== -->
-          <!-- FORM GRID -->
-          <!-- ===================================== -->
-
-          <div class="form-grid" [class.author-form-grid]="accountType === 'author'">
+          <div class="form-grid">
             <!-- ================================= -->
             <!-- FULL NAME -->
             <!-- ================================= -->
@@ -242,7 +258,9 @@
                 class="input-wrapper"
                 [class.invalid]="hasFieldError(activeForm, 'fullName', 'required')"
               >
-                <span class="input-icon"> ♙ </span>
+                <span class="input-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
 
                 <input type="text" formControlName="fullName" placeholder="John Doe" />
               </div>
@@ -265,7 +283,9 @@
                   class="input-wrapper"
                   [class.invalid]="hasFieldError(activeForm, 'penName', 'required')"
                 >
-                  <span class="input-icon"> ✎ </span>
+                  <span class="input-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </span>
 
                   <input type="text" formControlName="penName" placeholder="Your author name" />
                 </div>
@@ -331,14 +351,25 @@
               class="input-wrapper"
               [class.invalid]="
                 hasFieldError(activeForm, 'email', 'required') ||
-                hasFieldError(activeForm, 'email', 'email')
+                hasFieldError(activeForm, 'email', 'email') ||
+                emailTakenError !== null
               "
             >
               <span class="input-icon">
                 <svg lucideMail aria-hidden="true"></svg>
               </span>
 
-              <input type="email" formControlName="email" placeholder="reader@bookhive.com" />
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="reader@bookhive.com"
+                (blur)="onEmailBlur()"
+                (input)="onEmailInput()"
+              />
+
+              @if (isCheckingEmail) {
+                <span class="checking-indicator" style="position: absolute; right: 12px; font-size: 0.78rem; color: #854d0e; font-weight: 600;">Checking...</span>
+              }
             </div>
 
             @if (hasFieldError(activeForm, 'email', 'required')) {
@@ -347,6 +378,15 @@
 
             @if (hasFieldError(activeForm, 'email', 'email')) {
               <small> Please enter a valid email address. </small>
+            }
+
+            @if (emailTakenError) {
+              <small class="email-error-notice" role="alert" style="color: #dc2626; font-weight: 500; display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                <span>{{ emailTakenError }}</span>
+                @if (emailTakenError.includes('Unable to verify')) {
+                  <button type="button" (click)="onEmailBlur()" style="background: none; border: none; color: #854d0e; text-decoration: underline; cursor: pointer; font-size: 0.78rem; padding: 0;">Retry</button>
+                }
+              </small>
             }
           </div>
 
@@ -364,7 +404,9 @@
                 <label> COUNTRY </label>
 
                 <div class="input-wrapper">
-                  <span class="input-icon"> ⌖ </span>
+                  <span class="input-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  </span>
 
                   <select formControlName="country">
                     <option value="">Select country</option>
@@ -608,8 +650,13 @@
         <!-- NEXT -->
 
         @if (currentStep < totalSteps) {
-          <button type="button" class="next-button" (click)="nextStep()">
-            <span>Next</span>
+          <button
+            type="button"
+            class="next-button"
+            [disabled]="isCheckingEmail || isSubmitting"
+            (click)="nextStep()"
+          >
+            <span>{{ isCheckingEmail ? 'Checking...' : 'Next' }}</span>
             <svg lucideArrowRight class="button-icon" aria-hidden="true"></svg>
           </button>
         } @else {

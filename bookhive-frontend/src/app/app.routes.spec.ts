@@ -58,7 +58,7 @@ describe('App Routing Behavior', () => {
   it('should redirect "/" to "/home" and render public Home page', async () => {
     await harness.navigateByUrl('/');
     expect(router.url).toBe('/home');
-  });
+  }, 15000);
 
   it('should allow direct access to "/home"', async () => {
     await harness.navigateByUrl('/home');

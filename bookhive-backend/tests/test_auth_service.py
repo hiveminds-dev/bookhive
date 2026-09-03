@@ -107,3 +107,88 @@ async def test_logout_revokes_the_current_access_token(monkeypatch):
     assert revoked_token.user_id == user.id
     assert revoked_token.jti == "760b79df-3dcc-4ef0-a778-54593b33717d"
     session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_is_email_available():
+    service = AuthService()
+    session = AsyncMock()
+    service.user_repository.get_by_email = AsyncMock(return_value=None)
+
+    available = await service.is_email_available(session, "new@example.com")
+    assert available is True
+
+    service.user_repository.get_by_email = AsyncMock(return_value=make_user())
+    taken = await service.is_email_available(session, "existing@example.com")
+    assert taken is False
+
+
+@pytest.mark.asyncio
+async def test_is_email_available_normalization():
+    service = AuthService()
+    session = AsyncMock()
+    service.user_repository.get_by_email = AsyncMock(return_value=None)
+
+    await service.is_email_available(session, "  New.User@Example.COM  ")
+    service.user_repository.get_by_email.assert_awaited_once_with(session, "new.user@example.com")
+
+
+@pytest.mark.asyncio
+async def test_check_email_endpoint_available(monkeypatch):
+    from httpx import ASGITransport, AsyncClient
+    from database import get_db_session
+    from main import app
+    from routers.auth_router import auth_service
+
+    monkeypatch.setattr(auth_service, "is_email_available", AsyncMock(return_value=True))
+    app.dependency_overrides[get_db_session] = lambda: AsyncMock()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/auth/check-email", params={"email": "available@example.com"})
+            assert resp.status_code == 200
+            data = resp.json()
+            assert data["available"] is True
+            assert data["message"] is None
+    finally:
+        app.dependency_overrides.pop(get_db_session, None)
+
+
+@pytest.mark.asyncio
+async def test_check_email_endpoint_taken(monkeypatch):
+    from httpx import ASGITransport, AsyncClient
+    from database import get_db_session
+    from main import app
+    from routers.auth_router import auth_service
+
+    monkeypatch.setattr(auth_service, "is_email_available", AsyncMock(return_value=False))
+    app.dependency_overrides[get_db_session] = lambda: AsyncMock()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/auth/check-email", params={"email": "taken@example.com"})
+            assert resp.status_code == 200
+            data = resp.json()
+            assert data["available"] is False
+            assert data["message"] == "Email address is already registered"
+    finally:
+        app.dependency_overrides.pop(get_db_session, None)
+
+
+@pytest.mark.asyncio
+async def test_check_email_endpoint_invalid_email_format():
+    from httpx import ASGITransport, AsyncClient
+    from database import get_db_session
+    from main import app
+
+    app.dependency_overrides[get_db_session] = lambda: AsyncMock()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/auth/check-email", params={"email": "not-an-email"})
+            assert resp.status_code == 422
+    finally:
+        app.dependency_overrides.pop(get_db_session, None)

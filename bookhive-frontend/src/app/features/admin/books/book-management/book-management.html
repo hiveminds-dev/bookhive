@@ -126,7 +126,9 @@
             <div class="book-info">
               <div class="book-cover" [routerLink]="['/admin/books', book.id, 'review']" style="cursor: pointer;">
                 <img *ngIf="book.cover" [src]="book.cover" [alt]="book.title">
-                <div *ngIf="!book.cover" class="book-cover-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#e2e8f0;font-size:1.2rem;">📖</div>
+                <div *ngIf="!book.cover" class="book-cover-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#e2e8f0;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+                </div>
               </div>
               <div class="book-details">
                 <strong class="title" [routerLink]="['/admin/books', book.id, 'review']" style="cursor: pointer;">{{ book.title }}</strong>
@@ -205,14 +207,18 @@
           <h2>{{ selectedBookForView()?.title }}</h2>
           <p class="subtitle">by <strong>{{ selectedBookForView()?.author }}</strong> · ISBN: {{ selectedBookForView()?.isbn }}</p>
         </div>
-        <button type="button" class="btn-close" (click)="closeViewModal()">✕</button>
+        <button type="button" class="btn-close" (click)="closeViewModal()" style="display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
 
       <div class="modal-body">
         <div class="detail-grid">
           <div class="cover-col">
             <img *ngIf="selectedBookForView()?.cover" [src]="selectedBookForView()?.cover" [alt]="selectedBookForView()?.title" class="modal-cover">
-            <div *ngIf="!selectedBookForView()?.cover" style="width:140px;height:200px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;font-size:2.5rem;border-radius:8px;">📖</div>
+            <div *ngIf="!selectedBookForView()?.cover" style="width:140px;height:200px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;border-radius:8px;">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
           </div>
           <div class="info-col">
             <div class="info-group">

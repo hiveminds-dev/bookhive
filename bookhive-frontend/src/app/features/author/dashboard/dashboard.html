@@ -4,8 +4,8 @@
 
     <app-welcome-section
       [authorName]="authorFirstName()"
-      [newReviewCount]="2"
-      [readyManuscriptCount]="1"
+      [newReviewCount]="0"
+      [readyManuscriptCount]="0"
       (uploadBook)="goToUploadBook()">
     </app-welcome-section>
 
@@ -24,7 +24,7 @@
       </app-recent-books>
 
       <app-recent-reviews
-        [averageRating]="4.8"
+        [averageRating]="0"
         [reviews]="recentReviews">
       </app-recent-reviews>
 

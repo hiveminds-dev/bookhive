@@ -78,13 +78,13 @@ export class AuthorsComponent implements OnInit {
   }
 
   getAuthorAvatar(author: AuthorApplicationItem | null): string {
-    if (!author) return 'assets/images/auth/sign_in_1.png';
+    if (!author) return 'images/author/profile/profile-placeholder.jpg';
     if (author.profile_image_path) {
       return author.profile_image_path.startsWith('http')
         ? author.profile_image_path
         : `http://localhost:8000/${author.profile_image_path}`;
     }
-    return 'assets/images/auth/sign_in_1.png';
+    return 'images/author/profile/profile-placeholder.jpg';
   }
 
   openAuthorProfile(author: AuthorApplicationItem): void {

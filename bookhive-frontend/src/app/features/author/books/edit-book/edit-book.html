@@ -47,7 +47,9 @@
     @if (rejectionReason) {
       <div class="message rejection-banner" style="background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 14px; padding: 18px 22px; margin-bottom: 24px; color: #991b1b;">
         <div style="display: flex; align-items: flex-start; gap: 12px;">
-          <span style="font-size: 1.3rem; line-height: 1;">⚠️</span>
+          <span style="display: inline-flex; align-items: center; color: #dc2626;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span>
           <div>
             <strong style="display: block; font-size: 1rem; font-weight: 800; margin-bottom: 4px; color: #7f1d1d;">
               Submission Rejected by Editorial Review
@@ -67,7 +69,9 @@
 
     @if (successMessage) {
       <div class="message success-message">
-        <span aria-hidden="true">✓</span>
+        <span aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        </span>
         {{ successMessage }}
       </div>
     }

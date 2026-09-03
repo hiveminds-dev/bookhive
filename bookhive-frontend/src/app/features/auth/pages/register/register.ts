@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AbstractControl,
@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { finalize, Observable } from 'rxjs';
+import { finalize, Observable, Subscription } from 'rxjs';
 import {
   LucideArrowLeft,
   LucideArrowRight,
@@ -63,7 +63,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class Register {
+export class Register implements OnDestroy {
   private fb = inject(FormBuilder);
   private changeDetector = inject(ChangeDetectorRef);
   private registrationService = inject(RegistrationService);
@@ -83,8 +83,20 @@ export class Register {
   readonly totalSteps = 4;
 
   isSubmitting = false;
+  isCheckingEmail = false;
+  emailTakenError: string | null = null;
   registrationError: string | null = null;
   registrationSuccess: string | null = null;
+
+  private emailCheckSubscription: Subscription | null = null;
+  private lastCheckedEmail: string | null = null;
+  private lastCheckedResult: boolean | null = null;
+  private emailCheckGeneration = 0;
+  private pendingNextCallback: (() => void) | null = null;
+
+  ngOnDestroy(): void {
+    this.emailCheckSubscription?.unsubscribe();
+  }
 
   // =========================
   // PASSWORD
@@ -221,6 +233,10 @@ export class Register {
   // =========================
 
   nextStep(): void {
+    if (this.isCheckingEmail || this.isSubmitting) {
+      return;
+    }
+
     if (this.currentStep === 1) {
       if (!this.accountType) {
         this.step1Error = 'Please select an account type (Reader or Author) to continue.';
@@ -238,8 +254,117 @@ export class Register {
       return;
     }
 
+    if (this.currentStep === 3) {
+      this.verifyEmailAvailability(() => {
+        this.currentStep = 4;
+        this.changeDetector.markForCheck();
+      });
+      return;
+    }
+
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
+      this.changeDetector.markForCheck();
+    }
+  }
+
+  verifyEmailAvailability(onSuccess?: () => void): void {
+    const emailControl = this.activeForm.get('email');
+    if (!emailControl || emailControl.invalid || !emailControl.value) {
+      return;
+    }
+
+    const email = (emailControl.value as string).trim().toLowerCase();
+    if (!email) {
+      return;
+    }
+
+    // If this exact email was already verified and result is known
+    if (this.lastCheckedEmail === email && this.lastCheckedResult !== null) {
+      if (this.lastCheckedResult === true) {
+        this.emailTakenError = null;
+        if (onSuccess) {
+          onSuccess();
+        }
+        return;
+      } else {
+        this.emailTakenError =
+          this.emailTakenError ||
+          'This email address is already registered. Please sign in or use another email.';
+        return;
+      }
+    }
+
+    // If check is already in-flight
+    if (this.isCheckingEmail) {
+      if (this.lastCheckedEmail === email) {
+        if (onSuccess) {
+          this.pendingNextCallback = onSuccess;
+        }
+        return;
+      }
+      this.emailCheckSubscription?.unsubscribe();
+    }
+
+    this.isCheckingEmail = true;
+    this.emailTakenError = null;
+    this.pendingNextCallback = onSuccess ?? null;
+    this.lastCheckedEmail = email;
+    const currentGen = ++this.emailCheckGeneration;
+    this.changeDetector.markForCheck();
+
+    this.emailCheckSubscription = this.registrationService
+      .checkEmailAvailability(email)
+      .subscribe({
+        next: (res) => {
+          if (currentGen !== this.emailCheckGeneration) {
+            return;
+          }
+          this.isCheckingEmail = false;
+          this.lastCheckedResult = res.available;
+          if (!res.available) {
+            this.emailTakenError =
+              res.message ||
+              'This email address is already registered. Please sign in or use another email.';
+            this.pendingNextCallback = null;
+          } else {
+            this.emailTakenError = null;
+            const cb = this.pendingNextCallback;
+            this.pendingNextCallback = null;
+            if (cb) {
+              cb();
+            }
+          }
+          this.changeDetector.markForCheck();
+        },
+        error: () => {
+          if (currentGen !== this.emailCheckGeneration) {
+            return;
+          }
+          this.isCheckingEmail = false;
+          this.lastCheckedEmail = null;
+          this.lastCheckedResult = null;
+          this.pendingNextCallback = null;
+          this.emailTakenError = 'Unable to verify this email address. Please try again.';
+          this.changeDetector.markForCheck();
+        },
+      });
+  }
+
+  onEmailBlur(): void {
+    this.verifyEmailAvailability();
+  }
+
+  onEmailInput(): void {
+    if (this.isCheckingEmail) {
+      this.emailCheckSubscription?.unsubscribe();
+      this.isCheckingEmail = false;
+    }
+    this.lastCheckedEmail = null;
+    this.lastCheckedResult = null;
+    this.pendingNextCallback = null;
+    if (this.emailTakenError) {
+      this.emailTakenError = null;
       this.changeDetector.markForCheck();
     }
   }

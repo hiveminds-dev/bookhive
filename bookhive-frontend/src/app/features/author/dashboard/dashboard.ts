@@ -1,6 +1,8 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
+import { AuthorBookItem, BookService } from '../../../core/services/book.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 import {
   WelcomeSectionComponent
@@ -39,10 +41,13 @@ import {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class AuthorDashboardComponent {
+export class AuthorDashboardComponent implements OnInit {
 
   private readonly router = inject(Router);
   private readonly auth = inject(Auth);
+  private readonly bookService = inject(BookService);
+  private readonly toastService = inject(ToastService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   readonly currentUser = this.auth.currentUser;
 
@@ -58,15 +63,15 @@ export class AuthorDashboardComponent {
     {
       id: 1,
       label: 'Total Books',
-      value: '12',
+      value: '0',
       icon: '▤',
-      indicator: '↗ +2',
+      indicator: 'Current',
       tone: 'gold'
     },
     {
       id: 2,
       label: 'Published Books',
-      value: '8',
+      value: '0',
       icon: '✺',
       indicator: '◎ Stable',
       tone: 'green'
@@ -74,7 +79,7 @@ export class AuthorDashboardComponent {
     {
       id: 3,
       label: 'Pending Approval',
-      value: '4',
+      value: '0',
       icon: '⌛',
       indicator: '! Action',
       tone: 'red'
@@ -82,82 +87,68 @@ export class AuthorDashboardComponent {
     {
       id: 4,
       label: 'Total Downloads',
-      value: '2.4K',
+      value: '—',
       icon: '⇩',
-      indicator: '↗ 14%',
+      indicator: 'Not tracked',
       tone: 'neutral'
     }
   ];
 
-  recentBooks: RecentAuthorBook[] = [
-    {
-      id: 1,
-      title: 'The Silent Anchor',
-      cover: 'images/author-books/silent-anchor.jpg',
-      uploadedDate: 'Oct 24, 2024',
-      status: 'Published'
-    },
-    {
-      id: 2,
-      title: 'Linear Spaces',
-      cover: 'images/author-books/linear-spaces.jpg',
-      uploadedDate: 'Oct 12, 2024',
-      status: 'Pending'
-    },
-    {
-      id: 3,
-      title: 'Echoes of Gold',
-      cover: 'images/author-books/echoes-of-gold.jpg',
-      uploadedDate: 'Sep 28, 2024',
-      status: 'Published'
-    }
-  ];
+  recentBooks: RecentAuthorBook[] = [];
 
-  recentReviews: AuthorRecentReview[] = [
-    {
-      id: 1,
-      readerName: 'Eleanor Wright',
-      readerInitials: 'EW',
-      rating: 5,
-      comment:
-        'An absolute masterpiece in narrative structure. The development of the protagonist in The Silent Anchor kept me engaged until the very last page.'
-    },
-    {
-      id: 2,
-      readerName: 'Marcus Kane',
-      readerInitials: 'MK',
-      rating: 4,
-      comment:
-        'Sharp, insightful, and beautifully written. The author’s work continues to push the boundaries of modern non-fiction.'
-    }
-  ];
+  recentReviews: AuthorRecentReview[] = [];
 
-  activities: AuthorActivity[] = [
-    {
-      id: 1,
-      title: 'Book approved: "Echoes of Gold"',
-      description:
-        'Congratulations! Your manuscript has passed the final editorial review and is now live.',
-      time: '2 hours ago',
-      type: 'approved'
-    },
-    {
-      id: 2,
-      title: 'New review received',
-      description:
-        'Eleanor Wright left a 5-star review on "The Silent Anchor".',
-      time: '5 hours ago',
-      type: 'review'
-    },
-    {
-      id: 3,
-      title: 'Monthly report ready',
-      description:
-        'Your October earnings and download analytics report is now available for download.',
-      time: 'Yesterday, 10:45 AM',
-      type: 'report'
-    }
-  ];
+  activities: AuthorActivity[] = [];
+
+  ngOnInit(): void {
+    this.bookService.getAuthorBooks().subscribe({
+      next: (books) => {
+        const published = books.filter((book) => book.status.toUpperCase() === 'PUBLISHED').length;
+        const pending = books.filter((book) =>
+          ['PENDING', 'PENDING_REVIEW'].includes(book.status.toUpperCase())
+        ).length;
+
+        this.statistics = [
+          { ...this.statistics[0], value: String(books.length) },
+          { ...this.statistics[1], value: String(published) },
+          { ...this.statistics[2], value: String(pending) },
+          this.statistics[3]
+        ];
+        this.recentBooks = [...books]
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 3)
+          .map((book) => this.mapRecentBook(book));
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        this.toastService.warning('Failed to load the author dashboard.', 'Notice');
+        this.changeDetector.markForCheck();
+      }
+    });
+  }
+
+  private mapRecentBook(book: AuthorBookItem): RecentAuthorBook {
+    const rawStatus = book.status.toUpperCase();
+    const status = rawStatus === 'PUBLISHED'
+      ? 'Published'
+      : ['PENDING', 'PENDING_REVIEW'].includes(rawStatus)
+        ? 'Pending'
+        : rawStatus === 'REJECTED'
+          ? 'Rejected'
+          : 'Draft';
+
+    return {
+      id: book.id,
+      title: book.title,
+      cover: book.cover_url || 'images/author-books/default-cover.jpg',
+      uploadedDate: new Date(book.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      status
+    };
+  }
 
   goToUploadBook(): void {
     this.router.navigate(['/author/books/upload']);

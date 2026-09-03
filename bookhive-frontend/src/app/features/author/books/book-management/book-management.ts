@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   inject,
   OnInit
@@ -56,6 +57,7 @@ export class BookManagementComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly bookService = inject(BookService);
   private readonly toastService = inject(ToastService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   selectedStatus: BookFilterStatus = 'All';
   searchTerm = '';
@@ -76,10 +78,12 @@ export class BookManagementComponent implements OnInit {
       next: (items) => {
         this.isLoading = false;
         this.books = items.map((item) => this.mapToManagedBook(item));
+        this.changeDetector.markForCheck();
       },
       error: () => {
         this.isLoading = false;
         this.toastService.warning('Failed to load your books list.', 'Notice');
+        this.changeDetector.markForCheck();
       }
     });
   }

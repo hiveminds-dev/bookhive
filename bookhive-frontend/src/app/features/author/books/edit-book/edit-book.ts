@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   inject,
   OnInit
@@ -75,6 +76,7 @@ export class EditBookComponent implements OnInit {
   private readonly auth = inject(Auth);
   private readonly bookService = inject(BookService);
   private readonly toastService = inject(ToastService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   readonly bookId = this.route.snapshot.paramMap.get('id');
   readonly isEditMode = this.bookId !== null;
@@ -186,10 +188,12 @@ export class EditBookComponent implements OnInit {
             id: cat.id,
             name: cat.name
           }));
+          this.changeDetector.markForCheck();
         }
       },
       error: () => {
         this.toastService.warning('Failed to load categories.', 'Notice');
+        this.changeDetector.markForCheck();
       }
     });
   }

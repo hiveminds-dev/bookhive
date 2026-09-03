@@ -112,6 +112,7 @@ describe('EditBookComponent', () => {
     expect(component).toBeTruthy();
     expect(bookServiceMock.getCategories).toHaveBeenCalled();
     expect(component.categories.length).toBe(2);
+    expect((fixture.nativeElement as HTMLSelectElement).textContent).toContain('Philosophy');
   });
 
   it('should start in upload mode with author name pre-populated and read-only', () => {
