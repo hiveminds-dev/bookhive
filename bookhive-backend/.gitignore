@@ -10,14 +10,4 @@ htmlcov/
 .DS_Store
 *.log
 
-storage/books/*
-storage/covers/*
-storage/profiles/*
 storage/*.zip
-!storage/books/.gitkeep
-!storage/covers/.gitkeep
-!storage/profiles/.gitkeep
-!storage/books/sample*.pdf
-!storage/covers/beyond-good-and-evil.jpg
-!storage/covers/quantum-mechanics.jpg
-!storage/covers/the-silent-grove.jpg
