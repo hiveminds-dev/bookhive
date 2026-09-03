@@ -190,8 +190,11 @@ describe('BookReaderComponent', () => {
   it('should move to the next page when book is loaded with PDF', () => {
     component.currentPage = 1;
     component.nextPage();
+    fixture.detectChanges();
 
     expect(component.currentPage).toBe(2);
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.page-position')?.textContent).toContain('Page 2 of 85');
   });
 
   it('should move to the previous page', () => {

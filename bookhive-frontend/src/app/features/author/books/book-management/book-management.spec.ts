@@ -97,6 +97,7 @@ describe('BookManagementComponent', () => {
     expect(component).toBeTruthy();
     expect(bookServiceMock.getAuthorBooks).toHaveBeenCalled();
     expect(component.books.length).toBe(2);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Meditations on Solitude');
   });
 
   it('should filter published books', () => {

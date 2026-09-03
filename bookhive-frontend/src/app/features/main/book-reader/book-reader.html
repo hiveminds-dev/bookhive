@@ -129,7 +129,7 @@
         <div class="reader-right">
 
           <app-reader-settings
-            [currentPage]="lastReadPage"
+            [currentPage]="currentPage"
             [totalPages]="book.totalPages ?? 0"
             (pageSelected)="goToPage($event)"
             (shareExcerpt)="shareExcerpt()"
@@ -144,7 +144,7 @@
 
       @if (book.pdfUrl) {
         <app-page-navigation
-          [currentPage]="lastReadPage"
+          [currentPage]="currentPage"
           [totalPages]="book.totalPages ?? 0"
           [secondsRemaining]="secondsRemaining">
         </app-page-navigation>
