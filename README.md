@@ -109,6 +109,10 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
+Generate a secure 32-byte hexadecimal `SECRET_KEY` using `openssl rand -hex 32`
+(or `python3 -c "import secrets; print(secrets.token_hex(32))"`) and update `SECRET_KEY`
+in `.env`.
+
 Create the PostgreSQL database and update the database values in `.env`.
 
 Run the FastAPI application with:
@@ -193,7 +197,9 @@ git checkout -b feature/author-registration
 
 - Do not commit the `.env` file.
 - Do not place passwords or secret keys in source code.
-- Use `.env.example` only as a safe example.
+- Use `.env.example` only as a safe template for version control.
+- Generate a cryptographically secure `SECRET_KEY` (at least 32 characters) using `openssl rand -hex 32`.
+- Changing the `SECRET_KEY` immediately invalidates all previously issued JWT access tokens.
 - Uploaded PDFs and cover images are stored on the server for the MVP.
 - Validate file type and file size before saving uploads.
 
