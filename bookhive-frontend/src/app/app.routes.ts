@@ -3,26 +3,6 @@ import {
 } from '@angular/router';
 
 import {
-  VerificationSuccess
-} from './features/auth/pages/verification-success/verification-success';
-
-import {
-  VerifyEmail
-} from './features/auth/pages/verify-email/verify-email';
-
-import {
-  MainLayoutComponent
-} from './layouts/main-layout/main-layout';
-
-import {
-  AuthorLayoutComponent
-} from './layouts/author-layout/author-layout';
-
-import {
-  AdminLayout
-} from './layouts/admin-layout/admin-layout';
-
-import {
   adminGuard
 } from './core/guards/admin-guard';
 
@@ -88,12 +68,18 @@ export const routes: Routes = [
 
   {
     path: 'auth/verify-email',
-    component: VerifyEmail
+    loadComponent: () =>
+      import('./features/auth/pages/verify-email/verify-email').then(
+        module => module.VerifyEmail
+      )
   },
 
   {
     path: 'auth/verification-success',
-    component: VerificationSuccess
+    loadComponent: () =>
+      import('./features/auth/pages/verification-success/verification-success').then(
+        module => module.VerificationSuccess
+      )
   },
 
   {
@@ -110,7 +96,10 @@ export const routes: Routes = [
 
   {
     path: 'author',
-    component: AuthorLayoutComponent,
+    loadComponent: () =>
+      import('./layouts/author-layout/author-layout').then(
+        module => module.AuthorLayoutComponent
+      ),
     canActivate: [
       authorGuard
     ],
@@ -253,7 +242,10 @@ export const routes: Routes = [
 
   {
     path: 'admin',
-    component: AdminLayout,
+    loadComponent: () =>
+      import('./layouts/admin-layout/admin-layout').then(
+        module => module.AdminLayout
+      ),
     canActivate: [
       adminGuard
     ],
@@ -427,7 +419,10 @@ export const routes: Routes = [
 
   {
     path: '',
-    component: MainLayoutComponent,
+    loadComponent: () =>
+      import('./layouts/main-layout/main-layout').then(
+        module => module.MainLayoutComponent
+      ),
 
     children: [
       {

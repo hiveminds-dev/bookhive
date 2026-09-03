@@ -221,7 +221,7 @@
       <div class="people-list">
         <div class="person-row" *ngFor="let a of statsSignal()?.active_authors || []">
           <div class="person-left">
-            <img [src]="a.avatar || 'assets/images/auth/sign_in_1.png'" [alt]="a.name" class="avatar-img">
+            <img [src]="a.avatar || 'images/author/profile/profile-placeholder.jpg'" [alt]="a.name" class="avatar-img">
             <div class="info">
               <strong class="name">{{ a.name }}</strong>
               <span class="sub">{{ a.booksCount }} Books Published</span>

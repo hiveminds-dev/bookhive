@@ -28,19 +28,19 @@
     <div class="floating-books">
       <div class="book-card book-card-one">
         <div class="book-cover">
-          <img src="/images/auth/sign_in_1.png" alt="Book1" />
+          <img src="/images/auth/sign_in_1.png" alt="" aria-hidden="true" />
         </div>
       </div>
 
       <div class="book-card book-card-two">
         <div class="book-cover light">
-          <img src="/images/auth/sign_in_2.png" alt="Book2" />
+          <img src="/images/auth/sign_in_2.png" alt="" aria-hidden="true" />
         </div>
       </div>
 
       <div class="book-card book-card-three">
         <div class="mini-book">
-          <img src="/images/auth/sign_in_3.png" alt="Book3" />
+          <img src="/images/auth/sign_in_3.png" alt="" aria-hidden="true" />
         </div>
       </div>
     </div>
@@ -381,7 +381,12 @@
             }
 
             @if (emailTakenError) {
-              <small style="color: #dc2626; font-weight: 500;"> {{ emailTakenError }} </small>
+              <small class="email-error-notice" role="alert" style="color: #dc2626; font-weight: 500; display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                <span>{{ emailTakenError }}</span>
+                @if (emailTakenError.includes('Unable to verify')) {
+                  <button type="button" (click)="onEmailBlur()" style="background: none; border: none; color: #854d0e; text-decoration: underline; cursor: pointer; font-size: 0.78rem; padding: 0;">Retry</button>
+                }
+              </small>
             }
           </div>
 
@@ -645,8 +650,13 @@
         <!-- NEXT -->
 
         @if (currentStep < totalSteps) {
-          <button type="button" class="next-button" (click)="nextStep()">
-            <span>Next</span>
+          <button
+            type="button"
+            class="next-button"
+            [disabled]="isCheckingEmail || isSubmitting"
+            (click)="nextStep()"
+          >
+            <span>{{ isCheckingEmail ? 'Checking...' : 'Next' }}</span>
             <svg lucideArrowRight class="button-icon" aria-hidden="true"></svg>
           </button>
         } @else {

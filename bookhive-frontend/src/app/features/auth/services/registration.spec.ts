@@ -95,4 +95,19 @@ describe('RegistrationService', () => {
     expect(httpRequest.request.body).toEqual(request);
     httpRequest.flush(response);
   });
+
+  it('checks email availability via GET /api/auth/check-email', () => {
+    const email = 'check@example.com';
+    const mockResponse = { available: true, message: null };
+
+    service.checkEmailAvailability(email).subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const httpRequest = httpTesting.expectOne((req) =>
+      req.url === '/api/auth/check-email' && req.params.get('email') === email
+    );
+    expect(httpRequest.request.method).toBe('GET');
+    httpRequest.flush(mockResponse);
+  });
 });

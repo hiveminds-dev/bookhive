@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db_session
@@ -34,11 +35,13 @@ from services.email_verification_service import (
     EmailVerificationService,
 )
 from services.password_reset_service import PasswordResetError, PasswordResetService
+from services.user_service import UserService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 service = EmailVerificationService()
 auth_service = AuthService()
 password_reset_service = PasswordResetService()
+user_service = UserService()
 DbSession = Annotated[AsyncSession, Depends(get_db_session)]
 
 
@@ -224,10 +227,11 @@ async def reset_password(request: ResetPasswordRequest, session: DbSession):
 
 @router.get("/check-email", response_model=EmailCheckResponse)
 async def check_email(
-    email: Annotated[str, Query(..., description="Email address to check")],
+    email: Annotated[EmailStr, Query(..., description="Email address to check")],
     session: DbSession,
 ):
     """Check whether an email address is available for registration."""
-    is_available = await auth_service.is_email_available(session, email)
+    normalized_email = str(email).strip().lower()
+    is_available = await auth_service.is_email_available(session, normalized_email)
     message = None if is_available else "Email address is already registered"
     return EmailCheckResponse(available=is_available, message=message)

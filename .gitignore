@@ -41,3 +41,7 @@ bookhive-backend/storage/*.zip
 !bookhive-backend/storage/books/.gitkeep
 !bookhive-backend/storage/covers/.gitkeep
 !bookhive-backend/storage/profiles/.gitkeep
+!bookhive-backend/storage/books/sample*.pdf
+!bookhive-backend/storage/covers/beyond-good-and-evil.jpg
+!bookhive-backend/storage/covers/quantum-mechanics.jpg
+!bookhive-backend/storage/covers/the-silent-grove.jpg
