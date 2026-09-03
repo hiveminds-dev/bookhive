@@ -107,3 +107,17 @@ async def test_logout_revokes_the_current_access_token(monkeypatch):
     assert revoked_token.user_id == user.id
     assert revoked_token.jti == "760b79df-3dcc-4ef0-a778-54593b33717d"
     session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_is_email_available():
+    service = AuthService()
+    session = AsyncMock()
+    service.user_repository.get_by_email = AsyncMock(return_value=None)
+
+    available = await service.is_email_available(session, "new@example.com")
+    assert available is True
+
+    service.user_repository.get_by_email = AsyncMock(return_value=make_user())
+    taken = await service.is_email_available(session, "existing@example.com")
+    assert taken is False

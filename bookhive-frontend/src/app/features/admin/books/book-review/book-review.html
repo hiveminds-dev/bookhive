@@ -34,7 +34,9 @@
       <div class="cover-column">
         <div class="cover-wrapper-3d">
           <img *ngIf="book.cover" [src]="book.cover" [alt]="book.title" class="book-cover-img" />
-          <div *ngIf="!book.cover" style="width: 220px; height: 320px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; font-size: 3rem; border-radius: 12px;">📖</div>
+          <div *ngIf="!book.cover" style="width: 220px; height: 320px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 12px;">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          </div>
         </div>
       </div>
 
@@ -46,7 +48,7 @@
 
         <div class="meta-row">
           <div class="rating-box">
-            <span class="star-icon">★</span>
+            <span class="star-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
             <strong>{{ book.rating }}</strong>
             <span class="reviews-count">({{ book.reviewsCount }})</span>
           </div>

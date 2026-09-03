@@ -14,6 +14,7 @@ from orm_models.user import User
 from schemas.auth import (
     AuthenticatedUserResponse,
     ChangePasswordRequest,
+    EmailCheckResponse,
     EmailVerificationResponse,
     ForgotPasswordRequest,
     LoginRequest,
@@ -219,3 +220,14 @@ async def reset_password(request: ResetPasswordRequest, session: DbSession):
         ) from exc
 
     return MessageResponse(message="Password reset successfully")
+
+
+@router.get("/check-email", response_model=EmailCheckResponse)
+async def check_email(
+    email: Annotated[str, Query(..., description="Email address to check")],
+    session: DbSession,
+):
+    """Check whether an email address is available for registration."""
+    is_available = await auth_service.is_email_available(session, email)
+    message = None if is_available else "Email address is already registered"
+    return EmailCheckResponse(available=is_available, message=message)

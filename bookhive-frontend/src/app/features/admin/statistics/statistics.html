@@ -197,7 +197,12 @@
             </td>
             <td><span class="cat-text">{{ b.category }}</span></td>
             <td><strong class="reads-text">{{ b.totalReads }}</strong></td>
-            <td><span class="rating-text">★ {{ b.rating }}</span></td>
+            <td>
+              <span class="rating-text" style="display: inline-flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="#eab308"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {{ b.rating }}
+              </span>
+            </td>
             <td>
               <span class="trend-cell" [class.pos]="b.trend && b.trend.startsWith('+')" [class.neg]="b.trend && b.trend.startsWith('-')">
                 {{ b.trend || 'N/A' }}

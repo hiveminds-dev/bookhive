@@ -28,7 +28,9 @@
     } @else if (notFound) {
 
       <div class="error-card not-found-state" role="alert">
-        <div class="error-icon" aria-hidden="true">📖</div>
+        <div class="error-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        </div>
         <h2>Book Not Found</h2>
         <p>{{ errorMessage || 'The book you are looking for does not exist or has been removed.' }}</p>
         <div class="error-actions">
@@ -39,7 +41,9 @@
     } @else if (hasServerError) {
 
       <div class="error-card server-error-state" role="alert">
-        <div class="error-icon" aria-hidden="true">⚠️</div>
+        <div class="error-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#dc2626" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
         <h2>Unable to Load Book</h2>
         <p>{{ errorMessage || 'An unexpected error occurred while loading this book.' }}</p>
         <div class="error-actions">
@@ -134,7 +138,9 @@
       <div class="modal-dialog review-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
         <div class="modal-header">
           <h2>{{ isEditingReview ? 'Edit Your Review' : 'Write a Review' }}</h2>
-          <button type="button" class="close-btn" (click)="closeReviewModal()" aria-label="Close modal">✕</button>
+          <button type="button" class="close-btn" (click)="closeReviewModal()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <div class="modal-body">
@@ -154,7 +160,7 @@
                   [class.active]="star <= reviewRating"
                   (click)="setReviewRating(star)"
                   [title]="star + ' star' + (star > 1 ? 's' : '')">
-                  ★
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </button>
               }
               <span class="rating-label">{{ reviewRating }} out of 5 stars</span>
@@ -197,7 +203,9 @@
       <div class="modal-dialog delete-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
         <div class="modal-header">
           <h2>Delete Review</h2>
-          <button type="button" class="close-btn" (click)="closeDeleteConfirmModal()" aria-label="Close modal">✕</button>
+          <button type="button" class="close-btn" (click)="closeDeleteConfirmModal()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <div class="modal-body">

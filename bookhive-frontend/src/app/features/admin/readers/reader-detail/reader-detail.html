@@ -74,13 +74,18 @@
         <div class="history-list" *ngIf="(reader()?.reviews?.length || 0) > 0">
           <div class="history-item" *ngFor="let item of reader()?.reviews">
             <img *ngIf="item.book_cover_url" [src]="item.book_cover_url" [alt]="item.book_title" class="history-cover" />
-            <div *ngIf="!item.book_cover_url" style="width: 48px; height: 64px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px; font-size: 1.2rem;">📖</div>
+            <div *ngIf="!item.book_cover_url" style="width: 48px; height: 64px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
             <div class="history-info">
               <strong>{{ item.book_title }}</strong>
               <small>by {{ item.book_author }} · {{ item.created_at | date:'mediumDate' }}</small>
               <p *ngIf="item.comment" style="margin: 4px 0 0; font-size: 0.85rem; color: #475569;">"{{ item.comment }}"</p>
             </div>
-            <span class="status-pill" style="margin-left: auto;">★ {{ item.rating }}/5</span>
+            <span class="status-pill" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="#eab308"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {{ item.rating }}/5
+            </span>
           </div>
         </div>
 

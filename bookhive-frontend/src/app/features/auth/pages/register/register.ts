@@ -83,6 +83,8 @@ export class Register {
   readonly totalSteps = 4;
 
   isSubmitting = false;
+  isCheckingEmail = false;
+  emailTakenError: string | null = null;
   registrationError: string | null = null;
   registrationSuccess: string | null = null;
 
@@ -238,8 +240,73 @@ export class Register {
       return;
     }
 
+    if (this.currentStep === 3) {
+      const email = this.activeForm.get('email')?.value?.trim() ?? '';
+      if (!email) {
+        return;
+      }
+      this.isCheckingEmail = true;
+      this.emailTakenError = null;
+      this.changeDetector.markForCheck();
+
+      this.registrationService.checkEmailAvailability(email).subscribe({
+        next: (res) => {
+          this.isCheckingEmail = false;
+          if (!res.available) {
+            this.emailTakenError =
+              res.message ||
+              'This email address is already registered. Please sign in or use another email.';
+            this.changeDetector.markForCheck();
+            return;
+          }
+          this.emailTakenError = null;
+          this.currentStep = 4;
+          this.changeDetector.markForCheck();
+        },
+        error: () => {
+          this.isCheckingEmail = false;
+          this.currentStep = 4;
+          this.changeDetector.markForCheck();
+        },
+      });
+      return;
+    }
+
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
+      this.changeDetector.markForCheck();
+    }
+  }
+
+  onEmailBlur(): void {
+    const emailControl = this.activeForm.get('email');
+    if (!emailControl || emailControl.invalid || !emailControl.value) {
+      return;
+    }
+    const email = (emailControl.value as string).trim();
+    this.isCheckingEmail = true;
+    this.registrationService.checkEmailAvailability(email).subscribe({
+      next: (res) => {
+        this.isCheckingEmail = false;
+        if (!res.available) {
+          this.emailTakenError =
+            res.message ||
+            'This email address is already registered. Please sign in or use another email.';
+        } else {
+          this.emailTakenError = null;
+        }
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        this.isCheckingEmail = false;
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  onEmailInput(): void {
+    if (this.emailTakenError) {
+      this.emailTakenError = null;
       this.changeDetector.markForCheck();
     }
   }
