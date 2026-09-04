@@ -21,7 +21,6 @@ import {
   LucideSearch,
   LucideBell,
   LucideGrid2X2,
-  LucideX,
 } from '@lucide/angular';
 
 @Component({
@@ -48,7 +47,6 @@ import {
     LucideSearch,
     LucideBell,
     LucideGrid2X2,
-    LucideX,
   ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import { LucideBook, LucideUser, LucidePenLine, LucideCheck, LucideEye, LucideSearch, LucideX, LucideFilter, LucideStar, LucideDownload } from '@lucide/angular';
+import { LucideBook, LucideUser, LucidePenLine, LucideCheck, LucideEye, LucideSearch, LucideX, LucideFilter, LucideStar, LucideDownload, LucideCalendar } from '@lucide/angular';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
@@ -9,7 +9,7 @@ import { AdminApiService, PlatformStatistics } from '../../../core/services/admi
 @Component({
   selector: 'app-admin-statistics',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideBook, LucideUser, LucidePenLine, LucideCheck, LucideEye, LucideSearch, LucideX, LucideFilter, LucideStar, LucideDownload],
+  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideBook, LucideUser, LucidePenLine, LucideCheck, LucideEye, LucideSearch, LucideX, LucideFilter, LucideStar, LucideDownload, LucideCalendar],
   templateUrl: './statistics.html',
   styleUrl: './statistics.scss',
 })

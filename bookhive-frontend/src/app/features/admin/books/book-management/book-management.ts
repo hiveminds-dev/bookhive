@@ -11,8 +11,6 @@ import {
   LucideCheck,
   LucideGlobe,
   LucideEye,
-  LucideToggleRight,
-  LucideToggleLeft,
 } from '@lucide/angular';
 
 export interface AdminBookTableItem {
@@ -37,7 +35,7 @@ export interface AdminBookTableItem {
 @Component({
   selector: 'app-book-management',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideGlobe, LucideEye, LucideToggleRight, LucideToggleLeft],
+  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideGlobe, LucideEye],
   templateUrl: './book-management.html',
   styleUrl: './book-management.scss',
 })

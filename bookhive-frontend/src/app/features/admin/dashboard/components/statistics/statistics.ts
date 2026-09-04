@@ -1,5 +1,5 @@
 import { Component, Input, inject, OnInit, signal } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { AdminApiService, DashboardStats } from '../../../../../core/services/admin-api.service';
 import {
   LucideBook,
@@ -13,7 +13,7 @@ import {
 @Component({
   selector: 'app-statistics',
   standalone: true,
-  imports: [NgFor, LucideBook, LucideUsers, LucidePenLine, LucideInbox, LucideShieldCheck, LucideUserCog],
+  imports: [NgFor, NgIf, LucideBook, LucideUsers, LucidePenLine, LucideInbox, LucideShieldCheck, LucideUserCog],
   templateUrl: './statistics.html',
   styleUrl: './statistics.scss',
 })

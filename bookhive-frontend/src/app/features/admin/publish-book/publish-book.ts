@@ -3,10 +3,12 @@ import { NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 
+import { LucideX, LucideCheck } from '@lucide/angular';
+
 @Component({
   selector: 'app-publish-book',
   standalone: true,
-  imports: [],
+  imports: [LucideX, LucideCheck],
   templateUrl: './publish-book.html',
   styleUrl: './publish-book.scss',
 })

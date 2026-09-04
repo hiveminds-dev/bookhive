@@ -12,7 +12,7 @@
     </div>
     <div class="header-actions">
       <button type="button" class="btn-primary" [disabled]="true" title="Direct author account creation is coming soon in a future release." style="opacity: 0.6; cursor: not-allowed;">
-        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg lucideUserPlus aria-hidden="true"></svg>
         Create Author (Coming Soon)
       </button>
     </div>
@@ -25,12 +25,12 @@
         <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
         <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" placeholder="Search authors by full name, pen name, or email...">
         <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+          <svg lucideX aria-hidden="true"></svg>
         </button>
       </div>
 
       <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
-        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg lucideFilter aria-hidden="true"></svg>
         <span>Advance Search</span>
         <span class="filter-count-badge" *ngIf="filterCountry() || filterStatus() || filterTimeframe() !== 'all'">!</span>
       </button>
@@ -84,7 +84,7 @@
       <div class="filter-actions-row">
         <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
         <button type="button" class="btn-apply-filter" (click)="applyFilters()">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg lucideCheck aria-hidden="true"></svg>
           Apply Filters
         </button>
       </div>
@@ -96,7 +96,7 @@
     <article class="stat-card">
       <div class="stat-header">
         <div class="icon-box">
-          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <svg lucideUserPlus aria-hidden="true"></svg>
         </div>
         <span class="trend-badge positive">Pending</span>
       </div>
@@ -118,7 +118,7 @@
     <article class="stat-card">
       <div class="stat-header">
         <div class="icon-box">
-          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <svg lucideBook aria-hidden="true"></svg>
         </div>
         <span class="trend-badge high">In Review</span>
       </div>
@@ -129,7 +129,7 @@
     <article class="stat-card highlight-card">
       <div class="stat-header">
         <div class="icon-box star-icon">
-          <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg lucidePower aria-hidden="true"></svg>
         </div>
       </div>
       <span class="stat-label">REJECTED APPLICATIONS</span>
@@ -194,7 +194,7 @@
                 <span class="switch-slider"></span>
               </label>
               <button type="button" class="btn-icon" (click)="openAuthorProfile(author)" title="View Author Profile">
-                <svg viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+                <svg lucideEye style="width:16px;height:16px;" aria-hidden="true"></svg>
               </button>
             </div>
           </td>

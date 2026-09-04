@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgIf } from '@angular/common';
 
+import { LucideAlertTriangle, LucideInfo, LucideCheckCircle2 } from '@lucide/angular';
+
 export type ConfirmationType = 'danger' | 'warning' | 'primary';
 
 @Component({
   selector: 'app-confirmation-modal',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, LucideAlertTriangle, LucideInfo, LucideCheckCircle2],
   templateUrl: './confirmation-modal.html',
   styleUrl: './confirmation-modal.scss',
 })

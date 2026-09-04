@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf, DatePipe } from '@angular/common';
-import { LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck, LucideStar, LucideLock, LucideUserPlus, LucideEye, LucideAlertTriangle, LucideAlertCircle } from '@lucide/angular';
+import { LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck, LucideUserPlus, LucideEye, LucideAlertTriangle, LucideAlertCircle, LucideBook, LucidePower } from '@lucide/angular';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
@@ -9,7 +9,7 @@ import { AdminApiService, AuthorApplicationItem } from '../../../core/services/a
 @Component({
   selector: 'app-authors',
   standalone: true,
-  imports: [NgFor, NgIf, DatePipe, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck, LucideStar, LucideLock, LucideUserPlus, LucideEye, LucideAlertTriangle, LucideAlertCircle],
+  imports: [NgFor, NgIf, DatePipe, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck, LucideUserPlus, LucideEye, LucideAlertTriangle, LucideAlertCircle, LucideBook, LucidePower],
   templateUrl: './authors.html',
   styleUrl: './authors.scss',
 })

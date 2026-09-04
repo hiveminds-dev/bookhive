@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import { LucideSearch, LucideX, LucideMonitor, LucideBook, LucideMessageSquare, LucideGlobe } from '@lucide/angular';
+import { LucideSearch, LucideX, LucideMonitor, LucideBook, LucideFilter, LucideCheck, LucideUserPlus } from '@lucide/angular';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
@@ -15,7 +15,7 @@ interface FAQItem {
 @Component({
   selector: 'app-support',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, RouterLink, LucideSearch, LucideX, LucideMonitor, LucideBook, LucideMessageSquare, LucideGlobe],
+  imports: [NgFor, NgIf, FormsModule, RouterLink, LucideSearch, LucideX, LucideMonitor, LucideBook, LucideFilter, LucideCheck, LucideUserPlus],
   templateUrl: './support.html',
   styleUrl: './support.scss',
 })
