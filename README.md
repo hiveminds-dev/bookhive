@@ -5,7 +5,7 @@
 BookHive is a web platform where approved authors can publish PDF books and
 readers can search, read, download, rate, and review published books.
 
-BookHive is developed by the HiveMinds team.
+BookHive is developed by Team Nexora in the HiveMinds repository organization.
 
 ## Main Workflow
 
@@ -79,6 +79,8 @@ bookhive/
 ├── .github/                 # GitHub workflows and templates
 ├── bookhive-backend/        # FastAPI backend
 ├── bookhive-frontend/       # Angular frontend
+├── docs/                    # Setup, testing, API, and architecture guides
+├── SEED_ACCOUNTS.md         # Local demo accounts and scenarios
 └── README.md                # Project guide
 ```
 
@@ -142,13 +144,11 @@ http://127.0.0.1:8000/api/health/database
 
 ## Frontend Setup
 
-The Angular project will be kept inside `bookhive-frontend`.
-
-After the Angular project is created, open a terminal in that folder and run:
+Open a terminal inside the existing `bookhive-frontend` application and run:
 
 ```bash
-npm install
-ng serve
+npm ci
+npm start
 ```
 
 The frontend will normally be available at:
@@ -166,8 +166,30 @@ pytest
 ruff check .
 ```
 
+Run these commands inside `bookhive-frontend`:
+
+```bash
+npm test -- --watch=false
+npm run build
+```
+
 GitHub Actions will also run backend and frontend checks when code is pushed or
 a pull request is created for `main` or `develop`.
+
+## Documentation
+
+| Document | Purpose |
+|---|---|
+| [Local setup](docs/LOCAL_SETUP.md) | Install, configure, seed, and run BookHive |
+| [Testing guide](docs/TESTING_GUIDE.md) | Automated and three-role manual verification |
+| [Feature status](docs/FEATURE_STATUS.md) | Implemented, partial, and deferred scope |
+| [API overview](docs/API_OVERVIEW.md) | Endpoint groups, access roles, and Swagger |
+| [Database and seeding](docs/DATABASE_AND_SEEDING.md) | Schema lifecycle, reset flags, media, and demo data |
+| [Architecture](docs/ARCHITECTURE.md) | Components, roles, data flow, and book lifecycle |
+| [Branching and PR guide](docs/BRANCHING_AND_PR_GUIDE.md) | Team Git workflow and merge checklist |
+| [Known limitations](docs/KNOWN_LIMITATIONS.md) | Current technical and product constraints |
+| [Changelog](docs/CHANGELOG.md) | Completed development milestones |
+| [Seed accounts](SEED_ACCOUNTS.md) | Local-only Reader, Author, and Admin accounts |
 
 ## Git Branch Flow
 
@@ -213,6 +235,7 @@ git checkout -b feature/author-registration
 
 ## Team
 
-**Team HiveMinds**  
+**Team Nexora**
+
 C-Clarke Institute  
 Advanced AI and Software Engineering
