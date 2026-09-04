@@ -22,7 +22,7 @@
   <section class="admin-search-filter-section">
     <div class="search-primary-row">
       <div class="search-input-box">
-        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
         <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" placeholder="Search authors by full name, pen name, or email...">
         <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
@@ -107,7 +107,7 @@
     <article class="stat-card">
       <div class="stat-header">
         <div class="icon-box">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <svg lucideShieldCheck aria-hidden="true"></svg>
         </div>
         <span class="trend-badge positive">Active</span>
       </div>
@@ -212,7 +212,7 @@
     <div class="modal-card author-profile-modal" (click)="$event.stopPropagation()" style="max-width: 520px; border-radius: 20px; padding: 28px; background: #ffffff;">
       <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px;">
         <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Author Profile Details</h3>
-        <button type="button" class="close-btn" (click)="closeAuthorProfileModal()" style="border: none; background: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <button type="button" class="close-btn" (click)="closeAuthorProfileModal()" style="border: none; background: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg lucideX aria-hidden="true"></svg></button>
       </div>
 
       <div class="modal-body" style="display: flex; flex-direction: column; gap: 18px;">
@@ -268,14 +268,14 @@
       <div class="modal-header">
         <div class="modal-title-box">
           <div class="modal-icon-badge danger">
-            <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg lucideAlertTriangle aria-hidden="true"></svg>
           </div>
           <div>
             <h3 id="reject-modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Reject Author Application</h3>
             <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #64748b;">Please provide a mandatory reason for rejecting this author's application.</p>
           </div>
         </div>
-        <button type="button" class="close-btn" (click)="closeRejectModal()" [disabled]="isRejecting()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <button type="button" class="close-btn" (click)="closeRejectModal()" [disabled]="isRejecting()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;"><svg lucideX aria-hidden="true"></svg></button>
       </div>
 
       <div class="modal-body">
@@ -308,7 +308,7 @@
             [disabled]="isRejecting()"></textarea>
 
           <div class="rejection-error-alert" *ngIf="rejectionError()">
-            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; flex-shrink: 0;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2"/></svg>
+            <svg lucideAlertCircle style="width:16px;height:16px;flex-shrink:0" aria-hidden="true"></svg>
             <span>{{ rejectionError() }}</span>
           </div>
         </div>

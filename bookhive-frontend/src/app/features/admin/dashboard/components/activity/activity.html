@@ -1,13 +1,22 @@
 <div class="side-widgets">
   <section class="quick panel">
     <h2>Quick Actions</h2>
-    <button type="button" (click)="addCategory()"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4M9 14 6.5 16M15 14l2.5 2"/></svg> Add Category</button>
-    <a routerLink="/admin/books" class="quick-btn-link"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg> Manage Books</a>
-    <a routerLink="/admin/authors" class="quick-btn-link"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg> Manage Authors</a>
+    <button type="button" (click)="addCategory()">
+      <svg lucideNetwork aria-hidden="true"></svg>
+      Add Category
+    </button>
+    <a routerLink="/admin/books" class="quick-btn-link">
+      <svg lucideBook aria-hidden="true"></svg>
+      Manage Books
+    </a>
+    <a routerLink="/admin/authors" class="quick-btn-link">
+      <svg lucideUsers aria-hidden="true"></svg>
+      Manage Authors
+    </a>
 
     <!-- Super Admin only -->
     <button *ngIf="isSuperAdmin" type="button" class="super-action-btn" (click)="manageAdmins()">
-      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      <svg lucideShieldCheck aria-hidden="true"></svg>
       Manage Admins
     </button>
   </section>

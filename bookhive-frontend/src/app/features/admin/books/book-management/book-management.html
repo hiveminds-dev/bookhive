@@ -22,15 +22,15 @@
   <section class="admin-search-filter-section">
     <div class="search-primary-row">
       <div class="search-input-box">
-        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
         <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" placeholder="Search books by title, author, or ISBN...">
         <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+          <svg lucideX aria-hidden="true"></svg>
         </button>
       </div>
 
       <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
-        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg lucideFilter aria-hidden="true"></svg>
         <span>Advance Search</span>
         <span class="filter-count-badge" *ngIf="filterCategory() || filterStatus() || filterLanguage() || filterTimeframe() !== 'all'">!</span>
       </button>
@@ -96,7 +96,7 @@
       <div class="filter-actions-row">
         <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
         <button type="button" class="btn-apply-filter" (click)="applyFilters()">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg lucideCheck aria-hidden="true"></svg>
           Apply Filters
         </button>
       </div>
@@ -144,7 +144,7 @@
           </td>
           <td>
             <div class="lang-cell">
-              <svg class="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              <svg lucideGlobe class="icon-globe" aria-hidden="true"></svg>
               <span>{{ book.language }}</span>
             </div>
           </td>
@@ -171,7 +171,7 @@
           </td>
           <td class="text-right">
             <div class="action-buttons">
-              <a [routerLink]="['/admin/books', book.id, 'review']" class="btn-icon" title="View Book Details"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></a>
+              <a [routerLink]="['/admin/books', book.id, 'review']" class="btn-icon" title="View Book Details"><svg lucideEye aria-hidden="true"></svg></a>
               <button type="button" class="btn-icon status-toggle-btn" [class.is-active]="book.isActive" [class.is-deactive]="!book.isActive" [title]="book.isActive ? 'Deactivate Book' : 'Activate Book'" (click)="toggleBookActive(book)">
                 <svg *ngIf="book.isActive" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="2" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 <svg *ngIf="!book.isActive" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>

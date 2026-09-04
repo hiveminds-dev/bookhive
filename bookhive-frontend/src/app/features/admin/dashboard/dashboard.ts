@@ -9,11 +9,22 @@ import { RecentAuthors } from './components/recent-authors/recent-authors';
 import { RecentBooks } from './components/recent-books/recent-books';
 import { RecentRequests } from './components/recent-requests/recent-requests';
 import { Statistics } from './components/statistics/statistics';
+import {
+  LucideSearch,
+  LucideX,
+  LucideFilter,
+  LucideCheck,
+  LucideShieldCheck,
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [Statistics, RecentBooks, RecentAuthors, RecentRequests, Activity, NgIf, FormsModule, RouterLink],
+  imports: [
+    Statistics, RecentBooks, RecentAuthors, RecentRequests, Activity,
+    NgIf, FormsModule, RouterLink,
+    LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

@@ -6,10 +6,50 @@ import { Auth } from '../../core/services/auth';
 import { ToastContainerComponent } from '../../shared/components/toast-container/toast-container';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal';
 
+import {
+  LucideLayoutDashboard,
+  LucideBook,
+  LucideList,
+  LucideUsers,
+  LucideNetwork,
+  LucideBarChart2,
+  LucideShieldCheck,
+  LucideCircleUser,
+  LucideHelpCircle,
+  LucideLogOut,
+  LucideSquarePlus,
+  LucideSearch,
+  LucideBell,
+  LucideGrid2X2,
+  LucideX,
+} from '@lucide/angular';
+
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [NgIf, RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent, ConfirmationModalComponent],
+  imports: [
+    NgIf,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ToastContainerComponent,
+    ConfirmationModalComponent,
+    LucideLayoutDashboard,
+    LucideBook,
+    LucideList,
+    LucideUsers,
+    LucideNetwork,
+    LucideBarChart2,
+    LucideShieldCheck,
+    LucideCircleUser,
+    LucideHelpCircle,
+    LucideLogOut,
+    LucideSquarePlus,
+    LucideSearch,
+    LucideBell,
+    LucideGrid2X2,
+    LucideX,
+  ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
 })

@@ -135,9 +135,13 @@
   color: #806400;
 }
 
-.book-meta i {
-  color: #a8a197;
-  font-style: normal;
+.book-meta .meta-separator {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #a8a197;
+  flex-shrink: 0;
 }
 
 .book-statistics {
