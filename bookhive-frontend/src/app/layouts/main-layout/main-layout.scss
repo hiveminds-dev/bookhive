@@ -2,7 +2,7 @@
   display: block;
   min-height: 100vh;
   overflow-x: clip;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -47,7 +47,7 @@
 }
 
 .brand-name {
-  font-family: Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;

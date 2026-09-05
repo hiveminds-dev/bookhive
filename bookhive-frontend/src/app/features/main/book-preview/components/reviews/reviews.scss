@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -22,7 +22,7 @@
 h2 {
   margin: 0;
   color: #292621;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-serif);
   font-size: 21px;
   font-weight: 600;
 }
@@ -172,7 +172,7 @@ h2 {
 .reader-placeholder {
   background: #e3d6b5;
   color: #765f16;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-serif);
   font-size: 14px;
   font-weight: 600;
 }

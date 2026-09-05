@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -85,7 +85,7 @@
 
   strong {
     color: #6f5700;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: 23px;
     font-weight: 700;
     white-space: nowrap;

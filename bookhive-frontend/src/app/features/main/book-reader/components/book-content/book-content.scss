@@ -2,7 +2,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-serif);
 }
 
 * {
@@ -60,7 +60,7 @@
   p {
     margin: 0 0 calc(23px * var(--reader-zoom, 1));
     color: #393631;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: calc(15px * var(--reader-zoom, 1));
     line-height: 1.6;
     text-align: left;
@@ -107,7 +107,7 @@
 
   p {
     margin: 7px 0 0;
-    font-family: Inter, Arial, sans-serif;
+    font-family: var(--font-sans);
     font-size: calc(10px * var(--reader-zoom, 1));
   }
 }
