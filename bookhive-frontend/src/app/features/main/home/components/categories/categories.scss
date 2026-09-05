@@ -80,10 +80,11 @@
   gap: 16px;
   padding: 20px 22px;
   background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e7e5e4;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
   text-decoration: none;
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
   position: relative;
 
   .category-icon-box {
@@ -92,14 +93,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fdf8e6;
-    border-radius: 10px;
+    background: #fffbeb;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 12px;
     flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
 
     .cat-icon {
       width: 22px;
       height: 22px;
-      color: #854d0e;
+      color: #92400e;
     }
   }
 
@@ -110,15 +113,15 @@
       font-family: var(--font-serif);
       font-size: 1.05rem;
       font-weight: 700;
-      color: #1c1917;
+      color: #0f172a;
       margin: 0 0 4px;
     }
 
     .category-desc {
       font-size: 0.8rem;
-      color: #78716c;
+      color: #64748b;
       margin: 0;
-      line-height: 1.35;
+      line-height: 1.4;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
@@ -129,14 +132,19 @@
   .card-arrow {
     width: 18px;
     height: 18px;
-    color: #a8a29e;
+    color: #94a3b8;
     transition: transform 0.2s ease, color 0.2s ease;
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(28, 25, 23, 0.06);
-    border-color: #854d0e;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07);
+    border-color: rgba(180, 83, 9, 0.4);
+
+    .category-icon-box {
+      background-color: #fef3c7;
+      transform: scale(1.05);
+    }
 
     .card-arrow {
       color: #854d0e;
