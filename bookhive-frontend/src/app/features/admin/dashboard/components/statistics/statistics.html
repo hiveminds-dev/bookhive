@@ -1,7 +1,14 @@
 <div class="statistics" aria-label="Platform statistics">
   <article class="stat-card" *ngFor="let card of cards">
     <div class="stat-top">
-      <span class="stat-icon"><svg viewBox="0 0 24 24"><path [attr.d]="card.path"/></svg></span>
+      <span class="stat-icon" aria-hidden="true">
+        <svg lucideBook *ngIf="card.iconName === 'lucideBook'"></svg>
+        <svg lucideUsers *ngIf="card.iconName === 'lucideUsers'"></svg>
+        <svg lucidePenLine *ngIf="card.iconName === 'lucidePenLine'"></svg>
+        <svg lucideInbox *ngIf="card.iconName === 'lucideInbox'"></svg>
+        <svg lucideShieldCheck *ngIf="card.iconName === 'lucideShieldCheck'"></svg>
+        <svg lucideUserCog *ngIf="card.iconName === 'lucideUserCog'"></svg>
+      </span>
     </div>
     <span class="label">{{ card.label }}</span>
     <strong>{{ card.value }}</strong>

@@ -5,11 +5,12 @@ import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 import { AdminApiService, AdminStaffStats, AdminUserItem } from '../../../core/services/admin-api.service';
 import { ConfirmationModalComponent } from '../../../shared/components/confirmation-modal/confirmation-modal';
+import { LucideShieldCheck, LucideStar, LucideLock, LucideUserPlus, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideTrash2 } from '@lucide/angular';
 
 @Component({
   selector: 'app-admin-management',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, RouterLink, ConfirmationModalComponent],
+  imports: [NgFor, NgIf, FormsModule, RouterLink, ConfirmationModalComponent, LucideShieldCheck, LucideStar, LucideLock, LucideUserPlus, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideTrash2],
   templateUrl: './admin-management.html',
   styleUrl: './admin-management.scss',
 })

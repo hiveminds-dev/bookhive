@@ -14,7 +14,7 @@
     </div>
     <span>{{ book.author_name }}</span>
     <span><em>{{ book.category_name }}</em></span>
-    <span class="status" [class]="getStatusClass(book.status)"><i></i>{{ getStatusLabel(book.status) }}</span>
+    <span class="status" [class]="getStatusClass(book.status)"><span class="status-dot" aria-hidden="true"></span>{{ getStatusLabel(book.status) }}</span>
   </article>
 </section>
 

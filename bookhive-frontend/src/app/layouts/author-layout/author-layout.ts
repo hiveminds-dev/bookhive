@@ -7,6 +7,18 @@ import {
 } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../core/services/auth';
+import {
+  LucideLayoutDashboard,
+  LucideBook,
+  LucideBarChart2,
+  LucideCircleUser,
+  LucideMenu,
+  LucideX,
+  LucideSearch,
+  LucideChevronDown,
+  LucideLogOut,
+} from '@lucide/angular';
+
 
 @Component({
   selector: 'app-author-layout',
@@ -15,7 +27,16 @@ import { Auth } from '../../core/services/auth';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    FormsModule
+    FormsModule,
+    LucideLayoutDashboard,
+    LucideBook,
+    LucideBarChart2,
+    LucideCircleUser,
+    LucideMenu,
+    LucideX,
+    LucideSearch,
+    LucideChevronDown,
+    LucideLogOut,
   ],
   templateUrl: './author-layout.html',
   styleUrl: './author-layout.scss'

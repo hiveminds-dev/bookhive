@@ -4,6 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AdminApiService, AdminBookItem } from '../../../../core/services/admin-api.service';
+import {
+  LucideSearch,
+  LucideX,
+  LucideFilter,
+  LucideCheck,
+  LucideGlobe,
+  LucideEye,
+} from '@lucide/angular';
 
 export interface AdminBookTableItem {
   id: number;
@@ -27,7 +35,7 @@ export interface AdminBookTableItem {
 @Component({
   selector: 'app-book-management',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule],
+  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideGlobe, LucideEye],
   templateUrl: './book-management.html',
   styleUrl: './book-management.scss',
 })
