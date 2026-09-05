@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100%;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -47,7 +47,7 @@
   h1 {
     margin: 0 0 5px;
     color: #28251f;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: 29px;
     font-weight: 600;
     line-height: 1.1;
@@ -270,7 +270,7 @@
   h2 {
     margin: 0 0 8px;
     color: #39352e;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: 22px;
   }
 

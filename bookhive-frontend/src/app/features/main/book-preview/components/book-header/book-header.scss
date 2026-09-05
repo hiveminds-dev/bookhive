@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -32,7 +32,7 @@ h1 {
   max-width: 730px;
   margin: 0 0 9px;
   color: #24211d;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-serif);
   font-size: clamp(32px, 4vw, 52px);
   font-weight: 600;
   letter-spacing: -1.5px;

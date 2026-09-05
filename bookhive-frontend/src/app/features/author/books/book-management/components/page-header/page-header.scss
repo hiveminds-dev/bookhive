@@ -1,7 +1,7 @@
 :host {
   display: block;
   width: 100%;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -14,7 +14,7 @@
   > h1 {
     margin: 0 0 50px;
     color: #20201e;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: clamp(37px, 4vw, 48px);
     font-weight: 700;
     letter-spacing: -1.1px;

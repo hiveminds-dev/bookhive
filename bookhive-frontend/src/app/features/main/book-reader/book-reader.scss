@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100%;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -85,7 +85,7 @@
   h1 {
     margin: 0 0 4px;
     color: #292621;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: 19px;
     font-weight: 600;
   }
@@ -414,7 +414,7 @@ app-page-navigation {
   }
 
   h2 {
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-serif);
     font-size: 24px;
     font-weight: 600;
     color: #292621;

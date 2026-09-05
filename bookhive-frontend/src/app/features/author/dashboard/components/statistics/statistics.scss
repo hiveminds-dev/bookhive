@@ -1,7 +1,7 @@
 :host {
   display: block;
   width: 100%;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -67,7 +67,7 @@
 
 .statistic-value {
   color: #735b00;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-serif);
   font-size: 45px;
   font-weight: 700;
   line-height: 1;

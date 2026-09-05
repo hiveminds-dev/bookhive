@@ -1,7 +1,7 @@
 :host {
   display: block;
   width: 100%;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -64,7 +64,7 @@
 }
 
 .upload-card strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: 23px;
   font-weight: 600;
   text-align: center;
