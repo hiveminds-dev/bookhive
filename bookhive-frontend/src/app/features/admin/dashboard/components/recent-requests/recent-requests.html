@@ -1,15 +1,20 @@
 <section class="panel">
-  <h2>Author Requests</h2>
-  <div class="loading-row" *ngIf="loading()">Loading...</div>
-  <div class="empty-row" *ngIf="!loading() && filteredRequests.length === 0">No matching requests found.</div>
-  <a class="request" [routerLink]="['/admin/authors', request.user_id]" *ngFor="let request of filteredRequests">
-    <span class="marker"></span>
-    <span class="avatar">{{ getInitials(request.full_name) }}</span>
-    <span class="details">
-      <strong>{{ request.full_name }}</strong>
-      <small>Pen: {{ request.pen_name }}{{ request.country ? ' · ' + request.country : '' }}</small>
-    </span>
-    <span class="badge">Pending</span>
-    <span class="arrow">›</span>
-  </a>
+  <header class="panel-header">
+    <h2>Author Requests</h2>
+    <a routerLink="/admin/authors">Manage Authors</a>
+  </header>
+  <div class="panel-scroll">
+    <div class="loading-row" *ngIf="loading()">Loading...</div>
+    <div class="empty-row" *ngIf="!loading() && filteredRequests.length === 0">No matching requests found.</div>
+    <a class="request" [routerLink]="['/admin/authors', request.user_id]" *ngFor="let request of filteredRequests">
+      <span class="marker"></span>
+      <span class="avatar">{{ getInitials(request.full_name) }}</span>
+      <span class="details">
+        <strong>{{ request.full_name }}</strong>
+        <small>Pen: {{ request.pen_name }}{{ request.country ? ' · ' + request.country : '' }}</small>
+      </span>
+      <span class="badge">Pending</span>
+      <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+    </a>
+  </div>
 </section>

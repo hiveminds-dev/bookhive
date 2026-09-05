@@ -7,7 +7,7 @@
 
     <div class="brand-copy">
       <p class="eyebrow">Personal Library</p>
-      <h1>Welcome Back!</h1>
+      <h1>Welcome <br /><span>Back!</span></h1>
       <p>Continue your reading journey with BookHive and discover your next great read.</p>
     </div>
 
@@ -40,6 +40,7 @@
             autocomplete="email"
             placeholder="reader@bookhive.com"
             [class.invalid]="hasFieldError('email')"
+            (keydown.enter)="focusPassword($event)"
           />
         </label>
         @if (hasFieldError('email')) {
@@ -49,6 +50,7 @@
         <label class="field password-field">
           <span>PASSWORD</span>
           <input
+            #passwordInput
             [type]="showPassword ? 'text' : 'password'"
             formControlName="password"
             autocomplete="current-password"

@@ -1,8 +1,8 @@
 :host {
   display: block;
 
-  --community-background: #f7f8f8;
-  --community-text: #262521;
+  --community-background: var(--public-page-bg);
+  --community-text: var(--public-ink);
   --community-gold: #d5a31b;
 }
 
@@ -26,10 +26,10 @@
 
 .community-container {
   width: 100%;
-  max-width: 1180px;
+  max-width: var(--public-container);
 
   margin: 0 auto;
-  padding: 0 24px 80px;
+  padding: 0 var(--public-section-x) 80px;
 }
 
 .popular-area {
@@ -44,7 +44,7 @@
     minmax(250px, 1fr);
 
   align-items: start;
-  gap: 42px;
+  gap: 40px;
 }
 
 .main-column {
@@ -82,10 +82,10 @@
   align-items: center;
   gap: 10px;
 
-  background: #ffffff;
+  background: var(--public-paper);
 
-  border: 1px solid #dfd7c3;
-  border-radius: 10px;
+  border: 1px solid var(--public-border);
+  border-radius: var(--public-radius-card);
 
   box-shadow:
     0 14px 35px
@@ -96,10 +96,11 @@
     0.25s ease;
 }
 
-.community-notification >
-.material-symbols-outlined {
+.community-notification > svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
   color: #b3840d;
-  font-size: 22px;
 }
 
 .community-notification p {
@@ -136,9 +137,9 @@
   background: #f1efe9;
 }
 
-.community-notification button
-.material-symbols-outlined {
-  font-size: 18px;
+.community-notification button svg {
+  width: 18px;
+  height: 18px;
 }
 
 @keyframes notification-enter {

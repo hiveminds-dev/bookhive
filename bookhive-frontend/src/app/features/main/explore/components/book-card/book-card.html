@@ -17,7 +17,7 @@
         (error)="onImageError()">
     } @else {
       <div class="cover-placeholder">
-        <span>📖</span>
+        <span aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
         <p>{{ book.title }}</p>
       </div>
     }
@@ -40,13 +40,13 @@
     <div class="book-details">
       @if (book.rating !== undefined && book.rating !== null && book.reviews !== undefined && book.reviews !== null && book.reviews > 0) {
         <div class="rating">
-          <span class="star">★</span>
+          <span class="star" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
           <strong>{{ book.rating.toFixed(1) }}</strong>
           <span>({{ book.reviews }})</span>
         </div>
       } @else {
         <div class="rating unrated">
-          <span class="star unrated-star">★</span>
+          <span class="star unrated-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
           <span class="unrated-text">Not rated</span>
         </div>
       }
@@ -66,7 +66,7 @@
         type="button"
         class="read-button"
         (click)="onReadNow()">
-        <span aria-hidden="true">▣</span>
+        <span aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
         Read Now
       </button>
 
@@ -74,7 +74,7 @@
         type="button"
         class="preview-button"
         (click)="onPreview()">
-        <span aria-hidden="true">▦</span>
+        <span aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
         Preview
       </button>
     </div>

@@ -49,10 +49,18 @@ export class Dashboard {
       : 'Monitor platform statistics, pending manuscripts, author credentials, and system health.'
   );
 
+  readonly hasActiveFilters = computed(() =>
+    this.searchQuery().trim().length > 0 ||
+    this.filterTimeframe() !== 'all' ||
+    this.filterSortBy() !== 'newest'
+  );
+
   searchQuery = signal('');
   showAdvanceSearch = signal(false);
   filterTimeframe = signal('all');
-  filterSortBy = signal('newest');
+  filterSortBy = signal<'newest' | 'oldest'>('newest');
+  pendingFilterTimeframe = signal('all');
+  pendingFilterSortBy = signal<'newest' | 'oldest'>('newest');
 
   toggleAdvanceSearch(): void {
     this.showAdvanceSearch.update(v => !v);
@@ -63,6 +71,8 @@ export class Dashboard {
   }
 
   applyFilters(): void {
+    this.filterTimeframe.set(this.pendingFilterTimeframe());
+    this.filterSortBy.set(this.pendingFilterSortBy());
     this.toastService.success('Dashboard filters applied.', 'Filter Applied');
   }
 
@@ -70,6 +80,8 @@ export class Dashboard {
     this.searchQuery.set('');
     this.filterTimeframe.set('all');
     this.filterSortBy.set('newest');
+    this.pendingFilterTimeframe.set('all');
+    this.pendingFilterSortBy.set('newest');
     this.toastService.info('Dashboard search filters reset.', 'Filters Reset');
   }
 }

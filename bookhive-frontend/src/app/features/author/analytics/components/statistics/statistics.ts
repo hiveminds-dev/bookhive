@@ -25,36 +25,36 @@ export class StatisticsComponent {
   readonly statistics: AnalyticsStatistic[] = [
     {
       id: 1,
-      icon: '◉',
+      icon: 'views',
       title: 'Total Views',
-      value: '128.4K',
-      badge: '↗ 12%',
-      badgeType: 'positive',
+      value: '0',
+      badge: 'Not tracked',
+      badgeType: 'neutral',
       iconType: 'gold'
     },
     {
       id: 2,
-      icon: '⇩',
+      icon: 'downloads',
       title: 'Total Downloads',
-      value: '42.2K',
-      badge: '↗ 5%',
-      badgeType: 'positive',
+      value: '0',
+      badge: 'Not tracked',
+      badgeType: 'neutral',
       iconType: 'gold'
     },
     {
       id: 3,
-      icon: '▣',
+      icon: 'books',
       title: 'Books Published',
-      value: '24',
+      value: '0',
       badge: 'Lifetime',
       badgeType: 'neutral',
       iconType: 'gray'
     },
     {
       id: 4,
-      icon: '★',
+      icon: 'rating',
       title: 'Average Rating',
-      value: '4.8',
+      value: '0.0',
       secondaryValue: '/ 5.0',
       badge: 'User Sentiment',
       badgeType: 'neutral',

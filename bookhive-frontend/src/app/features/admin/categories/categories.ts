@@ -29,6 +29,8 @@ export class CategoriesComponent implements OnInit {
   showAdvanceSearch = signal(false);
   filterStatus = signal('');
   filterMinBooks = signal<number | null>(null);
+  currentPage = signal(1);
+  pageSize = signal(6);
 
   readonly categoriesSignal = signal<CategoryItem[]>([]);
   readonly showAddModal = signal<boolean>(false);
@@ -61,6 +63,7 @@ export class CategoriesComponent implements OnInit {
 
   onSearchInput(value: string): void {
     this.searchQuery.set(value);
+    this.currentPage.set(1);
   }
 
   toggleAdvanceSearch(): void {
@@ -69,6 +72,7 @@ export class CategoriesComponent implements OnInit {
 
   clearSearch(): void {
     this.searchQuery.set('');
+    this.currentPage.set(1);
   }
 
   get filteredCategories(): CategoryItem[] {
@@ -89,7 +93,21 @@ export class CategoriesComponent implements OnInit {
     });
   }
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredCategories.length / this.pageSize()));
+  }
+
+  get paginatedCategories(): CategoryItem[] {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredCategories.slice(start, start + this.pageSize());
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
   applyFilters(): void {
+    this.currentPage.set(1);
     this.toastService.success('Filtered categories successfully.', 'Filter Applied');
   }
 
@@ -97,7 +115,21 @@ export class CategoriesComponent implements OnInit {
     this.searchQuery.set('');
     this.filterStatus.set('');
     this.filterMinBooks.set(null);
+    this.currentPage.set(1);
     this.toastService.info('Category search filters reset.', 'Filters Reset');
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage.set(page);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage() + 1);
   }
 
   openAddCategoryModal(): void {

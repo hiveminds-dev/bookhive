@@ -34,7 +34,7 @@ export class CoreValues {
       id: 3,
       title: 'Community',
       description:
-        'The soul of HiveMinds is the connection between those who write and those who read.'
+        'The soul of BookHive is the connection between those who write and those who read.'
     },
     {
       id: 4,

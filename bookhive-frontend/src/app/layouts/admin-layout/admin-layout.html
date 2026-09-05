@@ -87,8 +87,8 @@
       </label>
 
       <div class="topbar-actions">
-        <a href="#">Guidelines</a>
-        <a href="#">Review Board</a>
+        <a [routerLink]="['/legal']" [queryParams]="{ tab: 'terms' }">Guidelines</a>
+        <a routerLink="/admin/books">Review Board</a>
         <span class="separator"></span>
         <button type="button" aria-label="Notifications">
           <svg lucideBell aria-hidden="true"></svg>
@@ -104,8 +104,7 @@
 
     <footer class="admin-footer">
       <div><strong>BookHive</strong><span>© 2026 BookHive. All rights reserved.</span></div>
-      <nav><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Intellectual Property</a><a href="#">Contact Support</a></nav>
+      <nav><a [routerLink]="['/legal']" [queryParams]="{ tab: 'privacy' }">Privacy Policy</a><a [routerLink]="['/legal']" [queryParams]="{ tab: 'terms' }">Terms of Service</a><a [routerLink]="['/legal']" [queryParams]="{ tab: 'intellectual-property' }">Intellectual Property</a><a routerLink="/admin/support">Contact Support</a></nav>
     </footer>
   </section>
 </div>
-

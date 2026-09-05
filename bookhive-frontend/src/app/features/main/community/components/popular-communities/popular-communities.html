@@ -30,9 +30,26 @@
         <div class="card-heading">
 
           <div class="community-icon">
-            <span class="material-symbols-outlined">
-              {{ community.icon }}
-            </span>
+            @switch (community.icon) {
+              @case ('terminal') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 8 4 4-4 4"/><path d="M13 17h4"/><path d="M4 4h16v16H4z"/></svg>
+              }
+              @case ('psychology') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M8.5 14.5A6 6 0 1 1 16 14"/><path d="M12 7v4"/><path d="M9.5 9.5h5"/></svg>
+              }
+              @case ('trending_up') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 6-6 4 4 7-7"/><path d="M14 8h6v6"/></svg>
+              }
+              @case ('smart_toy') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="8" width="14" height="10" rx="3"/><path d="M12 4v4"/><path d="M8.5 12h.01"/><path d="M15.5 12h.01"/><path d="M9 15h6"/></svg>
+              }
+              @case ('biotech') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v6l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17L14 8V2"/><path d="M8 2h8"/><path d="M7 16h10"/></svg>
+              }
+              @default {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+              }
+            }
           </div>
 
           <div class="community-title">

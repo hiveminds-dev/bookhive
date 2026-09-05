@@ -1,0 +1,521 @@
+<main class="legal-page">
+  <!-- Hero Header -->
+  <header class="legal-header">
+    <div class="legal-header-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/home">Home</a>
+        <span class="sep">/</span>
+        <span class="current">Legal & Policies</span>
+      </nav>
+
+      <span class="eyebrow">Trust, Rights & Transparency</span>
+      <h1 class="page-title">Legal & Policy Center</h1>
+      <p class="page-subtitle">
+        Clear agreements, transparent data stewardship, and author-first copyright protection for the entire BookHive community.
+      </p>
+
+      <div class="header-meta">
+        <span class="meta-item">
+          <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Effective Date: September 2026
+        </span>
+        <span class="meta-item">
+          <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          Version 2.4 (Open Knowledge Standard)
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <section class="tab-dock-container">
+    <div class="tab-dock" role="tablist" aria-label="Legal documents">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'privacy'"
+        class="tab-btn"
+        [class.active]="activeTab() === 'privacy'"
+        (click)="setTab('privacy')"
+      >
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Privacy Policy</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'terms'"
+        class="tab-btn"
+        [class.active]="activeTab() === 'terms'"
+        (click)="setTab('terms')"
+      >
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>Terms of Service</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'intellectual-property'"
+        class="tab-btn"
+        [class.active]="activeTab() === 'intellectual-property'"
+        (click)="setTab('intellectual-property')"
+      >
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="m4.93 4.93 4.24 4.24"></path>
+          <path d="m14.83 9.17 4.24-4.24"></path>
+          <path d="m14.83 14.83 4.24 4.24"></path>
+          <path d="m9.17 14.83-4.24 4.24"></path>
+          <circle cx="12" cy="12" r="4"></circle>
+        </svg>
+        <span>Intellectual Property</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'support'"
+        class="tab-btn"
+        [class.active]="activeTab() === 'support'"
+        (click)="setTab('support')"
+      >
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Contact & Support</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Document Content Container -->
+  <div class="legal-content-wrapper">
+    <div class="legal-card">
+
+      <!-- ============================================================== -->
+      <!-- TAB 1: PRIVACY POLICY                                          -->
+      <!-- ============================================================== -->
+      @if (activeTab() === 'privacy') {
+        <article class="doc-pane" role="tabpanel" aria-labelledby="Privacy Policy">
+          <div class="pane-header">
+            <span class="doc-badge">Data Privacy & Protection</span>
+            <h2>BookHive Privacy Policy</h2>
+            <p class="pane-lead">
+              Your privacy is fundamental to our literary mission. We are committed to protecting your personal data, maintaining reader confidentiality, and safeguarding author manuscripts.
+            </p>
+          </div>
+
+          <div class="summary-box">
+            <div class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <div class="summary-text">
+              <strong>Quick Privacy Summary:</strong> BookHive does not sell your personal data. We only collect the minimal information needed to operate reader profiles, track personal reading progress, and process author book submissions securely.
+            </div>
+          </div>
+
+          <section class="doc-section">
+            <h3>1. Information We Collect</h3>
+            <p>We collect information you provide directly when interacting with BookHive:</p>
+            <ul>
+              <li><strong>Account Credentials:</strong> Name, email address, password hashes, and user role (Reader, Author, or Administrator).</li>
+              <li><strong>Reading Activity:</strong> Books added to your reading shelf, reading progress percentages, bookmark positions, and user reviews.</li>
+              <li><strong>Author Content:</strong> Uploaded manuscript PDFs, cover artwork, author biographies, book descriptions, and genre classifications.</li>
+              <li><strong>Technical Metadata:</strong> Browser type, approximate location, device viewport, and security access logs to protect platform integrity.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h3>2. How We Use Your Information</h3>
+            <p>Your data is exclusively utilized for genuine platform operations:</p>
+            <ul>
+              <li>To provide seamless digital book reading experiences through our embedded manuscript reader.</li>
+              <li>To allow authors to review reader engagement, community feedback, and book distribution statistics.</li>
+              <li>To send essential account notifications, email verifications, and security password resets.</li>
+              <li>To prevent fraudulent uploads, unauthorized access, and malicious activity.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h3>3. Author Manuscript & File Security</h3>
+            <p>
+              Author manuscripts uploaded in PDF format are stored in secure object storage with cryptographic integrity checks. We do not index private draft manuscripts into public search engines without the author's explicit publication consent.
+            </p>
+          </section>
+
+          <section class="doc-section">
+            <h3>4. Cookies & Session Storage</h3>
+            <p>
+              We utilize strictly necessary session cookies and local storage to retain your authentication tokens, reader view mode preferences (e.g. font size, light/dark reading mode), and active navigation state. We do not deploy third-party advertising tracking cookies.
+            </p>
+          </section>
+
+          <section class="doc-section">
+            <h3>5. Data Retention & Your Rights</h3>
+            <p>
+              You maintain complete control over your personal data under global data protection principles:
+            </p>
+            <ul>
+              <li><strong>Access & Correction:</strong> You can inspect and update your profile details at any time from your Account Settings.</li>
+              <li><strong>Right to Erasure:</strong> You can request complete deletion of your account and associated reading data by reaching out to <a href="mailto:privacy@bookhive.org">privacy@bookhive.org</a>.</li>
+              <li><strong>Author Manuscript Deletion:</strong> Authors can unpublish or remove their manuscripts from public distribution directly from the Author Studio.</li>
+            </ul>
+          </section>
+        </article>
+      }
+
+      <!-- ============================================================== -->
+      <!-- TAB 2: TERMS OF SERVICE                                        -->
+      <!-- ============================================================== -->
+      @if (activeTab() === 'terms') {
+        <article class="doc-pane" role="tabpanel" aria-labelledby="Terms of Service">
+          <div class="pane-header">
+            <span class="doc-badge">User Agreement</span>
+            <h2>Terms of Service</h2>
+            <p class="pane-lead">
+              By registering, browsing, or publishing on BookHive, you agree to comply with these terms, community standards, and platform usage conditions.
+            </p>
+          </div>
+
+          <div class="summary-box">
+            <div class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <div class="summary-text">
+              <strong>Quick Terms Summary:</strong> Treat fellow readers and authors with respect. Publish only original or authorized content. Do not attempt to bypass security or unlawfully redistribute copyrighted manuscripts.
+            </div>
+          </div>
+
+          <section class="doc-section">
+            <h3>1. Account Registration & Security</h3>
+            <p>
+              To access personalized digital shelves, author studio publishing tools, or community review features, you must register an account. You agree to provide accurate registration details and maintain the confidentiality of your password.
+            </p>
+          </section>
+
+          <section class="doc-section">
+            <h3>2. Author Publishing Responsibilities</h3>
+            <p>
+              Authors utilizing the BookHive Author Studio to upload and publish manuscripts warrant that:
+            </p>
+            <ul>
+              <li>The work submitted is their original creation, or they hold lawful copyright licenses to publish the material.</li>
+              <li>The manuscript does not infringe upon any third party's trademark, intellectual property, or moral rights.</li>
+              <li>The publication does not contain defamatory, libelous, or unlawfully explicit content.</li>
+              <li>Manuscripts are categorized with truthful genre tags and age-appropriate content warnings.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h3>3. Reader Conduct & Review Guidelines</h3>
+            <p>
+              BookHive thrives on thoughtful literary discussion. When posting reviews, participating in reading clubs, or commenting on manuscripts:
+            </p>
+            <ul>
+              <li>Constructive, honest criticism is welcomed; harassment, hate speech, and personal attacks against authors or other readers are strictly prohibited.</li>
+              <li>Fake reviews, vote manipulation, or automated bot interactions will result in permanent account termination.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h3>4. Platform Availability & Disclaimers</h3>
+            <p>
+              BookHive is provided on an "as is" and "as available" basis. While we strive for continuous service uptime and secure manuscript delivery, we do not warrant uninterrupted access or immunity from unforeseen server interruptions.
+            </p>
+          </section>
+
+          <section class="doc-section">
+            <h3>5. Termination of Accounts</h3>
+            <p>
+              BookHive reserves the right to suspend or terminate accounts that repeatedly violate these terms, upload plagiarized works, or compromise the safety of our reading ecosystem.
+            </p>
+          </section>
+        </article>
+      }
+
+      <!-- ============================================================== -->
+      <!-- TAB 3: INTELLECTUAL PROPERTY                                   -->
+      <!-- ============================================================== -->
+      @if (activeTab() === 'intellectual-property') {
+        <article class="doc-pane" role="tabpanel" aria-labelledby="Intellectual Property">
+          <div class="pane-header">
+            <span class="doc-badge">Copyright & Ownership</span>
+            <h2>Intellectual Property Policy</h2>
+            <p class="pane-lead">
+              BookHive is founded on deep respect for human creativity. Authors retain full ownership of their manuscripts, while readers enjoy licensed personal reading access.
+            </p>
+          </div>
+
+          <div class="summary-box">
+            <div class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+            </div>
+            <div class="summary-text">
+              <strong>Key Copyright Guarantee:</strong> Authors retain 100% of their copyright and intellectual property. You do NOT surrender ownership when uploading your book to BookHive.
+            </div>
+          </div>
+
+          <section class="doc-section">
+            <h3>1. Author Copyright Retention</h3>
+            <p>
+              When you upload a manuscript, cover design, or excerpt to BookHive:
+            </p>
+            <ul>
+              <li><strong>You remain the sole owner</strong> of your literary work, copyright, and moral rights.</li>
+              <li>You grant BookHive a limited, non-exclusive, revocable worldwide license solely to store, convert, and render your manuscript for digital reading and preview by registered readers.</li>
+              <li>You are completely free to publish, sell, or distribute your book across other platforms, publishers, or physical mediums without restriction.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h3>2. Reader Fair Use & Non-Commercial License</h3>
+            <p>
+              Readers accessing books through the BookHive digital reader receive a personal, non-exclusive, non-transferable license to read the publication for educational and recreational purposes. Readers may not:
+            </p>
+            <ul>
+              <li>Redistribute, resell, or publicly broadcast the author's raw manuscript files.</li>
+              <li>Scrape, reverse-engineer, or systematically harvest manuscripts for commercial training or digital piracy.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h3>3. Copyright Infringement & DMCA Takedown Procedure</h3>
+            <p>
+              BookHive respects the intellectual property rights of all content creators. If you believe your copyrighted work has been reproduced on BookHive without authorization, please submit a formal takedown notice containing:
+            </p>
+            <ol>
+              <li>Identification of the copyrighted work claimed to have been infringed.</li>
+              <li>The specific BookHive book URL or author title of the allegedly infringing material.</li>
+              <li>Your contact information (name, address, telephone number, and email).</li>
+              <li>A statement of good faith belief that the disputed use is not authorized by the copyright owner, agent, or law.</li>
+              <li>Your physical or electronic signature.</li>
+            </ol>
+            <p>
+              Please send all infringement notifications directly to our designated copyright agent at <a href="mailto:copyright@bookhive.org">copyright@bookhive.org</a>.
+            </p>
+          </section>
+
+          <section class="doc-section">
+            <h3>4. BookHive Brand & Platform Assets</h3>
+            <p>
+              The BookHive name, honeycomb book logo, graphic design tokens, software code, and user interface elements are protected trademarks and intellectual property of BookHive.
+            </p>
+          </section>
+        </article>
+      }
+
+      <!-- ============================================================== -->
+      <!-- TAB 4: CONTACT & SUPPORT                                       -->
+      <!-- ============================================================== -->
+      @if (activeTab() === 'support') {
+        <article class="doc-pane" role="tabpanel" aria-labelledby="Contact and Support">
+          <div class="pane-header">
+            <span class="doc-badge">Community Helpdesk</span>
+            <h2>Contact & Support Center</h2>
+            <p class="pane-lead">
+              Have a question regarding your account, author manuscript submission, or platform policies? Our support team is here to assist you.
+            </p>
+          </div>
+
+          <!-- Quick Contact Channels Grid -->
+          <div class="channels-grid">
+            <div class="channel-card">
+              <div class="channel-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <h4>General Support</h4>
+              <p>For reader accounts, bookmarks, and platform questions.</p>
+              <a href="mailto:support@bookhive.org" class="channel-link">support@bookhive.org</a>
+            </div>
+
+            <div class="channel-card">
+              <div class="channel-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <h4>Legal & Copyright</h4>
+              <p>For DMCA notices, rights questions, and privacy requests.</p>
+              <a href="mailto:legal@bookhive.org" class="channel-link">legal@bookhive.org</a>
+            </div>
+
+            <div class="channel-card">
+              <div class="channel-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </div>
+              <h4>Author Studio Desk</h4>
+              <p>For manuscript reviews, formatting assistance, and author tools.</p>
+              <a href="mailto:authors@bookhive.org" class="channel-link">authors@bookhive.org</a>
+            </div>
+          </div>
+
+          <!-- Support Inquiry Form & FAQ Grid -->
+          <div class="support-split-layout">
+            <!-- Left: Support Form -->
+            <div class="support-form-wrapper">
+              <h3 class="form-title">Send Us a Direct Message</h3>
+              <p class="form-subtitle">Fill out the form below and our team will respond within 24–48 hours.</p>
+
+              @if (supportSubmitted()) {
+                <div class="submission-success">
+                  <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </div>
+                  <h4>Inquiry Sent Successfully!</h4>
+                  <p>Thank you for reaching out. A support ticket has been created and our team will get back to you shortly.</p>
+                  <button type="button" class="btn-reset" (click)="resetSupport()">Send Another Message</button>
+                </div>
+              } @else {
+                <form class="support-form" (ngSubmit)="submitSupport()">
+                  <div class="form-row">
+                    <label class="form-field">
+                      <span>Full Name</span>
+                      <input
+                        type="text"
+                        [(ngModel)]="supportForm.name"
+                        name="name"
+                        placeholder="E.g. Jayani Wickramasinghe"
+                        required
+                      />
+                    </label>
+
+                    <label class="form-field">
+                      <span>Email Address</span>
+                      <input
+                        type="email"
+                        [(ngModel)]="supportForm.email"
+                        name="email"
+                        placeholder="you@domain.com"
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <label class="form-field">
+                    <span>Topic / Category</span>
+                    <select [(ngModel)]="supportForm.subject" name="subject">
+                      <option value="general">General Platform Inquiry</option>
+                      <option value="author">Author Studio & Manuscript Review</option>
+                      <option value="privacy">Privacy & Account Deletion Request</option>
+                      <option value="copyright">Copyright & DMCA Notice</option>
+                      <option value="bug">Technical Bug Report</option>
+                    </select>
+                  </label>
+
+                  <label class="form-field">
+                    <span>Message</span>
+                    <textarea
+                      rows="5"
+                      [(ngModel)]="supportForm.message"
+                      name="message"
+                      placeholder="Please provide details regarding your inquiry..."
+                      required
+                    ></textarea>
+                  </label>
+
+                  <button
+                    type="submit"
+                    class="btn-submit"
+                    [disabled]="isSubmitting() || !supportForm.name || !supportForm.email || !supportForm.message"
+                  >
+                    {{ isSubmitting() ? 'Sending Inquiry...' : 'Submit Support Request' }}
+                  </button>
+                </form>
+              }
+            </div>
+
+            <!-- Right: Quick FAQ Accordion -->
+            <div class="support-faq-wrapper">
+              <h3 class="faq-title">Frequently Asked Questions</h3>
+              <p class="faq-subtitle">Quick answers to common questions about BookHive.</p>
+
+              <div class="faq-accordion">
+                <div class="faq-item" [class.open]="openFaq() === 0">
+                  <button type="button" class="faq-trigger" (click)="toggleFaq(0)">
+                    <span>Do authors retain ownership of uploaded manuscripts?</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="faq-answer">
+                    <p>Yes, absolutely. Authors retain 100% of their copyright and moral rights. You grant BookHive only a non-exclusive license to display the book to readers.</p>
+                  </div>
+                </div>
+
+                <div class="faq-item" [class.open]="openFaq() === 1">
+                  <button type="button" class="faq-trigger" (click)="toggleFaq(1)">
+                    <span>How do I submit a copyright takedown request?</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="faq-answer">
+                    <p>Email our copyright team at legal@bookhive.org with the book's URL, proof of ownership, and your contact details. We process valid notices within 24 hours.</p>
+                  </div>
+                </div>
+
+                <div class="faq-item" [class.open]="openFaq() === 2">
+                  <button type="button" class="faq-trigger" (click)="toggleFaq(2)">
+                    <span>How can I delete my account and reading history?</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="faq-answer">
+                    <p>You can request account deletion directly from your Profile settings or by emailing privacy@bookhive.org. All personal identifying data will be permanently wiped.</p>
+                  </div>
+                </div>
+
+                <div class="faq-item" [class.open]="openFaq() === 3">
+                  <button type="button" class="faq-trigger" (click)="toggleFaq(3)">
+                    <span>How fast does the support desk respond?</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="faq-answer">
+                    <p>Our community helpdesk typically responds within 24 to 48 business hours. Urgent copyright or security matters are escalated immediately.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+
+    </div>
+  </div>
+</main>

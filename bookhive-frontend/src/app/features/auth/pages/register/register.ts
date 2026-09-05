@@ -21,7 +21,6 @@ import {
   LucideMail,
   LucidePenLine,
   LucideShieldCheck,
-  LucideSparkles,
 } from '@lucide/angular';
 import {
   AuthorRegistrationRequest,
@@ -58,7 +57,6 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
     LucideMail,
     LucidePenLine,
     LucideShieldCheck,
-    LucideSparkles,
   ],
   templateUrl: './register.html',
   styleUrl: './register.scss',
@@ -228,6 +226,28 @@ export class Register implements OnDestroy {
     this.registrationSuccess = null;
   }
 
+  selectAccountTypeAndContinue(type: 'reader' | 'author', event: Event): void {
+    event.preventDefault();
+    this.selectAccountType(type);
+    this.nextStep();
+  }
+
+  focusRegisterField(event: Event, controlName: string): void {
+    event.preventDefault();
+    this.focusControl(controlName);
+  }
+
+  submitCurrentStepFromKeyboard(event: Event): void {
+    event.preventDefault();
+
+    if (this.currentStep < this.totalSteps) {
+      this.nextStep();
+      return;
+    }
+
+    this.register();
+  }
+
   // =========================
   // STEP NAVIGATION
   // =========================
@@ -247,6 +267,7 @@ export class Register implements OnDestroy {
       this.step1Error = null;
       this.currentStep = 2;
       this.changeDetector.markForCheck();
+      this.focusFirstFieldInStep();
       return;
     }
 
@@ -258,6 +279,7 @@ export class Register implements OnDestroy {
       this.verifyEmailAvailability(() => {
         this.currentStep = 4;
         this.changeDetector.markForCheck();
+        this.focusFirstFieldInStep();
       });
       return;
     }
@@ -265,6 +287,7 @@ export class Register implements OnDestroy {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
       this.changeDetector.markForCheck();
+      this.focusFirstFieldInStep();
     }
   }
 
@@ -373,6 +396,31 @@ export class Register implements OnDestroy {
     setTimeout(() => {
       const firstOption = document.querySelector<HTMLElement>('.account-card');
       firstOption?.focus();
+    }, 0);
+  }
+
+  private focusFirstFieldInStep(): void {
+    setTimeout(() => {
+      const selector =
+        this.currentStep === 2
+          ? '[formControlName="fullName"]'
+          : this.currentStep === 3
+            ? '[formControlName="email"]'
+            : this.currentStep === 4
+              ? '[formControlName="password"]'
+              : '';
+
+      if (!selector) {
+        return;
+      }
+
+      document.querySelector<HTMLElement>(selector)?.focus();
+    }, 0);
+  }
+
+  private focusControl(controlName: string): void {
+    setTimeout(() => {
+      document.querySelector<HTMLElement>(`[formControlName="${controlName}"]`)?.focus();
     }, 0);
   }
 

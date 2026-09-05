@@ -64,7 +64,7 @@ export class AuthorDashboardComponent implements OnInit {
       id: 1,
       label: 'Total Books',
       value: '0',
-      icon: '▤',
+      icon: 'books',
       indicator: 'Current',
       tone: 'gold'
     },
@@ -72,23 +72,23 @@ export class AuthorDashboardComponent implements OnInit {
       id: 2,
       label: 'Published Books',
       value: '0',
-      icon: '✺',
-      indicator: '◎ Stable',
+      icon: 'published',
+      indicator: 'Stable',
       tone: 'green'
     },
     {
       id: 3,
       label: 'Pending Approval',
       value: '0',
-      icon: '⌛',
-      indicator: '! Action',
+      icon: 'pending',
+      indicator: 'Action',
       tone: 'red'
     },
     {
       id: 4,
       label: 'Total Downloads',
       value: '—',
-      icon: '⇩',
+      icon: 'downloads',
       indicator: 'Not tracked',
       tone: 'neutral'
     }

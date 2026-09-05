@@ -9,7 +9,7 @@
 h2 {
   margin: 0 0 28px;
 
-  color: #252421;
+  color: var(--public-ink);
 
   font-size: 27px;
   font-weight: 700;
@@ -27,13 +27,12 @@ h2 {
 .discussion-card {
   padding: 22px 22px 18px;
 
-  background: #ffffff;
+  background: var(--public-paper);
 
-  border: 1px solid #ebe8df;
-  border-radius: 12px;
+  border: 1px solid var(--public-border);
+  border-radius: var(--public-radius-card);
 
-  box-shadow:
-    0 7px 20px rgb(45 40 29 / 6%);
+  box-shadow: var(--public-shadow-card);
 
   transition:
     transform 0.2s ease,
@@ -44,10 +43,9 @@ h2 {
 .discussion-card:hover {
   transform: translateY(-2px);
 
-  border-color: #dfce9c;
+  border-color: var(--public-border-strong);
 
-  box-shadow:
-    0 11px 28px rgb(45 40 29 / 9%);
+  box-shadow: var(--public-shadow-card-hover);
 }
 
 .author-row {
@@ -167,8 +165,9 @@ p {
   color: #a37a0c;
 }
 
-.discussion-stats .material-symbols-outlined {
-  font-size: 15px;
+.discussion-stats svg {
+  width: 15px;
+  height: 15px;
 }
 
 .view-thread {
@@ -194,14 +193,14 @@ p {
   color: #c18f10;
 }
 
-.view-thread .material-symbols-outlined {
-  font-size: 16px;
-
+.view-thread svg {
+  width: 15px;
+  height: 15px;
   transition:
     transform 0.2s ease;
 }
 
-.view-thread:hover .material-symbols-outlined {
+.view-thread:hover svg {
   transform: translateX(3px);
 }
 

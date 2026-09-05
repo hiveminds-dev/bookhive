@@ -22,15 +22,15 @@ export class WhyBookhive {
   readonly features: BookHiveFeature[] = [
     {
       id: 1,
-      icon: '▥',
+      icon: 'collection',
       title: 'Large Book Collection',
       description:
-        'Access over 50,000 titles across every genre imaginable, from classics to modern hits.',
+        'Explore a curated catalogue of verified manuscripts across literature, technology, science, and the arts.',
       size: 'large'
     },
     {
       id: 2,
-      icon: '♢',
+      icon: 'publishing',
       title: 'Easy Publishing',
       description:
         'Zero-hassle upload and formatting tools for authors.',
@@ -38,10 +38,10 @@ export class WhyBookhive {
     },
     {
       id: 3,
-      icon: '⌕',
+      icon: 'search',
       title: 'Fast Search',
       description:
-        'Instant AI-powered discovery system.',
+        'Find books by title, author, category, language, and reader rating.',
       size: 'small'
     }
   ];

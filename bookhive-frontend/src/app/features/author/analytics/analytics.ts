@@ -53,9 +53,9 @@ export class AnalyticsComponent {
     const report = [
       'BookHive Author Analytics Report',
       '',
-      'Total Views,128.4K',
+      'Total Views,0',
       'Total Downloads,42.2K',
-      'Books Published,24',
+      'Books Published,0',
       'Average Rating,4.8/5.0'
     ].join('\n');
 

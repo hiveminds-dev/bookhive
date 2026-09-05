@@ -39,27 +39,27 @@ export class ProfileInformation {
     return [
       {
         id: 1,
-        icon: '✉',
+        icon: 'email',
         label: 'Email',
         value: email,
         link: `mailto:${email}`
       },
       {
         id: 2,
-        icon: '⌕',
+        icon: 'phone',
         label: 'Phone',
         value: '+1 (555) 019-2834',
         link: 'tel:+15550192834'
       },
       {
         id: 3,
-        icon: '⌖',
+        icon: 'country',
         label: 'Country',
         value: 'International'
       },
       {
         id: 4,
-        icon: '◎',
+        icon: 'language',
         label: 'Language',
         value: 'English'
       }
@@ -69,19 +69,19 @@ export class ProfileInformation {
   readonly socialLinks: SocialLink[] = [
     {
       id: 1,
-      icon: '●',
+      icon: 'web',
       label: 'Web',
       url: 'https://bookhive.com'
     },
     {
       id: 2,
-      icon: '@',
+      icon: 'twitter',
       label: 'Twitter',
       url: 'https://twitter.com'
     },
     {
       id: 3,
-      icon: '▣',
+      icon: 'linkedin',
       label: 'LinkedIn',
       url: 'https://linkedin.com'
     }

@@ -10,6 +10,7 @@ import { Auth } from '../../core/services/auth';
 import {
   LucideLayoutDashboard,
   LucideBook,
+  LucideInbox,
   LucideBarChart2,
   LucideCircleUser,
   LucideMenu,
@@ -30,6 +31,7 @@ import {
     FormsModule,
     LucideLayoutDashboard,
     LucideBook,
+    LucideInbox,
     LucideBarChart2,
     LucideCircleUser,
     LucideMenu,

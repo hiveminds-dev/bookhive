@@ -2,12 +2,7 @@
 
   <div class="search-box">
 
-    <span
-      class="material-symbols-outlined search-icon"
-      aria-hidden="true"
-    >
-      search
-    </span>
+    <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
 
     <input
       #searchInput
@@ -25,9 +20,7 @@
         aria-label="Clear search"
         (click)="clearSearch(); searchInput.value = ''"
       >
-        <span class="material-symbols-outlined">
-          close
-        </span>
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     }
 

@@ -41,7 +41,7 @@
       <div class="filter-grid">
         <div class="filter-group">
           <label>Date Window</label>
-          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+          <select [ngModel]="pendingFilterTimeframe()" (ngModelChange)="pendingFilterTimeframe.set($event)">
             <option value="all">All Time</option>
             <option value="today">Today's Activity</option>
             <option value="7days">Past 7 Days</option>
@@ -51,7 +51,7 @@
 
         <div class="filter-group">
           <label>Sort By</label>
-          <select [ngModel]="filterSortBy()" (ngModelChange)="filterSortBy.set($event)">
+          <select [ngModel]="pendingFilterSortBy()" (ngModelChange)="pendingFilterSortBy.set($event)">
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
           </select>
@@ -68,17 +68,21 @@
     </div>
   </section>
 
-  <app-statistics [isSuperAdmin]="isSuperAdmin()" />
+  <app-statistics
+    [isSuperAdmin]="isSuperAdmin()"
+    [isFiltered]="hasActiveFilters()"
+    [searchQuery]="searchQuery()"
+    [filterTimeframe]="filterTimeframe()"
+  />
 
   <div class="dashboard-grid">
     <div class="main-column">
-      <app-recent-books [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
+      <app-recent-books [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" [filterSortBy]="filterSortBy()" />
       <div class="lower-grid">
-        <app-recent-authors [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
-        <app-recent-requests [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" />
+        <app-recent-authors [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" [filterSortBy]="filterSortBy()" />
+        <app-recent-requests [searchQuery]="searchQuery()" [filterTimeframe]="filterTimeframe()" [filterSortBy]="filterSortBy()" />
       </div>
     </div>
     <app-activity [isSuperAdmin]="isSuperAdmin()" />
   </div>
 </div>
-

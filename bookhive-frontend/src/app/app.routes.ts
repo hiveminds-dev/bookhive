@@ -14,6 +14,10 @@ import {
   readerGuard
 } from './core/guards/reader-guard';
 
+import {
+  superAdminGuard
+} from './core/guards/super-admin-guard';
+
 export const routes: Routes = [
 
   // ==========================================
@@ -401,6 +405,9 @@ export const routes: Routes = [
       },
       {
         path: 'admins',
+        canActivate: [
+          superAdminGuard
+        ],
 
         loadComponent: () =>
           import(
@@ -504,6 +511,44 @@ export const routes: Routes = [
             module =>
               module.About
           )
+      },
+      {
+        path: 'legal',
+
+        loadComponent: () =>
+          import(
+            './features/main/legal/legal'
+            ).then(
+            module =>
+              module.LegalComponent
+          )
+      },
+      {
+        path: 'privacy',
+        redirectTo: 'legal'
+      },
+      {
+        path: 'terms',
+        redirectTo: 'legal'
+      },
+      {
+        path: 'intellectual-property',
+        redirectTo: 'legal'
+      },
+      {
+        path: 'support',
+        redirectTo: 'legal'
+      },
+      {
+        path: 'not-found',
+
+        loadComponent: () =>
+          import(
+            './features/main/not-found/not-found'
+            ).then(
+            module =>
+              module.NotFoundComponent
+          )
       }
     ]
   },
@@ -514,7 +559,7 @@ export const routes: Routes = [
 
   {
     path: '**',
-    redirectTo: 'home'
+    redirectTo: 'not-found'
   }
 
 ];

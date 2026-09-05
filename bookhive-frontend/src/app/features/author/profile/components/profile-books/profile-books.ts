@@ -30,35 +30,7 @@ export class ProfileBooks {
   readonly viewAllSelected =
     new EventEmitter<void>();
 
-  readonly books: AuthorProfileBook[] = [
-    {
-      id: 1,
-      title: 'Meditations on Solitude',
-      category: 'Philosophy',
-      cover:
-        'images/author-books/meditations.jpg',
-      publishedDate: 'Oct 12, 2023',
-      rating: 4.9
-    },
-    {
-      id: 2,
-      title: 'The Gilded Key',
-      category: 'Mystery',
-      cover:
-        'images/author-books/gilded-key.jpg',
-      publishedDate: 'Aug 18, 2023',
-      rating: 4.8
-    },
-    {
-      id: 3,
-      title: 'Echoes of Rome',
-      category: 'History',
-      cover:
-        'images/author-books/echoes-of-rome.jpg',
-      publishedDate: 'Jun 05, 2023',
-      rating: 4.7
-    }
-  ];
+  readonly books: AuthorProfileBook[] = [];
 
   openBook(
     book: AuthorProfileBook

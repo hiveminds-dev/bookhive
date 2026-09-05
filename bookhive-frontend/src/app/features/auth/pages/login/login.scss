@@ -45,9 +45,9 @@
   width: max-content;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 8px;
   color: var(--gold-dark);
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   text-decoration: none;
   position: relative;
@@ -55,10 +55,10 @@
 }
 
 .brand-logo {
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  margin-right: -8px;
+  margin-right: 0;
 }
 
 .brand-copy {
@@ -73,16 +73,24 @@
   color: var(--gold-dark);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .brand-copy h1 {
   margin: 0;
   color: #17140f;
-  font-size: clamp(52px, 5.7vw, 86px);
-  line-height: 0.96;
-  letter-spacing: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(44px, 4.8vw, 70px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+
+  span {
+    display: block;
+    color: #92540d;
+    font-style: italic;
+  }
 }
 
 .brand-copy p:last-child {
@@ -193,83 +201,89 @@
 }
 
 .login-card {
-  width: min(100%, 462px);
-  padding: clamp(32px, 4.2vw, 48px);
+  width: min(100%, 460px);
+  padding: clamp(34px, 4.5vw, 48px);
   border: 1px solid rgba(214, 204, 184, 0.58);
-  border-radius: 30px;
-  background: rgba(255, 253, 248, 0.95);
+  border-radius: 28px;
+  background: rgba(255, 253, 248, 0.96);
   box-shadow: 0 28px 80px rgba(65, 52, 29, 0.11);
+  backdrop-filter: blur(8px);
 }
 
 .card-header {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   text-align: center;
 }
 
 .card-header h2 {
   margin: 0;
-  font-size: clamp(34px, 3vw, 44px);
-  line-height: 1;
+  color: var(--ink);
+  font-size: clamp(28px, 2.4vw, 34px);
+  line-height: 1.12;
   letter-spacing: 0;
+  font-weight: 850;
 }
 
 .card-header p {
-  margin: 13px 0 0;
+  margin: 10px 0 0;
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 14.5px;
+  line-height: 1.5;
 }
 
 .login-form {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .field {
   display: grid;
-  gap: 9px;
+  gap: 8px;
   position: relative;
 }
 
 .field span {
-  color: #7e7566;
+  color: #57534e;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .field input {
   width: 100%;
-  height: 54px;
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  background: #fffaf1;
+  height: 52px;
+  border: 1.5px solid #e7dece;
+  border-radius: 12px;
+  background: #faf8f5;
   color: var(--ink);
   font: inherit;
+  font-size: 14.5px;
   outline: none;
-  padding: 0 18px;
+  padding: 0 16px;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
     background 160ms ease;
-}
 
-.field input::placeholder {
-  color: #b5aa99;
-}
+  &::placeholder {
+    color: #a8a29e;
+  }
 
-.field input:focus {
-  border-color: rgba(201, 154, 36, 0.76);
-  background: #fffdfa;
-  box-shadow: 0 0 0 4px rgba(201, 154, 36, 0.14);
-}
+  &:focus {
+    border-color: #854d0e;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(133, 77, 14, 0.12);
+  }
 
-.field input.invalid {
-  border-color: #b84d3c;
+  &.invalid {
+    border-color: #dc2626;
+    background: #fff8f8;
+  }
 }
 
 .password-field input {
-  padding-right: 54px;
+  padding-right: 50px;
 }
 
 .icon-button {
@@ -278,34 +292,38 @@
   display: grid;
   place-items: center;
   position: absolute;
-  right: 8px;
-  bottom: 8px;
+  right: 7px;
+  bottom: 7px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 10px;
   background: transparent;
-  color: #8a806f;
+  color: #78716c;
   cursor: pointer;
-}
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
 
-.icon-button:hover {
-  background: rgba(201, 154, 36, 0.1);
-  color: var(--gold-dark);
-}
+  &:hover {
+    background: rgba(133, 77, 14, 0.08);
+    color: #854d0e;
+  }
 
-.icon-button svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 }
 
 .field-error {
-  margin: -8px 0 0;
-  color: #a64233;
+  margin: -10px 0 0;
+  color: #dc2626;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .form-options {
@@ -321,41 +339,71 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #655d52;
+  color: #57534e;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: #854d0e;
+    cursor: pointer;
+  }
 }
 
-.remember input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--gold);
-}
-
-.text-link,
-.register-link a {
+.text-link {
   border: 0;
   background: transparent;
-  color: var(--gold-dark);
+  color: #854d0e;
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: #713f12;
+    text-decoration: underline;
+  }
 }
 
 .submit-button {
-  height: 56px;
-  margin-top: 6px;
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
   border: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--gold-soft) 0%, var(--gold) 46%, #a77b18 100%);
-  box-shadow: 0 16px 34px rgba(166, 118, 24, 0.24);
-  color: #2d2108;
+  border-radius: 12px;
+  background: #854d0e;
+  box-shadow: 0 10px 24px rgba(133, 77, 14, 0.22);
+  color: #ffffff;
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
-}
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 
-.submit-button:hover {
-  filter: brightness(1.02);
+  &:hover:not(:disabled) {
+    background: #713f12;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(133, 77, 14, 0.32);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(133, 77, 14, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 }
 
 .divider {
@@ -421,6 +469,19 @@
   color: var(--muted);
   font-size: 14px;
   text-align: center;
+
+  a {
+    color: #854d0e;
+    font-weight: 800;
+    text-decoration: none;
+    margin-left: 4px;
+    transition: color 150ms ease;
+
+    &:hover {
+      color: #713f12;
+      text-decoration: underline;
+    }
+  }
 }
 
 @media (max-width: 1180px) {
@@ -484,7 +545,7 @@
   .brand-logo {
     width: 46px;
     height: 46px;
-    margin-right: -6px;
+    margin-right: 0;
   }
 
   .brand-copy {

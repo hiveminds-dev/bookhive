@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: center;
   background: #171b1c;
-  border-radius: 17px;
+  border-radius: var(--public-radius-card, 10px);
 }
 
 .cta-content {
@@ -59,7 +59,7 @@
   padding: 10px 20px;
   align-items: center;
   justify-content: center;
-  border-radius: 7px;
+  border-radius: var(--public-radius-control, 8px);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
@@ -70,13 +70,13 @@
 
 .primary-button {
   color: #ffffff;
-  background: #d3a308;
-  border: 1px solid #d3a308;
+  background: var(--public-gold, #8e7113);
+  border: 1px solid var(--public-gold, #8e7113);
 }
 
 .primary-button:hover {
-  background: #b58b00;
-  border-color: #b58b00;
+  background: var(--public-gold-hover, #755d0f);
+  border-color: var(--public-gold-hover, #755d0f);
 }
 
 .secondary-button {

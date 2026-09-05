@@ -42,6 +42,66 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Public UI Consistency Tokens */
+  --public-page-bg: #fafafa;
+  --public-paper: #ffffff;
+  --public-paper-warm: #fdfbf7;
+  --public-border: #e9e3d6;
+  --public-border-strong: #d8ccb3;
+  --public-ink: #1c1917;
+  --public-muted: #78716c;
+  --public-gold: #854d0e;
+  --public-gold-hover: #713f12;
+  --public-gold-soft: #fdf8e6;
+  --public-radius-card: 12px;
+  --public-radius-control: 8px;
+  --public-shadow-card: 0 4px 18px rgba(28, 25, 23, 0.05);
+  --public-shadow-card-hover: 0 12px 28px rgba(28, 25, 23, 0.09);
+  --public-section-x: 24px;
+  --public-section-y: clamp(52px, 6vw, 72px);
+  --public-container: 1280px;
+
+  --workspace-page-bg: #f6f7f8;
+  --workspace-paper: #ffffff;
+  --workspace-paper-soft: #fbfaf7;
+  --workspace-border: #e7e5df;
+  --workspace-border-strong: #d8cfb4;
+  --workspace-ink: #111827;
+  --workspace-muted: #6b7280;
+  --workspace-gold: #854d0e;
+  --workspace-gold-soft: #f8efd6;
+  --workspace-radius-card: 14px;
+  --workspace-radius-control: 10px;
+  --workspace-shadow-card: 0 8px 26px rgba(17, 24, 39, 0.05);
+  --workspace-shadow-hover: 0 14px 32px rgba(17, 24, 39, 0.08);
+}
+
+.checking-indicator {
+  position: absolute;
+  right: 12px;
+  color: var(--gold-dark, #854d0e);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.email-error-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.email-retry-btn {
+  padding: 0;
+  color: var(--gold-dark, #854d0e);
+  background: none;
+  border: 0;
+  font-size: 0.78rem;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* Global Reset & Base */

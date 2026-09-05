@@ -21,21 +21,21 @@ export class OurMission {
   readonly missionItems: MissionItem[] = [
     {
       id: 1,
-      icon: '▣',
+      icon: 'read',
       title: 'Read',
       description:
         'Curating a world-class selection of literature and research for the modern scholar.'
     },
     {
       id: 2,
-      icon: '≡',
+      icon: 'publish',
       title: 'Publish',
       description:
         'Empowering creators with powerful, intuitive tools to share their stories globally.'
     },
     {
       id: 3,
-      icon: '♙',
+      icon: 'connect',
       title: 'Connect',
       description:
         'Building a vibrant ecosystem where readers and authors engage in meaningful dialogue.'

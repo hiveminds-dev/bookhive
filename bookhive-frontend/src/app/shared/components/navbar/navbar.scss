@@ -117,6 +117,16 @@
   border-radius: 2px 2px 0 0;
 }
 
+.nav-links a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.nav-links a:focus-visible {
+  outline: 2px solid var(--primary-gold, #854d0e);
+  outline-offset: -8px;
+  border-radius: 6px;
+}
+
 /* =========================================
    SEARCH
 ========================================= */

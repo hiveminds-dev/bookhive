@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AdminApiService, AdminBookItem } from '../../../../core/services/admin-api.service';
 import {
@@ -10,7 +10,6 @@ import {
   LucideFilter,
   LucideCheck,
   LucideGlobe,
-  LucideEye,
 } from '@lucide/angular';
 
 export interface AdminBookTableItem {
@@ -35,13 +34,14 @@ export interface AdminBookTableItem {
 @Component({
   selector: 'app-book-management',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideGlobe, LucideEye],
+  imports: [NgFor, NgIf, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideGlobe],
   templateUrl: './book-management.html',
   styleUrl: './book-management.scss',
 })
 export class BookManagement implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly adminApi = inject(AdminApiService);
+  private readonly router = inject(Router);
 
   searchQuery = signal('');
   showAdvanceSearch = signal(false);
@@ -58,8 +58,6 @@ export class BookManagement implements OnInit {
 
   readonly booksSignal = signal<AdminBookTableItem[]>([]);
   readonly loadingSignal = signal<boolean>(false);
-
-  selectedBookForView = signal<AdminBookTableItem | null>(null);
 
   ngOnInit(): void {
     this.loadBooks();
@@ -219,15 +217,12 @@ export class BookManagement implements OnInit {
     this.toastService.info('All search filters reset.', 'Filters Reset');
   }
 
-  openViewModal(book: AdminBookTableItem): void {
-    this.selectedBookForView.set(book);
+  viewBook(book: AdminBookTableItem): void {
+    void this.router.navigate(['/admin/books', book.id, 'review']);
   }
 
-  closeViewModal(): void {
-    this.selectedBookForView.set(null);
-  }
-
-  toggleBookActive(book: AdminBookTableItem): void {
+  toggleBookActive(book: AdminBookTableItem, event?: Event): void {
+    event?.stopPropagation();
     const nextStatus = book.isActive ? 'DEACTIVATED' : 'PUBLISHED';
     const newActiveState = !book.isActive;
 

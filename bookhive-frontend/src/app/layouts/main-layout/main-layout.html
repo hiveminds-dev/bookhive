@@ -195,7 +195,7 @@
         <ul class="col-links">
           <li><a routerLink="/register">Author Registration</a></li>
           <li><a routerLink="/author/dashboard">Author Studio</a></li>
-          <li><a routerLink="/about">Publishing Guidelines</a></li>
+          <li><a [routerLink]="['/legal']" [queryParams]="{ tab: 'intellectual-property' }">Publishing Rights & IP</a></li>
         </ul>
       </div>
     </div>
@@ -207,6 +207,9 @@
         <a routerLink="/about">About</a>
         <a routerLink="/community">Community</a>
         <a routerLink="/explore">Catalogue</a>
+        <a [routerLink]="['/legal']" [queryParams]="{ tab: 'privacy' }">Privacy</a>
+        <a [routerLink]="['/legal']" [queryParams]="{ tab: 'terms' }">Terms</a>
+        <a [routerLink]="['/legal']" [queryParams]="{ tab: 'support' }">Support</a>
       </div>
     </div>
   </div>

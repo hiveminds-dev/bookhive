@@ -1,10 +1,15 @@
 <section class="panel">
-  <h2>New Readers</h2>
-  <div class="loading-row" *ngIf="loading()">Loading...</div>
-  <div class="empty-row" *ngIf="!loading() && filteredReaders.length === 0">No matching readers found.</div>
-  <a class="person" [routerLink]="['/admin/readers', reader.id]" *ngFor="let reader of filteredReaders">
-    <span class="avatar">{{ getInitials(reader.full_name) }}</span>
-    <span class="details"><strong>{{ reader.full_name }}</strong><small>{{ getJoinedLabel(reader.joined_at) }}</small></span>
-    <span class="arrow">›</span>
-  </a>
+  <header class="panel-header">
+    <h2>New Readers</h2>
+    <a routerLink="/admin/statistics">Reader Stats</a>
+  </header>
+  <div class="panel-scroll">
+    <div class="loading-row" *ngIf="loading()">Loading...</div>
+    <div class="empty-row" *ngIf="!loading() && filteredReaders.length === 0">No matching readers found.</div>
+    <a class="person" [routerLink]="['/admin/readers', reader.id]" *ngFor="let reader of filteredReaders">
+      <span class="avatar">{{ getInitials(reader.full_name) }}</span>
+      <span class="details"><strong>{{ reader.full_name }}</strong><small>{{ getJoinedLabel(reader.joined_at) }}</small></span>
+      <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+    </a>
+  </div>
 </section>

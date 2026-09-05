@@ -18,6 +18,7 @@ export interface RelatedBook {
 export class RelatedBooksComponent {
 
   @Input() books: RelatedBook[] = [];
+  @Input() isLoading = false;
 
   @Output() bookSelected = new EventEmitter<RelatedBook>();
 
