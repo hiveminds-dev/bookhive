@@ -1,1 +1,38 @@
-<p>search works!</p>
+<section class="search-section" aria-label="Book Search">
+  <div class="search-container">
+    <div class="search-card">
+      <h2 class="search-title">What would you like to read today?</h2>
+      <p class="search-subtitle">Search by book title, author, topic, or keyword across the open catalogue.</p>
+
+      <form class="search-bar-form" role="search" (submit)="$event.preventDefault(); onSubmit()">
+        <div class="search-input-wrapper">
+          <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
+          <input
+            type="search"
+            name="homeSearchInput"
+            [(ngModel)]="query"
+            placeholder="Search for books, authors, or subjects (e.g. 'Philosophy', 'Architecture')..."
+            aria-label="Search BookHive catalogue" />
+        </div>
+        <button type="submit" class="search-btn">Search Books</button>
+      </form>
+
+      <div class="trending-container">
+        <span class="trending-label">
+          <svg lucideTrendingUp class="trending-icon" aria-hidden="true"></svg>
+          Trending topics:
+        </span>
+        <div class="trending-tags">
+          @for (tag of trendingTags; track tag) {
+            <button
+              type="button"
+              class="tag-pill"
+              (click)="onTagClick(tag)">
+              {{ tag }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

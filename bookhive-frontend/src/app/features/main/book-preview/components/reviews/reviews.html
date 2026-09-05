@@ -1,1 +1,104 @@
-<p>reviews works!</p>
+<section class="reviews-section">
+
+  <div class="reviews-header">
+    <div>
+      <h2>Reader Reviews</h2>
+      <span class="title-line" aria-hidden="true"></span>
+    </div>
+
+    <button
+      type="button"
+      class="write-review-button"
+      (click)="onWriteReview()">
+      {{ hasUserReviewed ? 'Edit My Review' : 'Write a Review' }}
+      <span aria-hidden="true">✎</span>
+    </button>
+  </div>
+
+  <div class="reviews-list">
+
+    @for (review of reviews; track review.id) {
+      <article class="review-card" [class.own-review]="review.isOwnReview">
+
+        <div class="review-top">
+
+          <div class="reader-details">
+
+            @if (review.readerImage) {
+              <img
+                class="reader-image"
+                [src]="review.readerImage"
+                [alt]="review.readerName">
+            } @else {
+              <span class="reader-placeholder">
+                {{ review.readerName.charAt(0).toUpperCase() }}
+              </span>
+            }
+
+            <div>
+              <div class="reader-name-row">
+                <h3>{{ review.readerName }}</h3>
+                @if (review.isOwnReview) {
+                  <span class="you-badge">You</span>
+                }
+              </div>
+
+              <div class="review-rating">
+                @for (star of getStars(review.rating); track star) {
+                  <span [class.inactive]="star > review.rating">★</span>
+                }
+              </div>
+            </div>
+
+          </div>
+
+          <div class="review-top-right">
+            <time>{{ review.date }}</time>
+
+            @if (review.isOwnReview) {
+              <div class="review-owner-actions">
+                <button
+                  type="button"
+                  class="action-btn edit-btn"
+                  title="Edit review"
+                  (click)="onEditReview(review)">
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="action-btn delete-btn"
+                  title="Delete review"
+                  (click)="onDeleteReview(review.id)">
+                  Delete
+                </button>
+              </div>
+            }
+          </div>
+
+        </div>
+
+        <p class="review-comment">
+          {{ review.comment }}
+        </p>
+
+        <button
+          type="button"
+          class="helpful-button"
+          (click)="onHelpful(review)">
+          ♡ Helpful ({{ review.helpfulCount }})
+        </button>
+
+      </article>
+    } @empty {
+      <div class="no-reviews">
+        <p>No reviews have been added yet.</p>
+
+        <button type="button" (click)="onWriteReview()">
+          Write the first review
+        </button>
+      </div>
+    }
+
+  </div>
+
+</section>

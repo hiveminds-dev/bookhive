@@ -1,1 +1,24 @@
-<p>activity works!</p>
+<div class="side-widgets">
+  <section class="quick panel">
+    <h2>Quick Actions</h2>
+    <button type="button" (click)="addCategory()">
+      <svg lucideNetwork aria-hidden="true"></svg>
+      Add Category
+    </button>
+    <a routerLink="/admin/books" class="quick-btn-link">
+      <svg lucideBook aria-hidden="true"></svg>
+      Manage Books
+    </a>
+    <a routerLink="/admin/authors" class="quick-btn-link">
+      <svg lucideUsers aria-hidden="true"></svg>
+      Manage Authors
+    </a>
+
+    <!-- Super Admin only -->
+    <button *ngIf="isSuperAdmin" type="button" class="super-action-btn" (click)="manageAdmins()">
+      <svg lucideShieldCheck aria-hidden="true"></svg>
+      Manage Admins
+    </button>
+  </section>
+
+</div>

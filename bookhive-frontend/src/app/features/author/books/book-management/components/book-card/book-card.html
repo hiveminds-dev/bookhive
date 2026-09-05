@@ -1,1 +1,101 @@
-<p>book-card works!</p>
+<article class="book-card">
+
+  <div class="book-image-area">
+
+    <span
+      class="status-badge"
+      [class]="statusClass">
+      {{ book.status }}
+    </span>
+
+    @if (!imageLoadFailed) {
+      <img
+        [src]="book.bannerImage || book.cover"
+        [alt]="book.title"
+        (error)="onImageError()">
+    } @else {
+      <div class="image-placeholder">
+
+        <span aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        </span>
+
+        <strong>{{ book.title }}</strong>
+
+      </div>
+    }
+
+  </div>
+
+  <div class="book-content">
+
+    <h2>{{ book.title }}</h2>
+
+    <p class="book-meta">
+      <span>{{ book.category }}</span>
+      <span class="meta-separator" aria-hidden="true"></span>
+      <span>{{ book.language }}</span>
+    </p>
+
+    @if (book.status === 'Rejected' && book.rejectionReason) {
+      <div class="card-rejection-reason" style="margin: 8px 0; padding: 8px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 0.8rem; color: #991b1b; line-height: 1.4;">
+        <strong style="display: block; font-weight: 700;">Rejection Reason:</strong>
+        <span>{{ book.rejectionReason }}</span>
+      </div>
+    }
+
+    <div class="book-statistics">
+
+      <span>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        {{ formatCount(book.views) }}
+      </span>
+
+      <span>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        {{ formatCount(book.downloads) }}
+      </span>
+
+    </div>
+
+    <footer class="book-footer">
+
+      <time>{{ book.uploadedDate }}</time>
+
+      <div class="book-actions">
+
+        <button
+          type="button"
+          class="view-button"
+          aria-label="View book"
+          title="View book"
+          (click)="onViewBook()">
+
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+
+        <button
+          type="button"
+          class="edit-button"
+          aria-label="Edit book"
+          title="Edit book"
+          (click)="onEditBook()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+
+        <button
+          type="button"
+          class="delete-button"
+          aria-label="Delete book"
+          title="Delete book"
+          (click)="onDeleteBook()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+</article>

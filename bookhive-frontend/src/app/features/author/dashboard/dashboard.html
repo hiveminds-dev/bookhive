@@ -1,1 +1,41 @@
-<p>dashboard works!</p>
+<section class="dashboard-page">
+
+  <div class="dashboard-container">
+
+    <app-welcome-section
+      [authorName]="authorFirstName()"
+      [newReviewCount]="0"
+      [readyManuscriptCount]="0"
+      (uploadBook)="goToUploadBook()">
+    </app-welcome-section>
+
+    <div class="statistics-wrapper">
+      <app-statistics
+        [statistics]="statistics">
+      </app-statistics>
+    </div>
+
+    <div class="dashboard-columns">
+
+      <app-recent-books
+        [books]="recentBooks"
+        (viewAll)="goToAllBooks()"
+        (bookSelected)="openBook($event)">
+      </app-recent-books>
+
+      <app-recent-reviews
+        [averageRating]="0"
+        [reviews]="recentReviews">
+      </app-recent-reviews>
+
+    </div>
+
+    <div class="activity-wrapper">
+      <app-recent-activity
+        [activities]="activities">
+      </app-recent-activity>
+    </div>
+
+  </div>
+
+</section>

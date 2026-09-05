@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-content-editor',
   imports: [],
   templateUrl: './content-editor.html',
-  styleUrl: './content-editor.css',
+  styleUrl: './content-editor.scss',
 })
 export class ContentEditor {}

@@ -1,0 +1,194 @@
+from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
+from orm_models.user import AccountStatus, UserRole
+from schemas.auth import LoginRequest
+from services.auth_service import AccountAccessError, AuthenticationError, AuthService
+
+
+def make_user(
+    role=UserRole.READER,
+    status=AccountStatus.ACTIVE,
+    verified=True,
+):
+    return SimpleNamespace(
+        id=7,
+        full_name="Test User",
+        username="test_user",
+        email="test@example.com",
+        password_hash="stored-hash",
+        role=role,
+        account_status=status,
+        email_verified=verified,
+    )
+
+
+@pytest.mark.asyncio
+async def test_verified_active_reader_can_login(monkeypatch):
+    service = AuthService()
+    service.user_repository.get_by_email = AsyncMock(return_value=make_user())
+    monkeypatch.setattr("services.auth_service.verify_password", lambda *_: True)
+    monkeypatch.setattr("services.auth_service.create_access_token", lambda *_: "jwt-token")
+
+    response = await service.login(
+        AsyncMock(),
+        LoginRequest(email="test@example.com", password="correct-password"),
+    )
+
+    assert response.access_token == "jwt-token"
+    assert response.user.role == "reader"
+    assert response.user.account_status == "active"
+
+
+@pytest.mark.asyncio
+async def test_invalid_password_uses_generic_error(monkeypatch):
+    service = AuthService()
+    service.user_repository.get_by_email = AsyncMock(return_value=make_user())
+    monkeypatch.setattr("services.auth_service.verify_password", lambda *_: False)
+
+    with pytest.raises(AuthenticationError, match="Invalid email address or password"):
+        await service.login(
+            AsyncMock(),
+            LoginRequest(email="test@example.com", password="wrong-password"),
+        )
+
+
+def test_unverified_account_is_blocked():
+    with pytest.raises(AccountAccessError, match="verify your email"):
+        AuthService._validate_account_access(make_user(verified=False))
+
+
+def test_pending_author_is_blocked_until_admin_approval():
+    with pytest.raises(AccountAccessError, match="waiting for admin approval"):
+        AuthService._validate_account_access(
+            make_user(role=UserRole.AUTHOR, status=AccountStatus.PENDING),
+        )
+
+
+def test_approved_author_can_login():
+    AuthService._validate_account_access(
+        make_user(role=UserRole.AUTHOR, status=AccountStatus.APPROVED),
+    )
+
+
+def test_active_super_admin_can_login():
+    AuthService._validate_account_access(
+        make_user(role=UserRole.SUPER_ADMIN, status=AccountStatus.ACTIVE),
+    )
+
+
+def test_inactive_super_admin_is_blocked():
+    with pytest.raises(AccountAccessError, match="not currently allowed"):
+        AuthService._validate_account_access(
+            make_user(role=UserRole.SUPER_ADMIN, status=AccountStatus.INACTIVE),
+        )
+
+
+@pytest.mark.asyncio
+async def test_logout_revokes_the_current_access_token(monkeypatch):
+    service = AuthService()
+    session = SimpleNamespace(add=MagicMock(), commit=AsyncMock())
+    expires_at = datetime.now(UTC) + timedelta(minutes=30)
+    monkeypatch.setattr(
+        "services.auth_service.decode_access_token",
+        lambda _: {
+            "jti": "760b79df-3dcc-4ef0-a778-54593b33717d",
+            "exp": int(expires_at.timestamp()),
+        },
+    )
+    user = make_user()
+
+    await service.logout(session, "access-token", user)
+
+    revoked_token = session.add.call_args.args[0]
+    assert revoked_token.user_id == user.id
+    assert revoked_token.jti == "760b79df-3dcc-4ef0-a778-54593b33717d"
+    session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_is_email_available():
+    service = AuthService()
+    session = AsyncMock()
+    service.user_repository.get_by_email = AsyncMock(return_value=None)
+
+    available = await service.is_email_available(session, "new@example.com")
+    assert available is True
+
+    service.user_repository.get_by_email = AsyncMock(return_value=make_user())
+    taken = await service.is_email_available(session, "existing@example.com")
+    assert taken is False
+
+
+@pytest.mark.asyncio
+async def test_is_email_available_normalization():
+    service = AuthService()
+    session = AsyncMock()
+    service.user_repository.get_by_email = AsyncMock(return_value=None)
+
+    await service.is_email_available(session, "  New.User@Example.COM  ")
+    service.user_repository.get_by_email.assert_awaited_once_with(session, "new.user@example.com")
+
+
+@pytest.mark.asyncio
+async def test_check_email_endpoint_available(monkeypatch):
+    from httpx import ASGITransport, AsyncClient
+    from database import get_db_session
+    from main import app
+    from routers.auth_router import auth_service
+
+    monkeypatch.setattr(auth_service, "is_email_available", AsyncMock(return_value=True))
+    app.dependency_overrides[get_db_session] = lambda: AsyncMock()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/auth/check-email", params={"email": "available@example.com"})
+            assert resp.status_code == 200
+            data = resp.json()
+            assert data["available"] is True
+            assert data["message"] is None
+    finally:
+        app.dependency_overrides.pop(get_db_session, None)
+
+
+@pytest.mark.asyncio
+async def test_check_email_endpoint_taken(monkeypatch):
+    from httpx import ASGITransport, AsyncClient
+    from database import get_db_session
+    from main import app
+    from routers.auth_router import auth_service
+
+    monkeypatch.setattr(auth_service, "is_email_available", AsyncMock(return_value=False))
+    app.dependency_overrides[get_db_session] = lambda: AsyncMock()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/auth/check-email", params={"email": "taken@example.com"})
+            assert resp.status_code == 200
+            data = resp.json()
+            assert data["available"] is False
+            assert data["message"] == "Email address is already registered"
+    finally:
+        app.dependency_overrides.pop(get_db_session, None)
+
+
+@pytest.mark.asyncio
+async def test_check_email_endpoint_invalid_email_format():
+    from httpx import ASGITransport, AsyncClient
+    from database import get_db_session
+    from main import app
+
+    app.dependency_overrides[get_db_session] = lambda: AsyncMock()
+
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/api/auth/check-email", params={"email": "not-an-email"})
+            assert resp.status_code == 422
+    finally:
+        app.dependency_overrides.pop(get_db_session, None)

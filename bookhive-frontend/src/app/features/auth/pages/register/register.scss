@@ -1,0 +1,1254 @@
+:host {
+  --gold: #c99a24;
+  --gold-dark: #896611;
+  --gold-soft: #f7df91;
+
+  --cream: #f7f0df;
+  --cream-deep: #efe1c1;
+  --paper: #fffdf8;
+
+  --ink: #201d18;
+  --muted: #766f62;
+  --line: #e7dece;
+
+  --right-bg: #f8f7f3;
+
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+
+  color: var(--ink);
+
+  font-family: var(--font-sans);
+}
+
+/* =========================================
+GLOBAL
+========================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================================
+REGISTER PAGE
+========================================= */
+
+.register-page {
+  min-height: 100vh;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  overflow: hidden;
+
+  background: var(--right-bg);
+}
+
+/* =========================================
+RIGHT FORM SECTION
+========================================= */
+
+.form-section {
+  position: relative;
+
+  min-height: 100vh;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: clamp(28px, 5vw, 74px);
+
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(248, 247, 243, 0.94)), var(--right-bg);
+}
+
+/* =========================================
+TOP LOGIN
+========================================= */
+
+.top-login {
+  position: absolute;
+
+  top: 28px;
+  right: 58px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+.top-login a {
+  color: var(--gold-dark);
+
+  font-weight: 800;
+
+  text-decoration: none;
+
+  transition: color 160ms ease;
+}
+
+.top-login a:hover {
+  color: var(--gold);
+
+  text-decoration: underline;
+}
+
+/* =========================================
+REGISTER CARD
+========================================= */
+
+.register-card {
+  width: min(100%, 590px);
+
+  padding: clamp(32px, 4.2vw, 48px);
+
+  border: 1px solid rgba(214, 204, 184, 0.58);
+
+  border-radius: 30px;
+
+  background: rgba(255, 253, 248, 0.95);
+
+  box-shadow: 0 28px 80px rgba(65, 52, 29, 0.11);
+
+  backdrop-filter: blur(8px);
+}
+
+/* =========================================
+HEADER
+========================================= */
+
+.card-header {
+  margin-bottom: 30px;
+
+  text-align: center;
+}
+
+.step-small {
+  margin: 0 0 12px;
+
+  color: var(--gold-dark);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+}
+
+.card-header h2 {
+  margin: 0;
+
+  color: var(--ink);
+
+  font-size: clamp(32px, 3vw, 42px);
+
+  line-height: 1;
+
+  letter-spacing: 0;
+
+  font-weight: 800;
+}
+
+.card-header p {
+  margin: 13px 0 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+
+  line-height: 1.55;
+}
+
+/* =========================================
+PROGRESS
+CENTERED LINE
+========================================= */
+
+.progress-wrapper {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  width: 100%;
+
+  margin-bottom: 30px;
+}
+
+.progress-item {
+  position: relative;
+
+  min-width: 0;
+
+  text-align: center;
+
+  color: #b2ada2;
+}
+
+.progress-line {
+  position: relative;
+
+  width: 100%;
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================
+PROGRESS LINE
+========================================= */
+
+.progress-item .line {
+  position: absolute;
+
+  z-index: 0;
+
+  top: 50%;
+  left: 50%;
+
+  width: 100%;
+  height: 1px;
+
+  transform: translateY(-50%);
+
+  background: #e1d9ca;
+}
+
+.progress-item.completed .line {
+  background: var(--gold);
+}
+
+.progress-item:last-child .line {
+  display: none;
+}
+
+/* =========================================
+STEP CIRCLE
+========================================= */
+
+.step-circle {
+  position: relative;
+
+  z-index: 3;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  display: grid;
+
+  place-items: center;
+
+  border: 1px solid #d9d0bd;
+
+  border-radius: 50%;
+
+  background: #f5f1e9;
+
+  color: #999286;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.step-circle:hover {
+  transform: scale(1.05);
+}
+
+.progress-item.active .step-circle,
+.progress-item.completed .step-circle {
+  border-color: var(--gold);
+
+  background: var(--gold);
+
+  color: #fff;
+}
+
+.step-check-icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.progress-item span {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #aaa398;
+
+  font-size: 9px;
+
+  font-weight: 700;
+}
+
+.progress-item.active span,
+.progress-item.completed span {
+  color: var(--gold-dark);
+}
+
+/* =========================================
+STEP CONTENT
+========================================= */
+
+.step-content {
+  min-height: 270px;
+
+  animation: stepIn 0.28s ease;
+}
+
+@keyframes stepIn {
+  from {
+    opacity: 0;
+
+    transform: translateX(10px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateX(0);
+  }
+}
+
+/* =========================================
+ACCOUNT TYPE
+========================================= */
+
+.section-label {
+  display: block;
+
+  margin-bottom: 13px;
+
+  color: #7e7566;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 0;
+
+  text-transform: uppercase;
+}
+
+.step1-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  background: #fff0f0;
+  border: 1px solid #f5c2c2;
+  border-radius: 10px;
+  color: #c0392b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  .error-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+}
+
+.account-options {
+  display: grid;
+
+  gap: 12px;
+}
+
+.account-card {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 18px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 15px;
+
+  background: #fffaf1;
+
+  color: var(--ink);
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.account-card:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(201, 154, 36, 0.55);
+
+  box-shadow: 0 10px 25px rgba(126, 93, 20, 0.08);
+}
+
+.account-card.selected {
+  border-color: var(--gold);
+
+  background: #fffaf0;
+
+  box-shadow: 0 10px 25px rgba(168, 124, 0, 0.1);
+}
+
+.account-icon {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border-radius: 13px;
+
+  background: #f7df91;
+
+  color: var(--gold-dark);
+
+  font-size: 21px;
+}
+
+.account-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.account-info {
+  flex: 1;
+}
+
+.account-info strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #25211b;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+.account-info span {
+  display: block;
+
+  color: #81796c;
+
+  font-size: 11px;
+
+  line-height: 1.45;
+}
+
+.radio-circle {
+  width: 20px;
+  height: 20px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid #cfc5b3;
+
+  border-radius: 50%;
+
+  background: #fff;
+}
+
+.radio-circle span {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: var(--gold);
+}
+
+/* =========================================
+FORM GRID
+========================================= */
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 0 14px;
+}
+
+/* =========================================
+STEP 2 PERSONAL FORM
+FULL WIDTH / ONE BELOW ANOTHER
+========================================= */
+
+.author-form-grid {
+  display: flex;
+
+  flex-direction: column;
+
+  width: 100%;
+
+  gap: 0;
+}
+
+/*
+IMPORTANT:
+
+For reader, the HTML doesn't add
+.author-form-grid.
+
+So make the personal step
+vertical using this selector.
+*/
+
+.step-content .form-grid {
+  width: 100%;
+}
+
+/* Step 2 has only personal fields.
+The first form-grid inside step 2
+will become vertical. */
+
+.step-content > .form-grid {
+  display: flex;
+
+  flex-direction: column;
+
+  width: 100%;
+
+  gap: 0;
+}
+
+/* =========================================
+FIELD
+========================================= */
+
+.field {
+  width: 100%;
+
+  margin-bottom: 16px;
+}
+
+.field.full-width {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #7e7566;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 0;
+
+  text-transform: uppercase;
+}
+
+/* =========================================
+INPUT WRAPPER
+========================================= */
+
+.input-wrapper,
+.textarea-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  min-height: 54px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 15px;
+
+  background: #fffaf1;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.input-wrapper:focus-within,
+.textarea-wrapper:focus-within {
+  border-color: rgba(201, 154, 36, 0.76);
+
+  background: #fffdfa;
+
+  box-shadow: 0 0 0 4px rgba(201, 154, 36, 0.14);
+}
+
+.input-wrapper.invalid {
+  border-color: #b84d3c;
+}
+
+.textarea-wrapper.invalid {
+  border-color: #a64233;
+}
+
+/* =========================================
+INPUT ICON
+========================================= */
+
+.input-icon {
+  width: 44px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  color: #8a806f;
+
+  font-size: 16px;
+}
+
+.input-icon svg,
+.visibility-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+/* =========================================
+INPUT
+========================================= */
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+
+  min-width: 0;
+
+  height: 52px;
+
+  padding: 0 14px 0 0;
+
+  border: 0;
+
+  outline: none;
+
+  background: transparent;
+
+  color: var(--ink);
+
+  font: inherit;
+
+  font-size: 14px;
+}
+
+.input-wrapper input::placeholder {
+  color: #b5aa99;
+}
+
+.input-wrapper select {
+  cursor: pointer;
+}
+
+/* =========================================
+TEXTAREA
+========================================= */
+
+.textarea-wrapper {
+  align-items: stretch;
+}
+
+.textarea-wrapper textarea {
+  width: 100%;
+
+  min-height: 90px;
+
+  padding: 14px 16px;
+
+  border: 0;
+
+  outline: none;
+
+  resize: vertical;
+
+  background: transparent;
+
+  color: var(--ink);
+
+  font: inherit;
+
+  font-size: 14px;
+
+  line-height: 1.55;
+}
+
+.textarea-wrapper textarea::placeholder {
+  color: #b5aa99;
+}
+
+/* =========================================
+PASSWORD VISIBILITY
+========================================= */
+
+.visibility-button {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background: transparent;
+
+  color: #8a806f;
+
+  cursor: pointer;
+
+  font-size: 16px;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.visibility-button:hover {
+  background: rgba(201, 154, 36, 0.1);
+
+  color: var(--gold-dark);
+}
+
+/* =========================================
+ERRORS
+========================================= */
+
+.field small {
+  display: block;
+
+  margin: 6px 0 0;
+
+  color: #a64233;
+
+  font-size: 12px;
+}
+
+.profile-image-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 16px;
+  border: 1px solid #e2d3b8;
+  border-radius: 15px;
+  background: #fffaf1;
+}
+
+.profile-image-notice strong {
+  color: #5f4a19;
+  font-size: 12px;
+}
+
+.profile-image-notice span {
+  color: #756e63;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================
+AGREEMENT
+========================================= */
+
+.agreement {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 9px;
+
+  margin-top: 22px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  cursor: pointer;
+}
+
+.agreement input {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  margin-top: 1px;
+
+  accent-color: var(--gold);
+
+  cursor: pointer;
+}
+
+.agreement a {
+  color: var(--gold-dark);
+
+  font-weight: 800;
+}
+
+/* =========================================
+ACTION BUTTONS
+========================================= */
+
+.card-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 18px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid var(--line);
+}
+
+.back-button,
+.next-button {
+  min-width: 105px;
+
+  height: 48px;
+
+  padding: 0 20px;
+
+  border-radius: 15px;
+
+  font: inherit;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.button-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
+
+.back-button {
+  border: 1px solid var(--line);
+
+  background: #fffaf1;
+
+  color: #756f65;
+}
+
+.back-button:hover {
+  border-color: rgba(201, 154, 36, 0.46);
+
+  background: #fffdf8;
+}
+
+.next-button {
+  border: 0;
+
+  background: linear-gradient(135deg, var(--gold-soft) 0%, var(--gold) 46%, #a77b18 100%);
+
+  box-shadow: 0 16px 34px rgba(166, 118, 24, 0.24);
+
+  color: #2d2108;
+}
+
+.next-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 18px 38px rgba(166, 118, 24, 0.28);
+}
+
+.next-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.create-button {
+  min-width: 145px;
+}
+
+/* =========================================
+SECURITY NOTE
+========================================= */
+
+.security-note {
+  position: absolute;
+
+  bottom: 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #999287;
+
+  font-size: 9px;
+}
+
+.security-note-icon {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
+
+/* =========================================
+RESPONSIVE
+========================================= */
+
+@media (max-width: 1180px) {
+  .hero-section {
+    padding: 38px;
+  }
+
+  .hero-content {
+    width: 72%;
+  }
+
+  .book-card-one {
+    right: 4%;
+  }
+}
+
+/* =========================================
+TABLET
+========================================= */
+
+@media (max-width: 900px) {
+  .register-page {
+    grid-template-columns: 1fr;
+
+    overflow: visible;
+  }
+
+  .hero-section {
+    min-height: 390px;
+
+    padding: 28px;
+  }
+
+  .hero-content {
+    width: min(560px, 82%);
+
+    margin-top: 46px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(42px, 9vw, 66px);
+  }
+
+  .form-section {
+    min-height: auto;
+
+    padding: 36px 22px 46px;
+  }
+
+  .book-card-three {
+    display: none;
+  }
+
+  .security-note {
+    position: static;
+
+    margin-top: 20px;
+  }
+}
+
+/* =========================================
+MOBILE
+========================================= */
+
+@media (max-width: 620px) {
+  .hero-section {
+    min-height: 310px;
+
+    padding: 22px;
+  }
+
+  .brand {
+    font-size: 22px;
+  }
+
+  .brand-logo {
+    width: 46px;
+    height: 46px;
+
+    margin-right: -6px;
+  }
+
+  .hero-content {
+    width: 100%;
+
+    margin-top: 30px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(42px, 10vw, 58px);
+  }
+
+  .hero-content p {
+    max-width: 310px;
+
+    margin-top: 16px;
+
+    font-size: 15px;
+
+    line-height: 1.55;
+  }
+
+  .floating-books {
+    opacity: 0.65;
+  }
+
+  .book-card-one {
+    width: 126px;
+
+    right: -18px;
+
+    top: 82px;
+  }
+
+  .book-card-two,
+  .book-card-three {
+    display: none;
+  }
+
+  .form-section {
+    padding: 24px 15px 34px;
+  }
+
+  .register-card {
+    padding: 26px 18px;
+
+    border-radius: 24px;
+  }
+
+  .top-login {
+    top: 16px;
+
+    right: 18px;
+
+    font-size: 11px;
+  }
+
+  .card-header {
+    margin-bottom: 24px;
+  }
+
+  .card-header h2 {
+    font-size: 32px;
+  }
+
+  /* =====================================
+  ALL FORM FIELDS ONE BELOW ANOTHER
+  ===================================== */
+
+  .form-grid {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+  }
+
+  .author-form-grid {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+  }
+
+  .field.full-width {
+    width: 100%;
+  }
+
+  /* =====================================
+  PROGRESS
+  ===================================== */
+
+  .progress-wrapper {
+    margin-bottom: 24px;
+  }
+
+  .progress-line {
+    height: 26px;
+  }
+
+  .progress-item span {
+    font-size: 8px;
+  }
+
+  .step-circle {
+    width: 26px;
+    height: 26px;
+
+    font-size: 10px;
+  }
+
+  .card-actions {
+    margin-top: 12px;
+  }
+
+  .back-button,
+  .next-button {
+    height: 46px;
+
+    min-width: 95px;
+  }
+}
+
+/* =========================================
+SMALL MOBILE
+========================================= */
+
+@media (max-width: 390px) {
+  .hero-section {
+    min-height: 300px;
+
+    padding: 22px;
+  }
+
+  .hero-content h1 {
+    font-size: 40px;
+  }
+
+  .register-card {
+    padding: 22px 15px;
+  }
+
+  .top-login {
+    right: 16px;
+
+    font-size: 10px;
+  }
+
+  .social-logins {
+    gap: 8px;
+  }
+}
+
+/* =========================================
+REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .book-card,
+  .spark,
+  .step-content {
+    animation: none !important;
+  }
+}
+.registration-message {
+  margin-top: 1.25rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+.registration-message--error {
+  border: 1px solid #efb4b4;
+  background: #fff3f3;
+  color: #9f2525;
+}
+
+.registration-message--success {
+  border: 1px solid #a8d5b5;
+  background: #f1fbf4;
+  color: #216e39;
+}

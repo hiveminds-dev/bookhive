@@ -1,1 +1,82 @@
-<p>recent-books works!</p>
+<section class="recent-books-card">
+
+  <header class="card-header">
+
+    <h2>Recent Uploads</h2>
+
+    <button
+      type="button"
+      (click)="onViewAll()">
+      View All
+    </button>
+
+  </header>
+
+  <div class="header-line" aria-hidden="true"></div>
+
+  <div class="book-list">
+
+    @for (book of books; track book.id) {
+
+      <article class="book-item">
+
+        <button
+          type="button"
+          class="book-main"
+          (click)="selectBook(book)">
+
+          <div class="cover-wrapper">
+
+            @if (!imageHasFailed(book.id)) {
+              <img
+                [src]="book.cover"
+                [alt]="book.title + ' cover'"
+                (error)="onImageError(book.id)">
+            } @else {
+              <span class="cover-placeholder">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+              </span>
+            }
+
+          </div>
+
+          <div class="book-details">
+
+            <h3>{{ book.title }}</h3>
+
+            <p>
+              Uploaded: {{ book.uploadedDate }}
+            </p>
+
+            <span
+              class="status"
+              [class]="getStatusClass(book.status)">
+              {{ book.status }}
+            </span>
+
+          </div>
+
+        </button>
+
+        <button
+          type="button"
+          class="more-button"
+          aria-label="More options"
+          title="More options">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </button>
+
+      </article>
+
+    } @empty {
+
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M6 6h10M6 10h7"/></svg>
+        <p>No books have been uploaded yet.</p>
+      </div>
+
+    }
+
+  </div>
+
+</section>

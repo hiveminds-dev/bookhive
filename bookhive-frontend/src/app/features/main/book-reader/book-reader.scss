@@ -1,0 +1,478 @@
+:host {
+  display: block;
+  min-height: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================================
+   BOOK READER PAGE
+========================================= */
+
+.book-reader-page {
+  min-height: calc(100vh - 68px);
+  background: #f7f8f8;
+  color: #292621;
+}
+
+/* =========================================
+   BOOK HEADER
+========================================= */
+
+.reader-book-header {
+  border-bottom: 1px solid #e7e4de;
+  background: #ffffff;
+}
+
+.header-container {
+  display: flex;
+  width: 100%;
+  max-width: 1410px;
+  min-height: 88px;
+  padding: 14px 26px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+/* Back to Library */
+
+.back-button {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  color: #856800;
+  font-family: inherit;
+  font-size: 10px;
+  cursor: pointer;
+
+  span {
+    font-size: 17px;
+  }
+
+  &:hover {
+    color: #614c00;
+    text-decoration: underline;
+  }
+}
+
+/* Small book icon */
+
+.header-book-cover {
+  display: inline-flex;
+  width: 35px;
+  height: 43px;
+  margin-left: 24px;
+  border: 1px solid #ddd6c7;
+  border-radius: 3px;
+  align-items: center;
+  justify-content: center;
+  background: #eeeae1;
+  color: #978966;
+  font-size: 19px;
+}
+
+/* Book title and author */
+
+.header-book-details {
+  margin-left: 14px;
+
+  h1 {
+    margin: 0 0 4px;
+    color: #292621;
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: #756f66;
+    font-size: 9px;
+  }
+}
+
+/* Category and language */
+
+.header-tags {
+  display: flex;
+  margin-left: auto;
+  gap: 7px;
+
+  span {
+    padding: 5px 11px;
+    border-radius: 15px;
+    background: #f4efd9;
+    color: #78600b;
+    font-size: 8px;
+    font-weight: 600;
+  }
+}
+
+/* =========================================
+   READER WORKSPACE
+========================================= */
+
+.reader-workspace {
+  width: 100%;
+  background: #f7f8f8;
+
+  &:fullscreen {
+    overflow: auto;
+    background: #f7f8f8;
+  }
+
+  &:fullscreen .reader-grid {
+    max-width: 1500px;
+  }
+}
+
+/* =========================================
+   THREE COLUMN LAYOUT
+========================================= */
+
+.reader-grid {
+  display: grid;
+  width: 100%;
+  max-width: 1410px;
+  min-height: calc(100vh - 205px);
+  padding: 24px 26px 28px;
+  margin: 0 auto;
+  grid-template-columns:
+    250px
+    minmax(500px, 1fr)
+    165px;
+  align-items: start;
+  gap: 24px;
+}
+
+/* =========================================
+   LEFT SIDE
+========================================= */
+
+.reader-left {
+  position: sticky;
+  top: 92px;
+  align-self: start;
+}
+
+/* =========================================
+   CENTER READER
+========================================= */
+
+.reader-center {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #e9eaeb;
+
+  app-reader-toolbar {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .reader-pdf-container {
+    width: 100%;
+    height: 780px;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .reader-pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .reader-content-unavailable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    background: #ffffff;
+    border-radius: 8px;
+    text-align: center;
+    min-height: 400px;
+    border: 1px dashed #d1cac0;
+
+    .unavailable-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #292621;
+      margin: 0 0 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #756f66;
+      max-width: 400px;
+      margin: 0 0 20px;
+      line-height: 1.5;
+    }
+  }
+}
+
+/* =========================================
+   RIGHT SIDE
+========================================= */
+
+.reader-right {
+  position: sticky;
+  top: 92px;
+  align-self: start;
+}
+
+/* =========================================
+   BOTTOM PROGRESS BAR
+========================================= */
+
+app-page-navigation {
+  position: sticky;
+  z-index: 50;
+  bottom: 0;
+  display: block;
+  width: 100%;
+}
+
+/* =========================================
+   LOADING STATE
+========================================= */
+
+.reader-loading {
+  display: flex;
+  min-height: 500px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  color: #777168;
+  font-size: 12px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.loading-spinner {
+  width: 35px;
+  height: 35px;
+  border: 3px solid #e2ddcf;
+  border-top-color: #a17d08;
+  border-radius: 50%;
+  animation: reader-spin 0.8s linear infinite;
+}
+
+@keyframes reader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   LARGE TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+  .reader-grid {
+    padding-right: 18px;
+    padding-left: 18px;
+    grid-template-columns:
+      210px
+      minmax(400px, 1fr)
+      145px;
+    gap: 16px;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 850px) {
+  .header-container {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .reader-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-left,
+  .reader-right {
+    position: static;
+  }
+
+  .reader-center {
+    order: 1;
+  }
+
+  .reader-left {
+    order: 2;
+  }
+
+  .reader-right {
+    order: 3;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+  .book-reader-page {
+    min-height: calc(100vh - 64px);
+  }
+
+  .header-container {
+    min-height: 105px;
+    padding: 12px 15px;
+    flex-wrap: wrap;
+  }
+
+  .back-button {
+    width: 100px;
+    font-size: 9px;
+  }
+
+  .header-book-cover {
+    display: none;
+  }
+
+  .header-book-details {
+    width: calc(100% - 100px);
+    margin-left: auto;
+
+    h1 {
+      overflow: hidden;
+      font-size: 15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .header-tags {
+    width: 100%;
+    margin: 10px 0 0;
+    justify-content: flex-end;
+  }
+
+  .reader-grid {
+    padding: 16px 12px 23px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 400px) {
+  .header-book-details {
+    h1 {
+      font-size: 14px;
+    }
+  }
+
+  .reader-grid {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
+
+.reader-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 420px;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px 24px;
+  background: #ffffff;
+  border: 1px solid #e7e4de;
+  border-radius: 9px;
+
+  .reader-error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 600;
+    color: #292621;
+    margin: 0 0 10px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #756f66;
+    line-height: 1.5;
+    margin: 0 0 24px;
+  }
+
+  .reader-error-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    border-radius: 6px;
+    background: #856800;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #614c00;
+    }
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    border-radius: 6px;
+    background: #eeeae1;
+    color: #292621;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #ddd6c7;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #e2ded5;
+    }
+  }
+}
+

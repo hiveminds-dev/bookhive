@@ -1,9 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-book-info',
+  standalone: true,
   imports: [],
   templateUrl: './book-info.html',
-  styleUrl: './book-info.css',
+  styleUrl: './book-info.scss'
 })
-export class BookInfo {}
+export class BookInfoComponent {
+
+  @Input() rating = 0;
+  @Input() reviews = 0;
+  @Input() pages?: number | null = null;
+  @Input() readingTime?: string | null = null;
+}

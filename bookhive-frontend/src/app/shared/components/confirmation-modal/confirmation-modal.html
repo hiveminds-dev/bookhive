@@ -1,0 +1,21 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-area" [class]="type">
+        <svg *ngIf="type === 'danger'" lucideAlertTriangle aria-hidden="true"></svg>
+        <svg *ngIf="type === 'warning'" lucideInfo aria-hidden="true"></svg>
+        <svg *ngIf="type === 'primary'" lucideCheckCircle2 aria-hidden="true"></svg>
+      </div>
+
+      <div class="title-area">
+        <h3>{{ title }}</h3>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()">{{ cancelText }}</button>
+      <button type="button" class="btn-confirm" [class]="type" (click)="onConfirm()">{{ confirmText }}</button>
+    </div>
+  </div>
+</div>

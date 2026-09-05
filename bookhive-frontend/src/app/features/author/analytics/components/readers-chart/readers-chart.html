@@ -1,1 +1,72 @@
-<p>readers-chart works!</p>
+<section class="chart-card">
+
+  <header class="chart-header">
+    <div>
+      <h2>Monthly Downloads</h2>
+
+      <p>
+        Downloads received during the last
+        six months.
+      </p>
+    </div>
+
+    <div class="legend">
+      <span
+        class="legend-color"
+        aria-hidden="true"
+      ></span>
+
+      <span>eBooks</span>
+    </div>
+  </header>
+
+  <div
+    class="chart-area"
+    role="img"
+    aria-label="Monthly ebook downloads bar chart"
+  >
+    <div class="grid-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="bars">
+      @for (
+        item of monthlyDownloads;
+        track item.month
+        ) {
+        <div class="bar-column">
+
+          <div class="bar-space">
+            <div
+              class="bar"
+              [style.height.%]="
+                getBarHeight(item.value)
+              "
+              [style.background-color]="
+                item.color
+              "
+              [attr.title]="
+                item.month +
+                ': ' +
+                item.value +
+                'K downloads'
+              "
+            >
+              <span class="bar-value">
+                {{ item.value }}K
+              </span>
+            </div>
+          </div>
+
+          <span class="month">
+            {{ item.month }}
+          </span>
+
+        </div>
+      }
+    </div>
+  </div>
+
+</section>

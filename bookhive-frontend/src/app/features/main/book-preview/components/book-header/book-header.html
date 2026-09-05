@@ -1,1 +1,18 @@
-<p>book-header works!</p>
+<header class="book-header">
+
+  <p class="book-category">
+    {{ category }}
+
+    @if (language) {
+      <span class="separator">•</span>
+      <span>{{ language }}</span>
+    }
+  </p>
+
+  <h1>{{ title }}</h1>
+
+  <p class="author-name">
+    By <strong>{{ author }}</strong>
+  </p>
+
+</header>

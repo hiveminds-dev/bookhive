@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-welcome-section',
   imports: [],
   templateUrl: './welcome-section.html',
-  styleUrl: './welcome-section.css',
+  styleUrl: './welcome-section.scss',
 })
 export class WelcomeSection {}

@@ -1,0 +1,133 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.statistics-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.statistic-card {
+  min-height: 180px;
+  padding: 25px 25px 22px;
+  border: 1px solid #f0ede7;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 7px 22px rgba(43, 37, 22, 0.055);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 11px 27px rgba(43, 37, 22, 0.09);
+  }
+
+  > p {
+    margin: 21px 0 5px;
+    color: #777168;
+    font-size: 14px;
+  }
+}
+
+.statistic-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statistic-icon {
+  display: inline-flex;
+  width: 39px;
+  height: 39px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  background: #f7f1df;
+  color: #856a00;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.statistic-indicator {
+  color: #83711f;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statistic-value {
+  color: #735b00;
+  font-family: var(--font-serif);
+  font-size: 45px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Published books */
+
+.statistic-card.green {
+  .statistic-icon {
+    background: #f6f1df;
+    color: #816700;
+  }
+
+  .statistic-indicator {
+    color: #84701e;
+  }
+}
+
+/* Pending approval */
+
+.statistic-card.red {
+  .statistic-icon {
+    background: #fff0f0;
+    color: #cf2a2a;
+  }
+
+  .statistic-indicator {
+    color: #d02b2b;
+  }
+
+  .statistic-value {
+    color: #735b00;
+  }
+}
+
+/* Downloads */
+
+.statistic-card.neutral {
+  .statistic-icon {
+    background: #f5f1e5;
+    color: #866c0c;
+  }
+
+  .statistic-indicator {
+    color: #82701d;
+  }
+}
+
+@media (max-width: 1050px) {
+  .statistics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 540px) {
+  .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .statistic-card {
+    min-height: 150px;
+  }
+}

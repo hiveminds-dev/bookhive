@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.books-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 25px;
+}
+
+.upload-card {
+  display: flex;
+  width: 100%;
+  min-height: 500px;
+  padding: 30px;
+  border: 2px dashed #ddd4c2;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 27px;
+  background: transparent;
+  color: #514b40;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.upload-card:hover {
+  border-color: #b7942d;
+  background: #fbf8ed;
+  color: #755c00;
+  transform: translateY(-4px);
+}
+
+.upload-card:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.add-circle {
+  display: inline-flex;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #826600;
+  font-size: 38px;
+  font-weight: 300;
+  box-shadow: 0 5px 17px rgba(46, 38, 18, 0.07);
+}
+
+.upload-card strong {
+  font-family: var(--font-serif);
+  font-size: 23px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 1050px) {
+  .books-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-card {
+    min-height: 300px;
+  }
+}

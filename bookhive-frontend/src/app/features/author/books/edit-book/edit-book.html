@@ -1,1 +1,173 @@
-<p>edit-book works!</p>
+<section class="edit-book-page">
+
+  <div class="edit-book-container">
+
+    <!-- PAGE HEADER -->
+
+    <header class="upload-page-header">
+
+      <div class="header-copy">
+        <h1>{{ pageTitle }}</h1>
+        <p>{{ pageDescription }}</p>
+      </div>
+
+      <nav
+        class="management-tabs"
+        aria-label="Book management navigation">
+
+        <a
+          routerLink="/author/books"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{
+            exact: true
+          }">
+          My Books
+        </a>
+
+        <a
+          routerLink="/author/books/upload"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{
+            exact: true
+          }">
+          Upload Book
+        </a>
+
+        <a
+          routerLink="/author/requests"
+          routerLinkActive="active">
+          Requests
+        </a>
+
+      </nav>
+
+    </header>
+
+    <!-- REJECTION REASON BANNER (IF APPLICABLE) -->
+    @if (rejectionReason) {
+      <div class="message rejection-banner" style="background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 14px; padding: 18px 22px; margin-bottom: 24px; color: #991b1b;">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <span style="display: inline-flex; align-items: center; color: #dc2626;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span>
+          <div>
+            <strong style="display: block; font-size: 1rem; font-weight: 800; margin-bottom: 4px; color: #7f1d1d;">
+              Submission Rejected by Editorial Review
+            </strong>
+            <p style="margin: 0; font-size: 0.92rem; color: #991b1b; line-height: 1.5;">
+              <strong>Admin Feedback:</strong> {{ rejectionReason }}
+            </p>
+            <small style="display: block; margin-top: 8px; color: #b91c1c; font-weight: 600;">
+              Please adjust the book details, upload corrected files if necessary, and click "Submit for review" to resubmit.
+            </small>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- STATUS MESSAGE -->
+
+    @if (successMessage) {
+      <div class="message success-message">
+        <span aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        </span>
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="message error-message">
+        <span aria-hidden="true">!</span>
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (isLoading) {
+      <div class="loading-state" style="text-align: center; padding: 40px; color: #64748b; font-weight: 600;">
+        Loading book details...
+      </div>
+    } @else {
+
+      <!-- BASIC DETAILS -->
+
+      <div class="basic-details-wrapper">
+
+        <app-author-book-form
+          [form]="bookForm">
+        </app-author-book-form>
+
+        <app-author-category-select
+          [form]="bookForm"
+          [categories]="categories">
+        </app-author-category-select>
+
+      </div>
+
+      <!-- FILE UPLOAD -->
+
+      <div class="file-upload-wrapper">
+
+        <app-author-book-cover-upload
+          [initialCoverUrl]="existingCoverUrl"
+          [initialBookFileName]="existingPdfName"
+          (bookFileSelected)="
+            onBookFileSelected($event)
+          "
+          (coverSelected)="
+            onCoverSelected($event)
+          ">
+        </app-author-book-cover-upload>
+
+        @if (
+          bookFileRequiredError ||
+          coverRequiredError
+          ) {
+          <div class="file-errors">
+
+            @if (bookFileRequiredError) {
+              <small>
+                Book PDF file is required.
+              </small>
+            }
+
+            @if (coverRequiredError) {
+              <small>
+                Book cover image is required.
+              </small>
+            }
+
+          </div>
+        }
+
+      </div>
+
+      <!-- EXTRA DETAILS -->
+
+      <div class="details-wrapper">
+
+        <app-author-book-details
+          [form]="bookForm">
+        </app-author-book-details>
+
+      </div>
+
+      <!-- SAVE BUTTONS -->
+
+      <div class="actions-wrapper">
+
+        <app-author-save-actions
+          [isSavingDraft]="isSavingDraft"
+          [isSubmitting]="isSubmitting"
+          [submitDisabled]="false"
+          (saveDraft)="saveDraft()"
+          (submitForReview)="submitForReview()">
+        </app-author-save-actions>
+
+      </div>
+
+    }
+
+  </div>
+
+</section>

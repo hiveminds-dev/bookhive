@@ -1,0 +1,54 @@
+<section class="faq-section">
+
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="questions">
+
+    @for (
+      item of questions;
+      track item.id
+      ) {
+      <article
+        class="question-item"
+        [class.open]="item.isOpen"
+      >
+        <button
+          type="button"
+          class="question-button"
+          [attr.aria-expanded]="
+            item.isOpen
+          "
+          [attr.aria-controls]="
+            'answer-' + item.id
+          "
+          (click)="toggleQuestion(item)"
+        >
+          <span>
+            {{ item.question }}
+          </span>
+
+          <span
+            class="arrow"
+            aria-hidden="true"
+          >
+            ⌄
+          </span>
+        </button>
+
+        @if (item.isOpen) {
+          <div
+            class="answer"
+            [id]="'answer-' + item.id"
+          >
+            <p>
+              {{ item.answer }}
+            </p>
+          </div>
+        }
+
+      </article>
+    }
+
+  </div>
+
+</section>

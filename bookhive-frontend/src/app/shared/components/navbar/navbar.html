@@ -1,1 +1,96 @@
-<p>navbar works!</p>
+<nav class="navbar">
+  <div class="navbar-container">
+
+    <!-- Logo -->
+    <a
+      routerLink="/home"
+      class="brand"
+      aria-label="BookHive Home"
+    >
+      <img
+        src="/images/assets/bookhive-logo.v2.png"
+        alt="BookHive logo"
+        class="brand-logo"
+      />
+
+      <span class="brand-name">
+        BookHive
+      </span>
+    </a>
+
+    <!-- Navigation -->
+    <div class="nav-links">
+      <a
+        routerLink="/home"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Home
+      </a>
+
+      <a
+        routerLink="/explore"
+        routerLinkActive="active"
+      >
+        Explore
+      </a>
+
+      <a
+        routerLink="/community"
+        routerLinkActive="active"
+      >
+        Community
+      </a>
+
+      <a
+        routerLink="/about"
+        routerLinkActive="active"
+      >
+        About
+      </a>
+    </div>
+
+    <!-- Search -->
+    <div class="navbar-search">
+      <span class="material-symbols-outlined">
+        search
+      </span>
+
+      <input
+        type="search"
+        placeholder="Search books, authors, categories..."
+        aria-label="Search books"
+      />
+    </div>
+
+    <!-- Right Actions -->
+    <div class="navbar-actions">
+      <button
+        type="button"
+        class="language-btn"
+        aria-label="Change language"
+      >
+        <span class="material-symbols-outlined">
+          language
+        </span>
+
+        <span>EN</span>
+      </button>
+
+      <a
+        routerLink="/login"
+        class="sign-in-btn"
+      >
+        Sign In
+      </a>
+
+      <a
+        routerLink="/register"
+        class="sign-up-btn"
+      >
+        Sign Up
+      </a>
+    </div>
+
+  </div>
+</nav>

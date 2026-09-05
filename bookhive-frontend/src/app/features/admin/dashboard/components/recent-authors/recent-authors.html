@@ -1,1 +1,10 @@
-<p>recent-authors works!</p>
+<section class="panel">
+  <h2>New Readers</h2>
+  <div class="loading-row" *ngIf="loading()">Loading...</div>
+  <div class="empty-row" *ngIf="!loading() && filteredReaders.length === 0">No matching readers found.</div>
+  <a class="person" [routerLink]="['/admin/readers', reader.id]" *ngFor="let reader of filteredReaders">
+    <span class="avatar">{{ getInitials(reader.full_name) }}</span>
+    <span class="details"><strong>{{ reader.full_name }}</strong><small>{{ getJoinedLabel(reader.joined_at) }}</small></span>
+    <span class="arrow">›</span>
+  </a>
+</section>

@@ -1,1 +1,34 @@
-<p>subscription works!</p>
+<section class="cta-banner-section" aria-labelledby="cta-heading">
+  <div class="section-container">
+    <div class="cta-card">
+      <div class="cta-content">
+        <span class="cta-badge">
+          <svg lucideSparkles class="badge-icon" aria-hidden="true"></svg>
+          Open & Accessible
+        </span>
+        <h2 id="cta-heading" class="cta-title">Start Your Reading Journey with BookHive</h2>
+        <p class="cta-description">
+          Join our open reading community to track reading progress, bookmark manuscripts, and participate in community discussions. Completely free.
+        </p>
+
+        <div class="cta-actions">
+          <a
+            routerLink="/register"
+            class="btn-primary cta-btn-register"
+            (click)="onRegister()">
+            <svg lucideUserPlus class="btn-icon" aria-hidden="true"></svg>
+            <span>Create a Free Account</span>
+          </a>
+
+          <a
+            routerLink="/explore"
+            class="btn-secondary cta-btn-explore"
+            (click)="onExplore()">
+            <svg lucideCompass class="btn-icon" aria-hidden="true"></svg>
+            <span>Browse Full Catalogue</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

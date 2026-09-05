@@ -1,0 +1,273 @@
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { NgFor, NgIf, DatePipe } from '@angular/common';
+import { LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck, LucideUserPlus, LucideEye, LucideAlertTriangle, LucideAlertCircle, LucideBook, LucidePower } from '@lucide/angular';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ToastService } from '../../../core/services/toast.service';
+import { AdminApiService, AuthorApplicationItem } from '../../../core/services/admin-api.service';
+
+@Component({
+  selector: 'app-authors',
+  standalone: true,
+  imports: [NgFor, NgIf, DatePipe, RouterLink, FormsModule, LucideSearch, LucideX, LucideFilter, LucideCheck, LucideShieldCheck, LucideUserPlus, LucideEye, LucideAlertTriangle, LucideAlertCircle, LucideBook, LucidePower],
+  templateUrl: './authors.html',
+  styleUrl: './authors.scss',
+})
+export class AuthorsComponent implements OnInit {
+  private readonly toastService = inject(ToastService);
+  private readonly adminApi = inject(AdminApiService);
+
+  searchQuery = signal('');
+  showAdvanceSearch = signal(false);
+  filterCountry = signal('');
+  filterStatus = signal('');
+  filterTimeframe = signal('all');
+  filterSortBy = signal('newest');
+
+  readonly authorsSignal = signal<AuthorApplicationItem[]>([]);
+  readonly loading = signal(true);
+  readonly selectedAuthorForProfile = signal<AuthorApplicationItem | null>(null);
+
+  // Author rejection modal state
+  readonly authorToReject = signal<AuthorApplicationItem | null>(null);
+  readonly rejectionReason = signal('');
+  readonly rejectionError = signal<string | null>(null);
+  readonly isRejecting = signal(false);
+  readonly isApproving = signal(false);
+
+  readonly authorStatsSignal = signal({
+    new_applications: 0,
+    total_authors: 0,
+    books_in_review: 0,
+    total_rejected: 0,
+  });
+
+  ngOnInit(): void {
+    this.loadAuthors();
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+  }
+
+  refreshStats(): void {
+    this.adminApi.getAuthorStats().subscribe({
+      next: (stats) => {
+        if (stats) {
+          this.authorStatsSignal.set(stats);
+        }
+      },
+    });
+  }
+
+  loadAuthors(): void {
+    const status = this.filterStatus() || undefined;
+    this.loading.set(true);
+
+    this.refreshStats();
+
+    this.adminApi.getAuthorApplications(status).subscribe({
+      next: (data) => {
+        this.authorsSignal.set(data ?? []);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.toastService.info('Could not load author list — check your connection.', 'Notice');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  getAuthorAvatar(author: AuthorApplicationItem | null): string {
+    if (!author) return 'images/author/profile/profile-placeholder.jpg';
+    if (author.profile_image_path) {
+      return author.profile_image_path.startsWith('http')
+        ? author.profile_image_path
+        : `http://localhost:8000/${author.profile_image_path}`;
+    }
+    return 'images/author/profile/profile-placeholder.jpg';
+  }
+
+  openAuthorProfile(author: AuthorApplicationItem): void {
+    this.selectedAuthorForProfile.set(author);
+  }
+
+  closeAuthorProfileModal(): void {
+    this.selectedAuthorForProfile.set(null);
+  }
+
+  get filteredAuthors(): AuthorApplicationItem[] {
+    const q = this.searchQuery().toLowerCase().trim();
+    const country = this.filterCountry().toLowerCase().trim();
+    const timeframe = this.filterTimeframe();
+    const sortBy = this.filterSortBy();
+    const now = new Date().getTime();
+
+    let list = this.authorsSignal().filter((a) => {
+      const matchesSearch =
+        !q ||
+        a.full_name.toLowerCase().includes(q) ||
+        a.pen_name.toLowerCase().includes(q) ||
+        a.email.toLowerCase().includes(q);
+
+      if (!matchesSearch) return false;
+
+      const matchesCountry = !country || (a.country && a.country.toLowerCase().includes(country));
+      if (!matchesCountry) return false;
+
+      if (!a.applied_date || timeframe === 'all') return true;
+      const dateMs = new Date(a.applied_date).getTime();
+      const diffHours = (now - dateMs) / (1000 * 60 * 60);
+
+      if (timeframe === 'today') return diffHours <= 24;
+      if (timeframe === '7days') return diffHours <= 24 * 7;
+      if (timeframe === '30days') return diffHours <= 24 * 30;
+
+      return true;
+    });
+
+    if (sortBy === 'oldest') {
+      list = [...list].sort((a, b) => new Date(a.applied_date).getTime() - new Date(b.applied_date).getTime());
+    } else if (sortBy === 'name') {
+      list = [...list].sort((a, b) => a.full_name.localeCompare(b.full_name));
+    } else {
+      list = [...list].sort((a, b) => new Date(b.applied_date).getTime() - new Date(a.applied_date).getTime());
+    }
+
+    return list;
+  }
+
+  toggleAdvanceSearch(): void {
+    this.showAdvanceSearch.update((v) => !v);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  applyFilters(): void {
+    this.loadAuthors();
+    this.toastService.success('Filtered author list successfully.', 'Filter Applied');
+  }
+
+  resetFilters(): void {
+    this.searchQuery.set('');
+    this.filterCountry.set('');
+    this.filterStatus.set('');
+    this.filterTimeframe.set('all');
+    this.filterSortBy.set('newest');
+    this.loadAuthors();
+    this.toastService.info('Author search filters reset.', 'Filters Reset');
+  }
+
+  toggleAuthorStatus(author: AuthorApplicationItem): void {
+    const isCurrentlyApproved = author.account_status.toLowerCase() === 'approved';
+    if (isCurrentlyApproved) {
+      this.openRejectModal(author);
+    } else {
+      this.approveAuthor(author);
+    }
+  }
+
+  approveAuthor(author: AuthorApplicationItem): void {
+    if (this.isApproving()) return;
+    this.isApproving.set(true);
+
+    this.adminApi.approveAuthor(author.user_id).subscribe({
+      next: () => {
+        this.isApproving.set(false);
+        this.authorsSignal.update((list) =>
+          list.map((a) => (a.user_id === author.user_id ? { ...a, account_status: 'approved' } : a))
+        );
+        if (this.selectedAuthorForProfile()?.user_id === author.user_id) {
+          this.selectedAuthorForProfile.update((a) => (a ? { ...a, account_status: 'approved' } : null));
+        }
+        this.refreshStats();
+        this.toastService.success(`Approved ${author.full_name} as an official Author!`, 'Request Approved');
+      },
+      error: (err) => {
+        this.isApproving.set(false);
+        const msg = err.error?.detail || 'Failed to approve author. Please try again.';
+        this.toastService.warning(msg, 'Error');
+      },
+    });
+  }
+
+  openRejectModal(author: AuthorApplicationItem): void {
+    this.authorToReject.set(author);
+    this.rejectionReason.set('');
+    this.rejectionError.set(null);
+    this.isRejecting.set(false);
+  }
+
+  closeRejectModal(): void {
+    if (this.isRejecting()) return;
+    this.authorToReject.set(null);
+    this.rejectionReason.set('');
+    this.rejectionError.set(null);
+  }
+
+  onRejectionReasonChange(value: string): void {
+    this.rejectionReason.set(value);
+    if (this.rejectionError() && value.trim().length > 0) {
+      this.rejectionError.set(null);
+    }
+  }
+
+  confirmRejectAuthor(): void {
+    const author = this.authorToReject();
+    if (!author || this.isRejecting()) return;
+
+    const reason = this.rejectionReason().trim();
+    if (!reason) {
+      this.rejectionError.set('A rejection reason is required.');
+      return;
+    }
+    if (reason.length > 500) {
+      this.rejectionError.set('Rejection reason cannot exceed 500 characters.');
+      return;
+    }
+
+    this.isRejecting.set(true);
+    this.rejectionError.set(null);
+
+    this.adminApi.rejectAuthor(author.user_id, reason).subscribe({
+      next: () => {
+        this.isRejecting.set(false);
+        this.authorsSignal.update((list) =>
+          list.map((a) => (a.user_id === author.user_id ? { ...a, account_status: 'rejected', rejection_reason: reason } : a))
+        );
+        if (this.selectedAuthorForProfile()?.user_id === author.user_id) {
+          this.selectedAuthorForProfile.update((a) =>
+            a ? { ...a, account_status: 'rejected', rejection_reason: reason } : null
+          );
+        }
+        this.refreshStats();
+        this.closeRejectModal();
+        this.toastService.warning(`Rejected application for ${author.full_name}.`, 'Request Rejected');
+      },
+      error: (err) => {
+        this.isRejecting.set(false);
+        const msg = err.error?.detail || 'Failed to reject author. Please check your connection and try again.';
+        this.rejectionError.set(msg);
+      },
+    });
+  }
+
+  getStatusClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'status-approved';
+      case 'pending':
+        return 'status-pending';
+      case 'rejected':
+        return 'status-rejected';
+      default:
+        return 'status-inactive';
+    }
+  }
+
+  createAuthorModal(): void {
+    this.toastService.info('Direct author creation is coming soon. Authors currently apply via the registration portal.', 'Coming Soon');
+  }
+}

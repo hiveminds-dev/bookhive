@@ -1,0 +1,257 @@
+<div class="admin-master-container performance-overview">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Statistics</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <h1>Performance &amp; Analytics</h1>
+      <p>Real-time repository health, reader engagement, and platform growth metrics.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-outline">
+        <svg lucideCalendar aria-hidden="true"></svg>
+        Last 30 Days
+      </button>
+      <button type="button" class="btn-primary" (click)="exportPDF()">
+        <svg lucideDownload aria-hidden="true"></svg>
+        Export PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search analytics metrics, categories, or growth indicators...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg lucideX aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg lucideFilter aria-hidden="true"></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterMetric()">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Target Metric</label>
+          <select [ngModel]="filterMetric()" (ngModelChange)="filterMetric.set($event)">
+            <option value="">All Platform Metrics</option>
+            <option value="uploads">Monthly Uploads</option>
+            <option value="registrations">User Registrations</option>
+            <option value="categories">Category Distribution</option>
+            <option value="downloads">Total Downloads</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Timeframe Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="7days">Last 7 Days</option>
+            <option value="30days">Last 30 Days</option>
+            <option value="90days">Last 90 Days</option>
+            <option value="1year">Last 1 Year</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg lucideCheck aria-hidden="true"></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stat Cards Grid -->
+  <section class="stats-five-grid">
+    <article class="stat-card">
+      <div class="card-top">
+        <div class="icon-badge"><svg lucideBook aria-hidden="true"></svg></div>
+        <span class="trend positive">Active</span>
+      </div>
+      <span class="label">TOTAL BOOKS</span>
+      <strong class="val">{{ statsSignal()?.total_books ?? 0 }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="card-top">
+        <div class="icon-badge"><svg lucideUser aria-hidden="true"></svg></div>
+        <span class="trend positive">Total</span>
+      </div>
+      <span class="label">TOTAL READERS</span>
+      <strong class="val">{{ statsSignal()?.total_readers ?? 0 }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="card-top">
+        <div class="icon-badge"><svg lucidePenLine aria-hidden="true"></svg></div>
+        <span class="trend positive">Total</span>
+      </div>
+      <span class="label">TOTAL AUTHORS</span>
+      <strong class="val">{{ statsSignal()?.total_authors ?? 0 }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="card-top">
+        <div class="icon-badge"><svg lucideDownload aria-hidden="true"></svg></div>
+        <span class="trend positive">Total</span>
+      </div>
+      <span class="label">DOWNLOADS</span>
+      <strong class="val">{{ statsSignal()?.total_downloads ?? '0' }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="card-top">
+        <div class="icon-badge"><svg lucideEye aria-hidden="true"></svg></div>
+        <span class="trend positive">Total</span>
+      </div>
+      <span class="label">PAGE VIEWS</span>
+      <strong class="val">{{ statsSignal()?.total_views ?? '0' }}</strong>
+    </article>
+  </section>
+
+  <!-- Charts Row -->
+  <section class="charts-row">
+    <article class="chart-card">
+      <div class="chart-header">
+        <h2>Monthly Book Uploads</h2>
+        <span class="dots">•••</span>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-group" *ngFor="let m of statsSignal()?.monthly_uploads || []">
+          <div class="bar-stack">
+            <div class="bar-top" [style.height.%]="m.light"></div>
+            <div class="bar-bottom" [style.height.%]="m.dark"></div>
+          </div>
+          <span class="bar-label">{{ m.month }}</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="chart-card">
+      <div class="chart-header">
+        <h2>Monthly Registrations</h2>
+        <span class="legend"><span class="dot-gold"></span> NEW USERS</span>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-group" *ngFor="let r of statsSignal()?.monthly_registrations || []">
+          <div class="bar-single" [style.height.%]="r.val"></div>
+          <span class="bar-label">{{ r.month }}</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Category & Top Books Row -->
+  <section class="middle-row">
+    <article class="content-card cat-card">
+      <h2>Top Categories</h2>
+      <div class="cat-list">
+        <div class="cat-item" *ngFor="let cat of statsSignal()?.top_categories || []">
+          <div class="cat-header">
+            <span class="cat-name">{{ cat.name }}</span>
+            <span class="cat-pct">{{ cat.pct }}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="cat.pct"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="content-card books-card">
+      <div class="card-title-bar">
+        <h2>Most Read Books</h2>
+        <button type="button" class="link-btn" routerLink="/admin/books">View All</button>
+      </div>
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>BOOK TITLE</th>
+            <th>CATEGORY</th>
+            <th>TOTAL READS</th>
+            <th>RATING</th>
+            <th>TREND</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of statsSignal()?.most_read_books || []">
+            <td>
+              <div class="mini-book-cell">
+                <img [src]="b.cover || 'assets/images/book-covers/beyond-good-and-evil.jpg'" [alt]="b.title">
+                <strong class="title">{{ b.title }}</strong>
+              </div>
+            </td>
+            <td><span class="cat-text">{{ b.category }}</span></td>
+            <td><strong class="reads-text">{{ b.totalReads }}</strong></td>
+            <td>
+              <span class="rating-text" style="display: inline-flex; align-items: center; gap: 4px;">
+                <svg lucideStar width="13" height="13" style="fill:#eab308;color:#eab308" aria-hidden="true"></svg>
+                {{ b.rating }}
+              </span>
+            </td>
+            <td>
+              <span class="trend-cell" [class.pos]="b.trend && b.trend.startsWith('+')" [class.neg]="b.trend && b.trend.startsWith('-')">
+                {{ b.trend || 'N/A' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
+  </section>
+
+  <!-- Active Authors & Readers Row -->
+  <section class="bottom-row">
+    <article class="content-card">
+      <h2>Most Active Authors</h2>
+      <div class="people-list">
+        <div class="person-row" *ngFor="let a of statsSignal()?.active_authors || []">
+          <div class="person-left">
+            <img [src]="a.avatar || 'images/author/profile/profile-placeholder.jpg'" [alt]="a.name" class="avatar-img">
+            <div class="info">
+              <strong class="name">{{ a.name }}</strong>
+              <span class="sub">{{ a.booksCount }} Books Published</span>
+            </div>
+          </div>
+          <div class="score-badge">
+            <strong class="score">{{ a.score }}</strong>
+            <span class="sub-label">AVG RATING</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="content-card">
+      <h2>Most Active Readers</h2>
+      <div class="people-list">
+        <div class="person-row" *ngFor="let r of statsSignal()?.active_readers || []">
+          <div class="person-left">
+            <div class="initials-circle">{{ r.initials }}</div>
+            <div class="info">
+              <strong class="name">{{ r.name }}</strong>
+              <span class="sub">{{ r.joined }}</span>
+            </div>
+          </div>
+          <div class="score-badge">
+            <strong class="score">{{ r.totalReads }}</strong>
+            <span class="sub-label">REVIEWS WRITTEN</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>

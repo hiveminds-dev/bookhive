@@ -1,0 +1,322 @@
+<div class="admin-page book-review-page">
+  <!-- Mode Switch Tabs -->
+  <div class="mode-header">
+    <a routerLink="/admin/books" class="back-link">
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2"/><polyline points="12 19 5 12 12 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      Back to Books List
+    </a>
+
+    <div class="view-switch-btns" *ngIf="book">
+      <button type="button" [class.active]="currentModeSignal() === 'overview'" (click)="switchMode('overview')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="21" x2="9" y2="9" stroke="currentColor" stroke-width="1.8"/></svg>
+        Overview &amp; Details
+      </button>
+      <button type="button" [class.active]="currentModeSignal() === 'reader'" (click)="switchMode('reader')">
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Manuscript Inspector
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Loading manuscript details...</p>
+  </div>
+
+  <div *ngIf="!loading() && !book" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Book could not be found or loaded.</p>
+    <a routerLink="/admin/books" class="btn-primary" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Return to Books List</a>
+  </div>
+
+  <!-- MODE 1: OVERVIEW & DETAILS -->
+  <div class="overview-mode" *ngIf="!loading() && book && currentModeSignal() === 'overview'">
+    <div class="review-grid">
+      <!-- Left Column: Cover Preview -->
+      <div class="cover-column">
+        <div class="cover-wrapper-3d">
+          <img *ngIf="book.cover" [src]="book.cover" [alt]="book.title" class="book-cover-img" />
+          <div *ngIf="!book.cover" style="width: 220px; height: 320px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 12px;">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Column: Book Content & Meta -->
+      <div class="content-column">
+        <span class="category-badge">{{ book.category }}</span>
+        <h1 class="book-title">{{ book.title }}</h1>
+        <p class="author-subtitle">by <strong>{{ book.author }}</strong></p>
+
+        <div class="meta-row">
+          <div class="rating-box">
+            <span class="star-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+            <strong>{{ book.rating }}</strong>
+            <span class="reviews-count">({{ book.reviewsCount }})</span>
+          </div>
+          <span class="meta-divider">•</span>
+          <div class="meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> {{ book.readTime }}</div>
+          <span class="meta-divider">•</span>
+          <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> {{ book.pages }}</div>
+        </div>
+
+        <div class="action-buttons-top">
+          <button type="button" class="btn-read-now" (click)="switchMode('reader')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+            Inspect Manuscript
+          </button>
+          <button type="button" class="btn-download" (click)="downloadPdf()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            Download PDF
+          </button>
+        </div>
+
+        <div class="section-box">
+          <h2>Abstract</h2>
+          <p class="abstract-text">{{ book.abstract }}</p>
+        </div>
+
+        <!-- Reader Reviews -->
+        <div class="section-box">
+          <div class="section-header">
+            <h2>Reader Reviews</h2>
+          </div>
+          <div class="review-card-item" *ngFor="let rev of readerReviewsSignal()">
+            <a [routerLink]="['/admin/community']" class="reviewer-avatar-link" title="View Reader Profile" style="text-decoration:none;">
+              <div class="reviewer-avatar">{{ rev.avatarLetter }}</div>
+            </a>
+            <div class="review-body">
+              <div class="reviewer-top">
+                <a [routerLink]="['/admin/community']" class="reviewer-name-link" style="text-decoration:none; color:inherit; font-weight:700;">
+                  <strong>{{ rev.userName }}</strong>
+                </a>
+                <span class="stars-gold" style="margin-left: 10px; display: inline-flex; align-items: center; gap: 2px;">
+                  <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" style="width:14px;height:14px;" [style.fill]="s <= rev.rating ? '#f59e0b' : '#cbd5e1'" [style.stroke]="s <= rev.rating ? '#f59e0b' : '#cbd5e1'"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <span class="review-date" style="margin-left: auto; font-size: 0.78rem; color: #94a3b8;">{{ rev.date | date:'MMM d, y, h:mm a' }}</span>
+              </div>
+              <p class="review-text">{{ rev.comment }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="readerReviewsSignal().length === 0" style="padding: 16px 0; color: #94a3b8; font-size: 0.88rem; font-style: italic;">
+            No reader reviews have been submitted for this title yet.
+          </div>
+        </div>
+
+        <!-- Rejection History Audit Logs -->
+        <div class="section-box" *ngIf="book.rejectionLogs && (book.rejectionLogs.length || 0) > 0" style="margin-top: 24px; border: 1px solid #fecaca; background-color: #fff5f5;">
+          <div class="section-header" style="border-bottom: 1px solid #fee2e2;">
+            <h2 style="color: #991b1b; display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#dc2626;stroke-width:2;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Rejection History Audit Logs ({{ book.rejectionLogs.length }})
+            </h2>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; padding: 12px 0;">
+            <div *ngFor="let log of book.rejectionLogs; let i = index" style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #fecaca; border-radius: 8px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-weight: 700; font-size: 0.82rem; color: #dc2626;">Rejection Entry #{{ (book.rejectionLogs.length || 0) - i }}</span>
+                <span style="font-size: 0.78rem; color: #94a3b8;">{{ log.created_at | date:'MMM d, y, h:mm a' }}</span>
+              </div>
+              <p style="margin: 0; font-size: 0.88rem; color: #475569; line-height: 1.4;">{{ log.reason }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Author Profile Box -->
+      <div class="author-column">
+        <a [routerLink]="['/admin/authors']" class="author-card-link" style="text-decoration: none; color: inherit; display: block;" title="View Author Profile">
+          <div class="author-card-sticky">
+            <div class="author-avatar-wrapper">
+              <img [src]="book.authorAvatar || 'images/author/profile/profile-placeholder.jpg'" alt="Author photo" class="author-avatar-img" />
+            </div>
+            <h3>{{ book.author }}</h3>
+            <span class="author-title-badge">{{ book.authorTitle }}</span>
+            <p class="author-bio">{{ book.authorBio }}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Review Decision Footer Bar -->
+    <footer class="review-decision-bar">
+      <div class="decision-info" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px;">
+        <div>
+          <strong>Review Status:</strong>
+          <span class="status-pill" [class]="currentStatusInfo.class">{{ currentStatusInfo.label }}</span>
+          <span class="next-step-hint" style="font-size: 0.8rem; color: #64748b; margin-left: 8px;">Next Step: <strong>{{ currentStatusInfo.nextStep }}</strong></span>
+        </div>
+        <div *ngIf="book.status === 'REJECTED' && book.rejectionReason" style="font-size: 0.83rem; color: #dc2626; background-color: #fef2f2; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 6px; margin-top: 4px;">
+          <strong>Rejection Reason:</strong> {{ book.rejectionReason }}
+        </div>
+      </div>
+      <div class="decision-actions">
+        <button type="button" class="btn-reject" (click)="promptReject()" [disabled]="book.status !== 'PENDING_REVIEW' || isProcessing()">
+          Reject Submission
+        </button>
+        <button type="button" class="btn-revision" (click)="promptRequestChanges()" [disabled]="book.status !== 'PENDING_REVIEW' || isProcessing()">
+          Request Changes
+        </button>
+        <button type="button" class="btn-approve" (click)="approvePublication()" [disabled]="book.status !== 'PENDING_REVIEW' || isProcessing()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          Approve &amp; Publish
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODE 2: DIGITAL MANUSCRIPT READER / INSPECTOR -->
+  <div class="reader-mode" *ngIf="!loading() && book && currentModeSignal() === 'reader'">
+    <!-- Top Reader Bar -->
+    <header class="reader-topbar">
+      <button type="button" class="back-btn" (click)="switchMode('overview')">
+        ← Back to Details
+      </button>
+
+      <div class="reader-book-info">
+        <img *ngIf="book.cover" [src]="book.cover" alt="thumb" class="thumb-small" />
+        <div>
+          <strong class="title">{{ book.title }}</strong>
+          <span class="author">by {{ book.author }}</span>
+        </div>
+      </div>
+
+      <div class="reader-toolbar">
+        <button type="button" class="tool-btn icon-btn" title="Zoom Out" (click)="zoomOut()">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <span class="zoom-level">{{ zoomLevelSignal() }}%</span>
+        <button type="button" class="tool-btn icon-btn" title="Zoom In" (click)="zoomIn()">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+
+        <span class="page-nav">
+          <button type="button" class="tool-btn nav-arrow" (click)="prevPage()" [disabled]="currentPageSignal() === 1" title="Previous Page">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          Page {{ currentPageSignal() }} of {{ totalPagesSignal() }}
+          <button type="button" class="tool-btn nav-arrow" (click)="nextPage()" [disabled]="currentPageSignal() === totalPagesSignal()" title="Next Page">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </span>
+
+        <button type="button" class="tool-btn" title="Download PDF" (click)="downloadPdf()">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Inspector Viewport -->
+    <div class="reader-viewport-grid">
+      <!-- Left Sidebar: Meta & Contents -->
+      <aside class="left-sidebar">
+        <div class="sidebar-book-card">
+          <img *ngIf="book.cover" [src]="book.cover" alt="cover" class="side-cover" />
+          <div class="side-meta">
+            <span>Pages <strong>{{ totalPagesSignal() }}</strong></span>
+            <span>Rating <strong>{{ book.rating }}</strong></span>
+          </div>
+        </div>
+
+        <div class="contents-section" *ngIf="chaptersSignal().length > 0">
+          <h3>Contents</h3>
+          <ul class="contents-list">
+            <li *ngFor="let ch of chaptersSignal()" [class.active]="ch.active" (click)="goToPage(ch.page)" style="cursor: pointer;">
+              {{ ch.title }}
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Center Manuscript Canvas -->
+      <main class="manuscript-canvas">
+        <div class="pdf-viewport-box">
+          <div class="pdf-scale-wrapper" [style.transform]="'scale(' + (zoomLevelSignal() / 100) + ')'">
+            <iframe *ngIf="pdfViewerUrlSignal()"
+                    [src]="pdfViewerUrlSignal()"
+                    class="pdf-manuscript-iframe"
+                    width="100%"
+                    height="760px"></iframe>
+
+            <div *ngIf="!pdfViewerUrlSignal()" class="manuscript-paper" style="padding: 3rem; text-align: center;">
+              <h2 class="chapter-title">No Manuscript PDF Available</h2>
+              <p class="lead-paragraph" style="color: #64748b; margin-top: 1rem;">
+                This book does not have an attached PDF manuscript file.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Quick Actions -->
+      <aside class="right-sidebar">
+        <div class="page-jumper-card">
+          <label>PAGE NUMBER</label>
+          <input type="number" [ngModel]="currentPageSignal()" (ngModelChange)="goToPage($event)" [min]="1" [max]="totalPagesSignal()" class="page-input" />
+        </div>
+      </aside>
+    </div>
+
+    <!-- Bottom Progress Footer -->
+    <footer class="reader-bottombar">
+      <span>Page {{ currentPageSignal() }} of {{ totalPagesSignal() }}</span>
+      <div class="progress-bar-track">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <span>{{ progressPercentage }}% Read</span>
+    </footer>
+  </div>
+
+  <!-- Rejection Reason Modal with Feedback Input -->
+  <div class="modal-overlay" *ngIf="showRejectConfirm()" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+    <div class="modal-card" style="background: #ffffff; border-radius: 20px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18); border: 1px solid #e2e8f0;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0;">Reject Manuscript Submission?</h3>
+          <p style="font-size: 0.83rem; color: #64748b; margin: 4px 0 0 0;">Author <strong>{{ book?.author }}</strong> will receive this notification.</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Rejection Reason &amp; Editorial Feedback</label>
+        <textarea [ngModel]="rejectionReasonSignal()" (ngModelChange)="rejectionReasonSignal.set($event)" rows="4" placeholder="Specify clear feedback or reason for rejecting this manuscript..." style="width: 100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; font-size: 0.88rem; font-family: inherit; color: #1e293b; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button type="button" (click)="cancelReject()" [disabled]="isProcessing()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; cursor: pointer;">Cancel</button>
+        <button type="button" (click)="confirmReject()" [disabled]="isProcessing()" style="padding: 10px 20px; border-radius: 10px; border: none; background: #dc2626; color: #ffffff; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+          {{ isProcessing() ? 'Processing...' : 'Confirm Rejection' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Changes Modal with Feedback Input -->
+  <div class="modal-overlay" *ngIf="showChangesModal()" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+    <div class="modal-card" style="background: #ffffff; border-radius: 20px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18); border: 1px solid #e2e8f0;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background: #fef9c3; color: #ca8a04; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0;">Request Editorial Changes?</h3>
+          <p style="font-size: 0.83rem; color: #64748b; margin: 4px 0 0 0;">The book will return to draft for author <strong>{{ book?.author }}</strong> to edit and resubmit.</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Editorial Feedback for Author</label>
+        <textarea [ngModel]="changesFeedbackSignal()" (ngModelChange)="changesFeedbackSignal.set($event)" rows="4" placeholder="Explain the specific changes, corrections, or revisions required..." style="width: 100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; font-size: 0.88rem; font-family: inherit; color: #1e293b; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button type="button" (click)="cancelRequestChanges()" [disabled]="isProcessing()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; cursor: pointer;">Cancel</button>
+        <button type="button" (click)="confirmRequestChanges()" [disabled]="isProcessing()" style="padding: 10px 20px; border-radius: 10px; border: none; background: #ca8a04; color: #ffffff; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(202, 138, 4, 0.3);">
+          {{ isProcessing() ? 'Processing...' : 'Send Revision Request' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,230 @@
+<div class="admin-master-container admin-management-page">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Admin Governance</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <div class="super-admin-tag">SUPER ADMIN ACCESS ONLY</div>
+      <h1>Administrator Access Management</h1>
+      <p>Provision roles, manage editorial staff credentials, monitor 2FA security, and audit executive privileges.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-primary" (click)="openCreateModal()">
+        <svg lucideUserPlus aria-hidden="true"></svg>
+        Create New Admin
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" placeholder="Search admins by name, email, department, or privilege role...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg lucideX aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg lucideFilter aria-hidden="true"></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterRole() || filterStatus()">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Account Status</label>
+          <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+            <option value="">All Statuses</option>
+            <option value="Active">Active Accounts</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select [ngModel]="filterSortBy()" (ngModelChange)="filterSortBy.set($event)">
+            <option value="newest">Newest First</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg lucideCheck aria-hidden="true"></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Summary Stats -->
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg lucideShieldCheck aria-hidden="true"></svg>
+        </div>
+        <span class="trend-badge positive">Security Active</span>
+      </div>
+      <span class="stat-label">TOTAL ADMIN ACCOUNTS</span>
+      <strong class="stat-value">{{ staffStatsSignal()?.total_admin_accounts ?? 0 }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg lucideStar aria-hidden="true"></svg>
+        </div>
+        <span class="trend-badge high">Executive</span>
+      </div>
+      <span class="stat-label">SUPER ADMINS</span>
+      <strong class="stat-value">{{ staffStatsSignal()?.super_admins ?? 0 }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg lucideLock aria-hidden="true"></svg>
+        </div>
+        <span class="trend-badge positive">Enforced</span>
+      </div>
+      <span class="stat-label">2FA PROTECTED</span>
+      <strong class="stat-value">{{ staffStatsSignal()?.two_fa_protected_count ?? 0 }} / {{ staffStatsSignal()?.two_fa_total ?? 0 }}</strong>
+    </article>
+
+    <article class="stat-card highlight-card">
+      <div class="stat-header">
+        <div class="icon-box star-icon">
+          <svg lucideUserPlus aria-hidden="true"></svg>
+        </div>
+      </div>
+      <span class="stat-label">ACTIVE ADMINS</span>
+      <strong class="stat-value">{{ adminsSignal().length }}</strong>
+    </article>
+  </section>
+
+  <!-- Data Table -->
+  <section class="card-table-wrapper">
+    <div class="table-top-bar">
+      <h2>Administrative Staff</h2>
+      <span class="badge-count">{{ adminsSignal().length }} Users</span>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ADMIN USER</th>
+          <th>SECURITY &amp; 2FA</th>
+          <th>LAST ACTIVE</th>
+          <th>STATUS</th>
+          <th class="text-right">GOVERNANCE ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="filteredAdmins.length === 0">
+          <td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No admin staff found matching your search filters.</td>
+        </tr>
+        <tr *ngFor="let admin of filteredAdmins">
+          <td>
+            <div class="user-cell">
+              <div class="avatar-cell">
+                <img [src]="admin.avatar || 'images/author/profile/profile-placeholder.jpg'" [alt]="admin.name">
+              </div>
+              <div class="user-info">
+                <strong class="user-name">{{ admin.name }}</strong>
+                <span class="user-email">{{ admin.email }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="sec-badge" [class.enabled]="admin.two_factor">
+              <svg lucideLock aria-hidden="true"></svg>
+              {{ admin.two_factor ? '2FA Enabled' : '2FA Off' }}
+            </span>
+          </td>
+          <td>
+            <span class="active-text">{{ admin.last_active }}</span>
+          </td>
+          <td>
+            <span class="status-badge" [class.status-active]="admin.status === 'Active'" [class.status-suspended]="admin.status === 'Suspended'" [class.status-invited]="admin.status === 'Invited'">
+              <span class="dot"></span>
+              {{ admin.status }}
+            </span>
+          </td>
+          <td class="text-right">
+            <div class="action-buttons" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+              <label class="switch-toggle" [title]="admin.status === 'Active' ? 'Click to Suspend Admin' : 'Click to Activate Admin'" *ngIf="admin.role !== 'Super Admin'">
+                <input type="checkbox" [checked]="admin.status === 'Active'" (change)="toggleAdminStatus(admin)">
+                <span class="switch-slider"></span>
+              </label>
+              <button type="button" class="btn-icon" title="Reset Password" (click)="resetPassword(admin)">
+                <svg lucideLock aria-hidden="true"></svg>
+              </button>
+              <button type="button" class="btn-icon danger" title="Revoke Admin Credentials" (click)="promptRevokeAdmin(admin)" *ngIf="admin.role !== 'Super Admin'">
+                <svg lucideTrash2 aria-hidden="true"></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- CREATE ADMIN MODAL POPUP -->
+<div class="modal-overlay" *ngIf="showCreateModal()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Create New Admin Account</h2>
+      <button type="button" class="btn-close" (click)="closeCreateModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newAdminName" placeholder="e.g. Dr. Julian Vance">
+        </div>
+        <div class="form-group">
+          <label>Username <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newAdminUsername" placeholder="e.g. julianv">
+        </div>
+      </div>
+      <div class="form-grid-2 margin-top">
+        <div class="form-group">
+          <label>Corporate Email <span class="required">*</span></label>
+          <input type="email" [(ngModel)]="newAdminEmail" placeholder="e.g. julian.vance@bookhive.com">
+        </div>
+        <div class="form-group">
+          <label>Initial Password <span class="required">*</span></label>
+          <input type="password" [(ngModel)]="newAdminPassword" placeholder="••••••••">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+      <button type="button" class="btn-primary" (click)="saveCreateAdmin()">Create Admin Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<app-confirmation-modal
+  *ngIf="targetAdminForDelete()"
+  title="Revoke Admin Privileges"
+  [message]="'Are you sure you want to permanently revoke administrative credentials for &quot;' + targetAdminForDelete()?.name + '&quot;? They will immediately lose access to the Admin Portal.'"
+  confirmText="Revoke Access"
+  cancelText="Cancel"
+  (confirm)="confirmRevoke()"
+  (cancel)="cancelRevoke()">
+</app-confirmation-modal>

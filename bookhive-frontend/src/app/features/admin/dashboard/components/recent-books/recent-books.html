@@ -1,1 +1,20 @@
-<p>recent-books works!</p>
+<section class="panel">
+  <header><h2>Recent Book Uploads</h2><a routerLink="/admin/books">View All</a></header>
+  <div class="table-head"><span>Book Details</span><span>Author</span><span>Category</span><span>Status</span></div>
+
+  <div class="loading-row" *ngIf="loading()">Loading...</div>
+
+  <div class="empty-row" *ngIf="!loading() && filteredBooks.length === 0 && !searchQuery">No books yet.</div>
+  <div class="empty-row" *ngIf="!loading() && filteredBooks.length === 0 && searchQuery">No results for "{{ searchQuery }}".</div>
+
+  <article class="book-row" *ngFor="let book of filteredBooks">
+    <div class="book-details">
+      <img [src]="book.cover_image_path ? (book.cover_image_path.startsWith('http') ? book.cover_image_path : 'http://localhost:8000/' + book.cover_image_path) : 'assets/images/book-covers/beyond-good-and-evil.jpg'" alt="">
+      <div><strong>{{ book.title }}</strong><span>{{ book.author_name }}</span></div>
+    </div>
+    <span>{{ book.author_name }}</span>
+    <span><em>{{ book.category_name }}</em></span>
+    <span class="status" [class]="getStatusClass(book.status)"><span class="status-dot" aria-hidden="true"></span>{{ getStatusLabel(book.status) }}</span>
+  </article>
+</section>
+

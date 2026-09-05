@@ -1,0 +1,157 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.reader-toolbar {
+  display: grid;
+  width: 100%;
+  min-height: 52px;
+  padding: 7px 13px;
+  border: 1px solid #ebe7df;
+  border-radius: 9px;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 15px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(42, 36, 23, 0.04);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  button {
+    position: relative;
+    display: inline-flex;
+    width: 31px;
+    height: 31px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #4d4942;
+    font-family: inherit;
+    font-size: 18px;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: #ded7c8;
+      background: #f5f1e8;
+      color: #816600;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.35;
+    }
+
+    &.active {
+      border-color: #c8b46f;
+      background: #f3ecd2;
+      color: #8b6e05;
+    }
+  }
+}
+
+.zoom-controls {
+  justify-content: flex-start;
+}
+
+.page-controls {
+  justify-content: center;
+}
+
+.action-controls {
+  justify-content: flex-end;
+}
+
+.zoom-value,
+.page-count {
+  color: #4e4941;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.zoom-value {
+  min-width: 39px;
+  text-align: center;
+}
+
+.page-count {
+  min-width: 90px;
+  text-align: center;
+}
+
+.search-symbol {
+  position: absolute;
+  top: 8px;
+  left: 7px;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    bottom: -3px;
+    width: 6px;
+    height: 1.5px;
+    border-radius: 5px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+}
+
+.zoom-mark {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.download-symbol {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.fullscreen-symbol {
+  font-size: 17px;
+}
+
+@media (max-width: 620px) {
+  .reader-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .page-controls {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .zoom-controls {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .action-controls {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}

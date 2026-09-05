@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.chart-card {
+  min-height: 430px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #f0ede5;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+}
+
+.chart-header {
+  display: flex;
+  margin-bottom: 26px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.chart-header h2 {
+  margin: 0;
+  color: #26231e;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.chart-header p {
+  margin: 7px 0 0;
+  color: #918a7f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.export-button {
+  padding: 5px 0;
+  color: #977700;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-button:hover {
+  color: #6e5700;
+  text-decoration: underline;
+}
+
+.chart-container {
+  width: 100%;
+  padding-top: 12px;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 270px;
+  overflow: visible;
+}
+
+.grid-line {
+  stroke: #efede7;
+  stroke-width: 1;
+}
+
+.chart-area {
+  fill: url("#viewsAreaGradient");
+}
+
+.chart-line {
+  fill: none;
+  stroke: #d1a516;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-point {
+  fill: #ffffff;
+  stroke: #b78e00;
+  stroke-width: 3;
+  cursor: pointer;
+  transition:
+    r 0.2s ease,
+    fill 0.2s ease;
+}
+
+.chart-point:hover {
+  fill: #f6dd78;
+  r: 7;
+}
+
+.month-labels {
+  display: grid;
+  padding: 0 17px;
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+  color: #989185;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .chart-card {
+    min-height: auto;
+    padding: 22px 16px;
+  }
+
+  .chart-header {
+    margin-bottom: 16px;
+    flex-direction: column;
+  }
+
+  .chart {
+    height: 220px;
+  }
+
+  .month-labels {
+    padding: 0 5px;
+    font-size: 11px;
+  }
+}

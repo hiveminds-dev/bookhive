@@ -1,18 +1,60 @@
+import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
+import orm_models  # noqa: F401
 from config import settings
-from database import close_database_connection
+from data_seed import seed_database
+from database import (
+    close_database_connection,
+    initialize_database,
+    session_factory,
+)
 from routers import health_router
+from routers.admin_router import router as admin_router
+from routers.auth_router import router as auth_router
+from routers.author_profile_router import router as author_profile_router
+from routers.author_router import router as author_router
+from routers.book_router import router as book_router
+from routers.catalogue_router import router as catalogue_router
+from routers.category_router import router as category_router
+from routers.review_router import router as review_router
+from routers.user_router import router as user_router
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
-    yield
-    await close_database_connection()
+    logger.info("Starting the BookHive API.")
+
+    try:
+        await initialize_database()
+
+        if settings.seed_database_on_startup:
+            async with session_factory() as session:
+                await seed_database(session)
+        else:
+            logger.info(
+                "Database seeding is disabled by "
+                "SEED_DATABASE_ON_STARTUP."
+            )
+
+        yield
+
+    finally:
+        await close_database_connection()
+        logger.info("BookHive API stopped.")
+
 
 app = FastAPI(
     title=f"{settings.app_name} API",
@@ -29,7 +71,66 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health_router, prefix=settings.api_prefix)
+app.include_router(
+    health_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    auth_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    author_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    user_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    category_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    admin_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    book_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    catalogue_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    author_profile_router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    review_router,
+    prefix=settings.api_prefix,
+)
+
+settings.storage_root.mkdir(parents=True, exist_ok=True)
+settings.book_storage_path.mkdir(parents=True, exist_ok=True)
+settings.cover_storage_path.mkdir(parents=True, exist_ok=True)
+settings.profile_image_storage_path.mkdir(parents=True, exist_ok=True)
+
+app.mount(
+    "/storage",
+    StaticFiles(directory=str(settings.storage_root)),
+    name="storage",
+)
 
 
 @app.get("/", tags=["Root"])

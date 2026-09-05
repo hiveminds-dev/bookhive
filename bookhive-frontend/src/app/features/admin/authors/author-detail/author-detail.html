@@ -1,0 +1,219 @@
+<div class="admin-page author-detail-page">
+  <header class="page-header">
+    <a routerLink="/admin/authors" class="back-link">← Back to Authors List</a>
+    <h1>Author Profile &amp; Portfolio</h1>
+  </header>
+
+  <div *ngIf="loading()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Loading author profile &amp; manuscripts...</p>
+  </div>
+
+  <div *ngIf="!loading() && !author()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Author not found.</p>
+    <a routerLink="/admin/authors" class="btn-secondary" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Return to Authors List</a>
+  </div>
+
+  <div class="profile-grid" *ngIf="!loading() && author()">
+    <!-- Left Column: Author Bio Card -->
+    <div class="author-card">
+      <div class="avatar-wrapper">
+        <img *ngIf="author()?.profile_image_path" [src]="author()?.profile_image_path" [alt]="author()?.full_name" class="avatar-img" />
+        <div *ngIf="!author()?.profile_image_path" style="width: 80px; height: 80px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 2rem;">✍️</div>
+      </div>
+      <h2>{{ author()?.full_name }}</h2>
+      <span class="pen-name">Pen Name: <strong>{{ author()?.pen_name }}</strong></span>
+      <span class="status-badge" [class.approved]="author()?.account_status === 'approved'" [class.rejected]="author()?.account_status === 'rejected'">
+        {{ author()?.account_status }}
+      </span>
+
+      <div class="info-list">
+        <div class="info-item"><span>Email</span><strong>{{ author()?.email }}</strong></div>
+        <div class="info-item">
+          <span>Email Verified</span>
+          <strong>{{ author()?.email_verified ? 'Verified' : 'Unverified' }}</strong>
+        </div>
+        <div class="info-item"><span>Country</span><strong>{{ author()?.country || 'Not specified' }}</strong></div>
+        <div class="info-item"><span>Registered</span><strong>{{ author()?.created_at | date:'mediumDate' }}</strong></div>
+      </div>
+
+      <div class="bio-box">
+        <h4>Biography</h4>
+        <p>{{ author()?.short_bio || 'No biography provided by the author.' }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button
+          *ngIf="author()?.account_status === 'pending'"
+          type="button"
+          class="btn-approve"
+          (click)="approveAuthor()"
+          [disabled]="isProcessing()"
+        >
+          Approve Credentials
+        </button>
+        <button
+          *ngIf="author()?.account_status === 'approved'"
+          type="button"
+          class="btn-danger"
+          (click)="promptSuspend()"
+          [disabled]="isProcessing()"
+        >
+          Suspend Account
+        </button>
+        <button
+          *ngIf="author()?.account_status === 'suspended'"
+          type="button"
+          class="btn-primary"
+          (click)="promptReactivate()"
+          [disabled]="isProcessing()"
+        >
+          Reactivate Account
+        </button>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="promptResetPassword()"
+          [disabled]="isProcessing()"
+        >
+          Reset Password
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column: Performance & Books -->
+    <div class="portfolio-column">
+      <div class="stats-row">
+        <div class="stat-box">
+          <span>PUBLISHED BOOKS</span>
+          <strong>{{ author()?.published_books?.length || 0 }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>TOTAL VIEWS</span>
+          <strong>{{ formattedViews }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>AVERAGE RATING</span>
+          <strong style="display: flex; align-items: center; gap: 4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#eab308"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            {{ author()?.average_rating?.toFixed(1) || '0.0' }}
+          </strong>
+        </div>
+      </div>
+
+      <!-- Published Works -->
+      <div class="section-card">
+        <h3>Published Works ({{ author()?.published_books?.length || 0 }})</h3>
+        <div class="books-list" *ngIf="(author()?.published_books?.length || 0) > 0">
+          <div class="book-item" *ngFor="let b of author()?.published_books">
+            <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
+            <div class="book-info">
+              <strong>{{ b.title }}</strong>
+              <small>Category: {{ b.category_name }} · Published {{ b.published_at | date:'mediumDate' }}</small>
+            </div>
+            <div class="book-meta">
+              <span class="reads-text">{{ b.view_count.toLocaleString() }} Views</span>
+              <span class="status-pill status-published">Published</span>
+              <a [routerLink]="['/admin/books', b.id, 'review']" class="btn-secondary" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">Inspect</a>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="(author()?.published_books?.length || 0) === 0" style="padding: 1.5rem; text-align: center; color: #94a3b8; font-style: italic;">
+          No published books yet.
+        </div>
+      </div>
+
+      <!-- Pending Manuscripts -->
+      <div class="section-card" *ngIf="(author()?.pending_books?.length || 0) > 0" style="margin-top: 1.5rem;">
+        <h3>Pending Review ({{ author()?.pending_books?.length }})</h3>
+        <div class="books-list">
+          <div class="book-item" *ngFor="let b of author()?.pending_books">
+            <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
+            <div class="book-info">
+              <strong>{{ b.title }}</strong>
+              <small>Category: {{ b.category_name }} · Submitted {{ b.created_at | date:'mediumDate' }}</small>
+            </div>
+            <div class="book-meta">
+              <span class="status-pill status-pending">Under Review</span>
+              <a [routerLink]="['/admin/books', b.id, 'review']" class="btn-primary" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">Review</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rejected Submissions -->
+      <div class="section-card" *ngIf="(author()?.rejected_books?.length || 0) > 0" style="margin-top: 1.5rem; border: 1px solid #fecaca; background: #fffbfb;">
+        <h3 style="color: #991b1b;">Rejected Submissions ({{ author()?.rejected_books?.length }})</h3>
+        <div class="books-list">
+          <div class="book-item" *ngFor="let b of author()?.rejected_books">
+            <img *ngIf="b.cover_image_path" [src]="b.cover_image_path" [alt]="b.title" class="book-cover" />
+            <div *ngIf="!b.cover_image_path" style="width: 44px; height: 60px; display: flex; align-items: center; justify-content: center; background: #fee2e2; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dc2626" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
+            <div class="book-info">
+              <strong>{{ b.title }}</strong>
+              <small>Category: {{ b.category_name }}</small>
+              <p *ngIf="b.rejection_reason" style="margin: 4px 0 0; font-size: 0.82rem; color: #dc2626;">Reason: {{ b.rejection_reason }}</p>
+            </div>
+            <div class="book-meta">
+              <span class="status-pill status-rejected">Rejected</span>
+              <a [routerLink]="['/admin/books', b.id, 'review']" class="btn-secondary" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none;">Inspect</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Author Rejection Audit Logs -->
+      <div class="section-card" *ngIf="(author()?.rejection_logs?.length || 0) > 0" style="margin-top: 1.5rem; border: 1px solid #fed7aa; background: #fffaf5;">
+        <h3 style="color: #9a3412;">Author Application Rejection History ({{ author()?.rejection_logs?.length }})</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+          <div *ngFor="let log of author()?.rejection_logs; let i = index" style="padding: 10px; background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #ea580c; font-weight: 700;">
+              <span>Application Rejection #{{ (author()?.rejection_logs?.length || 0) - i }}</span>
+              <span style="color: #94a3b8; font-weight: normal;">{{ log.created_at | date:'mediumDate' }}</span>
+            </div>
+            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #475569;">{{ log.reason }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showConfirmModal()">
+    <div class="modal-card">
+      <h3 *ngIf="confirmActionType() === 'suspend'">Suspend Author Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reactivate'">Reactivate Author Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reset-password'">Send Password Reset Email?</h3>
+
+      <p *ngIf="confirmActionType() === 'suspend'">
+        Are you sure you want to suspend <strong>{{ author()?.full_name }}</strong>? The author will be immediately prevented from accessing creator studio features or publishing books.
+      </p>
+      <p *ngIf="confirmActionType() === 'reactivate'">
+        Are you sure you want to reactivate <strong>{{ author()?.full_name }}</strong>? Their full author studio access will be restored immediately.
+      </p>
+      <p *ngIf="confirmActionType() === 'reset-password'">
+        A secure password reset link will be sent to <strong>{{ author()?.email }}</strong>.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelConfirm()" [disabled]="isProcessing()">Cancel</button>
+        <button
+          type="button"
+          [class.btn-danger]="confirmActionType() === 'suspend'"
+          [class.btn-primary]="confirmActionType() === 'reactivate' || confirmActionType() === 'reset-password'"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          {{ isProcessing() ? 'Processing...' : (confirmActionType() === 'suspend' ? 'Confirm Suspension' : (confirmActionType() === 'reactivate' ? 'Confirm Reactivation' : 'Send Reset Email')) }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,92 @@
-<p>community works!</p>
+<main class="community-page">
+
+  <app-community-hero
+    (startDiscussion)="onStartDiscussion()"
+    (browseCommunities)="onBrowseCommunities()"
+  />
+
+  <app-community-search
+    (searchChanged)="onSearchChanged($event)"
+  />
+
+  <div class="community-container">
+
+    <section class="popular-area">
+
+      <app-popular-communities
+        (communityJoined)="onCommunityJoined($event)"
+        (viewAll)="onViewAllCommunities()"
+      />
+
+    </section>
+
+    <div class="community-content-grid">
+
+      <div class="main-column">
+
+        <app-trending-discussions
+          [searchTerm]="searchTerm"
+          (threadSelected)="onThreadSelected($event)"
+          (discussionLiked)="onDiscussionLiked($event)"
+        />
+
+        <app-upcoming-events
+          (eventSelected)="onEventSelected($event)"
+        />
+
+        <app-active-members
+          (followChanged)="onFollowChanged($event)"
+        />
+
+      </div>
+
+      <div class="sidebar-column">
+
+        <app-community-sidebar
+          (communitySelected)="
+            onSuggestedCommunitySelected($event)
+          "
+          (policySelected)="onPolicySelected()"
+        />
+
+      </div>
+
+    </div>
+
+    <section class="cta-area">
+
+      <app-community-cta
+        (joinCommunity)="onJoinCommunity()"
+        (exploreBooks)="onExploreBooks()"
+      />
+
+    </section>
+
+  </div>
+
+  @if (notificationMessage) {
+    <div
+      class="community-notification"
+      role="status"
+    >
+      <span class="material-symbols-outlined">
+        check_circle
+      </span>
+
+      <p>
+        {{ notificationMessage }}
+      </p>
+
+      <button
+        type="button"
+        aria-label="Close notification"
+        (click)="closeNotification()"
+      >
+        <span class="material-symbols-outlined">
+          close
+        </span>
+      </button>
+    </div>
+  }
+
+</main>

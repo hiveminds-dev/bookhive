@@ -1,0 +1,333 @@
+<div class="admin-master-container author-management">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Authors</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <h1>Author Management</h1>
+      <p>Review author applications, approve credentials, and manage creator profiles.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-primary" [disabled]="true" title="Direct author account creation is coming soon in a future release." style="opacity: 0.6; cursor: not-allowed;">
+        <svg lucideUserPlus aria-hidden="true"></svg>
+        Create Author (Coming Soon)
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" placeholder="Search authors by full name, pen name, or email...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg lucideX aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg lucideFilter aria-hidden="true"></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterCountry() || filterStatus() || filterTimeframe() !== 'all'">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Country / Region</label>
+          <select [ngModel]="filterCountry()" (ngModelChange)="filterCountry.set($event)">
+            <option value="">All Countries</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United States">United States</option>
+            <option value="Sri Lanka">Sri Lanka</option>
+            <option value="Germany">Germany</option>
+            <option value="Australia">Australia</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Application Status</label>
+          <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending Approval</option>
+            <option value="Approved">Approved Creators</option>
+            <option value="Rejected">Rejected Applications</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Date Window</label>
+          <select [ngModel]="filterTimeframe()" (ngModelChange)="filterTimeframe.set($event)">
+            <option value="all">All Time</option>
+            <option value="today">Today's Activity</option>
+            <option value="7days">Past 7 Days</option>
+            <option value="30days">Past 30 Days</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select [ngModel]="filterSortBy()" (ngModelChange)="filterSortBy.set($event)">
+            <option value="newest">Newest Applicants First</option>
+            <option value="oldest">Oldest Applicants First</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg lucideCheck aria-hidden="true"></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Summary Stats -->
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg lucideUserPlus aria-hidden="true"></svg>
+        </div>
+        <span class="trend-badge positive">Pending</span>
+      </div>
+      <span class="stat-label">NEW APPLICATIONS</span>
+      <strong class="stat-value">{{ authorStatsSignal().new_applications }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg lucideShieldCheck aria-hidden="true"></svg>
+        </div>
+        <span class="trend-badge positive">Active</span>
+      </div>
+      <span class="stat-label">APPROVED AUTHORS</span>
+      <strong class="stat-value">{{ authorStatsSignal().total_authors }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="icon-box">
+          <svg lucideBook aria-hidden="true"></svg>
+        </div>
+        <span class="trend-badge high">In Review</span>
+      </div>
+      <span class="stat-label">BOOKS IN REVIEW</span>
+      <strong class="stat-value">{{ authorStatsSignal().books_in_review }}</strong>
+    </article>
+
+    <article class="stat-card highlight-card">
+      <div class="stat-header">
+        <div class="icon-box star-icon">
+          <svg lucidePower aria-hidden="true"></svg>
+        </div>
+      </div>
+      <span class="stat-label">REJECTED APPLICATIONS</span>
+      <strong class="stat-value">{{ authorStatsSignal().total_rejected }}</strong>
+    </article>
+  </section>
+
+  <!-- Main Card Table -->
+  <section class="card-table-wrapper">
+    <div class="tabs-header">
+      <button type="button" class="tab-btn active">
+        All Author Applications
+        <span class="tab-badge">{{ authorsSignal().length }}</span>
+      </button>
+    </div>
+
+    <!-- Loading state -->
+    <div class="loading-row" *ngIf="loading()">Loading author applications...</div>
+
+    <!-- Empty state -->
+    <div class="empty-row" *ngIf="!loading() && filteredAuthors.length === 0">No authors found.</div>
+
+    <table class="data-table" *ngIf="!loading() && filteredAuthors.length > 0">
+      <thead>
+        <tr>
+          <th>FULL NAME</th>
+          <th>PEN NAME</th>
+          <th>EMAIL</th>
+          <th>COUNTRY</th>
+          <th>APPLIED DATE</th>
+          <th>STATUS</th>
+          <th class="text-right">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let author of filteredAuthors">
+          <td>
+            <div class="author-name-cell" (click)="openAuthorProfile(author)" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px; white-space: nowrap;" title="Click to view Author Profile">
+              <img [src]="getAuthorAvatar(author)" [alt]="author.full_name" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0;" />
+              <strong class="full-name" style="color: #0f172a; font-size: 0.92rem; white-space: nowrap;">{{ author.full_name }}</strong>
+            </div>
+          </td>
+          <td>
+            <span class="pen-name">{{ author.pen_name }}</span>
+          </td>
+          <td>
+            <span class="email-text">{{ author.email }}</span>
+          </td>
+          <td>
+            <span class="country-text">{{ author.country ?? '—' }}</span>
+          </td>
+          <td>
+            <span class="date-text">{{ author.applied_date | date:'MMM d, y' }}</span>
+          </td>
+          <td>
+            <span class="status-badge" [class]="getStatusClass(author.account_status)">{{ author.account_status }}</span>
+          </td>
+          <td class="text-right">
+            <div class="action-buttons" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+              <label class="switch-toggle" [title]="author.account_status === 'approved' ? 'Click to Reject Author' : 'Click to Approve Author'">
+                <input type="checkbox" [checked]="author.account_status === 'approved'" (change)="toggleAuthorStatus(author)" />
+                <span class="switch-slider"></span>
+              </label>
+              <button type="button" class="btn-icon" (click)="openAuthorProfile(author)" title="View Author Profile">
+                <svg lucideEye style="width:16px;height:16px;" aria-hidden="true"></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="table-footer" *ngIf="!loading() && filteredAuthors.length > 0">
+      <span class="summary-text">Showing {{ filteredAuthors.length }} of {{ authorsSignal().length }} records</span>
+    </footer>
+  </section>
+
+  <!-- Author Profile Quick Detail Modal -->
+  <div class="modal-backdrop" *ngIf="selectedAuthorForProfile()" (click)="closeAuthorProfileModal()">
+    <div class="modal-card author-profile-modal" (click)="$event.stopPropagation()" style="max-width: 520px; border-radius: 20px; padding: 28px; background: #ffffff;">
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px;">
+        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Author Profile Details</h3>
+        <button type="button" class="close-btn" (click)="closeAuthorProfileModal()" style="border: none; background: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg lucideX aria-hidden="true"></svg></button>
+      </div>
+
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; align-items: center; gap: 16px; padding: 14px; background-color: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0;">
+          <img [src]="getAuthorAvatar(selectedAuthorForProfile())" [alt]="selectedAuthorForProfile()?.full_name" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2.5px solid #854d0e;" />
+          <div>
+            <h4 style="margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; color: #0f172a;">{{ selectedAuthorForProfile()?.full_name }}</h4>
+            <span style="font-size: 0.85rem; font-weight: 600; color: #854d0e; background-color: #fef3c7; padding: 2px 8px; border-radius: 6px;">Pen Name: {{ selectedAuthorForProfile()?.pen_name }}</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Email Address</span>
+            <strong style="font-size: 0.88rem; color: #0f172a; word-break: break-all;">{{ selectedAuthorForProfile()?.email }}</strong>
+          </div>
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Country / Region</span>
+            <strong style="font-size: 0.88rem; color: #0f172a;">{{ selectedAuthorForProfile()?.country || 'N/A' }}</strong>
+          </div>
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Account Status</span>
+            <span class="status-badge" [class]="getStatusClass(selectedAuthorForProfile()?.account_status || '')" style="margin-top: 4px; display: inline-block;">{{ selectedAuthorForProfile()?.account_status }}</span>
+          </div>
+          <div style="padding: 10px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Applied Date</span>
+            <strong style="font-size: 0.88rem; color: #0f172a;">{{ selectedAuthorForProfile()?.applied_date | date:'MMM d, y' }}</strong>
+          </div>
+        </div>
+
+        <div *ngIf="selectedAuthorForProfile()?.bio" style="padding: 12px 14px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;">
+          <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Author Bio</span>
+          <p style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.5;">{{ selectedAuthorForProfile()?.bio }}</p>
+        </div>
+
+        <div *ngIf="selectedAuthorForProfile()?.rejection_reason" style="padding: 12px 14px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;">
+          <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #991b1b; text-transform: uppercase; margin-bottom: 4px;">Latest Rejection Reason</span>
+          <p style="margin: 0; font-size: 0.88rem; color: #7f1d1d; line-height: 1.5;">{{ selectedAuthorForProfile()?.rejection_reason }}</p>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+        <button type="button" class="btn-cancel" (click)="closeAuthorProfileModal()" style="padding: 0.7rem 1.4rem; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; cursor: pointer;">Close</button>
+        <button type="button" *ngIf="selectedAuthorForProfile()?.account_status !== 'approved'" (click)="approveAuthor(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #166534; color: #ffffff; font-weight: 700; cursor: pointer;">Approve Author</button>
+        <button type="button" *ngIf="selectedAuthorForProfile()?.account_status === 'approved'" (click)="openRejectModal(selectedAuthorForProfile()!)" style="padding: 0.7rem 1.5rem; border-radius: 10px; border: none; background: #991b1b; color: #ffffff; font-weight: 700; cursor: pointer;">Deactivate / Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejection Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="authorToReject()" (click)="closeRejectModal()">
+    <div class="modal-card rejection-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="reject-modal-title">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-icon-badge danger">
+            <svg lucideAlertTriangle aria-hidden="true"></svg>
+          </div>
+          <div>
+            <h3 id="reject-modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Reject Author Application</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #64748b;">Please provide a mandatory reason for rejecting this author's application.</p>
+          </div>
+        </div>
+        <button type="button" class="close-btn" (click)="closeRejectModal()" [disabled]="isRejecting()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;"><svg lucideX aria-hidden="true"></svg></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="applicant-summary">
+          <img [src]="getAuthorAvatar(authorToReject())" [alt]="authorToReject()?.full_name" class="applicant-avatar" />
+          <div class="applicant-info">
+            <strong class="applicant-name">{{ authorToReject()?.full_name }}</strong>
+            <span class="applicant-meta">Pen Name: {{ authorToReject()?.pen_name }} • {{ authorToReject()?.email }}</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 16px;">
+          <div class="label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label for="rejection-reason-input" style="font-size: 0.86rem; font-weight: 700; color: #334155;">
+              Rejection Reason <span style="color: #dc2626;">*</span>
+            </label>
+            <span class="char-count" [class.limit-reached]="rejectionReason().length > 500" style="font-size: 0.75rem; color: #94a3b8;">
+              {{ rejectionReason().length }}/500
+            </span>
+          </div>
+
+          <textarea
+            id="rejection-reason-input"
+            class="rejection-textarea"
+            [ngModel]="rejectionReason()"
+            (ngModelChange)="onRejectionReasonChange($event)"
+            rows="4"
+            maxlength="500"
+            placeholder="Specify why this author application is being rejected (e.g. insufficient verification documents, identity mismatch)..."
+            [disabled]="isRejecting()"></textarea>
+
+          <div class="rejection-error-alert" *ngIf="rejectionError()">
+            <svg lucideAlertCircle style="width:16px;height:16px;flex-shrink:0" aria-hidden="true"></svg>
+            <span>{{ rejectionError() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeRejectModal()" [disabled]="isRejecting()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-confirm-reject"
+          id="confirm-reject-btn"
+          [disabled]="!rejectionReason().trim() || isRejecting()"
+          (click)="confirmRejectAuthor()">
+          <span *ngIf="!isRejecting()">Confirm Rejection</span>
+          <span *ngIf="isRejecting()">Rejecting...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

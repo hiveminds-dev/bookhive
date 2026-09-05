@@ -1,1 +1,79 @@
-<p>profile-books works!</p>
+<section class="profile-books">
+
+  <header class="section-header">
+
+    <div>
+      <p class="eyebrow">
+        Published Works
+      </p>
+
+      <h2>Author Books</h2>
+    </div>
+
+    <button
+      type="button"
+      class="view-all-button"
+      (click)="viewAllBooks()"
+    >
+      View All
+      <span aria-hidden="true">→</span>
+    </button>
+
+  </header>
+
+  <div class="books-grid">
+
+    @for (
+      book of books;
+      track book.id
+      ) {
+      <article
+        class="book-card"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="
+          'Open ' + book.title
+        "
+        (click)="openBook(book)"
+        (keydown.enter)="openBook(book)"
+      >
+
+        <img
+          class="book-cover"
+          [src]="book.cover"
+          [alt]="book.title + ' cover'"
+          (error)="handleImageError($event)"
+        >
+
+        <div class="book-details">
+
+          <span class="category">
+            {{ book.category }}
+          </span>
+
+          <h3>
+            {{ book.title }}
+          </h3>
+
+          <p class="published-date">
+            Published {{ book.publishedDate }}
+          </p>
+
+          <div class="rating">
+            <span aria-hidden="true" style="display: inline-flex; vertical-align: middle; color: #eab308;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </span>
+
+            <strong>
+              {{ book.rating }}
+            </strong>
+          </div>
+
+        </div>
+
+      </article>
+    }
+
+  </div>
+
+</section>

@@ -1,1 +1,111 @@
-<p>admin-layout works!</p>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/admin/dashboard">
+      <img src="assets/bookhive-logo.png" alt="BookHive logo">
+      <span>BookHive</span>
+    </a>
+
+    <div class="admin-profile">
+      <img src="images/author/profile/profile-placeholder.jpg" alt="Administrator profile">
+      <div>
+        <strong>{{ displayName() }}</strong>
+        <span [class.role-super-admin]="isSuperAdmin()">{{ roleLabel() }}</span>
+      </div>
+    </div>
+
+    <nav class="side-nav" aria-label="Admin navigation">
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <svg lucideLayoutDashboard aria-hidden="true"></svg>
+        Dashboard
+      </a>
+      <a routerLink="/admin/books" routerLinkActive="active">
+        <svg lucideBook aria-hidden="true"></svg>
+        Books
+      </a>
+      <a routerLink="/admin/categories" routerLinkActive="active">
+        <svg lucideList aria-hidden="true"></svg>
+        Categories
+      </a>
+      <a routerLink="/admin/authors" routerLinkActive="active">
+        <svg lucideUsers aria-hidden="true"></svg>
+        Authors
+      </a>
+      <a routerLink="/admin/community" routerLinkActive="active">
+        <svg lucideNetwork aria-hidden="true"></svg>
+        Community
+      </a>
+      <a routerLink="/admin/statistics" routerLinkActive="active">
+        <svg lucideBarChart2 aria-hidden="true"></svg>
+        Statistics
+      </a>
+
+      <!-- Super Admin only: Admin Governance -->
+      <a *ngIf="isSuperAdmin()" routerLink="/admin/admins" routerLinkActive="active" class="super-link">
+        <svg lucideShieldCheck aria-hidden="true"></svg>
+        Admin Governance
+        <span class="super-badge">SA</span>
+      </a>
+
+      <a routerLink="/admin/profile" routerLinkActive="active">
+        <svg lucideCircleUser aria-hidden="true"></svg>
+        Profile
+      </a>
+      <a routerLink="/admin/support" routerLinkActive="active">
+        <svg lucideHelpCircle aria-hidden="true"></svg>
+        Support
+      </a>
+      <button class="logout" type="button" (click)="promptLogout()">
+        <svg lucideLogOut aria-hidden="true"></svg>
+        Logout
+      </button>
+    </nav>
+
+    <div class="sidebar-action">
+      <a routerLink="/admin/books/upload" class="btn-publish">
+        <svg lucideSquarePlus aria-hidden="true"></svg>
+        Publish New Work
+      </a>
+    </div>
+  </aside>
+
+  <app-toast-container />
+
+  <app-confirmation-modal
+    *ngIf="showLogoutConfirmSignal()"
+    title="Sign Out of BookHive?"
+    message="Are you sure you want to end your administrator session?"
+    confirmText="Sign Out"
+    type="warning"
+    (confirm)="confirmLogout()"
+    (cancel)="cancelLogout()"
+  />
+  <section class="workspace">
+    <header class="topbar">
+      <label class="global-search">
+        <svg lucideSearch aria-hidden="true"></svg>
+        <input type="search" placeholder="Search authors, books, or records..." aria-label="Global search">
+      </label>
+
+      <div class="topbar-actions">
+        <a href="#">Guidelines</a>
+        <a href="#">Review Board</a>
+        <span class="separator"></span>
+        <button type="button" aria-label="Notifications">
+          <svg lucideBell aria-hidden="true"></svg>
+        </button>
+        <button type="button" aria-label="Applications">
+          <svg lucideGrid2X2 aria-hidden="true"></svg>
+        </button>
+        <img src="images/author/profile/profile-placeholder.jpg" alt="Admin">
+      </div>
+    </header>
+
+    <main class="content"><router-outlet /></main>
+
+    <footer class="admin-footer">
+      <div><strong>BookHive</strong><span>© 2026 BookHive. All rights reserved.</span></div>
+      <nav><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Intellectual Property</a><a href="#">Contact Support</a></nav>
+    </footer>
+  </section>
+</div>
+

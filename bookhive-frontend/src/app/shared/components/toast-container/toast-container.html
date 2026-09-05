@@ -1,0 +1,23 @@
+<div class="toast-wrapper" aria-live="polite" aria-atomic="true">
+  <div
+    *ngFor="let toast of toastService.toasts()"
+    class="toast-item"
+    [class]="'toast-' + toast.type"
+  >
+    <div class="icon-area">
+      <svg *ngIf="toast.type === 'success'" lucideCheckCircle2 aria-hidden="true"></svg>
+      <svg *ngIf="toast.type === 'error'" lucideAlertOctagon aria-hidden="true"></svg>
+      <svg *ngIf="toast.type === 'warning'" lucideAlertTriangle aria-hidden="true"></svg>
+      <svg *ngIf="toast.type === 'info'" lucideInfo aria-hidden="true"></svg>
+    </div>
+
+    <div class="content-area">
+      <strong *ngIf="toast.title" class="toast-title">{{ toast.title }}</strong>
+      <span class="toast-msg">{{ toast.message }}</span>
+    </div>
+
+    <button type="button" class="close-btn" (click)="toastService.remove(toast.id)" aria-label="Close alert">
+      <svg lucideX aria-hidden="true"></svg>
+    </button>
+  </div>
+</div>

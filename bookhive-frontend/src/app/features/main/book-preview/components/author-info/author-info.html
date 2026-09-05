@@ -1,1 +1,29 @@
-<p>author-info works!</p>
+<aside class="author-card">
+
+  <div class="author-image-wrapper">
+    @if (!imageLoadFailed && image) {
+      <img
+        class="author-image"
+        [src]="image"
+        [alt]="name"
+        (error)="onImageError()">
+    } @else {
+      <div class="author-placeholder" aria-hidden="true">
+        {{ name ? name.charAt(0).toUpperCase() : 'A' }}
+      </div>
+    }
+  </div>
+
+  <h3>{{ name }}</h3>
+
+  <p class="author-role">
+    {{ role }}
+  </p>
+
+  <span class="author-divider" aria-hidden="true"></span>
+
+  <p class="author-biography">
+    {{ biography }}
+  </p>
+
+</aside>

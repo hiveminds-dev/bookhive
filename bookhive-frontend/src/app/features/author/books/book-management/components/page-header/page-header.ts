@@ -1,9 +1,29 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  Input
+} from '@angular/core';
+
+import {
+  RouterLink,
+  RouterLinkActive
+} from '@angular/router';
 
 @Component({
-  selector: 'app-page-header',
-  imports: [],
+  selector: 'app-book-management-page-header',
+  standalone: true,
+  imports: [
+    RouterLink,
+    RouterLinkActive
+  ],
   templateUrl: './page-header.html',
-  styleUrl: './page-header.css',
+  styleUrl: './page-header.scss'
 })
-export class PageHeader {}
+export class PageHeaderComponent {
+
+  @Input() title = 'Book Management';
+
+  @Input() sectionTitle = 'My Books';
+
+  @Input() description =
+    `View, edit, and organize all the books you've uploaded.`;
+}

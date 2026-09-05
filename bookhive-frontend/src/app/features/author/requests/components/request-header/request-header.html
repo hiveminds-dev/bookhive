@@ -1,1 +1,43 @@
-<p>request-header works!</p>
+<header class="request-header">
+
+  <div class="header-copy">
+
+    <h1>Book Requests</h1>
+
+    <p>
+      Review and manage your pending book submissions.
+    </p>
+
+  </div>
+
+  <nav
+    class="management-tabs"
+    aria-label="Book management navigation">
+
+    <a
+      routerLink="/author/books"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{
+        exact: true
+      }">
+      My Books
+    </a>
+
+    <a
+      routerLink="/author/books/upload"
+      routerLinkActive="active">
+      Upload Book
+    </a>
+
+    <a
+      routerLink="/author/requests"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{
+        exact: true
+      }">
+      Requests
+    </a>
+
+  </nav>
+
+</header>

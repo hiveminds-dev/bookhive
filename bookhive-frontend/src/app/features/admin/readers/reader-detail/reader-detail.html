@@ -1,0 +1,130 @@
+<div class="admin-page reader-detail-page">
+  <header class="page-header">
+    <a routerLink="/admin/dashboard" class="back-link">← Back to Dashboard</a>
+    <h1>Reader Profile Details</h1>
+  </header>
+
+  <div *ngIf="loading()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Loading reader details...</p>
+  </div>
+
+  <div *ngIf="!loading() && !reader()" style="padding: 3rem; text-align: center; color: #64748b;">
+    <p>Reader not found.</p>
+    <a routerLink="/admin/dashboard" class="btn-secondary" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Return to Dashboard</a>
+  </div>
+
+  <div class="profile-grid" *ngIf="!loading() && reader()">
+    <!-- Left Column: User Card -->
+    <div class="user-card">
+      <div class="avatar-large">{{ getInitials(reader()?.full_name || '') }}</div>
+      <h2>{{ reader()?.full_name }}</h2>
+      <span class="role-badge">Reader</span>
+      <span class="status-badge" [class.active]="reader()?.account_status === 'active'">
+        {{ reader()?.account_status }}
+      </span>
+
+      <div class="info-list">
+        <div class="info-item"><span>Username</span><strong>{{ reader()?.username }}</strong></div>
+        <div class="info-item"><span>Email</span><strong>{{ reader()?.email }}</strong></div>
+        <div class="info-item">
+          <span>Email Verified</span>
+          <strong>{{ reader()?.email_verified ? 'Verified' : 'Unverified' }}</strong>
+        </div>
+        <div class="info-item"><span>Joined</span><strong>{{ reader()?.joined_at | date:'mediumDate' }}</strong></div>
+        <div class="info-item"><span>Location</span><strong>{{ reader()?.country || 'Not specified' }}</strong></div>
+      </div>
+
+      <div class="bio-box" *ngIf="reader()?.short_bio" style="margin-top: 1rem; padding: 0.8rem; background: #f8fafc; border-radius: 8px;">
+        <h4 style="margin: 0 0 0.4rem; font-size: 0.85rem; color: #64748b;">Bio</h4>
+        <p style="margin: 0; font-size: 0.9rem; color: #1e293b;">{{ reader()?.short_bio }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn-secondary" (click)="promptResetPassword()" [disabled]="isProcessing()">
+          Reset Password
+        </button>
+        <button *ngIf="reader()?.account_status === 'active'" type="button" class="btn-danger" (click)="promptSuspend()" [disabled]="isProcessing()">
+          Suspend Account
+        </button>
+        <button *ngIf="reader()?.account_status === 'suspended'" type="button" class="btn-primary" (click)="promptReactivate()" [disabled]="isProcessing()">
+          Reactivate Account
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column: Reading & Reviews Activity -->
+    <div class="activity-column">
+      <div class="stats-row">
+        <div class="stat-box">
+          <span>TOTAL REVIEWS</span>
+          <strong>{{ reader()?.review_count || 0 }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>ACCOUNT STATUS</span>
+          <strong style="text-transform: capitalize;">{{ reader()?.account_status }}</strong>
+        </div>
+        <div class="stat-box">
+          <span>VERIFICATION</span>
+          <strong>{{ reader()?.email_verified ? 'Verified' : 'Pending' }}</strong>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Reviews &amp; Reading Activity</h3>
+        <div class="history-list" *ngIf="(reader()?.reviews?.length || 0) > 0">
+          <div class="history-item" *ngFor="let item of reader()?.reviews">
+            <img *ngIf="item.book_cover_url" [src]="item.book_cover_url" [alt]="item.book_title" class="history-cover" />
+            <div *ngIf="!item.book_cover_url" style="width: 48px; height: 64px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; border-radius: 4px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </div>
+            <div class="history-info">
+              <strong>{{ item.book_title }}</strong>
+              <small>by {{ item.book_author }} · {{ item.created_at | date:'mediumDate' }}</small>
+              <p *ngIf="item.comment" style="margin: 4px 0 0; font-size: 0.85rem; color: #475569;">"{{ item.comment }}"</p>
+            </div>
+            <span class="status-pill" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="#eab308"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {{ item.rating }}/5
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="(reader()?.reviews?.length || 0) === 0" style="padding: 2rem; text-align: center; color: #94a3b8; font-style: italic;">
+          No reader reviews or activity recorded for this user yet.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showConfirmModal()">
+    <div class="modal-card">
+      <h3 *ngIf="confirmActionType() === 'suspend'">Suspend Reader Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reactivate'">Reactivate Reader Account?</h3>
+      <h3 *ngIf="confirmActionType() === 'reset-password'">Send Password Reset Email?</h3>
+
+      <p *ngIf="confirmActionType() === 'suspend'">
+        Are you sure you want to suspend <strong>{{ reader()?.full_name }}</strong>? The user will be immediately blocked from signing in or accessing reader services.
+      </p>
+      <p *ngIf="confirmActionType() === 'reactivate'">
+        Are you sure you want to reactivate <strong>{{ reader()?.full_name }}</strong>? Their account access will be restored immediately.
+      </p>
+      <p *ngIf="confirmActionType() === 'reset-password'">
+        A secure password reset link will be sent to <strong>{{ reader()?.email }}</strong>.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelConfirm()" [disabled]="isProcessing()">Cancel</button>
+        <button
+          type="button"
+          [class.btn-danger]="confirmActionType() === 'suspend'"
+          [class.btn-primary]="confirmActionType() === 'reactivate' || confirmActionType() === 'reset-password'"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          {{ isProcessing() ? 'Processing...' : (confirmActionType() === 'suspend' ? 'Confirm Suspension' : (confirmActionType() === 'reactivate' ? 'Confirm Reactivation' : 'Send Reset Email')) }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

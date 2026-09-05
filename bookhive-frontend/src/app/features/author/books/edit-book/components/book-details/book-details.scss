@@ -1,0 +1,144 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.book-details-card {
+  width: 100%;
+  padding: 47px;
+  border: 1px solid #efebe4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 7px 22px
+  rgba(43, 37, 22, 0.05);
+
+  > h2 {
+    margin: 29px 0 27px;
+    color: #4d4840;
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+.required-fields {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 95px;
+}
+
+.form-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+
+  label {
+    margin-bottom: 10px;
+    color: #575148;
+    font-size: 13px;
+    font-weight: 500;
+
+    span {
+      color: #e12626;
+    }
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    background: #f1f2f3;
+    color: #37332d;
+    font-family: inherit;
+    font-size: 13px;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: #b89a3e;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px
+      rgba(184, 154, 62, 0.11);
+    }
+
+    &.ng-touched.ng-invalid {
+      border-color: #d94444;
+    }
+  }
+
+  input {
+    padding: 0 16px;
+
+    &::placeholder {
+      color: #838995;
+    }
+  }
+
+  select {
+    padding: 0 48px 0 16px;
+    appearance: none;
+    cursor: pointer;
+  }
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 17px;
+  color: #5e5951;
+  font-size: 17px;
+  transform: translateY(-55%);
+  pointer-events: none;
+}
+
+.optional-field {
+  margin-top: 23px;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.error-message {
+  margin-top: 7px;
+  color: #c92d2d;
+  font-size: 10px;
+}
+
+.field-hint {
+  margin-top: 7px;
+  color: #8a847a;
+  font-size: 9px;
+}
+
+@media (max-width: 800px) {
+  .book-details-card {
+    padding: 32px 25px;
+  }
+
+  .required-fields {
+    grid-template-columns: 1fr;
+    gap: 23px;
+  }
+}
+
+@media (max-width: 450px) {
+  .book-details-card {
+    padding: 25px 17px;
+  }
+}

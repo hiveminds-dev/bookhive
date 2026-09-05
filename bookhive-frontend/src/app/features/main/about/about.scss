@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.about-page {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #292929;
+  background: #ffffff;
+  font-family: var(--font-sans);
+}
+
+.hero-wrapper {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 0 35px;
+}
+
+app-about-hero,
+app-our-story,
+app-our-mission,
+app-why-booklab,
+app-about-statistics,
+app-core-values,
+app-about-faq,
+app-about-cta {
+  display: block;
+}
+
+@media (max-width: 850px) {
+  .hero-wrapper {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-wrapper {
+    padding: 0 16px;
+  }
+}

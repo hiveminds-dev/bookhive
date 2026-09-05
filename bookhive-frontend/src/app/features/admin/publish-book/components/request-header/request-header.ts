@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-request-header',
   imports: [],
   templateUrl: './request-header.html',
-  styleUrl: './request-header.css',
+  styleUrl: './request-header.scss',
 })
 export class RequestHeader {}

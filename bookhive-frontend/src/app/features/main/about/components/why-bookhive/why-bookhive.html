@@ -1,0 +1,85 @@
+<section class="why-section">
+
+  <div class="why-content">
+
+    <h2>Why Choose HiveMinds</h2>
+
+    <div class="features-grid">
+
+      @for (
+        feature of features;
+        track feature.id
+        ) {
+        <article
+          class="feature-card"
+          [class.large]="
+            feature.size === 'large'
+          "
+        >
+          <span
+            class="feature-icon"
+            aria-hidden="true"
+          >
+            {{ feature.icon }}
+          </span>
+
+          <div class="feature-content">
+
+            <h3>
+              {{ feature.title }}
+            </h3>
+
+            <p>
+              {{ feature.description }}
+            </p>
+
+          </div>
+        </article>
+      }
+
+      <article class="security-card">
+
+        <div class="security-content">
+
+          <span
+            class="security-icon"
+            aria-hidden="true"
+          >
+            ♢
+          </span>
+
+          <div>
+            <h3>Secure Platform</h3>
+
+            <p>
+              Your data and intellectual property
+              are protected by state-of-the-art
+              encryption and blockchain-verified
+              ownership records.
+            </p>
+          </div>
+
+        </div>
+
+        <div
+          class="security-visual"
+          aria-hidden="true"
+        >
+          <div class="glow"></div>
+
+          <div class="security-ring outer-ring">
+            <div class="security-ring middle-ring">
+              <div class="security-ring inner-ring">
+                <span>▣</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>

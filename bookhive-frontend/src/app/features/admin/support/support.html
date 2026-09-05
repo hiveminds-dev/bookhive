@@ -1,0 +1,139 @@
+<div class="admin-master-container support-page">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Support</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <h1>Admin Support &amp; Help Center</h1>
+      <p>Get assistance, inspect system guides, or submit a priority support request.</p>
+    </div>
+  </header>
+
+  <!-- SEARCH & ADVANCE SEARCH BAR -->
+  <section class="admin-search-filter-section">
+    <div class="search-primary-row">
+      <div class="search-input-box">
+        <svg lucideSearch class="search-icon" aria-hidden="true"></svg>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search support topics, ticket IDs, or FAQ questions...">
+        <button type="button" class="btn-clear-search" *ngIf="searchQuery()" (click)="clearSearch()">
+          <svg lucideX aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-advance-toggle" [class.active]="showAdvanceSearch()" (click)="toggleAdvanceSearch()">
+        <svg lucideFilter aria-hidden="true"></svg>
+        <span>Advance Search</span>
+        <span class="filter-count-badge" *ngIf="filterCategory() || filterPriority()">!</span>
+      </button>
+    </div>
+
+    <!-- Advance Search Expandable Panel -->
+    <div class="advance-filter-panel" *ngIf="showAdvanceSearch()">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Topic Category</label>
+          <select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event)">
+            <option value="">All Categories</option>
+            <option value="Admin">System Administration</option>
+            <option value="Review">Book Review Workflow</option>
+            <option value="Author">Author Approvals</option>
+            <option value="Billing">Storage &amp; Server Health</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Ticket Priority</label>
+          <select [ngModel]="filterPriority()" (ngModelChange)="filterPriority.set($event)">
+            <option value="">All Priorities</option>
+            <option value="Urgent">Urgent / Critical</option>
+            <option value="High">High Priority</option>
+            <option value="Normal">Normal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions-row">
+        <button type="button" class="btn-reset-filter" (click)="resetFilters()">Reset Filters</button>
+        <button type="button" class="btn-apply-filter" (click)="applyFilters()">
+          <svg lucideCheck aria-hidden="true"></svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Cards -->
+  <section class="help-cards-grid">
+    <article class="help-card">
+      <div class="card-icon"><svg lucideMonitor aria-hidden="true"></svg></div>
+      <h3>System Administration</h3>
+      <p>Configure platform settings, storage limits, and security logs.</p>
+    </article>
+
+    <article class="help-card">
+      <div class="card-icon"><svg lucideBook aria-hidden="true"></svg></div>
+      <h3>Content Moderation</h3>
+      <p>Guide for approving, reviewing, and managing book manuscripts.</p>
+    </article>
+
+    <article class="help-card">
+      <div class="card-icon"><svg lucideUserPlus aria-hidden="true"></svg></div>
+      <h3>Author Onboarding</h3>
+      <p>Manage author verification requests and creator profiles.</p>
+    </article>
+  </section>
+
+  <div class="support-grid">
+    <!-- FAQ Section -->
+    <div class="faq-column">
+      <h2>Frequently Asked Questions</h2>
+      <div class="accordion-list">
+        <div class="empty-state" *ngIf="filteredFaqs.length === 0" style="padding: 1.5rem; color: #64748b;">No matching FAQ topics found.</div>
+        <div class="accordion-item" *ngFor="let item of filteredFaqs" [class.open]="item.isOpen">
+          <button type="button" class="accordion-header" (click)="toggleFAQ(item)">
+            <span>{{ item.question }}</span>
+            <span class="chevron">{{ item.isOpen ? '−' : '+' }}</span>
+          </button>
+          <div class="accordion-body" *ngIf="item.isOpen">
+            <p>{{ item.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket Form Column -->
+    <div class="ticket-column">
+      <div class="ticket-card">
+        <h2>Submit Support Ticket</h2>
+        <p>Need assistance from technical support? Send a ticket.</p>
+
+        <form (ngSubmit)="submitTicket()" class="ticket-form">
+          <div class="form-group">
+            <label>Subject *</label>
+            <input type="text" [(ngModel)]="ticketSubject" name="subject" placeholder="e.g. Storage sync delay" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label>Priority</label>
+            <select [(ngModel)]="ticketPriority" name="priority" class="form-control">
+              <option value="Low">Low Priority</option>
+              <option value="Medium">Medium Priority</option>
+              <option value="High">High Priority</option>
+              <option value="Urgent">Urgent / Critical</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea [(ngModel)]="ticketMessage" name="message" rows="4" placeholder="Describe the issue in detail..." class="form-control"></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Submit Support Ticket</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

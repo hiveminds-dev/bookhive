@@ -1,1 +1,90 @@
-<p>request-row works!</p>
+<article class="request-row">
+
+  <div
+    class="request-cell cover-cell"
+    data-label="Book Cover">
+
+    @if (!imageLoadFailed) {
+      <img
+        [src]="request.cover"
+        [alt]="request.title + ' cover'"
+        (error)="onImageError()">
+    } @else {
+      <span
+        class="cover-placeholder"
+        aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+      </span>
+    }
+
+  </div>
+
+  <div
+    class="request-cell title-cell"
+    data-label="Book Title">
+
+    <strong>{{ request.title }}</strong>
+
+    <small>
+      ISBN: {{ request.isbn }}
+    </small>
+
+  </div>
+
+  <div
+    class="request-cell date-cell"
+    data-label="Submission Date">
+
+    <span>{{ request.submissionDate }}</span>
+
+  </div>
+
+  <div
+    class="request-cell status-cell"
+    data-label="Status">
+
+    <span
+      class="status-badge"
+      [class]="statusClass">
+
+      @if (request.status === 'Pending') {
+        Pending Review
+      } @else {
+        {{ request.status }}
+      }
+
+    </span>
+
+  </div>
+
+  <div
+    class="request-cell feedback-cell"
+    [class.rejected-feedback]="
+      request.status === 'Rejected'
+    "
+    data-label="Admin Feedback">
+
+    <span>{{ request.adminFeedback }}</span>
+
+  </div>
+
+  <div
+    class="request-cell action-cell"
+    data-label="Actions">
+
+    <button
+      type="button"
+      [class.view-book]="
+        request.status === 'Approved'
+      "
+      [class.resubmit]="
+        request.status === 'Rejected'
+      "
+      (click)="onAction()">
+
+      {{ actionLabel }}
+    </button>
+
+  </div>
+
+</article>

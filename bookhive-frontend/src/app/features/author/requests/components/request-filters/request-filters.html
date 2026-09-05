@@ -1,1 +1,73 @@
-<p>request-filters works!</p>
+<section class="request-filters">
+
+  <div class="filter-controls">
+
+    <strong class="filter-label">
+      Filter By
+    </strong>
+
+    <div
+      class="status-buttons"
+      aria-label="Filter book requests">
+
+      @for (
+        status of statuses;
+        track status
+        ) {
+
+        <button
+          type="button"
+          [class.active]="
+            selectedStatus === status
+          "
+          (click)="selectStatus(status)">
+
+          {{ status }}
+        </button>
+
+      }
+
+    </div>
+
+    <span
+      class="controls-divider"
+      aria-hidden="true">
+    </span>
+
+    <div class="sort-wrapper">
+
+      <select
+        [(ngModel)]="selectedSort"
+        (ngModelChange)="onSortChanged()"
+        aria-label="Sort book requests">
+
+        <option value="newest">
+          Newest
+        </option>
+
+        <option value="oldest">
+          Oldest
+        </option>
+
+        <option value="title">
+          Book Title
+        </option>
+
+      </select>
+
+      <span
+        class="sort-arrow"
+        aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </span>
+
+    </div>
+
+  </div>
+
+  <p class="request-count">
+    Showing {{ showingFrom }}–{{ showingTo }}
+    of {{ totalRequests }} requests
+  </p>
+
+</section>

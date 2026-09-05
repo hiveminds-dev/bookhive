@@ -1,1 +1,157 @@
-<p>book-reader works!</p>
+<main class="book-reader-page">
+
+  <header class="reader-book-header">
+
+    <div class="header-container">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToLibrary()">
+
+        <span aria-hidden="true">‹</span>
+        Back to Library
+      </button>
+
+      @if (book) {
+        <div
+          class="header-book-cover"
+          aria-hidden="true">
+          <span>▤</span>
+        </div>
+
+        <div class="header-book-details">
+          <h1>{{ book.title }}</h1>
+          <p>By {{ book.author }}</p>
+        </div>
+
+        <div class="header-tags">
+          <span>{{ book.category }}</span>
+          <span>{{ book.language }}</span>
+        </div>
+      }
+
+    </div>
+
+  </header>
+
+  @if (isLoading) {
+
+    <div class="reader-loading" role="status" aria-live="polite">
+      <div class="loading-spinner"></div>
+      <p>Loading your book...</p>
+    </div>
+
+  } @else if (notFound) {
+
+    <div class="reader-error-state not-found" role="alert">
+      <div class="reader-error-icon" aria-hidden="true">📖</div>
+      <h2>Book Not Found</h2>
+      <p>{{ errorMessage || 'The requested book does not exist or is no longer available.' }}</p>
+      <div class="reader-error-actions">
+        <button type="button" class="btn-primary" (click)="backToLibrary()">Back to Library</button>
+      </div>
+    </div>
+
+  } @else if (hasServerError) {
+
+    <div class="reader-error-state server-error" role="alert">
+      <div class="reader-error-icon" aria-hidden="true">⚠️</div>
+      <h2>Unable to Load Reader</h2>
+      <p>{{ errorMessage || 'A connection error occurred while loading this book.' }}</p>
+      <div class="reader-error-actions">
+        <button type="button" class="btn-secondary" (click)="retry()">Try Again</button>
+        <button type="button" class="btn-primary" (click)="backToLibrary()">Back to Library</button>
+      </div>
+    </div>
+
+  } @else if (book) {
+
+    <section class="reader-workspace">
+
+      <div class="reader-grid">
+
+        <!-- LEFT: Book cover and details -->
+
+        <div class="reader-left">
+
+          <app-reader-sidebar
+            [bookTitle]="book.title"
+            [cover]="book.cover"
+            [totalPages]="book.totalPages ?? 0"
+            [rating]="book.rating"
+            [currentPage]="currentPage"
+            [chapters]="chapters"
+            (chapterSelected)="selectChapter($event)">
+          </app-reader-sidebar>
+
+        </div>
+
+        <!-- CENTER: Reader toolbar and content -->
+
+        <div class="reader-center">
+
+          <app-reader-toolbar
+            [zoomLevel]="zoomLevel"
+            [currentPage]="currentPage"
+            [totalPages]="book.totalPages ?? 0"
+            [bookmarked]="bookmarked"
+            (zoomIn)="zoomIn()"
+            (zoomOut)="zoomOut()"
+            (previousPage)="previousPage()"
+            (nextPage)="nextPage()"
+            (bookmarkChanged)="onBookmarkChanged($event)"
+            (download)="downloadBook()"
+            (fullscreen)="openFullscreen()">
+          </app-reader-toolbar>
+
+          @if (pdfViewerUrl) {
+            <div class="reader-pdf-container">
+              <iframe
+                [src]="pdfViewerUrl"
+                class="reader-pdf-iframe"
+                title="Manuscript PDF Viewer">
+              </iframe>
+            </div>
+          } @else {
+            <div class="reader-content-unavailable" role="status">
+              <div class="unavailable-icon" aria-hidden="true">📄</div>
+              <h3>Reader Content Unavailable</h3>
+              <p>A digital manuscript PDF is not available for this book at this time.</p>
+              <button type="button" class="btn-primary" (click)="backToLibrary()">Back to Library</button>
+            </div>
+          }
+
+        </div>
+
+        <!-- RIGHT: Quick actions and saved page number -->
+
+        <div class="reader-right">
+
+          <app-reader-settings
+            [currentPage]="currentPage"
+            [totalPages]="book.totalPages ?? 0"
+            (pageSelected)="goToPage($event)"
+            (shareExcerpt)="shareExcerpt()"
+            (reportIssue)="reportIssue()">
+          </app-reader-settings>
+
+        </div>
+
+      </div>
+
+      <!-- Reading progress -->
+
+      @if (book.pdfUrl) {
+        <app-page-navigation
+          [currentPage]="currentPage"
+          [totalPages]="book.totalPages ?? 0"
+          [secondsRemaining]="secondsRemaining">
+        </app-page-navigation>
+      }
+
+    </section>
+
+  }
+
+</main>

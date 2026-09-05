@@ -1,0 +1,459 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  background-color: #ffffff;
+}
+
+.curated-grid-section {
+  padding: 44px 24px 36px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0ece1;
+}
+
+.curated-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.45fr 0.95fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+}
+
+.curated-card {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* 1. Real Highlighted Book Card */
+.book-highlight-card {
+  grid-column: 1;
+  grid-row: 1;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+
+  &:hover {
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09);
+    border-color: #cbd5e1;
+  }
+
+  .card-image-col {
+    position: relative;
+    background: #f8fafc;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 3 / 4;
+    min-height: 220px;
+    box-shadow: inset -3px 0 8px rgba(0, 0, 0, 0.04);
+
+    .feature-book-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .book-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      color: #78350f;
+      text-align: center;
+
+      .book-placeholder-icon {
+        width: 42px;
+        height: 42px;
+        margin-bottom: 10px;
+        color: #854d0e;
+      }
+
+      span {
+        font-family: var(--font-serif);
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+    }
+  }
+
+  &:hover .card-image-col .feature-book-img {
+    transform: scale(1.03);
+  }
+
+  .card-text-col {
+    padding: 28px 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .card-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #92400e;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .card-heading {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1c1917;
+      margin: 0 0 4px;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .card-author-line {
+      font-size: 0.85rem;
+      color: #78716c;
+      margin: 0 0 10px;
+      font-weight: 600;
+    }
+
+    .card-summary {
+      font-size: 0.85rem;
+      color: #57534e;
+      line-height: 1.5;
+      margin: 0 0 16px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
+    .card-action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #854d0e;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: gap 0.2s ease, color 0.2s ease;
+
+      .link-arrow {
+        width: 15px;
+        height: 15px;
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        gap: 9px;
+        color: #713f12;
+
+        .link-arrow {
+          transform: translateX(3px);
+        }
+      }
+    }
+  }
+}
+
+/* 2. Real Category Highlight Card */
+.category-highlight-card {
+  grid-column: 2;
+  grid-row: 1;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #fde68a 100%);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(180, 83, 9, 0.07);
+
+  &:hover {
+    box-shadow: 0 12px 32px rgba(180, 83, 9, 0.13);
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+
+  .highlight-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(180, 83, 9, 0.08);
+
+    .highlight-svg {
+      width: 20px;
+      height: 20px;
+      color: #92400e;
+    }
+  }
+
+  .highlight-body {
+    flex: 1;
+
+    .highlight-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #78350f;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .highlight-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1c1917;
+      margin: 0 0 6px;
+    }
+
+    .highlight-description {
+      font-size: 0.85rem;
+      color: #451a03;
+      line-height: 1.45;
+      margin: 0 0 16px;
+    }
+  }
+
+  .highlight-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #78350f;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: gap 0.2s ease, color 0.2s ease;
+
+    .link-arrow {
+      width: 15px;
+      height: 15px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      color: #451a03;
+      gap: 9px;
+
+      .link-arrow {
+        transform: translateX(3px);
+      }
+    }
+  }
+}
+
+/* 3. Value Proposition Card */
+.value-stat-card {
+  grid-column: 1;
+  grid-row: 2;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+
+  &:hover {
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09);
+    border-color: #cbd5e1;
+  }
+
+  .value-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #fef3c7;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+
+    .stat-icon {
+      width: 20px;
+      height: 20px;
+      color: #92400e;
+    }
+  }
+
+  .value-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #1c1917;
+    margin: 0 0 6px;
+  }
+
+  .value-card-text {
+    font-size: 0.85rem;
+    color: #57534e;
+    line-height: 1.5;
+    margin: 0 0 16px;
+    flex: 1;
+  }
+
+  .value-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #854d0e;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: gap 0.2s ease, color 0.2s ease;
+
+    .link-arrow {
+      width: 15px;
+      height: 15px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      color: #713f12;
+      gap: 9px;
+
+      .link-arrow {
+        transform: translateX(3px);
+      }
+    }
+  }
+}
+
+/* 4. Community Spotlight Card */
+.author-spotlight-card {
+  grid-column: 2;
+  grid-row: 2;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 26px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+
+  &:hover {
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    border-color: #cbd5e1;
+  }
+
+  .author-avatar-col {
+    flex-shrink: 0;
+
+    .community-avatar-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+
+      .author-box-icon {
+        width: 24px;
+        height: 24px;
+        color: #854d0e;
+      }
+    }
+  }
+
+  .author-details-col {
+    flex: 1;
+
+    .spotlight-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .author-name {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 4px;
+      line-height: 1.3;
+    }
+
+    .author-quote {
+      font-size: 0.82rem;
+      color: #475569;
+      line-height: 1.45;
+      margin: 0 0 12px;
+    }
+
+    .author-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .author-pill {
+        display: inline-block;
+        padding: 4px 10px;
+        background: #ffffff;
+        border-radius: 999px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #334155;
+        text-decoration: none;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: #fdf8e6;
+          border-color: #fde68a;
+          color: #92400e;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .curated-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .book-highlight-card,
+  .category-highlight-card,
+  .value-stat-card,
+  .author-spotlight-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .book-highlight-card {
+    grid-template-columns: 1fr;
+  }
+}

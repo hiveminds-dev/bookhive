@@ -1,1 +1,231 @@
-<p>book-preview works!</p>
+<main class="preview-page">
+
+  <div class="preview-container">
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span>›</span>
+
+      <a routerLink="/explore">Explore Library</a>
+      <span>›</span>
+
+      <span class="current">{{ book ? book.title : 'Book Preview' }}</span>
+    </nav>
+
+    @if (isLoading) {
+
+      <div class="loading-state" role="status" aria-live="polite">
+        <div class="loading-cover shimmer"></div>
+
+        <div class="loading-details">
+          <span class="loading-line short shimmer"></span>
+          <span class="loading-line title shimmer"></span>
+          <span class="loading-line medium shimmer"></span>
+          <span class="loading-line long shimmer"></span>
+        </div>
+      </div>
+
+    } @else if (notFound) {
+
+      <div class="error-card not-found-state" role="alert">
+        <div class="error-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        </div>
+        <h2>Book Not Found</h2>
+        <p>{{ errorMessage || 'The book you are looking for does not exist or has been removed.' }}</p>
+        <div class="error-actions">
+          <a routerLink="/explore" class="btn-primary">Back to Explore</a>
+        </div>
+      </div>
+
+    } @else if (hasServerError) {
+
+      <div class="error-card server-error-state" role="alert">
+        <div class="error-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#dc2626" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h2>Unable to Load Book</h2>
+        <p>{{ errorMessage || 'An unexpected error occurred while loading this book.' }}</p>
+        <div class="error-actions">
+          <button type="button" class="btn-secondary" (click)="retry()">Try Again</button>
+          <a routerLink="/explore" class="btn-primary">Back to Explore</a>
+        </div>
+      </div>
+
+    } @else if (book) {
+
+      <section class="book-hero">
+
+        <div class="cover-column">
+          <app-book-cover
+            [title]="book.title"
+            [cover]="book.cover"
+            [badge]="book.badge">
+          </app-book-cover>
+        </div>
+
+        <div class="hero-content">
+
+          <app-book-header
+            [category]="book.category"
+            [title]="book.title"
+            [author]="book.author"
+            [language]="book.language">
+          </app-book-header>
+
+          <app-book-info
+            [rating]="book.rating"
+            [reviews]="book.reviewsCount"
+            [pages]="book.pages"
+            [readingTime]="book.readingTime">
+          </app-book-info>
+
+          <app-book-actions
+            [canDownload]="book.canDownload"
+            (readBook)="onReadBook()"
+            (downloadBook)="onDownloadBook()">
+          </app-book-actions>
+
+        </div>
+
+      </section>
+
+      <section class="details-layout">
+
+        <div class="main-details">
+
+          <app-book-description
+            title="Abstract"
+            [paragraphs]="book.description">
+          </app-book-description>
+
+          <app-reviews
+            [reviews]="readerReviews"
+            [currentUserId]="currentUserId"
+            [hasUserReviewed]="hasUserReviewed"
+            (writeReview)="onWriteReview()"
+            (editReview)="openEditReview($event)"
+            (deleteReview)="openDeleteReview($event)">
+          </app-reviews>
+
+        </div>
+
+        <div class="author-column">
+          <app-author-info
+            [name]="book.authorInfo.name"
+            [role]="book.authorInfo.role"
+            [image]="book.authorInfo.image"
+            [biography]="book.authorInfo.biography">
+          </app-author-info>
+        </div>
+
+      </section>
+
+      <section class="related-wrapper">
+        <app-related-books
+          [books]="relatedBooks"
+          (bookSelected)="onRelatedBookSelected($event)">
+        </app-related-books>
+      </section>
+
+    }
+
+  </div>
+
+  <!-- Review Modal -->
+  @if (showReviewModal) {
+    <div class="modal-backdrop" (click)="closeReviewModal()">
+      <div class="modal-dialog review-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2>{{ isEditingReview ? 'Edit Your Review' : 'Write a Review' }}</h2>
+          <button type="button" class="close-btn" (click)="closeReviewModal()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          @if (reviewFormError) {
+            <div class="alert alert-error" role="alert">
+              {{ reviewFormError }}
+            </div>
+          }
+
+          <div class="form-group">
+            <label class="form-label">Your Rating</label>
+            <div class="star-rating-picker" role="radiogroup" aria-label="Rating">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <button
+                  type="button"
+                  class="star-btn"
+                  [class.active]="star <= reviewRating"
+                  (click)="setReviewRating(star)"
+                  [title]="star + ' star' + (star > 1 ? 's' : '')">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+              }
+              <span class="rating-label">{{ reviewRating }} out of 5 stars</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="review-comment">Review Comment</label>
+            <textarea
+              id="review-comment"
+              class="form-textarea"
+              rows="4"
+              maxlength="2000"
+              [(ngModel)]="reviewComment"
+              placeholder="Share your thoughts about this book...">
+            </textarea>
+            <span class="char-counter">{{ reviewComment.length }} / 2000 characters</span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeReviewModal()" [disabled]="isSubmittingReview">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-submit"
+            (click)="submitReviewModal()"
+            [disabled]="isSubmittingReview">
+            {{ isSubmittingReview ? 'Submitting...' : (isEditingReview ? 'Save Changes' : 'Submit Review') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteConfirmModal) {
+    <div class="modal-backdrop" (click)="closeDeleteConfirmModal()">
+      <div class="modal-dialog delete-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2>Delete Review</h2>
+          <button type="button" class="close-btn" (click)="closeDeleteConfirmModal()" aria-label="Close modal" style="display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p>Are you sure you want to delete your review? This action cannot be undone.</p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeDeleteConfirmModal()" [disabled]="isDeletingReview">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-danger"
+            (click)="confirmDeleteReview()"
+            [disabled]="isDeletingReview">
+            {{ isDeletingReview ? 'Deleting...' : 'Delete Review' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</main>

@@ -1,1 +1,28 @@
-<p>requests works!</p>
+<main class="requests-page">
+
+  <app-author-request-header />
+
+  <app-author-request-filters
+    [showingFrom]="showingFrom"
+    [showingTo]="showingTo"
+    [totalRequests]="displayedTotalRequests"
+    (statusChanged)="onStatusChanged($event)"
+    (sortChanged)="onSortChanged($event)"
+  />
+
+  <app-author-request-table
+    [requests]="paginatedRequests"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (pageChanged)="onPageChanged($event)"
+    (actionSelected)="onRequestAction($event)"
+  />
+
+</main>
+
+@if (selectedRequest) {
+  <app-author-request-details
+    [request]="selectedRequest"
+    (closed)="closeRequestDetails()"
+  />
+}

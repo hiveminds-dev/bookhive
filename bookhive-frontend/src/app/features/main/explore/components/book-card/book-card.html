@@ -1,1 +1,84 @@
-<p>book-card works!</p>
+<article class="book-card">
+
+  <div class="cover-wrapper">
+    @if (book.badge) {
+      <span
+        class="book-badge"
+        [class.free-badge]="book.badge.toLowerCase() === 'free'">
+        {{ book.badge }}
+      </span>
+    }
+
+    @if (!imageLoadFailed) {
+      <img
+        class="book-cover"
+        [src]="book.cover"
+        [alt]="book.title + ' book cover'"
+        (error)="onImageError()">
+    } @else {
+      <div class="cover-placeholder">
+        <span>📖</span>
+        <p>{{ book.title }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="book-content">
+
+    <p class="book-meta">
+      {{ book.category }}
+      <span>•</span>
+      {{ book.language }}
+    </p>
+
+    <h3>{{ book.title }}</h3>
+
+    <p class="author">
+      By {{ book.author }}
+    </p>
+
+    <div class="book-details">
+      @if (book.rating !== undefined && book.rating !== null && book.reviews !== undefined && book.reviews !== null && book.reviews > 0) {
+        <div class="rating">
+          <span class="star">★</span>
+          <strong>{{ book.rating.toFixed(1) }}</strong>
+          <span>({{ book.reviews }})</span>
+        </div>
+      } @else {
+        <div class="rating unrated">
+          <span class="star unrated-star">★</span>
+          <span class="unrated-text">Not rated</span>
+        </div>
+      }
+
+      @if (book.pages && book.pages > 0) {
+        <span class="detail-divider">•</span>
+        <span>{{ book.pages }} {{ book.pages === 1 ? 'Page' : 'Pages' }}</span>
+      }
+    </div>
+
+    <p class="description">
+      {{ book.description }}
+    </p>
+
+    <div class="card-actions">
+      <button
+        type="button"
+        class="read-button"
+        (click)="onReadNow()">
+        <span aria-hidden="true">▣</span>
+        Read Now
+      </button>
+
+      <button
+        type="button"
+        class="preview-button"
+        (click)="onPreview()">
+        <span aria-hidden="true">▦</span>
+        Preview
+      </button>
+    </div>
+
+  </div>
+
+</article>

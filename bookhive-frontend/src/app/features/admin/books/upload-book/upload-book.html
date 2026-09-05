@@ -1,0 +1,187 @@
+<div class="admin-master-container upload-books-page">
+  <nav class="admin-breadcrumb">
+    <a routerLink="/admin/dashboard">Admin</a>
+    <span class="sep">/</span>
+    <a routerLink="/admin/books">Books</a>
+    <span class="sep">/</span>
+    <span class="current">Upload</span>
+  </nav>
+
+  <header class="admin-page-header">
+    <div class="header-titles">
+      <h1>Upload New Manuscript</h1>
+      <p>Upload book files, set category parameters, and submit for editorial review.</p>
+    </div>
+  </header>
+
+  <form (ngSubmit)="submitForReview()" #uploadForm="ngForm">
+    <!-- Card 1: Basic Information -->
+    <section class="form-card">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="bookTitle">Book Title <span class="required">*</span></label>
+          <input
+            id="bookTitle"
+            type="text"
+            placeholder="Enter book title"
+            [(ngModel)]="bookTitle"
+            name="bookTitle"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="authorName">Author Name <span class="required">*</span></label>
+          <input
+            id="authorName"
+            type="text"
+            placeholder="Author name"
+            [(ngModel)]="authorName"
+            name="authorName"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="form-group margin-top">
+        <label for="description">Short Description (Max 500 characters) <span class="required">*</span></label>
+        <textarea
+          id="description"
+          placeholder="Tell readers what your book is about..."
+          [(ngModel)]="description"
+          name="description"
+          maxlength="500"
+          rows="4"
+          required
+        ></textarea>
+        <span class="char-count">{{ charCount }}/500</span>
+      </div>
+
+      <div class="form-group margin-top">
+        <label for="category">Categories <span class="required">*</span></label>
+        <select id="category" [(ngModel)]="selectedCategory" name="selectedCategory" required>
+          <option value="" disabled selected>Search categories...</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Card 2: File Uploads -->
+    <section class="form-grid-2 margin-top-card">
+      <div class="form-card dropzone-card">
+        <div class="dropzone-header">
+          <svg class="header-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <label>Book File <span class="required">*</span></label>
+        </div>
+
+        <div class="dropzone-box" (click)="fileInput.click()">
+          <input #fileInput type="file" accept=".pdf,.epub" (change)="onFileSelected($event, 'file')" hidden>
+          <div class="dropzone-content">
+            <svg class="cloud-icon" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 13 12 8 10 10" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="8" x2="14" y2="10" stroke="currentColor" stroke-width="1.8"/></svg>
+            <p *ngIf="!selectedBookFileName()">
+              Drag &amp; drop or <span class="browse-link">browse</span>
+            </p>
+            <p *ngIf="selectedBookFileName()" class="selected-file-name">
+              <strong>{{ selectedBookFileName() }}</strong>
+            </p>
+            <span class="file-hint">PDF, EPUB (Max 100MB)</span>
+          </div>
+        </div>
+
+        <div *ngIf="detectedPageCountSignal()" class="pdf-analysis-pill" style="margin-top: 12px; padding: 10px 14px; background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; font-size: 13px; color: #854d0e; display: flex; align-items: center; gap: 8px;">
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <svg style="width:16px;height:16px;flex-shrink:0;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            <strong>{{ detectedPageCountSignal() }} Pages</strong> auto-detected
+          </span>
+          <span style="opacity: 0.4;">•</span>
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <svg style="width:16px;height:16px;flex-shrink:0;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            Estimated Reading Time: <strong>{{ estimatedReadingTimeSignal() }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="form-card dropzone-card">
+        <div class="dropzone-header">
+          <svg class="header-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <label>Book Cover <span class="required">*</span></label>
+        </div>
+
+        <div class="dropzone-box" (click)="coverInput.click()">
+          <input #coverInput type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event, 'cover')" hidden>
+          <div class="dropzone-content">
+            <svg class="image-icon" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            <p *ngIf="!selectedCoverFileName()">
+              <span class="browse-link">Upload Cover Image</span>
+            </p>
+            <p *ngIf="selectedCoverFileName()" class="selected-file-name">
+              <strong>{{ selectedCoverFileName() }}</strong>
+            </p>
+            <span class="file-hint">PNG, JPG (Max 10MB)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card 3: Specifications & Optional Details -->
+    <section class="form-card margin-top-card">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="language">Language <span class="required">*</span></label>
+          <select id="language" [(ngModel)]="selectedLanguage" name="selectedLanguage">
+            <option *ngFor="let lang of languages" [value]="lang">{{ lang }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="readingLevel">Reading Level <span class="required">*</span></label>
+          <select id="readingLevel" [(ngModel)]="readingLevel" name="readingLevel">
+            <option *ngFor="let lvl of readingLevels" [value]="lvl">{{ lvl }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="optional-section margin-top">
+        <h3 class="optional-title">Optional</h3>
+
+        <div class="form-group margin-top-small">
+          <label for="isbn">ISBN</label>
+          <input
+            id="isbn"
+            type="text"
+            placeholder="Enter ISBN"
+            [(ngModel)]="isbn"
+            name="isbn"
+          >
+        </div>
+
+        <div class="form-group margin-top-small">
+          <label for="tags">Tags</label>
+          <input
+            id="tags"
+            type="text"
+            placeholder="Add tags (press Enter)"
+            [(ngModel)]="tagInput"
+            name="tagInput"
+            (keydown.enter)="$event.preventDefault(); addTag()"
+          >
+          <div class="tags-container" *ngIf="tagsSignal().length > 0">
+            <span class="tag-pill" *ngFor="let tag of tagsSignal()">
+              {{ tag }}
+              <button type="button" class="remove-tag-btn" (click)="removeTag(tag)">&times;</button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Bottom Action Buttons -->
+    <footer class="form-actions-bar">
+      <button type="button" class="btn-draft" (click)="saveDraft()">Save Draft</button>
+      <button type="submit" class="btn-submit">
+        <svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3M15 12l-3-3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 15l3-3 6 6-3 3-6-6zM15 12l3-3 4 1-1 4-3-3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Submit for review
+      </button>
+    </footer>
+  </form>
+</div>

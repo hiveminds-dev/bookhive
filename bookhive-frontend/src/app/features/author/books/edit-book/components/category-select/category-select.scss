@@ -1,0 +1,105 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.category-section {
+  width: 100%;
+  padding: 0 47px 47px;
+  border-right: 1px solid #efebe4;
+  border-bottom: 1px solid #efebe4;
+  border-left: 1px solid #efebe4;
+  border-radius: 0 0 12px 12px;
+  background: #ffffff;
+  box-shadow: 0 7px 22px
+  rgba(43, 37, 22, 0.05);
+}
+
+.category-field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  label {
+    margin-bottom: 10px;
+    color: #575148;
+    font-size: 13px;
+    font-weight: 500;
+
+    span {
+      color: #e12626;
+    }
+  }
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+
+  select {
+    width: 100%;
+    height: 48px;
+    padding: 0 48px 0 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    appearance: none;
+    background: #f1f2f3;
+    color: #37332d;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:invalid {
+      color: #838995;
+    }
+
+    &:focus {
+      border-color: #b89a3e;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px
+      rgba(184, 154, 62, 0.11);
+    }
+
+    &.ng-touched.ng-invalid {
+      border-color: #d94444;
+    }
+  }
+}
+
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 17px;
+  color: #554f46;
+  font-size: 17px;
+  transform: translateY(-55%);
+  pointer-events: none;
+}
+
+.error-message {
+  margin-top: 7px;
+  color: #c92d2d;
+  font-size: 10px;
+}
+
+@media (max-width: 750px) {
+  .category-section {
+    padding: 0 24px 30px;
+  }
+}
+
+@media (max-width: 450px) {
+  .category-section {
+    padding: 0 17px 24px;
+  }
+}

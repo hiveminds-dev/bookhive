@@ -1,1 +1,69 @@
-<p>recent-reviews works!</p>
+<section class="recent-reviews-card">
+
+  <header class="card-header">
+
+    <h2>Recent Reviews</h2>
+
+    <div class="average-rating">
+      <span aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </span>
+      {{ averageRating.toFixed(1) }} Avg Rating
+    </div>
+
+  </header>
+
+  <div class="header-line" aria-hidden="true"></div>
+
+  <div class="reviews-list">
+
+    @for (review of reviews; track review.id) {
+
+      <article class="review-item">
+
+        <div class="review-top">
+
+          <div class="reader">
+
+            <span class="reader-avatar">
+              {{ review.readerInitials }}
+            </span>
+
+            <strong>{{ review.readerName }}</strong>
+
+          </div>
+
+          <div
+            class="review-stars"
+            [attr.aria-label]="review.rating + ' out of 5 stars'">
+
+            @for (star of stars; track star) {
+              <span
+                [class.inactive]="star > review.rating"
+                aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </span>
+            }
+
+          </div>
+
+        </div>
+
+        <p>
+          “{{ review.comment }}”
+        </p>
+
+      </article>
+
+    } @empty {
+
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#94a3b8" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <p>No reviews have been received yet.</p>
+      </div>
+
+    }
+
+  </div>
+
+</section>

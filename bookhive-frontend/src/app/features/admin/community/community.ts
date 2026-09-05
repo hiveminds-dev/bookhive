@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { LucideUsers } from '@lucide/angular';
 
 @Component({
   selector: 'app-community',
-  imports: [],
+  standalone: true,
+  imports: [RouterLink, LucideUsers],
   templateUrl: './community.html',
-  styleUrl: './community.css',
+  styleUrl: './community.scss',
 })
 export class Community {}

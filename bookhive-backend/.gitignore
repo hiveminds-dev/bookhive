@@ -10,7 +10,4 @@ htmlcov/
 .DS_Store
 *.log
 
-storage/books/*
-storage/covers/*
-!storage/books/.gitkeep
-!storage/covers/.gitkeep
+storage/*.zip

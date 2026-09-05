@@ -1,1 +1,50 @@
-<p>related-books works!</p>
+<section class="related-section">
+
+  <div class="section-heading">
+    <h2>Related Books</h2>
+    <span class="title-line" aria-hidden="true"></span>
+  </div>
+
+  <div class="related-books">
+
+    @for (book of books; track book.id) {
+      <button
+        type="button"
+        class="related-card"
+        (click)="selectBook(book)">
+
+        <div class="cover-wrapper">
+
+          @if (!imageHasFailed(book.id)) {
+            <img
+              [src]="book.cover"
+              [alt]="book.title + ' book cover'"
+              (error)="onImageError(book.id)">
+          } @else {
+            <div class="cover-placeholder">
+              <span>📖</span>
+            </div>
+          }
+
+        </div>
+
+        <div class="book-details">
+          <h3>{{ book.title }}</h3>
+          <p>{{ book.author }}</p>
+
+          <span class="rating">
+            <span aria-hidden="true">★</span>
+            {{ book.rating.toFixed(1) }}
+          </span>
+        </div>
+
+      </button>
+    } @empty {
+      <div class="empty-related">
+        No related books are currently available.
+      </div>
+    }
+
+  </div>
+
+</section>

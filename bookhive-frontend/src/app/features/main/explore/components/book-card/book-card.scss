@@ -1,0 +1,249 @@
+:host {
+  display: block;
+  min-width: 0;
+  height: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.book-card {
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #eeeae2;
+  border-radius: 9px;
+  background: #ffffff;
+  box-shadow: 0 3px 14px rgba(37, 31, 16, 0.05);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(49, 41, 19, 0.12);
+  }
+}
+
+.cover-wrapper {
+  position: relative;
+  height: 267px;
+  overflow: hidden;
+  background: #eeeae1;
+}
+
+.book-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+
+  .book-card:hover & {
+    transform: scale(1.025);
+  }
+}
+
+.category-badge {
+  position: absolute;
+  z-index: 2;
+  top: 11px;
+  left: 10px;
+  padding: 4px 9px;
+  border-radius: 12px;
+  background: #f4e7a4;
+  color: #5f4c00;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(42, 34, 5, 0.12);
+}
+
+.free-badge {
+  background: #8d7508;
+  color: #ffffff;
+}
+
+.cover-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background:
+    linear-gradient(145deg, #eee7d8, #d8ceb8);
+  color: #756543;
+  text-align: center;
+
+  span {
+    font-size: 42px;
+  }
+
+  p {
+    margin: 12px 0 0;
+    font-family: var(--font-serif);
+    font-size: 16px;
+  }
+}
+
+.book-content {
+  padding: 15px 14px 13px;
+}
+
+.book-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 9px;
+  color: #8a7430;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  span {
+    color: #aaa49a;
+  }
+}
+
+h3 {
+  min-height: 42px;
+  margin: 0 0 5px;
+  overflow: hidden;
+  color: #2c2923;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.author {
+  margin: 0 0 10px;
+  color: var(--text-muted, #64748b);
+  font-size: 0.8125rem;
+}
+
+.book-details {
+  display: flex;
+  min-height: 17px;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-secondary, #334155);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  strong {
+    color: #4b473f;
+    font-weight: 600;
+  }
+
+  &.unrated {
+    color: #9c9589;
+
+    .unrated-star {
+      color: #c9c3b8;
+    }
+
+    .unrated-text {
+      font-size: 0.75rem;
+      color: #8c867b;
+    }
+  }
+}
+
+.star {
+  color: #9a7900;
+  font-size: 11px;
+}
+
+.detail-divider {
+  color: #bbb5aa;
+}
+
+.description {
+  min-height: 44px;
+  margin: 11px 0 13px;
+  overflow: hidden;
+  color: #837d72;
+  font-size: 10px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.book-actions {
+  display: grid;
+  margin-top: 13px;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 7px;
+
+  button {
+    display: flex;
+    height: 34px;
+    padding: 0 8px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+.read-button {
+  border: 1px solid #866b00;
+  background: #866b00;
+  color: #ffffff;
+
+  &:hover {
+    border-color: #695300;
+    background: #695300;
+  }
+}
+
+.preview-button {
+  border: 1px solid #dfdcd5;
+  background: #f7f6f3;
+  color: #4d4941;
+
+  &:hover {
+    border-color: #b9aa7d;
+    background: #eee9dc;
+  }
+}
+
+@media (max-width: 1100px) {
+  .cover-wrapper {
+    height: 245px;
+  }
+}
+
+@media (max-width: 650px) {
+  .cover-wrapper {
+    height: 320px;
+  }
+}

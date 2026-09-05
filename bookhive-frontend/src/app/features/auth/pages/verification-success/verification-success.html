@@ -1,0 +1,59 @@
+<div class="success-page">
+  <!-- BookHive Logo -->
+  <a class="brand" routerLink="/" aria-label="BookHive home">
+    <img class="brand-icon" [src]="logoPath" alt="" />
+    <span>BookHive</span>
+  </a>
+
+  <!-- Success Card -->
+  <main class="success-card">
+    <!-- Animated Success Icon -->
+    <div class="success-icon-wrapper">
+      <div class="success-glow"></div>
+
+      <div class="success-icon">
+        <svg lucideCheck class="check-icon" aria-hidden="true"></svg>
+      </div>
+
+      <!-- Decorative particles -->
+      <span class="particle particle-1"></span>
+      <span class="particle particle-2"></span>
+      <span class="particle particle-3"></span>
+      <span class="particle particle-4"></span>
+      <span class="particle particle-5"></span>
+      <span class="particle particle-6"></span>
+    </div>
+
+    <!-- Success Content -->
+    <div class="success-content">
+      <p class="eyebrow">{{ isVerifying ? 'Please wait' : (verificationSucceeded ? 'Email verified' : 'Verification failed') }}</p>
+      <h1>{{ isVerifying ? 'Verifying your email' : (verificationSucceeded ? 'Verification successful' : 'Unable to verify email') }}</h1>
+
+      <p class="description" [attr.role]="verificationSucceeded ? 'status' : 'alert'">{{ message }}</p>
+
+      <!-- Welcome Badge -->
+      @if (verificationSucceeded) {
+      <div class="welcome-badge">
+        <svg lucideSparkles class="celebration-icon" aria-hidden="true"></svg>
+        <span>Welcome to BookHive!</span>
+      </div>
+      }
+
+      <!-- Continue Button -->
+      @if (verificationSucceeded) {
+      <button type="button" class="continue-button" (click)="goToLogin()">
+        <span>Continue to sign in</span>
+
+        <svg lucideArrowRight class="arrow-icon" aria-hidden="true"></svg>
+      </button>
+      }
+
+      <!-- No Auto  Redirect -->
+      @if (verificationSucceeded) {
+        <p class="redirect-message">Click continue to sign in to your BookHive account.</p>
+      } @else if (!isVerifying) {
+        <a class="redirect-message" routerLink="/register">Return to registration</a>
+      }
+    </div>
+  </main>
+</div>

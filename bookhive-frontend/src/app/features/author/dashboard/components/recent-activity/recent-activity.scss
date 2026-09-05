@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.activity-card {
+  width: 100%;
+  min-height: 340px;
+  padding: 30px 28px;
+  border: 1px solid #efebe4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 7px 22px rgba(43, 37, 22, 0.055);
+
+  header {
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    margin: 0;
+    color: #786000;
+    font-family: var(--font-serif);
+    font-size: 23px;
+    font-weight: 700;
+  }
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-item {
+  display: grid;
+  min-height: 82px;
+  grid-template-columns: 25px minmax(0, 1fr);
+}
+
+.timeline-column {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.timeline-point {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 15px;
+  height: 15px;
+  margin-top: 4px;
+  border: 2px solid #a88616;
+  border-radius: 50%;
+  background: #ffffff;
+
+  &.approved {
+    border-color: #937400;
+  }
+
+  &.review {
+    border-color: #c7bda1;
+  }
+
+  &.report {
+    border-color: #d8c9a0;
+  }
+}
+
+.timeline-line {
+  position: absolute;
+  top: 18px;
+  bottom: -4px;
+  width: 1px;
+  background: #d8d1bf;
+}
+
+.activity-content {
+  display: flex;
+  padding: 0 0 23px 4px;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.activity-text {
+  min-width: 0;
+
+  h3 {
+    margin: 0 0 5px;
+    color: #806500;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: #777168;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+}
+
+time {
+  flex: 0 0 auto;
+  padding-top: 2px;
+  color: #777168;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.empty-state {
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #898278;
+
+  span {
+    color: #a68722;
+    font-size: 33px;
+  }
+
+  p {
+    margin: 10px 0 0;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .activity-card {
+    padding: 24px 19px;
+  }
+
+  .activity-content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

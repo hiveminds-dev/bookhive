@@ -1,1 +1,71 @@
-<p>statistics works!</p>
+<section
+  class="statistics-grid"
+  aria-label="Author analytics statistics"
+>
+  @for (
+    statistic of statistics;
+    track statistic.id
+    ) {
+    <article class="statistic-card">
+
+      <div class="card-header">
+        <span
+          class="statistic-icon"
+          [class.gold]="
+            statistic.iconType === 'gold'
+          "
+          [class.gray]="
+            statistic.iconType === 'gray'
+          "
+          [class.yellow]="
+            statistic.iconType === 'yellow'
+          "
+          aria-hidden="true"
+        >
+          @if (statistic.title === 'Total Views') {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          } @else if (statistic.title === 'Total Downloads') {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          } @else if (statistic.title === 'Books Published') {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          } @else if (statistic.title === 'Average Rating') {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          } @else {
+            {{ statistic.icon }}
+          }
+        </span>
+
+        @if (statistic.badge) {
+          <span
+            class="statistic-badge"
+            [class.positive]="
+              statistic.badgeType === 'positive'
+            "
+            [class.neutral]="
+              statistic.badgeType === 'neutral'
+            "
+          >
+            {{ statistic.badge }}
+          </span>
+        }
+      </div>
+
+      <p class="statistic-title">
+        {{ statistic.title }}
+      </p>
+
+      <div class="statistic-value">
+        <strong>
+          {{ statistic.value }}
+        </strong>
+
+        @if (statistic.secondaryValue) {
+          <span>
+            {{ statistic.secondaryValue }}
+          </span>
+        }
+      </div>
+
+    </article>
+  }
+</section>
