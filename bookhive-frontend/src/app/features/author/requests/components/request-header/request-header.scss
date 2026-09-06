@@ -11,26 +11,55 @@
 .request-header {
   display: flex;
   width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.breadcrumb {
+  display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1;
+  white-space: nowrap;
+
+  .sep {
+    font-size: 0.75rem;
+  }
+
+  .current {
+    color: #111827;
+    font-weight: 750;
+  }
+}
+
+.header-row {
+  display: flex;
+  width: 100%;
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
 }
 
 .header-copy {
+  min-width: 0;
+  flex: 1;
+
   h1 {
-    margin: 0 0 8px;
-    color: #20201e;
-    font-family: var(--font-serif);
-    font-size: clamp(35px, 4vw, 43px);
-    font-weight: 700;
-    letter-spacing: -0.8px;
-    line-height: 1.1;
+    margin: 0 0 6px;
+    color: #0f172a;
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1.12;
   }
 
   p {
     margin: 0;
-    color: #625d54;
-    font-size: 14px;
+    color: #64748b;
+    font-size: 0.95rem;
     line-height: 1.5;
   }
 }
@@ -90,7 +119,7 @@
 }
 
 @media (max-width: 850px) {
-  .request-header {
+  .header-row {
     align-items: stretch;
     flex-direction: column;
     gap: 25px;

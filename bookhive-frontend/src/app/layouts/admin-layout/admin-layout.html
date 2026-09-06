@@ -54,17 +54,13 @@
         <svg lucideHelpCircle aria-hidden="true"></svg>
         Support
       </a>
-      <button class="logout" type="button" (click)="promptLogout()">
-        <svg lucideLogOut aria-hidden="true"></svg>
-        Logout
-      </button>
     </nav>
 
     <div class="sidebar-action">
-      <a routerLink="/admin/books/upload" class="btn-publish">
-        <svg lucideSquarePlus aria-hidden="true"></svg>
-        Publish New Work
-      </a>
+      <button type="button" class="btn-sidebar-logout" (click)="promptLogout()">
+        <svg lucideLogOut aria-hidden="true"></svg>
+        Logout
+      </button>
     </div>
   </aside>
 
@@ -87,16 +83,54 @@
       </label>
 
       <div class="topbar-actions">
-        <a [routerLink]="['/legal']" [queryParams]="{ tab: 'terms' }">Guidelines</a>
-        <a routerLink="/admin/books">Review Board</a>
+        <a [routerLink]="['/legal']" [queryParams]="{ tab: 'terms' }" (click)="closeTopbarMenu()">Guidelines</a>
+        <a routerLink="/admin/books" (click)="closeTopbarMenu()">Review Board</a>
         <span class="separator"></span>
-        <button type="button" aria-label="Notifications">
-          <svg lucideBell aria-hidden="true"></svg>
-        </button>
-        <button type="button" aria-label="Applications">
-          <svg lucideGrid2X2 aria-hidden="true"></svg>
-        </button>
-        <img src="images/author/profile/profile-placeholder.jpg" alt="Admin">
+
+        <div class="topbar-menu-wrap">
+          <button type="button" [class.active]="activeTopbarMenu() === 'notifications'" aria-label="Notifications" (click)="toggleTopbarMenu('notifications')">
+            <svg lucideBell aria-hidden="true"></svg>
+            <span class="notification-dot"></span>
+          </button>
+          <div class="topbar-dropdown notification-menu" *ngIf="activeTopbarMenu() === 'notifications'">
+            <div class="dropdown-heading">
+              <strong>Notifications</strong>
+              <span>Today</span>
+            </div>
+            <a *ngFor="let item of notifications" routerLink="/admin/dashboard" (click)="closeTopbarMenu()">
+              <span class="notice-dot"></span>
+              <span><strong>{{ item.title }}</strong><em>{{ item.meta }}</em></span>
+            </a>
+          </div>
+        </div>
+
+        <div class="topbar-menu-wrap">
+          <button type="button" [class.active]="activeTopbarMenu() === 'quick'" aria-label="Quick actions" (click)="toggleTopbarMenu('quick')">
+            <svg lucideGrid2X2 aria-hidden="true"></svg>
+          </button>
+          <div class="topbar-dropdown quick-menu" *ngIf="activeTopbarMenu() === 'quick'">
+            <div class="dropdown-heading">
+              <strong>Quick Menu</strong>
+            </div>
+            <a *ngFor="let link of quickLinks" [routerLink]="link.route" (click)="closeTopbarMenu()">{{ link.label }}</a>
+            <a *ngIf="isSuperAdmin()" routerLink="/admin/admins" (click)="closeTopbarMenu()">Admin Governance</a>
+          </div>
+        </div>
+
+        <div class="topbar-menu-wrap">
+          <button type="button" class="avatar-button" [class.active]="activeTopbarMenu() === 'profile'" aria-label="Profile menu" (click)="toggleTopbarMenu('profile')">
+            <img src="images/author/profile/profile-placeholder.jpg" alt="Admin">
+          </button>
+          <div class="topbar-dropdown profile-menu" *ngIf="activeTopbarMenu() === 'profile'">
+            <div class="profile-summary">
+              <img src="images/author/profile/profile-placeholder.jpg" alt="Admin profile">
+              <span><strong>{{ displayName() }}</strong><em>{{ roleLabel() }}</em></span>
+            </div>
+            <a routerLink="/admin/profile" (click)="closeTopbarMenu()">My Profile</a>
+            <a routerLink="/admin/support" (click)="closeTopbarMenu()">Contact Support</a>
+            <button type="button" (click)="promptLogout()">Logout</button>
+          </div>
+        </div>
       </div>
     </header>
 

@@ -63,7 +63,7 @@ export class RequestsComponent implements OnInit {
   selectedSort: RequestSortOption = 'newest';
 
   currentPage = 1;
-  readonly pageSize = 12;
+  readonly pageSize = 5;
   isLoading = false;
 
   selectedRequest: AuthorBookRequest | null = null;
@@ -205,6 +205,21 @@ export class RequestsComponent implements OnInit {
 
   get displayedTotalRequests(): number {
     return this.filteredRequests.length;
+  }
+
+  get requestStatusCounts(): Record<RequestFilterStatus, number> {
+    const counts: Record<RequestFilterStatus, number> = {
+      All: this.requests.length,
+      Pending: 0,
+      Approved: 0,
+      Rejected: 0
+    };
+
+    for (const request of this.requests) {
+      counts[request.status] += 1;
+    }
+
+    return counts;
   }
 
   onStatusChanged(

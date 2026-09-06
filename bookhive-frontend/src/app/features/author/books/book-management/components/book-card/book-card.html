@@ -1,4 +1,6 @@
-<article class="book-card">
+<article
+  class="book-card"
+  [class.rejected-card]="book.status === 'Rejected'">
 
   <div class="book-image-area">
 
@@ -38,8 +40,10 @@
     </p>
 
     @if (book.status === 'Rejected' && book.rejectionReason) {
-      <div class="card-rejection-reason" style="margin: 8px 0; padding: 8px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 0.8rem; color: #991b1b; line-height: 1.4;">
-        <strong style="display: block; font-weight: 700;">Rejection Reason:</strong>
+      <div
+        class="card-rejection-reason"
+        [title]="book.rejectionReason">
+        <strong>Reason for Rejection</strong>
         <span>{{ book.rejectionReason }}</span>
       </div>
     }
@@ -69,7 +73,7 @@
           class="view-button"
           aria-label="View book"
           title="View book"
-          (click)="onViewBook()">
+          (click)="onViewBook($event)">
 
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
@@ -79,7 +83,7 @@
           class="edit-button"
           aria-label="Edit book"
           title="Edit book"
-          (click)="onEditBook()">
+          (click)="onEditBook($event)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </button>
 
@@ -88,7 +92,7 @@
           class="delete-button"
           aria-label="Delete book"
           title="Delete book"
-          (click)="onDeleteBook()">
+          (click)="onDeleteBook($event)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>
 

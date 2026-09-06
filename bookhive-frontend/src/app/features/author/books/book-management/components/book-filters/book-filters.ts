@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Input,
   Output
 } from '@angular/core';
 
@@ -23,6 +24,14 @@ export type BookFilterStatus =
   styleUrl: './book-filters.scss'
 })
 export class BookFiltersComponent {
+
+  @Input() statusCounts: Record<BookFilterStatus, number> = {
+    All: 0,
+    Published: 0,
+    Pending: 0,
+    Rejected: 0,
+    Draft: 0
+  };
 
   @Output() statusChanged =
     new EventEmitter<BookFilterStatus>();
@@ -55,5 +64,9 @@ export class BookFiltersComponent {
   clearSearch(): void {
     this.searchTerm = '';
     this.onSearchChange();
+  }
+
+  getStatusCount(status: BookFilterStatus): number {
+    return this.statusCounts[status] ?? 0;
   }
 }

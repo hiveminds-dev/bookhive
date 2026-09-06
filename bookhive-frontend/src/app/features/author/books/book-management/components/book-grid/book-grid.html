@@ -11,17 +11,24 @@
 
   }
 
-  <button
-    type="button"
-    class="upload-card"
-    (click)="onUploadBook()">
+  @if (!hasMatches) {
+    <div class="empty-results">
+      <strong>
+        @if (isSearching) {
+          No matching books found
+        } @else {
+          No books uploaded yet
+        }
+      </strong>
 
-    <span class="add-circle" aria-hidden="true">
-      +
-    </span>
-
-    <strong>Upload New Book</strong>
-
-  </button>
+      <span>
+        @if (isSearching) {
+          Try another status or search term.
+        } @else {
+          Upload your first book to start building your library.
+        }
+      </span>
+    </div>
+  }
 
 </section>

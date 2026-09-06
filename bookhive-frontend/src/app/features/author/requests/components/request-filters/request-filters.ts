@@ -32,6 +32,12 @@ export class RequestFiltersComponent {
   @Input() showingFrom = 1;
   @Input() showingTo = 12;
   @Input() totalRequests = 0;
+  @Input() statusCounts: Record<RequestFilterStatus, number> = {
+    All: 0,
+    Pending: 0,
+    Approved: 0,
+    Rejected: 0
+  };
 
   @Output() statusChanged =
     new EventEmitter<RequestFilterStatus>();
@@ -60,5 +66,9 @@ export class RequestFiltersComponent {
     this.sortChanged.emit(
       this.selectedSort
     );
+  }
+
+  getStatusCount(status: RequestFilterStatus): number {
+    return this.statusCounts[status] ?? 0;
   }
 }

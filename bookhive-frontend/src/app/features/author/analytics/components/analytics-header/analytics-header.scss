@@ -8,62 +8,84 @@
 
 .analytics-header {
   display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.breadcrumb {
+  display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1;
+  white-space: nowrap;
+
+  .sep {
+    font-size: 0.75rem;
+  }
+
+  .current {
+    color: #111827;
+    font-weight: 750;
+  }
+}
+
+.header-row {
+  display: flex;
+  width: 100%;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 30px;
+  gap: 40px;
 }
 
 .heading {
   min-width: 0;
-}
-
-.eyebrow {
-  margin: 0 0 8px;
-  color: #9a7a00;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  flex: 1;
 }
 
 h1 {
-  margin: 0;
-  color: #22211d;
-  font-size: clamp(34px, 4vw, 48px);
-  line-height: 1.1;
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.12;
 }
 
 .description {
   max-width: 580px;
-  margin: 12px 0 0;
-  color: #777064;
-  font-size: 15px;
-  line-height: 1.6;
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .export-button {
   display: inline-flex;
   min-height: 46px;
-  padding: 10px 20px;
+  padding: 0 20px;
   align-items: center;
   justify-content: center;
   gap: 9px;
   color: #ffffff;
-  background: #a88600;
-  border: 1px solid #a88600;
+  background: #9a570d;
+  border: 1px solid #9a570d;
   border-radius: 9px;
   font: inherit;
-  font-weight: 700;
+  font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
-  box-shadow: 0 7px 18px rgba(168, 134, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(133, 77, 14, 0.18);
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
 }
 
 .export-button:hover {
-  background: #826800;
+  background: #7c4308;
   transform: translateY(-1px);
 }
 
@@ -72,7 +94,7 @@ h1 {
 }
 
 @media (max-width: 650px) {
-  .analytics-header {
+  .header-row {
     align-items: stretch;
     flex-direction: column;
     gap: 20px;

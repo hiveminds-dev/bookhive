@@ -1,5 +1,6 @@
 import {
-  Component
+  Component,
+  Input
 } from '@angular/core';
 
 export interface AnalyticsStatistic {
@@ -22,7 +23,8 @@ export interface AnalyticsStatistic {
 })
 export class StatisticsComponent {
 
-  readonly statistics: AnalyticsStatistic[] = [
+  @Input()
+  statistics: AnalyticsStatistic[] = [
     {
       id: 1,
       icon: 'views',

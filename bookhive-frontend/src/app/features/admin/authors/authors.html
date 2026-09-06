@@ -11,9 +11,9 @@
       <p>Review author applications, approve credentials, and manage creator profiles.</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn-primary" [disabled]="true" title="Direct author account creation is coming soon in a future release." style="opacity: 0.6; cursor: not-allowed;">
+      <button type="button" class="btn-primary is-disabled" [disabled]="true" title="Direct author account creation is coming soon in a future release. Authors can still apply through registration.">
         <svg lucideUserPlus aria-hidden="true"></svg>
-        Create Author (Coming Soon)
+        Create Author
       </button>
     </div>
   </header>
@@ -126,11 +126,12 @@
       <strong class="stat-value">{{ authorStatsSignal().books_in_review }}</strong>
     </article>
 
-    <article class="stat-card highlight-card">
+    <article class="stat-card">
       <div class="stat-header">
         <div class="icon-box star-icon">
           <svg lucidePower aria-hidden="true"></svg>
         </div>
+        <span class="trend-badge rejected">Rejected</span>
       </div>
       <span class="stat-label">REJECTED APPLICATIONS</span>
       <strong class="stat-value">{{ authorStatsSignal().total_rejected }}</strong>
@@ -153,6 +154,15 @@
     <div class="empty-row" *ngIf="!loading() && filteredAuthors.length === 0">No authors found.</div>
 
     <table class="data-table" *ngIf="!loading() && filteredAuthors.length > 0">
+      <colgroup>
+        <col class="col-name" />
+        <col class="col-pen" />
+        <col class="col-email" />
+        <col class="col-country" />
+        <col class="col-date" />
+        <col class="col-status" />
+        <col class="col-actions" />
+      </colgroup>
       <thead>
         <tr>
           <th>FULL NAME</th>
@@ -165,11 +175,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let author of filteredAuthors">
+        <tr *ngFor="let author of paginatedAuthors">
           <td>
-            <div class="author-name-cell" (click)="openAuthorProfile(author)" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px; white-space: nowrap;" title="Click to view Author Profile">
-              <img [src]="getAuthorAvatar(author)" [alt]="author.full_name" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0;" />
-              <strong class="full-name" style="color: #0f172a; font-size: 0.92rem; white-space: nowrap;">{{ author.full_name }}</strong>
+            <div class="author-name-cell" (click)="openAuthorProfile(author)" title="Click to view Author Profile">
+              <img [src]="getAuthorAvatar(author)" [alt]="author.full_name" />
+              <strong class="full-name">{{ author.full_name }}</strong>
             </div>
           </td>
           <td>
@@ -188,7 +198,7 @@
             <span class="status-badge" [class]="getStatusClass(author.account_status)">{{ author.account_status }}</span>
           </td>
           <td class="text-right">
-            <div class="action-buttons" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+            <div class="action-buttons">
               <label class="switch-toggle" [title]="author.account_status === 'approved' ? 'Click to Reject Author' : 'Click to Approve Author'">
                 <input type="checkbox" [checked]="author.account_status === 'approved'" (change)="toggleAuthorStatus(author)" />
                 <span class="switch-slider"></span>
@@ -203,7 +213,18 @@
     </table>
 
     <footer class="table-footer" *ngIf="!loading() && filteredAuthors.length > 0">
-      <span class="summary-text">Showing {{ filteredAuthors.length }} of {{ authorsSignal().length }} records</span>
+      <span class="summary-text">
+        Showing {{ (currentPage() - 1) * pageSize() + 1 }} to {{ currentPage() * pageSize() > filteredAuthors.length ? filteredAuthors.length : currentPage() * pageSize() }} of {{ filteredAuthors.length }} records
+      </span>
+      <div class="pagination">
+        <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === 1" (click)="prevPage()" title="Previous Page">
+          <svg viewBox="0 0 24 24" class="pagination-icon"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button type="button" class="page-btn" *ngFor="let page of pageNumbers" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</button>
+        <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === totalPages" (click)="nextPage()" title="Next Page">
+          <svg viewBox="0 0 24 24" class="pagination-icon"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
     </footer>
   </section>
 

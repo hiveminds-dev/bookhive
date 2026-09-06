@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Input,
   Output
 } from '@angular/core';
 
@@ -30,7 +31,8 @@ export class ProfileBooks {
   readonly viewAllSelected =
     new EventEmitter<void>();
 
-  readonly books: AuthorProfileBook[] = [];
+  @Input()
+  books: AuthorProfileBook[] = [];
 
   openBook(
     book: AuthorProfileBook

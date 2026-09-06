@@ -15,13 +15,13 @@
 
 .books-card {
   display: flex;
-  min-height: 520px;
-  padding: 32px;
+  min-height: 430px;
+  padding: 28px;
   flex-direction: column;
   background: #ffffff;
-  border: 1px solid #f0ede5;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
 }
 
 .card-header {
@@ -30,9 +30,9 @@
 
 .card-header h2 {
   margin: 0;
-  color: #28251f;
-  font-size: 19px;
-  font-weight: 600;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .book-list {
@@ -113,13 +113,13 @@
   }
 
   .books-card {
-    min-height: 500px;
+    min-height: 430px;
   }
 }
 
 @media (max-width: 480px) {
   .books-card {
-    min-height: 470px;
+    min-height: 400px;
     padding: 24px 20px;
   }
 

@@ -5,9 +5,9 @@
 .request-table {
   overflow: hidden;
   background: #ffffff;
-  border: 1px solid #f0ede4;
-  border-radius: 18px;
-  box-shadow: 0 10px 32px rgba(56, 48, 27, 0.06);
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
 }
 
 .table-header {
@@ -20,12 +20,15 @@
     minmax(170px, 1.6fr)
     110px;
   align-items: center;
-  min-height: 80px;
+  min-height: 58px;
   padding: 0 30px;
-  color: #554d3b;
-  font-size: 14px;
-  font-weight: 600;
-  border-bottom: 1px solid #efede7;
+  color: #687386;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e7e5df;
+  background: #f8f6f1;
 }
 
 .table-body {
@@ -34,7 +37,7 @@
 
 .empty-state {
   display: flex;
-  min-height: 320px;
+  min-height: 220px;
   padding: 40px;
   align-items: center;
   justify-content: center;
@@ -44,8 +47,8 @@
 
 .empty-icon {
   display: grid;
-  width: 64px;
-  height: 64px;
+  width: 58px;
+  height: 58px;
   margin-bottom: 18px;
   place-items: center;
   background: #fff8d7;
@@ -55,8 +58,9 @@
 
 .empty-state h3 {
   margin: 0 0 8px;
-  color: #25231e;
-  font-size: 20px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .empty-state p {

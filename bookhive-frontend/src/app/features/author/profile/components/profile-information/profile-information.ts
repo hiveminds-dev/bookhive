@@ -1,8 +1,13 @@
 import {
   Component,
   inject,
+  OnInit
 } from '@angular/core';
 import { Auth } from '../../../../../core/services/auth';
+import {
+  UserProfile,
+  UserProfileService
+} from '../../../../../core/services/user-profile.service';
 
 export interface ContactDetail {
   id: number;
@@ -26,12 +31,25 @@ export interface SocialLink {
   templateUrl: './profile-information.html',
   styleUrl: './profile-information.scss'
 })
-export class ProfileInformation {
+export class ProfileInformation implements OnInit {
   private readonly auth = inject(Auth);
+  private readonly userProfileService = inject(UserProfileService);
   readonly currentUser = this.auth.currentUser;
+  profile: UserProfile | null = null;
+
+  ngOnInit(): void {
+    this.userProfileService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.profile = profile;
+      },
+      error: () => {
+        this.profile = null;
+      }
+    });
+  }
 
   get emailValue(): string {
-    return this.currentUser()?.email ?? 'author@bookhive.com';
+    return this.profile?.email ?? this.currentUser()?.email ?? 'author@bookhive.com';
   }
 
   get contactDetails(): ContactDetail[] {
@@ -47,21 +65,20 @@ export class ProfileInformation {
       {
         id: 2,
         icon: 'phone',
-        label: 'Phone',
-        value: '+1 (555) 019-2834',
-        link: 'tel:+15550192834'
+        label: 'Account',
+        value: this.profile?.account_status ?? this.currentUser()?.account_status ?? 'pending'
       },
       {
         id: 3,
         icon: 'country',
         label: 'Country',
-        value: 'International'
+        value: this.profile?.country ?? 'Not added'
       },
       {
         id: 4,
         icon: 'language',
         label: 'Language',
-        value: 'English'
+        value: this.profile?.preferred_language ?? 'Not added'
       }
     ];
   }
@@ -87,6 +104,8 @@ export class ProfileInformation {
     }
   ];
 
-  readonly biography =
-    'Published author dedicated to compelling storytelling, insightful literature, and enriching the BookHive reading community with quality manuscripts.';
+  get biography(): string {
+    return this.profile?.short_bio ||
+      'Biography details will appear here after the author profile is updated.';
+  }
 }

@@ -1,5 +1,6 @@
 :host {
   display: block;
+  font-family: var(--font-sans);
 }
 
 * {
@@ -10,22 +11,22 @@
   width: min(100%, 1180px);
   min-height: calc(100vh - 180px);
   margin: 0 auto;
-  padding: 55px 35px 85px;
+  padding: 40px 55px 72px;
 }
 
 app-analytics-header {
   display: block;
-  margin-bottom: 45px;
+  margin-bottom: 30px;
 }
 
 app-statistics {
   display: block;
-  margin-bottom: 55px;
+  margin-bottom: 34px;
 }
 
 .charts-grid {
   display: grid;
-  margin-bottom: 55px;
+  margin-bottom: 34px;
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
   gap: 28px;
@@ -61,7 +62,7 @@ app-book-performance {
 
 @media (max-width: 850px) {
   .analytics-page {
-    padding: 42px 24px 70px;
+    padding: 40px 35px 70px;
   }
 
   .charts-grid {

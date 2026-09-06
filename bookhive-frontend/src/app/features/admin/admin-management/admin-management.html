@@ -9,7 +9,7 @@
     <div class="header-titles">
       <div class="super-admin-tag">SUPER ADMIN ACCESS ONLY</div>
       <h1>Administrator Access Management</h1>
-      <p>Provision roles, manage editorial staff credentials, monitor 2FA security, and audit executive privileges.</p>
+      <p>Provision roles, manage editorial staff credentials, monitor account access, and audit executive privileges.</p>
     </div>
     <div class="header-actions">
       <button type="button" class="btn-primary" (click)="openCreateModal()">
@@ -97,17 +97,18 @@
         <div class="icon-box">
           <svg lucideLock aria-hidden="true"></svg>
         </div>
-        <span class="trend-badge positive">Enforced</span>
+        <span class="trend-badge high">Invited</span>
       </div>
-      <span class="stat-label">2FA PROTECTED</span>
-      <strong class="stat-value">{{ staffStatsSignal()?.two_fa_protected_count ?? 0 }} / {{ staffStatsSignal()?.two_fa_total ?? 0 }}</strong>
+      <span class="stat-label">PENDING INVITES</span>
+      <strong class="stat-value">{{ staffStatsSignal()?.pending_invites ?? 0 }}</strong>
     </article>
 
-    <article class="stat-card highlight-card">
+    <article class="stat-card">
       <div class="stat-header">
         <div class="icon-box star-icon">
           <svg lucideUserPlus aria-hidden="true"></svg>
         </div>
+        <span class="trend-badge positive">Active</span>
       </div>
       <span class="stat-label">ACTIVE ADMINS</span>
       <strong class="stat-value">{{ adminsSignal().length }}</strong>
@@ -122,10 +123,17 @@
     </div>
 
     <table class="data-table">
+      <colgroup>
+        <col class="col-user" />
+        <col class="col-role" />
+        <col class="col-active" />
+        <col class="col-status" />
+        <col class="col-actions" />
+      </colgroup>
       <thead>
         <tr>
           <th>ADMIN USER</th>
-          <th>SECURITY &amp; 2FA</th>
+          <th>ROLE &amp; DEPARTMENT</th>
           <th>LAST ACTIVE</th>
           <th>STATUS</th>
           <th class="text-right">GOVERNANCE ACTIONS</th>
@@ -133,9 +141,9 @@
       </thead>
       <tbody>
         <tr *ngIf="filteredAdmins.length === 0">
-          <td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No admin staff found matching your search filters.</td>
+          <td colspan="5" class="empty-state">No admin staff found matching your search filters.</td>
         </tr>
-        <tr *ngFor="let admin of filteredAdmins">
+        <tr *ngFor="let admin of paginatedAdmins">
           <td>
             <div class="user-cell">
               <div class="avatar-cell">
@@ -148,10 +156,8 @@
             </div>
           </td>
           <td>
-            <span class="sec-badge" [class.enabled]="admin.two_factor">
-              <svg lucideLock aria-hidden="true"></svg>
-              {{ admin.two_factor ? '2FA Enabled' : '2FA Off' }}
-            </span>
+            <span class="role-badge" [class]="admin.role_badge_class">{{ admin.role }}</span>
+            <span class="dept-text">{{ admin.department }}</span>
           </td>
           <td>
             <span class="active-text">{{ admin.last_active }}</span>
@@ -163,7 +169,7 @@
             </span>
           </td>
           <td class="text-right">
-            <div class="action-buttons" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+            <div class="action-buttons">
               <label class="switch-toggle" [title]="admin.status === 'Active' ? 'Click to Suspend Admin' : 'Click to Activate Admin'" *ngIf="admin.role !== 'Super Admin'">
                 <input type="checkbox" [checked]="admin.status === 'Active'" (change)="toggleAdminStatus(admin)">
                 <span class="switch-slider"></span>
@@ -179,6 +185,21 @@
         </tr>
       </tbody>
     </table>
+
+    <footer class="table-footer" *ngIf="filteredAdmins.length > 0">
+      <span class="summary-text">
+        Showing {{ (currentPage() - 1) * pageSize() + 1 }} to {{ currentPage() * pageSize() > filteredAdmins.length ? filteredAdmins.length : currentPage() * pageSize() }} of {{ filteredAdmins.length }} admin users
+      </span>
+      <div class="pagination">
+        <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === 1" (click)="prevPage()" title="Previous Page">
+          <svg viewBox="0 0 24 24" class="pagination-icon"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button type="button" class="page-btn" *ngFor="let page of pageNumbers" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</button>
+        <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === totalPages" (click)="nextPage()" title="Next Page">
+          <svg viewBox="0 0 24 24" class="pagination-icon"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </footer>
   </section>
 </div>
 

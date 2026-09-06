@@ -18,6 +18,8 @@ import {
   LucideSearch,
   LucideChevronDown,
   LucideLogOut,
+  LucideBell,
+  LucideGrid2X2,
 } from '@lucide/angular';
 
 
@@ -39,6 +41,8 @@ import {
     LucideSearch,
     LucideChevronDown,
     LucideLogOut,
+    LucideBell,
+    LucideGrid2X2,
   ],
   templateUrl: './author-layout.html',
   styleUrl: './author-layout.scss'
@@ -51,7 +55,46 @@ export class AuthorLayoutComponent {
   searchTerm = '';
   mobileSidebarOpen = false;
   profileMenuOpen = false;
+  activeTopbarMenu: 'notifications' | 'quick' | null = null;
   avatarLoadFailed = false;
+
+  readonly notifications = [
+    {
+      title: 'Drafts ready to continue',
+      meta: 'Open My Books'
+    },
+    {
+      title: 'Submission status updates',
+      meta: 'Check Requests'
+    }
+  ];
+
+  readonly quickLinks = [
+    {
+      label: 'Dashboard',
+      route: '/author/dashboard'
+    },
+    {
+      label: 'My Books',
+      route: '/author/books'
+    },
+    {
+      label: 'Upload Book',
+      route: '/author/books/upload'
+    },
+    {
+      label: 'Requests',
+      route: '/author/requests'
+    },
+    {
+      label: 'Analytics',
+      route: '/author/analytics'
+    },
+    {
+      label: 'Profile',
+      route: '/author/profile'
+    }
+  ];
 
   readonly currentUser =
     this.auth.currentUser;
@@ -90,10 +133,25 @@ export class AuthorLayoutComponent {
 
   toggleProfileMenu(): void {
     this.profileMenuOpen = !this.profileMenuOpen;
+    this.activeTopbarMenu = null;
   }
 
   closeProfileMenu(): void {
     this.profileMenuOpen = false;
+  }
+
+  toggleTopbarMenu(
+    menu: 'notifications' | 'quick'
+  ): void {
+    this.activeTopbarMenu =
+      this.activeTopbarMenu === menu
+        ? null
+        : menu;
+    this.profileMenuOpen = false;
+  }
+
+  closeTopbarMenu(): void {
+    this.activeTopbarMenu = null;
   }
 
   onAvatarError(): void {
@@ -113,6 +171,7 @@ export class AuthorLayoutComponent {
   logout(): void {
     this.closeSidebar();
     this.closeProfileMenu();
+    this.closeTopbarMenu();
 
     this.auth.logout().subscribe({
       next: () => this.router.navigate(['/login']),

@@ -3,14 +3,16 @@
   <div class="management-container">
 
     <app-book-management-page-header
-      title="Book Management"
-      sectionTitle="My Books"
-      description="View, edit, and organize all the books you've uploaded.">
+      title="My Books"
+      sectionTitle="Book Library"
+      description="View, edit, and organize all the books you've uploaded."
+      (uploadBook)="goToUploadBook()">
     </app-book-management-page-header>
 
     <div class="filters-wrapper">
 
       <app-author-book-filters
+        [statusCounts]="statusCounts"
         (statusChanged)="onStatusChanged($event)"
         (searchChanged)="onSearchChanged($event)">
       </app-author-book-filters>
@@ -21,7 +23,8 @@
 
       <app-author-book-grid
         [books]="paginatedBooks"
-        (uploadBook)="goToUploadBook()"
+        [hasMatches]="filteredBooks.length > 0"
+        [isSearching]="searchTerm.trim().length > 0 || selectedStatus !== 'All'"
         (viewBook)="viewBook($event)"
         (editBook)="editBook($event)"
         (deleteBook)="deleteBook($event)">

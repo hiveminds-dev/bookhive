@@ -27,6 +27,8 @@ export class AdminManagementComponent implements OnInit {
   filterRole = signal('');
   filterStatus = signal('');
   filterSortBy = signal('newest');
+  currentPage = signal(1);
+  pageSize = signal(5);
 
   showCreateModal = signal(false);
   targetAdminForDelete = signal<AdminUserItem | null>(null);
@@ -44,6 +46,7 @@ export class AdminManagementComponent implements OnInit {
 
   onSearchInput(value: string): void {
     this.searchQuery.set(value);
+    this.currentPage.set(1);
   }
 
   loadAdminStaff(): void {
@@ -72,6 +75,7 @@ export class AdminManagementComponent implements OnInit {
 
   clearSearch(): void {
     this.searchQuery.set('');
+    this.currentPage.set(1);
   }
 
   get filteredAdmins(): AdminUserItem[] {
@@ -104,7 +108,21 @@ export class AdminManagementComponent implements OnInit {
     return list;
   }
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredAdmins.length / this.pageSize()));
+  }
+
+  get paginatedAdmins(): AdminUserItem[] {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredAdmins.slice(start, start + this.pageSize());
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
   applyFilters(): void {
+    this.currentPage.set(1);
     this.loadAdminStaff();
     this.toastService.success('Admin accounts list filtered.', 'Filter Applied');
   }
@@ -114,8 +132,22 @@ export class AdminManagementComponent implements OnInit {
     this.filterRole.set('');
     this.filterStatus.set('');
     this.filterSortBy.set('newest');
+    this.currentPage.set(1);
     this.loadAdminStaff();
     this.toastService.info('Admin search filters reset.', 'Filters Reset');
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage.set(page);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage() + 1);
   }
 
   openCreateModal(): void {

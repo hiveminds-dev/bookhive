@@ -7,12 +7,12 @@
 }
 
 .chart-card {
-  min-height: 430px;
-  padding: 32px;
+  min-height: 380px;
+  padding: 28px;
   background: #ffffff;
-  border: 1px solid #f0ede5;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
 }
 
 .chart-header {
@@ -25,9 +25,9 @@
 
 .chart-header h2 {
   margin: 0;
-  color: #26231e;
-  font-size: 19px;
-  font-weight: 600;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .chart-header p {

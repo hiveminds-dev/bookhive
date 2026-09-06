@@ -1,6 +1,8 @@
 import {
   Component,
-  Input
+  EventEmitter,
+  Input,
+  Output
 } from '@angular/core';
 
 import {
@@ -26,4 +28,11 @@ export class PageHeaderComponent {
 
   @Input() description =
     `View, edit, and organize all the books you've uploaded.`;
+
+  @Output() uploadBook =
+    new EventEmitter<void>();
+
+  onUploadBook(): void {
+    this.uploadBook.emit();
+  }
 }

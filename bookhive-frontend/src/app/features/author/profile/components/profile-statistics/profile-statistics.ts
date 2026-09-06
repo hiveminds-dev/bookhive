@@ -1,5 +1,6 @@
 import {
-  Component
+  Component,
+  Input
 } from '@angular/core';
 
 export interface ProfileStatistic {
@@ -17,7 +18,8 @@ export interface ProfileStatistic {
 })
 export class ProfileStatistics {
 
-  readonly statistics: ProfileStatistic[] = [
+  @Input()
+  statistics: ProfileStatistic[] = [
     {
       id: 1,
       label: 'Published Books',

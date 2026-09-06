@@ -23,6 +23,8 @@ export class AuthorsComponent implements OnInit {
   filterStatus = signal('');
   filterTimeframe = signal('all');
   filterSortBy = signal('newest');
+  currentPage = signal(1);
+  pageSize = signal(5);
 
   readonly authorsSignal = signal<AuthorApplicationItem[]>([]);
   readonly loading = signal(true);
@@ -48,6 +50,7 @@ export class AuthorsComponent implements OnInit {
 
   onSearchInput(value: string): void {
     this.searchQuery.set(value);
+    this.currentPage.set(1);
   }
 
   refreshStats(): void {
@@ -137,15 +140,30 @@ export class AuthorsComponent implements OnInit {
     return list;
   }
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredAuthors.length / this.pageSize()));
+  }
+
+  get paginatedAuthors(): AuthorApplicationItem[] {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredAuthors.slice(start, start + this.pageSize());
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
   toggleAdvanceSearch(): void {
     this.showAdvanceSearch.update((v) => !v);
   }
 
   clearSearch(): void {
     this.searchQuery.set('');
+    this.currentPage.set(1);
   }
 
   applyFilters(): void {
+    this.currentPage.set(1);
     this.loadAuthors();
     this.toastService.success('Filtered author list successfully.', 'Filter Applied');
   }
@@ -156,8 +174,22 @@ export class AuthorsComponent implements OnInit {
     this.filterStatus.set('');
     this.filterTimeframe.set('all');
     this.filterSortBy.set('newest');
+    this.currentPage.set(1);
     this.loadAuthors();
     this.toastService.info('Author search filters reset.', 'Filters Reset');
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage.set(page);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage() + 1);
   }
 
   toggleAuthorStatus(author: AuthorApplicationItem): void {

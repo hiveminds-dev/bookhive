@@ -45,6 +45,17 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 18px rgba(133, 77, 14, 0.4);
       }
+
+      &.is-disabled {
+        opacity: 0.72;
+        cursor: not-allowed;
+
+        &:hover {
+          background-color: #854d0e;
+          transform: none;
+          box-shadow: 0 4px 14px rgba(133, 77, 14, 0.3);
+        }
+      }
     }
   }
 
@@ -101,6 +112,10 @@
           &.high {
             color: #b45309;
           }
+
+          &.rejected {
+            color: #b91c1c;
+          }
         }
       }
 
@@ -118,23 +133,9 @@
         color: #0f172a;
       }
 
-      &.highlight-card {
-        background: linear-gradient(135deg, #713f12 0%, #854d0e 100%);
-        border: none;
-        color: #ffffff;
-
-        .icon-box.star-icon {
-          background: rgba(255, 255, 255, 0.2);
-          color: #fef08a;
-        }
-
-        .stat-label {
-          color: #fef08a;
-        }
-
-        .stat-value {
-          color: #ffffff;
-        }
+      .icon-box.star-icon {
+        background: #fef2f2;
+        color: #b91c1c;
       }
     }
   }
@@ -144,7 +145,8 @@
     border-radius: 18px;
     border: 1px solid #e2e8f0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
 
     .tabs-header {
       display: flex;
@@ -198,8 +200,18 @@
 
     .data-table {
       width: 100%;
+      min-width: 1060px;
       border-collapse: collapse;
+      table-layout: fixed;
       text-align: left;
+
+      .col-name { width: 18%; }
+      .col-pen { width: 13%; }
+      .col-email { width: 22%; }
+      .col-country { width: 13%; }
+      .col-date { width: 12%; }
+      .col-status { width: 10%; }
+      .col-actions { width: 12%; }
 
       th {
         padding: 16px 24px;
@@ -217,50 +229,68 @@
         border-bottom: 1px solid #f1f5f9;
         vertical-align: middle;
         white-space: nowrap;
+        overflow: hidden;
       }
 
-      .avatar-cell {
-        width: 40px !important;
-        height: 40px !important;
-        max-width: 40px !important;
-        max-height: 40px !important;
-        border-radius: 50%;
-        overflow: hidden;
-        background: #e2e8f0;
-        flex-shrink: 0;
+      tbody tr {
+        height: 82px;
+      }
+
+      .author-name-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        min-width: 0;
+        cursor: pointer;
 
         img {
-          width: 40px !important;
-          height: 40px !important;
-          max-width: 40px !important;
-          max-height: 40px !important;
-          object-fit: cover;
+          width: 36px;
+          height: 36px;
+          border: 1.5px solid #cbd5e1;
           border-radius: 50%;
+          object-fit: cover;
+          flex: 0 0 36px;
         }
       }
 
       .full-name {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         font-size: 0.92rem;
         font-weight: 700;
         color: #0f172a;
       }
 
-      .pen-name {
-        font-size: 0.88rem;
-        color: #475569;
-      }
-
+      .pen-name,
       .email-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         font-size: 0.88rem;
         color: #64748b;
       }
 
+      .pen-name {
+        color: #475569;
+      }
+
       .country-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         font-size: 0.88rem;
         color: #334155;
       }
 
       .date-text {
+        display: block;
+        white-space: nowrap;
         font-size: 0.88rem;
         color: #64748b;
       }
@@ -387,6 +417,26 @@
             color: #ffffff;
             border-color: #854d0e;
           }
+
+          &:hover:not(.active):not(:disabled) {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+          }
+
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+          }
+        }
+
+        .pagination-icon {
+          width: 14px;
+          height: 14px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2.5;
+          stroke-linecap: round;
+          stroke-linejoin: round;
         }
       }
     }

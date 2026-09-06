@@ -11,15 +11,15 @@
 .welcome-card {
   display: flex;
   width: 100%;
-  min-height: 280px;
-  padding: 54px 78px;
-  border: 1px solid #f0ede7;
+  min-height: 196px;
+  padding: 38px 48px;
+  border: 1px solid #e3e9f1;
   border-radius: 12px;
   align-items: center;
   justify-content: space-between;
   gap: 50px;
   background: #ffffff;
-  box-shadow: 0 8px 25px rgba(46, 39, 22, 0.06);
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
 }
 
 .welcome-content {
@@ -27,18 +27,17 @@
 
   h1 {
     margin: 0 0 11px;
-    color: #786000;
-    font-family: var(--font-serif);
-    font-size: clamp(28px, 3vw, 37px);
-    font-weight: 700;
+    color: #111827;
+    font-size: 36px;
+    font-weight: 800;
     line-height: 1.15;
   }
 
   p {
     margin: 0;
-    color: #777168;
+    color: #6b7280;
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.65;
 
     strong {
       color: inherit;
@@ -49,26 +48,22 @@
 
 .upload-button {
   display: flex;
-  width: 260px;
-  min-height: 110px;
+  width: 235px;
+  min-height: 86px;
   padding: 20px 30px;
   border: 0;
   border-radius: 9px;
-  flex: 0 0 260px;
+  flex: 0 0 235px;
   align-items: center;
   justify-content: center;
   gap: 22px;
-  background: linear-gradient(
-    135deg,
-    #deb322,
-    #c99300
-  );
+  background: #9a570d;
   color: #ffffff;
   font-family: inherit;
-  font-size: 23px;
+  font-size: 20px;
   line-height: 1.2;
   cursor: pointer;
-  box-shadow: 0 9px 20px rgba(164, 121, 0, 0.22);
+  box-shadow: 0 9px 20px rgba(154, 87, 13, 0.22);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -84,13 +79,9 @@
   }
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      #d3a814,
-      #b88600
-    );
-    transform: translateY(-3px);
-    box-shadow: 0 13px 25px rgba(164, 121, 0, 0.27);
+    background: #7c4308;
+    transform: translateY(-2px);
+    box-shadow: 0 13px 25px rgba(154, 87, 13, 0.24);
   }
 
   &:active {
