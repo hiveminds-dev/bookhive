@@ -15,12 +15,12 @@
 
 .statistic-card {
   min-width: 0;
-  min-height: 165px;
+  min-height: 150px;
   padding: 25px;
   background: #ffffff;
-  border: 1px solid #f0ede5;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(58, 50, 31, 0.06);
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -83,15 +83,15 @@
 }
 
 .statistic-badge.neutral {
-  color: #999187;
+  color: #6b7280;
   background: transparent;
 }
 
 .statistic-title {
   margin: 18px 0 8px;
-  color: #635c50;
+  color: #64748b;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -103,8 +103,8 @@
 }
 
 .statistic-value strong {
-  color: #26231e;
-  font-size: 26px;
+  color: #111827;
+  font-size: 32px;
   line-height: 1;
 }
 

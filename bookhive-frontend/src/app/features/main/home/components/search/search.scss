@@ -11,20 +11,20 @@
 }
 
 .search-card {
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #fdfbf7 100%);
   border-radius: 16px;
-  padding: 36px 40px;
-  box-shadow: 0 8px 28px rgba(28, 25, 23, 0.06);
-  border: 1px solid #e7e5e4;
+  padding: 38px 42px;
+  box-shadow: 0 10px 32px rgba(28, 25, 23, 0.05);
+  border: 1px solid #ebe7df;
   text-align: center;
 }
 
 .search-title {
-  font-family: var(--font-serif);
-  font-size: 1.45rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 850;
   color: #1c1917;
   margin: 0 0 6px;
+  letter-spacing: -0.01em;
 }
 
 .search-subtitle {

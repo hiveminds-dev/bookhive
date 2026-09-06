@@ -21,6 +21,10 @@ export class BookGridComponent {
 
   @Input() books: ManagedBook[] = [];
 
+  @Input() hasMatches = true;
+
+  @Input() isSearching = false;
+
   @Output() uploadBook =
     new EventEmitter<void>();
 

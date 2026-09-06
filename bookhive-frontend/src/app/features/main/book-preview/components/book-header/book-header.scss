@@ -32,11 +32,11 @@ h1 {
   max-width: 730px;
   margin: 0 0 9px;
   color: #24211d;
-  font-family: var(--font-serif);
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 600;
-  letter-spacing: -1.5px;
-  line-height: 1.05;
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
 }
 
 .author-name {
@@ -47,7 +47,7 @@ h1 {
 
   strong {
     color: #3b3730;
-    font-weight: 600;
+    font-weight: 700;
   }
 }
 

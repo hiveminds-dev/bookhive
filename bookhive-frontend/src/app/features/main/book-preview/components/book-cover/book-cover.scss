@@ -10,11 +10,11 @@
 .cover-container {
   position: relative;
   width: 100%;
-  max-width: 330px;
+  max-width: 300px;
   overflow: hidden;
-  border-radius: 7px;
+  border-radius: var(--public-radius-card, 12px);
   background: #eee9df;
-  box-shadow: 0 13px 28px rgba(43, 35, 18, 0.16);
+  box-shadow: 0 16px 34px rgba(43, 35, 18, 0.14);
 }
 
 .book-cover {
@@ -30,9 +30,9 @@
   top: 13px;
   left: 13px;
   padding: 5px 10px;
-  border-radius: 20px;
-  background: #f2e4a2;
-  color: #695200;
+  border-radius: 999px;
+  background: rgba(255, 248, 225, 0.94);
+  color: #654b04;
   font-family: var(--font-sans);
   font-size: 9px;
   font-weight: 800;

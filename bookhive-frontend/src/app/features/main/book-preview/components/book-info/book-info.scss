@@ -11,8 +11,9 @@
   display: flex;
   min-height: 48px;
   align-items: center;
-  gap: 21px;
+  gap: clamp(14px, 2vw, 21px);
   color: #5e5950;
+  flex-wrap: wrap;
 }
 
 .info-item {
@@ -57,7 +58,7 @@
 
   span {
     color: #817b72;
-    font-size: 10px;
+    font-size: 0.72rem;
   }
 }
 

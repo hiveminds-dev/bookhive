@@ -32,8 +32,10 @@
   min-height: 175px;
   padding: 28px 22px;
   overflow: hidden;
-  background: #f1f2f3;
-  border-radius: 9px;
+  background: var(--public-paper, #ffffff);
+  border: 1px solid var(--public-border, #e8e2d6);
+  border-radius: var(--public-radius-card, 10px);
+  box-shadow: var(--public-shadow-card, 0 8px 24px rgba(47, 39, 18, 0.06));
 }
 
 .value-card::before {
@@ -42,7 +44,7 @@
   right: 0;
   left: 0;
   height: 3px;
-  background: #806600;
+  background: var(--public-gold, #8e7113);
   content: "";
 }
 

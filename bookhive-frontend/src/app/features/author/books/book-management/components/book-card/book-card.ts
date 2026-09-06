@@ -52,15 +52,18 @@ export class BookCardComponent {
     this.imageLoadFailed = true;
   }
 
-  onViewBook(): void {
+  onViewBook(event?: Event): void {
+    event?.stopPropagation();
     this.viewBook.emit(this.book);
   }
 
-  onEditBook(): void {
+  onEditBook(event?: Event): void {
+    event?.stopPropagation();
     this.editBook.emit(this.book);
   }
 
-  onDeleteBook(): void {
+  onDeleteBook(event?: Event): void {
+    event?.stopPropagation();
     this.deleteBook.emit(this.book);
   }
 

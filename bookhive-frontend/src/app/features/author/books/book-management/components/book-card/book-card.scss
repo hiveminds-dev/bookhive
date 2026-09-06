@@ -10,16 +10,23 @@
 }
 
 .book-card {
+  display: flex;
   width: 100%;
   height: 100%;
+  min-height: 506px;
   overflow: hidden;
-  border: 1px solid #efebe3;
-  border-radius: 10px;
+  flex-direction: column;
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 7px 21px rgba(46, 39, 22, 0.06);
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
   transition:
     transform 0.22s ease,
     box-shadow 0.22s ease;
+}
+
+.book-card.rejected-card {
+  border-color: #f3c6c6;
 }
 
 .book-card:hover {
@@ -30,7 +37,7 @@
 .book-image-area {
   position: relative;
   width: 100%;
-  height: 255px;
+  height: 220px;
   overflow: hidden;
   background: #e9e8e4;
 }
@@ -105,19 +112,48 @@
 }
 
 .book-content {
-  padding: 24px 24px 20px;
+  display: flex;
+  min-height: 286px;
+  padding: 22px 22px 18px;
+  flex: 1;
+  flex-direction: column;
 }
 
 .book-content h2 {
-  min-height: 55px;
+  min-height: 48px;
   margin: 0 0 7px;
   overflow: hidden;
   color: #242321;
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 21px;
+  font-weight: 800;
   line-height: 1.15;
   display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.card-rejection-reason {
+  min-height: 66px;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  overflow: hidden;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.card-rejection-reason strong {
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 800;
+}
+
+.card-rejection-reason span {
+  display: -webkit-box;
+  overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -129,6 +165,13 @@
   gap: 10px;
   color: #4d4941;
   font-size: 11px;
+}
+
+.book-meta span:first-child,
+.book-meta span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .book-meta span:first-child {
@@ -146,7 +189,7 @@
 
 .book-statistics {
   display: grid;
-  margin-top: 23px;
+  margin-top: auto;
   padding: 15px 0;
   border-top: 1px solid #ded9cf;
   border-bottom: 1px solid #ded9cf;
@@ -206,7 +249,11 @@
 .book-actions {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
+  padding: 3px;
+  border: 1px solid #eee7da;
+  border-radius: 8px;
+  background: #fffdfa;
 }
 
 .book-actions button {
@@ -214,7 +261,7 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 5px;
   align-items: center;
   justify-content: center;
@@ -229,7 +276,7 @@
 }
 
 .book-actions button:hover {
-  background: #f2eee4;
+  background: #f7f2e8;
 }
 
 .book-actions .view-button {
@@ -243,6 +290,11 @@
 .book-actions .delete-button {
   color: #d22323;
   font-size: 18px;
+}
+
+.book-actions .delete-button:hover {
+  border-color: #fecaca;
+  background: #fff1f1;
 }
 
 @media (max-width: 500px) {

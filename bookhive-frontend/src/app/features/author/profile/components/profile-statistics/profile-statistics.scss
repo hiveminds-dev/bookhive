@@ -10,21 +10,21 @@
   display: grid;
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
-  gap: 24px;
+  gap: 22px;
 }
 
 .statistic-card {
   display: flex;
   min-width: 0;
-  min-height: 120px;
-  padding: 22px;
+  min-height: 116px;
+  padding: 20px 22px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   background: #ffffff;
-  border: 1px solid #f0ede5;
-  border-radius: 16px;
-  box-shadow: 0 9px 27px rgba(52, 45, 28, 0.06);
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
   text-align: center;
   transition:
     transform 0.2s ease,
@@ -33,22 +33,25 @@
 
 .statistic-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 13px 32px rgba(52, 45, 28, 0.1);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
 }
 
 .statistic-label {
-  margin: 0 0 12px;
-  color: #5f584c;
-  font-size: 12px;
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.055em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .statistic-value {
-  color: #23221f;
-  font-size: clamp(26px, 3vw, 34px);
+  color: #111827;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 28px;
   line-height: 1;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -67,5 +70,9 @@
 
   .statistic-card {
     min-height: 105px;
+  }
+
+  .statistic-value {
+    font-size: 24px;
   }
 }

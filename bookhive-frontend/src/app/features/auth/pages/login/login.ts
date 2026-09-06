@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -26,6 +26,8 @@ export class Login {
   isSubmitting = false;
   loginError: string | null = null;
 
+  @ViewChild('passwordInput') private passwordInput?: ElementRef<HTMLInputElement>;
+
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
@@ -34,6 +36,11 @@ export class Login {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  focusPassword(event: Event): void {
+    event.preventDefault();
+    this.passwordInput?.nativeElement.focus();
   }
 
   hasFieldError(fieldName: 'email' | 'password'): boolean {

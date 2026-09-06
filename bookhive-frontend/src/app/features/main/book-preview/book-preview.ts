@@ -6,7 +6,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Auth } from '../../../core/services/auth';
-import { BookDetails, BookService, PublicReview } from '../../../core/services/book.service';
+import {
+  BookDetails,
+  BookService,
+  CatalogueBook,
+  PublicReview,
+} from '../../../core/services/book.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthorInfoComponent } from './components/author-info/author-info';
 import { BookActionsComponent } from './components/book-actions/book-actions';
@@ -27,6 +32,7 @@ export interface PreviewBook {
   id: number;
   title: string;
   author: string;
+  categoryId: number | null;
   category: string;
   language: string;
   rating: number;
@@ -98,43 +104,8 @@ export class BookPreviewComponent implements OnInit, OnDestroy {
   deletingReviewId: number | null = null;
   isDeletingReview = false;
 
-  relatedBooks: RelatedBook[] = [
-    {
-      id: 2,
-      title: 'Cognitive Structures',
-      author: 'Emma Richardson',
-      cover: 'images/related/cognitive-structures.jpg',
-      rating: 4.6,
-    },
-    {
-      id: 3,
-      title: 'The Nature of Mind',
-      author: 'Marcus Vale',
-      cover: 'images/related/nature-of-mind.jpg',
-      rating: 4.8,
-    },
-    {
-      id: 4,
-      title: 'Infinite Systems',
-      author: 'Daniel Harrington',
-      cover: 'images/related/infinite-systems.jpg',
-      rating: 4.7,
-    },
-    {
-      id: 5,
-      title: 'Logic & Form',
-      author: 'Sophia Bennett',
-      cover: 'images/related/logic-and-form.jpg',
-      rating: 4.5,
-    },
-    {
-      id: 6,
-      title: 'The Rational Language',
-      author: 'Nathan Cole',
-      cover: 'images/related/rational-language.jpg',
-      rating: 4.9,
-    },
-  ];
+  relatedBooks: RelatedBook[] = [];
+  isRelatedLoading = false;
 
   get currentUserId(): number | undefined {
     return this.auth.currentUser()?.id;
@@ -187,12 +158,15 @@ export class BookPreviewComponent implements OnInit, OnDestroy {
         this.book = this.mapToPreviewBook(data);
         this.readerReviews = this.mapReviews(data);
         this.isLoading = false;
+        this.loadRelatedBooks(data);
         this.changeDetector.markForCheck();
       },
       error: (error: HttpErrorResponse) => {
         this.isLoading = false;
         this.book = null;
         this.bookDetailsRaw = null;
+        this.relatedBooks = [];
+        this.isRelatedLoading = false;
 
         if (error.status === 404) {
           this.notFound = true;
@@ -413,6 +387,7 @@ export class BookPreviewComponent implements OnInit, OnDestroy {
       id: data.id,
       title: data.title,
       author: data.author?.display_name || 'Unknown Author',
+      categoryId: data.category?.id ?? null,
       category: data.category?.name || 'General',
       language: data.language || 'English',
       rating: data.average_rating ?? 0,
@@ -433,10 +408,111 @@ export class BookPreviewComponent implements OnInit, OnDestroy {
       description: descriptionList,
       authorInfo: {
         name: data.author?.display_name || 'Author',
-        role: 'Author',
+        role: data.author?.username ? `@${data.author.username}` : 'BookHive Author',
         image: data.author?.profile_image_url || 'images/author/profile/profile-placeholder.jpg',
         biography: data.author?.biography || 'No author biography provided.',
       },
+    };
+  }
+
+  private loadRelatedBooks(data: BookDetails): void {
+    this.relatedBooks = [];
+    this.isRelatedLoading = true;
+    this.changeDetector.markForCheck();
+
+    this.bookService
+      .getCatalogue({
+        page: 1,
+        size: 8,
+        category_id: data.category?.id,
+      })
+      .subscribe({
+        next: (catalogue) => {
+          const sameCategoryBooks = this.mapRelatedBooks(catalogue.items, data.id);
+
+          if (sameCategoryBooks.length >= 3 || !data.category?.id) {
+            this.relatedBooks = sameCategoryBooks;
+            this.isRelatedLoading = false;
+            this.changeDetector.markForCheck();
+            return;
+          }
+
+          this.bookService
+            .getCatalogue({
+              page: 1,
+              size: 10,
+            })
+            .subscribe({
+              next: (fallbackCatalogue) => {
+                const fallbackBooks = this.mapRelatedBooks(
+                  fallbackCatalogue.items,
+                  data.id,
+                  sameCategoryBooks
+                );
+                this.relatedBooks = fallbackBooks;
+                this.isRelatedLoading = false;
+                this.changeDetector.markForCheck();
+              },
+              error: () => {
+                this.relatedBooks = sameCategoryBooks;
+                this.isRelatedLoading = false;
+                this.changeDetector.markForCheck();
+              },
+            });
+        },
+        error: () => {
+          this.bookService
+            .getCatalogue({
+              page: 1,
+              size: 5,
+            })
+            .subscribe({
+              next: (catalogue) => {
+                this.relatedBooks = this.mapRelatedBooks(catalogue.items, data.id);
+                this.isRelatedLoading = false;
+                this.changeDetector.markForCheck();
+              },
+              error: () => {
+                this.relatedBooks = [];
+                this.isRelatedLoading = false;
+                this.changeDetector.markForCheck();
+              },
+            });
+        },
+      });
+  }
+
+  private mapRelatedBooks(
+    books: CatalogueBook[],
+    currentBookId: number,
+    seedBooks: RelatedBook[] = []
+  ): RelatedBook[] {
+    const seenIds = new Set(seedBooks.map((book) => book.id));
+    const relatedBooks = [...seedBooks];
+
+    for (const book of books) {
+      if (book.id === currentBookId || seenIds.has(book.id)) {
+        continue;
+      }
+
+      relatedBooks.push(this.mapRelatedBook(book));
+      seenIds.add(book.id);
+
+      if (relatedBooks.length >= 5) {
+        break;
+      }
+    }
+
+    return relatedBooks;
+  }
+
+  private mapRelatedBook(book: CatalogueBook): RelatedBook {
+    return {
+      id: book.id,
+      title: book.title,
+      author: book.author_name || 'Unknown Author',
+      cover: book.cover_url || '',
+      rating: book.rating ?? 0,
     };
   }
 

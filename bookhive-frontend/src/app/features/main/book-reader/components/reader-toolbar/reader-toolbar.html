@@ -36,7 +36,7 @@
       title="Previous page"
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()">
-      ‹
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
     </button>
 
     <span class="page-count">
@@ -49,7 +49,7 @@
       title="Next page"
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()">
-      ›
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
     </button>
 
   </div>
@@ -62,9 +62,7 @@
       title="Bookmark"
       [class.active]="bookmarked"
       (click)="toggleBookmark()">
-      <span aria-hidden="true">
-        {{ bookmarked ? '▰' : '▯' }}
-      </span>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" [attr.fill]="bookmarked ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg>
     </button>
 
     <button
@@ -72,7 +70,7 @@
       aria-label="Download book"
       title="Download"
       (click)="onDownload()">
-      <span class="download-symbol" aria-hidden="true">⇩</span>
+      <svg class="download-symbol" aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
     </button>
 
     <button
@@ -80,9 +78,7 @@
       aria-label="Open fullscreen"
       title="Fullscreen"
       (click)="onFullscreen()">
-      <span class="fullscreen-symbol" aria-hidden="true">
-        ⛶
-      </span>
+      <svg class="fullscreen-symbol" aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
     </button>
 
   </div>

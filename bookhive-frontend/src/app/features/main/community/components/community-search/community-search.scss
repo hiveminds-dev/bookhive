@@ -39,8 +39,9 @@
 }
 
 .search-icon {
+  width: 20px;
+  height: 20px;
   color: #747169;
-  font-size: 20px;
   flex-shrink: 0;
 }
 
@@ -92,8 +93,9 @@ input::-webkit-search-cancel-button {
   color: #a0770c;
 }
 
-.clear-button .material-symbols-outlined {
-  font-size: 18px;
+.clear-button svg {
+  width: 17px;
+  height: 17px;
 }
 
 @media (max-width: 600px) {

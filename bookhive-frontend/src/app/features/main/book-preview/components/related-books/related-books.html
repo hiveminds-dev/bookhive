@@ -7,7 +7,19 @@
 
   <div class="related-books">
 
-    @for (book of books; track book.id) {
+    @if (isLoading) {
+      @for (item of [1, 2, 3, 4, 5]; track item) {
+        <div class="related-card related-skeleton" aria-hidden="true">
+          <div class="cover-wrapper skeleton-cover"></div>
+          <div class="book-details">
+            <span class="skeleton-line title"></span>
+            <span class="skeleton-line short"></span>
+            <span class="skeleton-line tiny"></span>
+          </div>
+        </div>
+      }
+    } @else {
+      @for (book of books; track book.id) {
       <button
         type="button"
         class="related-card"
@@ -22,7 +34,7 @@
               (error)="onImageError(book.id)">
           } @else {
             <div class="cover-placeholder">
-              <span>📖</span>
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
             </div>
           }
 
@@ -33,16 +45,17 @@
           <p>{{ book.author }}</p>
 
           <span class="rating">
-            <span aria-hidden="true">★</span>
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
             {{ book.rating.toFixed(1) }}
           </span>
         </div>
 
       </button>
-    } @empty {
-      <div class="empty-related">
-        No related books are currently available.
-      </div>
+      } @empty {
+        <div class="empty-related">
+          No related books are currently available.
+        </div>
+      }
     }
 
   </div>

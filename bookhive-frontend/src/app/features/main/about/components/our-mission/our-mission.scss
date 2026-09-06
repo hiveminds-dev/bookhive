@@ -30,10 +30,10 @@
 .mission-card {
   min-height: 245px;
   padding: 34px 27px;
-  background: #ffffff;
-  border: 1px solid #f0f0f0;
-  border-radius: 11px;
-  box-shadow: 0 8px 24px rgba(40, 40, 40, 0.05);
+  background: var(--public-paper, #ffffff);
+  border: 1px solid var(--public-border, #f0f0f0);
+  border-radius: var(--public-radius-card, 10px);
+  box-shadow: var(--public-shadow-card, 0 8px 24px rgba(47, 39, 18, 0.06));
   text-align: center;
 }
 
@@ -43,8 +43,8 @@
   height: 53px;
   margin: 0 auto 18px;
   place-items: center;
-  color: #755d00;
-  background: #ffdf75;
+  color: var(--public-gold, #8e7113);
+  background: var(--public-gold-soft, #f6edcf);
   border-radius: 50%;
   font-size: 20px;
   font-weight: 700;

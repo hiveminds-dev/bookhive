@@ -1,43 +1,61 @@
 <header class="page-header">
 
-  <h1>{{ title }}</h1>
+  <div class="breadcrumb">
+    <span>Author</span>
+    <span class="sep">/</span>
+    <span class="current">{{ title }}</span>
+  </div>
 
   <div class="header-row">
 
     <div class="header-copy">
 
-      <h2>{{ sectionTitle }}</h2>
+      <h1>{{ title }}</h1>
 
       <p>{{ description }}</p>
 
     </div>
 
-    <nav
-      class="management-tabs"
-      aria-label="Book management navigation">
+    <div class="header-actions">
 
-      <a
-        routerLink="/author/books"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{
-          exact: true
-        }">
-        My Books
-      </a>
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="onUploadBook()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Upload New Book
+      </button>
 
-      <a
-        routerLink="/author/books/upload"
-        routerLinkActive="active">
-        Upload Book
-      </a>
+      <nav
+        class="management-tabs"
+        aria-label="Book management navigation">
 
-      <a
-        routerLink="/author/requests"
-        routerLinkActive="active">
-        Requests
-      </a>
+        <a
+          routerLink="/author/books"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{
+            exact: true
+          }">
+          My Books
+        </a>
 
-    </nav>
+        <a
+          routerLink="/author/books/upload"
+          routerLinkActive="active">
+          Upload Book
+        </a>
+
+        <a
+          routerLink="/author/requests"
+          routerLinkActive="active">
+          Requests
+        </a>
+
+      </nav>
+
+    </div>
 
   </div>
 

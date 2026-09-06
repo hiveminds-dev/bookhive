@@ -11,13 +11,12 @@
 .sidebar-card {
   padding: 21px 20px;
 
-  background: #ffffff;
+  background: var(--public-paper);
 
-  border: 1px solid #ebe8df;
-  border-radius: 12px;
+  border: 1px solid var(--public-border);
+  border-radius: var(--public-radius-card);
 
-  box-shadow:
-    0 7px 20px rgb(45 40 29 / 6%);
+  box-shadow: var(--public-shadow-card);
 }
 
 .sidebar-card h3 {
@@ -42,8 +41,10 @@
   color: #80620d;
 }
 
-.guidelines-card h3 .material-symbols-outlined {
-  font-size: 18px;
+.guidelines-card h3 svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .guidelines-card ul {
@@ -142,8 +143,14 @@
   color: #9b730b;
 }
 
-.suggestion-icon .material-symbols-outlined {
-  font-size: 18px;
+.suggestion-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
 .suggestion-details {
@@ -190,8 +197,9 @@
   color: #a27a0c;
 }
 
-.add-button .material-symbols-outlined {
-  font-size: 18px;
+.add-button svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Activity */

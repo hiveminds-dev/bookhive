@@ -11,7 +11,7 @@
       class="write-review-button"
       (click)="onWriteReview()">
       {{ hasUserReviewed ? 'Edit My Review' : 'Write a Review' }}
-      <span aria-hidden="true">✎</span>
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
     </button>
   </div>
 
@@ -45,7 +45,7 @@
 
               <div class="review-rating">
                 @for (star of getStars(review.rating); track star) {
-                  <span [class.inactive]="star > review.rating">★</span>
+                  <span [class.inactive]="star > review.rating" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
                 }
               </div>
             </div>
@@ -85,7 +85,8 @@
           type="button"
           class="helpful-button"
           (click)="onHelpful(review)">
-          ♡ Helpful ({{ review.helpfulCount }})
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+          Helpful ({{ review.helpfulCount }})
         </button>
 
       </article>

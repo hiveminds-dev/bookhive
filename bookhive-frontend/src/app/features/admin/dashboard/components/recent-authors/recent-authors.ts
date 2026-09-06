@@ -14,6 +14,7 @@ export class RecentAuthors implements OnInit {
 
   @Input() searchQuery = '';
   @Input() filterTimeframe = 'all';
+  @Input() filterSortBy: 'newest' | 'oldest' = 'newest';
 
   readonly readers = signal<RecentReaderItem[]>([]);
   readonly loading = signal(true);
@@ -51,7 +52,14 @@ export class RecentAuthors implements OnInit {
       if (timeframe === '30days') return diffHours <= 24 * 30;
 
       return true;
-    });
+    }).sort((a, b) => this.compareDates(a.joined_at, b.joined_at));
+  }
+
+  private compareDates(a?: string | null, b?: string | null): number {
+    const first = a ? new Date(a).getTime() : 0;
+    const second = b ? new Date(b).getTime() : 0;
+
+    return this.filterSortBy === 'oldest' ? first - second : second - first;
   }
 
   getInitials(name: string): string {

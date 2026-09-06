@@ -11,9 +11,15 @@
 .filters-row {
   display: flex;
   width: 100%;
+  min-height: 72px;
+  padding: 16px;
+  border: 1px solid var(--workspace-border, #e7e5df);
+  border-radius: var(--workspace-radius-card, 14px);
   align-items: center;
   justify-content: space-between;
-  gap: 35px;
+  gap: 24px;
+  background: var(--workspace-paper, #ffffff);
+  box-shadow: var(--workspace-shadow-card, 0 8px 26px rgba(17, 24, 39, 0.05));
 }
 
 .status-filters {
@@ -24,11 +30,15 @@
 }
 
 .status-filters button {
-  min-width: 89px;
+  display: inline-flex;
+  min-width: 122px;
   min-height: 34px;
-  padding: 0 17px;
+  padding: 0 13px 0 18px;
   border: 1px solid transparent;
-  border-radius: 18px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: #f1f1f0;
   color: #4f4a42;
   font-family: inherit;
@@ -40,6 +50,22 @@
     border-color 0.2s ease,
     color 0.2s ease,
     transform 0.2s ease;
+}
+
+.status-filters button span {
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 .status-filters button:hover {
@@ -58,18 +84,23 @@
   font-weight: 700;
 }
 
+.status-filters button.active span {
+  background: #d39f0e;
+  color: #ffffff;
+}
+
 .search-wrapper {
   position: relative;
-  width: min(100%, 290px);
-  flex: 0 0 290px;
+  width: min(100%, 320px);
+  flex: 0 0 320px;
 }
 
 .search-wrapper input {
   width: 100%;
-  height: 43px;
+  height: 44px;
   padding: 0 43px 0 18px;
   border: 1px solid #ded9ce;
-  border-radius: 7px;
+  border-radius: var(--workspace-radius-control, 10px);
   outline: none;
   background: #ffffff;
   color: #302d28;

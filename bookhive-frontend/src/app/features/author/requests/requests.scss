@@ -7,20 +7,21 @@
 }
 
 .requests-page {
-  width: min(100%, 1100px);
+  width: min(100%, 1180px);
   min-height: calc(100vh - 180px);
   margin: 0 auto;
-  padding: 55px 35px 80px;
+  padding: 40px 55px 72px;
+  font-family: var(--font-sans);
 }
 
 app-author-request-header {
   display: block;
-  margin-bottom: 45px;
+  margin-bottom: 30px;
 }
 
 app-author-request-filters {
   display: block;
-  margin-bottom: 45px;
+  margin-bottom: 30px;
 }
 
 app-author-request-table {
@@ -29,7 +30,7 @@ app-author-request-table {
 
 @media (max-width: 900px) {
   .requests-page {
-    padding: 40px 24px 65px;
+    padding: 40px 35px 65px;
   }
 
   app-author-request-header,

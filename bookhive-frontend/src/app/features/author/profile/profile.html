@@ -1,5 +1,14 @@
 <main class="profile-page">
 
+  <nav
+    class="profile-breadcrumb"
+    aria-label="Breadcrumb"
+  >
+    <span>Author</span>
+    <span class="separator">/</span>
+    <span class="current">Profile</span>
+  </nav>
+
   <section class="profile-introduction">
 
     <app-profile-header
@@ -24,11 +33,14 @@
   </section>
 
 
-  <app-profile-statistics />
+  <app-profile-statistics
+    [statistics]="profileStatistics"
+  />
 
   <app-profile-information />
 
   <app-profile-books
+    [books]="books"
     (bookSelected)="openBook($event)"
     (viewAllSelected)="viewAllBooks()"
   />

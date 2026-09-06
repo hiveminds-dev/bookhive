@@ -162,6 +162,22 @@ export class BookManagementComponent implements OnInit {
     );
   }
 
+  get statusCounts(): Record<BookFilterStatus, number> {
+    const counts: Record<BookFilterStatus, number> = {
+      All: this.books.length,
+      Published: 0,
+      Pending: 0,
+      Rejected: 0,
+      Draft: 0
+    };
+
+    for (const book of this.books) {
+      counts[book.status] += 1;
+    }
+
+    return counts;
+  }
+
   get totalPages(): number {
     return Math.max(
       1,

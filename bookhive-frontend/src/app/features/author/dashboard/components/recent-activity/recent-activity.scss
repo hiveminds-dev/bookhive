@@ -10,12 +10,12 @@
 
 .activity-card {
   width: 100%;
-  min-height: 340px;
+  min-height: 300px;
   padding: 30px 28px;
-  border: 1px solid #efebe4;
+  border: 1px solid #e3e9f1;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 7px 22px rgba(43, 37, 22, 0.055);
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
 
   header {
     margin-bottom: 30px;
@@ -23,10 +23,10 @@
 
   h2 {
     margin: 0;
-    color: #786000;
-    font-family: var(--font-serif);
-    font-size: 23px;
-    font-weight: 700;
+    color: #111827;
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 800;
   }
 }
 
@@ -129,6 +129,7 @@ time {
 
   p {
     margin: 10px 0 0;
+    color: #6b7280;
     font-size: 12px;
   }
 }

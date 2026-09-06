@@ -178,6 +178,13 @@
         <button type="button" class="link-btn" routerLink="/admin/books">View All</button>
       </div>
       <table class="mini-table">
+        <colgroup>
+          <col class="col-title" />
+          <col class="col-category" />
+          <col class="col-reads" />
+          <col class="col-rating" />
+          <col class="col-trend" />
+        </colgroup>
         <thead>
           <tr>
             <th>BOOK TITLE</th>
@@ -198,8 +205,8 @@
             <td><span class="cat-text">{{ b.category }}</span></td>
             <td><strong class="reads-text">{{ b.totalReads }}</strong></td>
             <td>
-              <span class="rating-text" style="display: inline-flex; align-items: center; gap: 4px;">
-                <svg lucideStar width="13" height="13" style="fill:#eab308;color:#eab308" aria-hidden="true"></svg>
+              <span class="rating-text">
+                <svg lucideStar aria-hidden="true"></svg>
                 {{ b.rating }}
               </span>
             </td>

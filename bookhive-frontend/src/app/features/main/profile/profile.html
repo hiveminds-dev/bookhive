@@ -48,6 +48,15 @@
       <!-- Main Profile View -->
       <div class="profile-layout">
 
+        <nav
+          class="profile-breadcrumb"
+          aria-label="Breadcrumb"
+        >
+          <span>Profile</span>
+          <span class="separator">/</span>
+          <span class="current">Account</span>
+        </nav>
+
         <!-- Profile Hero Card -->
         <section class="profile-hero-card" aria-label="Reader Profile Header">
           <div class="hero-main">
@@ -151,7 +160,7 @@
             </button>
 
             <a
-              routerLink="/auth/reset-password"
+              routerLink="/forgot-password"
               class="btn btn-secondary">
               <svg lucideLock class="btn-icon" aria-hidden="true"></svg>
               <span>Change Password</span>
@@ -170,7 +179,7 @@
               id="logout-btn"
               (click)="onLogout()">
               <svg lucideLogOut class="btn-icon" aria-hidden="true"></svg>
-              <span>Log Out</span>
+              <span>Logout</span>
             </button>
           </div>
         </section>

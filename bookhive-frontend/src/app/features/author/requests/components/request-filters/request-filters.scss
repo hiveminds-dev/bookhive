@@ -11,16 +11,15 @@
 .request-filters {
   display: flex;
   width: 100%;
-  min-height: 80px;
-  padding: 17px 25px;
-  border: 1px solid #efebe4;
+  min-height: 72px;
+  padding: 16px;
+  border: 1px solid #e3e9f1;
   border-radius: 12px;
   align-items: center;
   justify-content: space-between;
   gap: 30px;
   background: #ffffff;
-  box-shadow: 0 6px 20px
-  rgba(43, 37, 22, 0.045);
+  box-shadow: 0 7px 22px rgba(15, 23, 42, 0.05);
 }
 
 .filter-controls {
@@ -45,11 +44,16 @@
   gap: 9px;
 
   button {
+    display: inline-flex;
+    min-width: 116px;
     min-height: 34px;
-    padding: 0 17px;
+    padding: 0 13px 0 18px;
     border: 1px solid transparent;
-    border-radius: 18px;
-    background: transparent;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #f1f1f0;
     color: #4d4840;
     font-family: inherit;
     font-size: 11px;
@@ -71,6 +75,27 @@
       color: #7c6200;
       font-weight: 700;
     }
+
+    span {
+      display: inline-flex;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      background: #ffffff;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    &.active span {
+      background: #d39f0e;
+      color: #ffffff;
+    }
   }
 }
 
@@ -86,12 +111,13 @@
 
   select {
     min-width: 100px;
-    height: 35px;
-    padding: 0 30px 0 11px;
-    border: 0;
+    height: 36px;
+    padding: 0 34px 0 13px;
+    border: 1px solid #e3e9f1;
+    border-radius: 8px;
     outline: none;
     appearance: none;
-    background: transparent;
+    background: #ffffff;
     color: #4f4a42;
     font-family: inherit;
     font-size: 11px;
@@ -111,8 +137,8 @@
 
 .request-count {
   margin: 0;
-  color: #554f46;
-  font-size: 10px;
+  color: #64748b;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
 }

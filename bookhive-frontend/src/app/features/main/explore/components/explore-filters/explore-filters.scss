@@ -11,10 +11,10 @@
 .filter-panel {
   width: 100%;
   padding: 22px 20px;
-  background: #ffffff;
-  border: 1px solid #eeeae1;
-  border-radius: 10px;
-  box-shadow: 0 4px 18px rgba(48, 39, 18, 0.06);
+  background: var(--public-paper);
+  border: 1px solid var(--public-border);
+  border-radius: var(--public-radius-card);
+  box-shadow: var(--public-shadow-card);
 }
 
 .filter-header {
@@ -169,13 +169,15 @@
   position: relative;
 
   &::after {
-    content: '⌄';
+    content: '';
     position: absolute;
-    top: 45%;
+    top: 48%;
     right: 14px;
-    color: #777167;
-    font-size: 15px;
-    transform: translateY(-50%);
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid #777167;
+    border-bottom: 1.5px solid #777167;
+    transform: translateY(-65%) rotate(45deg);
     pointer-events: none;
   }
 

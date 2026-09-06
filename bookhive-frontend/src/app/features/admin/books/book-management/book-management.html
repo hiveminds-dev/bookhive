@@ -105,6 +105,16 @@
 
   <section class="card-table-wrapper">
     <table class="data-table">
+      <colgroup>
+        <col class="col-book" />
+        <col class="col-author" />
+        <col class="col-category" />
+        <col class="col-language" />
+        <col class="col-date" />
+        <col class="col-metrics" />
+        <col class="col-status" />
+        <col class="col-actions" />
+      </colgroup>
       <thead>
         <tr>
           <th>BOOK</th>
@@ -119,25 +129,33 @@
       </thead>
       <tbody>
         <tr *ngIf="filteredBooks.length === 0">
-          <td colspan="8" style="text-align: center; padding: 2rem; color: #64748b;">No books found matching your search criteria.</td>
+          <td colspan="8" class="empty-table-cell">No books found matching your search criteria.</td>
         </tr>
-        <tr *ngFor="let book of paginatedBooks">
+        <tr
+          *ngFor="let book of paginatedBooks"
+          class="book-row"
+          tabindex="0"
+          role="link"
+          [attr.aria-label]="'View details for ' + book.title"
+          (click)="viewBook(book)"
+          (keydown.enter)="viewBook(book)"
+        >
           <td>
             <div class="book-info">
-              <div class="book-cover" [routerLink]="['/admin/books', book.id, 'review']" style="cursor: pointer;">
+              <div class="book-cover">
                 <img *ngIf="book.cover" [src]="book.cover" [alt]="book.title">
-                <div *ngIf="!book.cover" class="book-cover-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#e2e8f0;">
+                <div *ngIf="!book.cover" class="book-cover-placeholder">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
                 </div>
               </div>
               <div class="book-details">
-                <strong class="title" [routerLink]="['/admin/books', book.id, 'review']" style="cursor: pointer;">{{ book.title }}</strong>
+                <strong class="title">{{ book.title }}</strong>
                 <span class="isbn">ISBN: {{ book.isbn }}</span>
               </div>
             </div>
           </td>
           <td>
-            <span class="author-name" style="font-weight: 600; color: #1e293b;">{{ book.author }}</span>
+            <span class="author-name">{{ book.author }}</span>
           </td>
           <td>
             <span class="badge-tag">{{ book.category }}</span>
@@ -171,8 +189,7 @@
           </td>
           <td class="text-right">
             <div class="action-buttons">
-              <a [routerLink]="['/admin/books', book.id, 'review']" class="btn-icon" title="View Book Details"><svg lucideEye aria-hidden="true"></svg></a>
-              <button type="button" class="btn-icon status-toggle-btn" [class.is-active]="book.isActive" [class.is-deactive]="!book.isActive" [title]="book.isActive ? 'Deactivate Book' : 'Activate Book'" (click)="toggleBookActive(book)">
+              <button type="button" class="btn-icon status-toggle-btn" [class.is-active]="book.isActive" [class.is-deactive]="!book.isActive" [title]="book.isActive ? 'Deactivate Book' : 'Activate Book'" (click)="toggleBookActive(book, $event)">
                 <svg *ngIf="book.isActive" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="2" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 <svg *ngIf="!book.isActive" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
               </button>
@@ -188,85 +205,13 @@
       </span>
       <div class="pagination">
         <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === 1" (click)="prevPage()" title="Previous Page">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg viewBox="0 0 24 24" class="pagination-icon"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <button type="button" class="page-btn" *ngFor="let page of pageNumbers" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</button>
         <button type="button" class="page-btn nav-btn" [disabled]="currentPage() === totalPages" (click)="nextPage()" title="Next Page">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg viewBox="0 0 24 24" class="pagination-icon"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
     </footer>
   </section>
-
-  <!-- Quick Book Details Modal -->
-  <div class="modal-backdrop" *ngIf="selectedBookForView()" (click)="closeViewModal()">
-    <div class="modal-card book-detail-modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <div class="header-info">
-          <span class="badge-tag">{{ selectedBookForView()?.category }}</span>
-          <h2>{{ selectedBookForView()?.title }}</h2>
-          <p class="subtitle">by <strong>{{ selectedBookForView()?.author }}</strong> · ISBN: {{ selectedBookForView()?.isbn }}</p>
-        </div>
-        <button type="button" class="btn-close" (click)="closeViewModal()" style="display: flex; align-items: center; justify-content: center;">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <div class="detail-grid">
-          <div class="cover-col">
-            <img *ngIf="selectedBookForView()?.cover" [src]="selectedBookForView()?.cover" [alt]="selectedBookForView()?.title" class="modal-cover">
-            <div *ngIf="!selectedBookForView()?.cover" style="width:140px;height:200px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;border-radius:8px;">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#64748b" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
-            </div>
-          </div>
-          <div class="info-col">
-            <div class="info-group">
-              <label>Status</label>
-              <span class="status-badge" [class]="selectedBookForView()?.statusClass">
-                <span class="dot"></span> {{ selectedBookForView()?.status }}
-              </span>
-            </div>
-            <div class="info-group">
-              <label>Language</label>
-              <span>{{ selectedBookForView()?.language }}</span>
-            </div>
-            <div class="info-group">
-              <label>Page Count</label>
-              <span style="display: inline-flex; align-items: center; gap: 6px;">
-                <svg style="width:15px;height:15px;color:#64748b;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
-                {{ selectedBookForView()?.pageCount ? (selectedBookForView()?.pageCount + ' pages') : 'Not available' }}
-              </span>
-            </div>
-            <div class="info-group">
-              <label>Estimated Reading Time</label>
-              <span style="display: inline-flex; align-items: center; gap: 6px;">
-                <svg style="width:15px;height:15px;color:#64748b;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
-                {{ selectedBookForView()?.estimatedReadingTime || 'Not available' }}
-              </span>
-            </div>
-            <div class="info-group">
-              <label>Date Added</label>
-              <span>{{ selectedBookForView()?.date }}</span>
-            </div>
-            <div class="info-group">
-              <label>Total Views</label>
-              <span>{{ selectedBookForView()?.views }}</span>
-            </div>
-            <div class="info-group">
-              <label>Total Downloads</label>
-              <span>{{ selectedBookForView()?.downloads }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
-        <a [routerLink]="['/admin/books', selectedBookForView()?.id, 'review']" class="btn-primary" (click)="closeViewModal()">
-          Open Full Manuscript Inspector →
-        </a>
-      </div>
-    </div>
-  </div>
 </div>

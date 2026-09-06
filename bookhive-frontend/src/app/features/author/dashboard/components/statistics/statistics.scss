@@ -16,10 +16,10 @@
 }
 
 .statistic-card {
-  min-height: 180px;
+  min-height: 150px;
   padding: 25px 25px 22px;
   border: 1px solid #f0ede7;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #ffffff;
   box-shadow: 0 7px 22px rgba(43, 37, 22, 0.055);
   transition:
@@ -66,9 +66,8 @@
 }
 
 .statistic-value {
-  color: #735b00;
-  font-family: var(--font-serif);
-  font-size: 45px;
+  color: #111827;
+  font-size: 34px;
   font-weight: 700;
   line-height: 1;
 }

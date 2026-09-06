@@ -414,14 +414,16 @@
     flex-direction: column;
     background: #ffffff;
     box-shadow: -8px 10px 30px rgba(37, 31, 18, 0.12);
-    transform: translateX(105%);
+    opacity: 0;
+    pointer-events: none;
     visibility: hidden;
     transition:
-      transform 0.28s ease,
+      opacity 0.2s ease,
       visibility 0s linear 0.28s;
 
     &.mobile-open {
-      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
       visibility: visible;
       transition-delay: 0s;
     }

@@ -10,9 +10,9 @@
 
 .preview-page {
   min-height: calc(100vh - 68px);
-  padding: 20px 24px 70px;
-  background: #ffffff;
-  color: #29251f;
+  padding: clamp(22px, 3vw, 38px) 24px 70px;
+  background: var(--public-page-bg, #fbfaf7);
+  color: var(--public-ink, #29251f);
 }
 
 .preview-container {
@@ -24,12 +24,12 @@
 .breadcrumb {
   display: flex;
   min-height: 32px;
-  margin-bottom: 25px;
+  margin-bottom: 18px;
   align-items: center;
   gap: 7px;
   overflow: hidden;
   color: #a09a90;
-  font-size: 9px;
+  font-size: 0.72rem;
   white-space: nowrap;
 
   a {
@@ -50,12 +50,13 @@
 
 .book-hero {
   display: grid;
-  padding: 30px 30px 31px;
-  border: 1px solid #e8e2d6;
-  border-radius: 9px;
-  grid-template-columns: minmax(190px, 285px) minmax(0, 1fr);
-  gap: 58px;
-  background: #fdfcf9;
+  padding: clamp(24px, 3vw, 34px);
+  border: 1px solid var(--public-border, #e8e2d6);
+  border-radius: var(--public-radius-card, 10px);
+  grid-template-columns: minmax(190px, 270px) minmax(0, 1fr);
+  gap: clamp(28px, 4.5vw, 54px);
+  background: var(--public-paper, #ffffff);
+  box-shadow: var(--public-shadow-card, 0 8px 24px rgba(47, 39, 18, 0.06));
 }
 
 .cover-column {
@@ -65,14 +66,14 @@
 .hero-content {
   display: flex;
   min-width: 0;
-  padding: 24px 0;
+  padding: 14px 0;
   justify-content: center;
   flex-direction: column;
 
   app-book-info {
     display: block;
-    margin: 28px 0 25px;
-    padding: 13px 0;
+    margin: 22px 0 20px;
+    padding: 14px 0;
     border-top: 1px solid #e5dfd3;
     border-bottom: 1px solid #e5dfd3;
   }
@@ -80,9 +81,9 @@
 
 .details-layout {
   display: grid;
-  padding: 28px 0 0;
-  grid-template-columns: minmax(0, 1fr) 245px;
-  gap: 35px;
+  padding: 30px 0 0;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 280px);
+  gap: 28px;
 }
 
 .main-details {
@@ -97,11 +98,13 @@
 
 .author-column {
   align-self: start;
+  position: sticky;
+  top: 92px;
 }
 
 .related-wrapper {
-  margin-top: 28px;
-  padding-top: 27px;
+  margin-top: 30px;
+  padding-top: 28px;
   border-top: 1px solid #e7e2d9;
 }
 
@@ -109,11 +112,12 @@
   display: grid;
   min-height: 430px;
   padding: 30px;
-  border: 1px solid #ece8e0;
-  border-radius: 9px;
+  border: 1px solid var(--public-border, #ece8e0);
+  border-radius: var(--public-radius-card, 10px);
   grid-template-columns: 285px 1fr;
   gap: 55px;
-  background: #fdfcf9;
+  background: var(--public-paper, #ffffff);
+  box-shadow: var(--public-shadow-card, 0 8px 24px rgba(47, 39, 18, 0.06));
 }
 
 .loading-cover {
@@ -190,6 +194,10 @@
     grid-template-columns: minmax(0, 1fr) 215px;
     gap: 24px;
   }
+
+  .author-column {
+    position: static;
+  }
 }
 
 @media (max-width: 720px) {
@@ -242,10 +250,11 @@
   text-align: center;
   min-height: 380px;
   padding: 40px 24px;
-  background: #fdfcf9;
-  border: 1px solid #e8e2d6;
-  border-radius: 9px;
+  background: var(--public-paper, #ffffff);
+  border: 1px solid var(--public-border, #e8e2d6);
+  border-radius: var(--public-radius-card, 10px);
   margin-top: 10px;
+  box-shadow: var(--public-shadow-card, 0 8px 24px rgba(47, 39, 18, 0.06));
 
   .error-icon {
     font-size: 48px;
@@ -331,9 +340,10 @@
 .modal-dialog {
   width: 100%;
   max-width: 500px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  background: var(--public-paper, #ffffff);
+  border: 1px solid var(--public-border, #e8e2d6);
+  border-radius: var(--public-radius-card, 10px);
+  box-shadow: 0 22px 50px rgba(32, 28, 20, 0.18);
   overflow: hidden;
   animation: slideUp 0.25s ease;
 
@@ -358,8 +368,14 @@
   }
 
   .close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
     padding: 4px;
     border: none;
+    border-radius: var(--public-radius-control, 8px);
     background: transparent;
     color: #999288;
     font-size: 16px;
@@ -367,6 +383,7 @@
     line-height: 1;
 
     &:hover {
+      background: var(--public-gold-soft, #f6edcf);
       color: #29251f;
     }
   }
@@ -561,4 +578,3 @@
     transform: translateY(0);
   }
 }
-
