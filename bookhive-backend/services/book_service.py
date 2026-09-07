@@ -23,6 +23,7 @@ from schemas.review import PublicReviewResponse
 from utils.file_handler import (
     FileUploadError,
     delete_stored_file,
+    get_pdf_page_count,
     save_cover,
     save_pdf,
 )
@@ -350,6 +351,7 @@ class BookService:
         self._ensure_book_is_editable(book)
 
         new_pdf_path = await save_pdf(upload)
+        page_count = await get_pdf_page_count(new_pdf_path)
         old_pdf_path = book.pdf_path
 
         return await self._save_uploaded_path(
@@ -358,6 +360,9 @@ class BookService:
             field_name="pdf_path",
             new_path=new_pdf_path,
             old_path=old_pdf_path,
+            extra_updates={
+                "page_count": page_count,
+            },
         )
 
     async def upload_cover(
@@ -419,6 +424,10 @@ class BookService:
                 and not value.strip()
             )
         ]
+
+        page_count = getattr(book, "page_count", None)
+        if not page_count or page_count <= 0:
+            missing_fields.append("page_count")
 
         if missing_fields:
             raise BookValidationError(
@@ -508,17 +517,22 @@ class BookService:
         field_name: str,
         new_path: str,
         old_path: str | None,
+        extra_updates: dict | None = None,
     ) -> Book:
         """Save an uploaded path and clean up replaced files."""
 
         try:
+            updates = {
+                field_name: new_path,
+            }
+            if extra_updates:
+                updates.update(extra_updates)
+
             updated_book = (
                 await self.book_repository.update_book(
                     session,
                     book,
-                    {
-                        field_name: new_path,
-                    },
+                    updates,
                 )
             )
 

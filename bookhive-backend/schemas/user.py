@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from orm_models.user import AccountStatus, UserRole
+from schemas.password_validation import validate_password_complexity
 
 
 class UserCreate(BaseModel):
@@ -14,6 +15,11 @@ class UserCreate(BaseModel):
     )
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        return validate_password_complexity(value)
 
 
 class UserResponse(BaseModel):

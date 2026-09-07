@@ -50,7 +50,7 @@ describe(
       () => {
         expect(
           component.statistics[3].value
-        ).toBe('Oct 2023');
+        ).toBe('Current account');
       }
     );
   }

@@ -15,6 +15,7 @@ describe('App Routing Behavior', () => {
   let mockAuth: {
     isAuthenticated: ReturnType<typeof vi.fn>;
     getUserRole: ReturnType<typeof vi.fn>;
+    getCurrentUserLandingRoute: ReturnType<typeof vi.fn>;
     hasRole: ReturnType<typeof vi.fn>;
     logout: ReturnType<typeof vi.fn>;
   };
@@ -28,6 +29,7 @@ describe('App Routing Behavior', () => {
     mockAuth = {
       isAuthenticated: vi.fn().mockReturnValue(false),
       getUserRole: vi.fn().mockReturnValue(null),
+      getCurrentUserLandingRoute: vi.fn().mockReturnValue('/home'),
       hasRole: vi.fn().mockReturnValue(false),
       logout: vi.fn().mockReturnValue(of({ message: 'Logged out' })),
     };
@@ -87,6 +89,29 @@ describe('App Routing Behavior', () => {
     expect(router.url).toBe('/forgot-password');
   });
 
+  it('should redirect authenticated users away from auth-only pages', async () => {
+    mockAuth.isAuthenticated.mockReturnValue(true);
+    mockAuth.getUserRole.mockReturnValue('reader');
+
+    await harness.navigateByUrl('/login');
+    expect(router.url).toBe('/home');
+
+    await harness.navigateByUrl('/register');
+    expect(router.url).toBe('/home');
+
+    await harness.navigateByUrl('/forgot-password');
+    expect(router.url).toBe('/home');
+
+    await harness.navigateByUrl('/auth/reset-password?token=test-token');
+    expect(router.url).toBe('/home');
+
+    await harness.navigateByUrl('/auth/verify-email?email=reader@example.com');
+    expect(router.url).toBe('/home');
+
+    await harness.navigateByUrl('/auth/verification-success?token=test-token');
+    expect(router.url).toBe('/home');
+  });
+
   it('should redirect unauthenticated guest away from protected Reader profile route', async () => {
     mockAuth.isAuthenticated.mockReturnValue(false);
     mockAuth.getUserRole.mockReturnValue(null);
@@ -111,8 +136,8 @@ describe('App Routing Behavior', () => {
     expect(router.url).toContain('/login');
   });
 
-  it('should redirect unknown routes to "/home"', async () => {
+  it('should redirect unknown routes to "/not-found"', async () => {
     await harness.navigateByUrl('/some/unknown/nonexistent/route');
-    expect(router.url).toBe('/home');
+    expect(router.url).toBe('/not-found');
   });
 });

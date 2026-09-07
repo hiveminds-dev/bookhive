@@ -78,7 +78,7 @@
       id="minimum-rating"
       class="rating-range"
       type="range"
-      min="1"
+      min="0"
       max="5"
       step="1"
       [(ngModel)]="minimumRating"
@@ -91,7 +91,7 @@
         }
       </span>
 
-      <span>{{ minimumRating }}.0 &amp; up</span>
+      <span>{{ minimumRating > 0 ? minimumRating + '.0 & up' : 'Any rating' }}</span>
     </div>
   </div>
 

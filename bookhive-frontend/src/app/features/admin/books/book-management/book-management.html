@@ -128,11 +128,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngIf="filteredBooks.length === 0">
+        <tr *ngIf="loadingSignal()">
+          <td colspan="8" class="empty-table-cell state-cell">
+            <strong>Loading books...</strong>
+            <span>Retrieving repository books from BookHive.</span>
+          </td>
+        </tr>
+        <tr *ngIf="!loadingSignal() && errorMessageSignal()">
+          <td colspan="8" class="empty-table-cell state-cell error-cell">
+            <strong>Books could not be loaded</strong>
+            <span>{{ errorMessageSignal() }}</span>
+            <button type="button" (click)="loadBooks()">Try Again</button>
+          </td>
+        </tr>
+        <tr *ngIf="!loadingSignal() && !errorMessageSignal() && filteredBooks.length === 0">
           <td colspan="8" class="empty-table-cell">No books found matching your search criteria.</td>
         </tr>
         <tr
-          *ngFor="let book of paginatedBooks"
+          *ngFor="let book of !loadingSignal() && !errorMessageSignal() ? paginatedBooks : []"
           class="book-row"
           tabindex="0"
           role="link"

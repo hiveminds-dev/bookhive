@@ -16,6 +16,7 @@
           [src]="member.image"
           [alt]="member.name"
           class="member-image"
+          (error)="handleImageError($event)"
         />
 
         <h3>

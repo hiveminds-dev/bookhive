@@ -92,12 +92,16 @@ export class SupportComponent {
   ticketPriority = 'Medium';
   ticketMessage = '';
 
+  get isTicketFormIncomplete(): boolean {
+    return !this.ticketSubject.trim() || !this.ticketMessage.trim();
+  }
+
   toggleFAQ(item: FAQItem): void {
     item.isOpen = !item.isOpen;
   }
 
   submitTicket(): void {
-    if (!this.ticketSubject.trim() || !this.ticketMessage.trim()) {
+    if (this.isTicketFormIncomplete) {
       this.toastService.error('Please enter a ticket subject and description.', 'Form Error');
       return;
     }

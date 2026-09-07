@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { catchError, finalize, Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 
 import {
   AuthenticatedUser,
@@ -22,6 +22,18 @@ export class Auth {
   private readonly currentUserSignal = signal<AuthenticatedUser | null>(
     this.readStoredUser(),
   );
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key === ACCESS_TOKEN_KEY || event.key === AUTH_USER_KEY) {
+          this.currentUserSignal.set(
+            this.getAccessToken() ? this.readStoredUser() : null,
+          );
+        }
+      });
+    }
+  }
 
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly isAuthenticated = computed(
@@ -130,13 +142,19 @@ export class Auth {
   }
 
   logout(): Observable<void> {
-    if (!this.getAccessToken()) {
-      this.clearSession();
+    const token = this.getAccessToken();
+    this.clearSession();
+
+    if (!token) {
       return of(undefined);
     }
 
-    return this.http.post<void>('/api/auth/logout', {}).pipe(
-      finalize(() => this.clearSession()),
+    return this.http.post<void>('/api/auth/logout', {}, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      }),
+    }).pipe(
+      catchError(() => of(undefined)),
     );
   }
 

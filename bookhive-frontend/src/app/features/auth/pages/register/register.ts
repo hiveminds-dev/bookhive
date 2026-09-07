@@ -301,6 +301,10 @@ export class Register implements OnDestroy {
     if (!email) {
       return;
     }
+    if (emailControl.value !== email) {
+      emailControl.setValue(email, { emitEvent: false });
+      emailControl.updateValueAndValidity({ emitEvent: false });
+    }
 
     // If this exact email was already verified and result is known
     if (this.lastCheckedEmail === email && this.lastCheckedResult !== null) {
@@ -390,6 +394,7 @@ export class Register implements OnDestroy {
       this.emailTakenError = null;
       this.changeDetector.markForCheck();
     }
+    this.registrationError = null;
   }
 
   private focusAccountSelection(): void {

@@ -51,12 +51,13 @@ describe('Auth', () => {
     localStorage.setItem('bookhive_access_token', 'jwt-token');
     service.logout().subscribe();
 
-    const request = httpTesting.expectOne('/api/auth/logout');
-    expect(request.request.method).toBe('POST');
-    request.flush(null);
-
     expect(service.getAccessToken()).toBeNull();
     expect(service.isAuthenticated()).toBe(false);
+
+    const request = httpTesting.expectOne('/api/auth/logout');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.headers.get('Authorization')).toBe('Bearer jwt-token');
+    request.flush(null);
   });
 
   it('clears the local session even when the logout request fails', () => {

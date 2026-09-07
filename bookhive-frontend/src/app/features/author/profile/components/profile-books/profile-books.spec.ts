@@ -38,10 +38,10 @@ describe(
     });
 
     it(
-      'should contain three books',
+      'should start without placeholder books',
       () => {
         expect(component.books.length)
-          .toBe(3);
+          .toBe(0);
       }
     );
 
@@ -57,9 +57,18 @@ describe(
           }
         );
 
-        component.openBook(
-          component.books[0]
-        );
+        component.books = [
+          {
+            id: 1,
+            title: 'Mind Over Marathon',
+            category: 'Personal Growth',
+            cover: 'images/author-books/mind-over-marathon.jpg',
+            publishedDate: 'Sep 4, 2026',
+            rating: 4.5
+          }
+        ];
+
+        component.openBook(component.books[0]);
 
         expect(selectedBookId).toBe(1);
       }

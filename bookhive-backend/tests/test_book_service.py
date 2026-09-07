@@ -45,6 +45,7 @@ def make_book(
             if complete
             else None
         ),
+        page_count=12 if complete else 0,
         status=status,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
@@ -216,6 +217,10 @@ async def test_pdf_upload_updates_owned_draft_book(
         save_pdf_mock,
     )
     monkeypatch.setattr(
+        "services.book_service.get_pdf_page_count",
+        AsyncMock(return_value=3),
+    )
+    monkeypatch.setattr(
         "services.book_service.delete_stored_file",
         delete_file_mock,
     )
@@ -236,6 +241,7 @@ async def test_pdf_upload_updates_owned_draft_book(
         book,
         {
             "pdf_path": "storage/books/new.pdf",
+            "page_count": 3,
         },
     )
 
@@ -343,6 +349,10 @@ async def test_new_upload_is_deleted_when_database_update_fails(
     monkeypatch.setattr(
         "services.book_service.save_pdf",
         save_pdf_mock,
+    )
+    monkeypatch.setattr(
+        "services.book_service.get_pdf_page_count",
+        AsyncMock(return_value=3),
     )
     monkeypatch.setattr(
         "services.book_service.delete_stored_file",

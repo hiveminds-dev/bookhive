@@ -21,26 +21,41 @@
 
     <div class="books-wrapper">
 
-      <app-author-book-grid
-        [books]="paginatedBooks"
-        [hasMatches]="filteredBooks.length > 0"
-        [isSearching]="searchTerm.trim().length > 0 || selectedStatus !== 'All'"
-        (viewBook)="viewBook($event)"
-        (editBook)="editBook($event)"
-        (deleteBook)="deleteBook($event)">
-      </app-author-book-grid>
+      @if (isLoading) {
+        <div class="state-panel" role="status" aria-live="polite">
+          <strong>Loading your books...</strong>
+          <span>Please wait while BookHive retrieves your author library.</span>
+        </div>
+      } @else if (loadError) {
+        <div class="state-panel error-state" role="alert">
+          <strong>Books could not be loaded</strong>
+          <span>{{ loadError }}</span>
+          <button type="button" (click)="loadBooks()">Try Again</button>
+        </div>
+      } @else {
+        <app-author-book-grid
+          [books]="paginatedBooks"
+          [hasMatches]="filteredBooks.length > 0"
+          [isSearching]="searchTerm.trim().length > 0 || selectedStatus !== 'All'"
+          (viewBook)="viewBook($event)"
+          (editBook)="editBook($event)"
+          (deleteBook)="deleteBook($event)">
+        </app-author-book-grid>
+      }
 
     </div>
 
-    <div class="pagination-wrapper">
+    @if (!isLoading && !loadError && totalPages > 1) {
+      <div class="pagination-wrapper">
 
-      <app-author-books-pagination
-        [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        (pageChanged)="onPageChanged($event)">
-      </app-author-books-pagination>
+        <app-author-books-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          (pageChanged)="onPageChanged($event)">
+        </app-author-books-pagination>
 
-    </div>
+      </div>
+    }
 
   </div>
 

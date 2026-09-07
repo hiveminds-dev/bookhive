@@ -97,6 +97,13 @@ export interface PaginatedCatalogue {
   items: CatalogueBook[];
 }
 
+type MaybeWrapped<T> = T | { data: T; message?: string };
+type CatalogueResponseLike = Partial<PaginatedCatalogue> & {
+  data?: CatalogueBook[] | Partial<PaginatedCatalogue>;
+  books?: CatalogueBook[];
+  total?: number;
+};
+
 export interface CategoryItem {
   id: number;
   name: string;
@@ -189,8 +196,8 @@ export class BookService {
 
   getBookDetails(bookId: number): Observable<BookDetails> {
     return this.http
-      .get<BookDetailsResult>(`/api/books/${bookId}`)
-      .pipe(map((response) => response.data));
+      .get<MaybeWrapped<BookDetails>>(`/api/books/${bookId}`)
+      .pipe(map((response) => this.unwrapResponse(response)));
   }
 
   getCatalogue(params?: CatalogueFilterParams): Observable<PaginatedCatalogue> {
@@ -212,9 +219,11 @@ export class BookService {
       httpParams = httpParams.set('language', params.language.trim());
     }
 
-    return this.http.get<PaginatedCatalogue>('/api/catalogue/books', {
-      params: httpParams,
-    });
+    return this.http
+      .get<MaybeWrapped<CatalogueResponseLike>>('/api/catalogue/books', {
+        params: httpParams,
+      })
+      .pipe(map((response) => this.normalizeCatalogue(this.unwrapResponse(response))));
   }
 
   getCategories(page = 1, pageSize = 50): Observable<CategoryListResponse> {
@@ -267,8 +276,8 @@ export class BookService {
       params = params.set('status', status.toUpperCase());
     }
     return this.http
-      .get<AuthorBookListResult>('/api/books/mine', { params })
-      .pipe(map((res) => res.data));
+      .get<MaybeWrapped<AuthorBookItem[]>>('/api/books/mine', { params })
+      .pipe(map((res) => this.unwrapResponse(res) ?? []));
   }
 
   getAuthorBookById(bookId: number): Observable<AuthorBookItem> {
@@ -307,5 +316,38 @@ export class BookService {
     return this.http
       .get<ReviewListResult>(`/api/books/${bookId}/reviews`)
       .pipe(map((res) => res.data));
+  }
+
+  private unwrapResponse<T>(response: MaybeWrapped<T>): T {
+    if (response && typeof response === 'object' && 'data' in response) {
+      return response.data;
+    }
+
+    return response as T;
+  }
+
+  private normalizeCatalogue(catalogue: CatalogueResponseLike): PaginatedCatalogue {
+    const payload =
+      catalogue?.data && !Array.isArray(catalogue.data)
+        ? catalogue.data
+        : catalogue;
+    const itemsSource = Array.isArray(payload?.items)
+      ? payload.items
+      : Array.isArray(catalogue?.data)
+        ? catalogue.data
+        : Array.isArray(catalogue?.books)
+          ? catalogue.books
+          : [];
+    const items = itemsSource;
+    const totalItems = Number(payload?.total_items ?? catalogue?.total ?? items.length);
+    const pageSize = Number(catalogue?.page_size ?? (items.length || 1));
+
+    return {
+      total_items: totalItems,
+      total_pages: Number(payload?.total_pages ?? (Math.ceil(totalItems / pageSize) || 1)),
+      current_page: Number(payload?.current_page ?? 1),
+      page_size: pageSize,
+      items,
+    };
   }
 }
