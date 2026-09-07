@@ -54,7 +54,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
     search: '',
     categories: [],
     language: '',
-    minimumRating: 1
+    minimumRating: 0
   };
 
   readonly skeletonCards = [1, 2, 3, 4, 5, 6];
@@ -78,7 +78,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
     this.routeSubscription = this.route.queryParams
       .pipe(
         map((params) => {
-          const search = (params['search'] ?? '').trim();
+          const search = (params['search'] ?? params['q'] ?? '').trim();
           const rawPage = Number(params['page']);
           const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
           const rawCategoryId = Number(params['category_id'] ?? params['categoryId']);

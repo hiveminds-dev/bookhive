@@ -15,6 +15,10 @@ import {
 } from './core/guards/reader-guard';
 
 import {
+  guestGuard
+} from './core/guards/guest-guard';
+
+import {
   superAdminGuard
 } from './core/guards/super-admin-guard';
 
@@ -36,6 +40,9 @@ export const routes: Routes = [
 
   {
     path: 'login',
+    canActivate: [
+      guestGuard
+    ],
 
     loadComponent: () =>
       import(
@@ -48,6 +55,9 @@ export const routes: Routes = [
 
   {
     path: 'register',
+    canActivate: [
+      guestGuard
+    ],
 
     loadComponent: () =>
       import(
@@ -60,6 +70,9 @@ export const routes: Routes = [
 
   {
     path: 'forgot-password',
+    canActivate: [
+      guestGuard
+    ],
 
     loadComponent: () =>
       import(
@@ -72,6 +85,9 @@ export const routes: Routes = [
 
   {
     path: 'auth/verify-email',
+    canActivate: [
+      guestGuard
+    ],
     loadComponent: () =>
       import('./features/auth/pages/verify-email/verify-email').then(
         module => module.VerifyEmail
@@ -80,6 +96,9 @@ export const routes: Routes = [
 
   {
     path: 'auth/verification-success',
+    canActivate: [
+      guestGuard
+    ],
     loadComponent: () =>
       import('./features/auth/pages/verification-success/verification-success').then(
         module => module.VerificationSuccess
@@ -88,10 +107,35 @@ export const routes: Routes = [
 
   {
     path: 'auth/reset-password',
+    canActivate: [
+      guestGuard
+    ],
     loadComponent: () =>
       import('./features/auth/pages/reset-password/reset-password').then(
         module => module.ResetPassword
       )
+  },
+
+  // ==========================================
+  // READER SHORTCUTS
+  // ==========================================
+
+  {
+    path: 'reader/dashboard',
+    redirectTo: 'home',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'reader/library',
+    redirectTo: 'explore',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'reader/bookmarks',
+    redirectTo: 'profile',
+    pathMatch: 'full'
   },
 
   // ==========================================

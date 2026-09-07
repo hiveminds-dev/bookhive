@@ -14,6 +14,7 @@ from utils.file_handler import (
     FileTooLargeError,
     InvalidFileContentError,
     InvalidFileTypeError,
+    get_pdf_page_count,
     save_cover,
     save_pdf,
 )
@@ -94,6 +95,7 @@ async def test_valid_pdf_is_saved(
     assert stored_path.startswith("storage/books/")
     assert stored_file.exists()
     assert len(PdfReader(stored_file).pages) == 1
+    assert await get_pdf_page_count(stored_path) == 1
 
 
 @pytest.mark.asyncio

@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ToastService } from '../../../core/services/toast.service';
 import { AdminApiService } from '../../../core/services/admin-api.service';
 import { ConfirmationModalComponent } from '../../../shared/components/confirmation-modal/confirmation-modal';
+import { LucideTrash2 } from '@lucide/angular';
 
 interface CategoryItem {
   id: number;
@@ -17,7 +18,7 @@ interface CategoryItem {
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, RouterLink, ConfirmationModalComponent],
+  imports: [NgFor, NgIf, FormsModule, RouterLink, ConfirmationModalComponent, LucideTrash2],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })

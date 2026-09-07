@@ -61,6 +61,18 @@ export class ActiveMembers {
     }
   ];
 
+  readonly fallbackAvatar = '/assets/bookhive-logo.v2.png';
+
+  handleImageError(event: Event): void {
+    const image = event.target as HTMLImageElement | null;
+    if (!image || image.dataset['fallbackApplied'] === 'true') {
+      return;
+    }
+
+    image.dataset['fallbackApplied'] = 'true';
+    image.src = this.fallbackAvatar;
+  }
+
   toggleFollow(
     member: ActiveMember
   ): void {

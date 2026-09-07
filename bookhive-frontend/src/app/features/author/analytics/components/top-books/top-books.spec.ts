@@ -38,20 +38,20 @@ describe(
     });
 
     it(
-      'should contain viewed books',
+      'should not show placeholder viewed books',
       () => {
         expect(
           component.topViewedBooks.length
-        ).toBe(3);
+        ).toBe(0);
       }
     );
 
     it(
-      'should contain downloaded books',
+      'should not show placeholder downloaded books',
       () => {
         expect(
           component.mostDownloadedBooks.length
-        ).toBe(3);
+        ).toBe(0);
       }
     );
 

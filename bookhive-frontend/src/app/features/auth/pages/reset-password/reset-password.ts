@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -17,6 +17,7 @@ export class ResetPassword {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly passwordRecovery = inject(PasswordRecoveryService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   readonly token = this.route.snapshot.queryParamMap.get('token') ?? '';
   isSubmitting = false;
@@ -49,9 +50,17 @@ export class ResetPassword {
     this.isSubmitting = true;
     this.passwordRecovery
       .resetPassword(this.token, password)
-      .pipe(finalize(() => (this.isSubmitting = false)))
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.changeDetector.markForCheck();
+        }),
+      )
       .subscribe({
-        next: () => (this.resetComplete = true),
+        next: () => {
+          this.resetComplete = true;
+          this.changeDetector.markForCheck();
+        },
         error: (error: HttpErrorResponse) => {
           this.errorMessage =
             error.status === 400
@@ -59,6 +68,7 @@ export class ResetPassword {
               : error.status === 0
                 ? 'Unable to connect to the BookHive server.'
                 : 'Unable to reset your password. Please try again.';
+          this.changeDetector.markForCheck();
         },
       });
   }

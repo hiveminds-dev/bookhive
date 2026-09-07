@@ -26,7 +26,7 @@ describe('ExploreFiltersComponent', () => {
   it('should use the default filter values', () => {
     expect(component.searchTerm).toBe('');
     expect(component.selectedLanguage).toBe('');
-    expect(component.minimumRating).toBe(1);
+    expect(component.minimumRating).toBe(0);
     expect(component.categories[0].selected).toBe(false);
   });
 
@@ -61,7 +61,7 @@ describe('ExploreFiltersComponent', () => {
 
     expect(component.searchTerm).toBe('');
     expect(component.selectedLanguage).toBe('');
-    expect(component.minimumRating).toBe(1);
+    expect(component.minimumRating).toBe(0);
     expect(component.categories[0].selected).toBe(false);
     expect(component.categories[1].selected).toBe(false);
   });

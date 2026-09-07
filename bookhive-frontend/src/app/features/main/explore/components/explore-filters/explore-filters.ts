@@ -44,7 +44,7 @@ export class ExploreFiltersComponent {
 
   searchTerm = '';
   selectedLanguage = '';
-  minimumRating = 1;
+  minimumRating = 0;
 
   categories: CategoryOption[] = [
     { name: 'Technology', selected: false },
@@ -76,7 +76,7 @@ export class ExploreFiltersComponent {
   resetFilters(): void {
     this.searchTerm = '';
     this.selectedLanguage = '';
-    this.minimumRating = 1;
+    this.minimumRating = 0;
 
     this.categories = this.categories.map((category) => ({
       ...category,

@@ -92,6 +92,23 @@ async def save_pdf(upload: UploadFile) -> str:
     )
 
 
+async def get_pdf_page_count(relative_path: str) -> int:
+    """Return the number of pages in a stored PDF."""
+
+    path = Path(relative_path)
+    if not path.is_absolute():
+        normalized_path = path.as_posix().lstrip("/")
+        if normalized_path.startswith("storage/books/"):
+            path = settings.book_storage_path / Path(normalized_path).name
+        else:
+            path = settings.storage_root.parent / path
+
+    return await asyncio.to_thread(
+        _get_pdf_page_count_sync,
+        path,
+    )
+
+
 async def save_cover(upload: UploadFile) -> str:
     """Validate and save a JPG or PNG book cover."""
 
@@ -280,6 +297,12 @@ async def _validate_pdf(path: Path) -> None:
 def _validate_pdf_sync(path: Path) -> None:
     """Validate PDF structure using pypdf."""
 
+    _get_pdf_page_count_sync(path)
+
+
+def _get_pdf_page_count_sync(path: Path) -> int:
+    """Read and validate a PDF page count using pypdf."""
+
     try:
         reader = PdfReader(path)
 
@@ -288,10 +311,13 @@ def _validate_pdf_sync(path: Path) -> None:
                 "Encrypted PDF files are not supported"
             )
 
-        if len(reader.pages) == 0:
+        page_count = len(reader.pages)
+        if page_count == 0:
             raise InvalidFileContentError(
                 "The PDF must contain at least one page"
             )
+
+        return page_count
 
     except InvalidFileContentError:
         raise

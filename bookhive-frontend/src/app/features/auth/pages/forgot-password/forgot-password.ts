@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -34,6 +34,7 @@ import { PasswordRecoveryService } from '../../services/password-recovery';
 export class ForgotPassword implements OnDestroy {
   private fb = inject(FormBuilder);
   private readonly passwordRecovery = inject(PasswordRecoveryService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   readonly appName = 'BookHive';
   readonly logoPath = 'assets/bookhive-logo.v2.png';
@@ -73,23 +74,34 @@ export class ForgotPassword implements OnDestroy {
       return;
     }
 
+    const normalizedEmail = (email.value ?? '').trim().toLowerCase();
+
+    email.setValue(normalizedEmail, { emitEvent: false });
+
     this.isSubmitting = true;
-    this.submittedEmail = email.value ?? '';
+    this.submittedEmail = normalizedEmail;
     this.requestError = null;
 
     this.passwordRecovery
       .requestReset(this.submittedEmail)
-      .pipe(finalize(() => (this.isSubmitting = false)))
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.changeDetector.markForCheck();
+        }),
+      )
       .subscribe({
         next: () => {
           this.emailSent = true;
           this.startResendCooldown();
+          this.changeDetector.markForCheck();
         },
         error: (error: HttpErrorResponse) => {
           this.requestError =
             error.status === 0
               ? 'Unable to connect to the BookHive server.'
               : 'Unable to request a reset link. Please try again.';
+          this.changeDetector.markForCheck();
         },
       });
   }
@@ -104,11 +116,20 @@ export class ForgotPassword implements OnDestroy {
 
     this.passwordRecovery
       .requestReset(this.submittedEmail)
-      .pipe(finalize(() => (this.isSubmitting = false)))
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.changeDetector.markForCheck();
+        }),
+      )
       .subscribe({
-        next: () => this.startResendCooldown(),
+        next: () => {
+          this.startResendCooldown();
+          this.changeDetector.markForCheck();
+        },
         error: () => {
           this.requestError = 'Unable to resend the reset link. Please try again.';
+          this.changeDetector.markForCheck();
         },
       });
   }
@@ -123,11 +144,13 @@ export class ForgotPassword implements OnDestroy {
     this.cooldownTimer = setInterval(() => {
       if (this.resendCooldown > 0) {
         this.resendCooldown--;
+        this.changeDetector.markForCheck();
       } else {
         if (this.cooldownTimer) {
           clearInterval(this.cooldownTimer);
           this.cooldownTimer = undefined;
         }
+        this.changeDetector.markForCheck();
       }
     }, 1000);
   }

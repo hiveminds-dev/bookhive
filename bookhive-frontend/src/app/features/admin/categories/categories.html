@@ -101,6 +101,14 @@
                 <input type="checkbox" [checked]="cat.isActive" (change)="toggleActive(cat)">
                 <span class="switch-slider"></span>
               </label>
+              <button
+                type="button"
+                class="btn-delete-category"
+                [attr.aria-label]="'Delete ' + cat.name"
+                [title]="'Delete ' + cat.name"
+                (click)="promptDelete(cat)">
+                <svg lucideTrash2 aria-hidden="true"></svg>
+              </button>
             </div>
           </td>
         </tr>

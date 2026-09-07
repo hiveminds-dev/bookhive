@@ -38,6 +38,17 @@ def test_reader_registration_rejects_invalid_username(username: str):
         )
 
 
+@pytest.mark.parametrize("password", ["password", "PASSWORD123!", "Password!", "Password123"])
+def test_reader_registration_rejects_weak_password(password: str):
+    with pytest.raises(ValidationError, match="uppercase letter"):
+        UserCreate(
+            full_name="John Doe",
+            username="john_reads",
+            email="john@example.com",
+            password=password,
+        )
+
+
 def test_author_registration_accepts_valid_contract():
     request = AuthorRegistrationRequest(
         full_name="Jane Smith",
@@ -63,4 +74,18 @@ def test_author_registration_requires_profile_fields():
             email="jane@example.com",
             password="SecurePass123!",
             pen_name="J. S. Archer",
+        )
+
+
+def test_author_registration_rejects_weak_password():
+    with pytest.raises(ValidationError, match="uppercase letter"):
+        AuthorRegistrationRequest(
+            full_name="Jane Smith",
+            username="js_archer",
+            email="jane@example.com",
+            password="password",
+            pen_name="J. S. Archer",
+            country="Sri Lanka",
+            preferred_language="English",
+            short_bio="Independent fiction author.",
         )

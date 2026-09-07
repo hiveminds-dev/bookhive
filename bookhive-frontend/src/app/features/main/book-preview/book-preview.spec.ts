@@ -10,7 +10,10 @@ describe('BookPreviewComponent', () => {
   let component: BookPreviewComponent;
   let fixture: ComponentFixture<BookPreviewComponent>;
   let paramMapSubject: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
-  let mockBookService: { getBookDetails: ReturnType<typeof vi.fn> };
+  let mockBookService: {
+    getBookDetails: ReturnType<typeof vi.fn>;
+    getCatalogue: ReturnType<typeof vi.fn>;
+  };
 
   const sampleBookDetails: BookDetails = {
     id: 1,
@@ -53,6 +56,9 @@ describe('BookPreviewComponent', () => {
     paramMapSubject = new BehaviorSubject(convertToParamMap({ id: '1' }));
     mockBookService = {
       getBookDetails: vi.fn().mockReturnValue(of(sampleBookDetails)),
+      getCatalogue: vi.fn().mockReturnValue(
+        of({ total_items: 0, total_pages: 1, current_page: 1, page_size: 3, items: [] }),
+      ),
     };
 
     await TestBed.configureTestingModule({

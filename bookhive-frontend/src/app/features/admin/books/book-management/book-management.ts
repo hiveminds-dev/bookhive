@@ -58,6 +58,7 @@ export class BookManagement implements OnInit {
 
   readonly booksSignal = signal<AdminBookTableItem[]>([]);
   readonly loadingSignal = signal<boolean>(false);
+  readonly errorMessageSignal = signal<string>('');
 
   ngOnInit(): void {
     this.loadBooks();
@@ -71,6 +72,7 @@ export class BookManagement implements OnInit {
 
   loadBooks(): void {
     this.loadingSignal.set(true);
+    this.errorMessageSignal.set('');
     const params = {
       search_query: this.searchQuery() || undefined,
       category_filter: this.filterCategory() || undefined,
@@ -148,6 +150,7 @@ export class BookManagement implements OnInit {
         this.booksSignal.set([]);
         this.totalBooksSignal.set(0);
         this.totalPagesSignal.set(1);
+        this.errorMessageSignal.set('Unable to load books from the admin catalogue. Please try again.');
       },
     });
   }

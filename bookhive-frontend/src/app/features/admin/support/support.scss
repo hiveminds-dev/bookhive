@@ -140,6 +140,13 @@
 
             label { font-size: 0.82rem; font-weight: 700; color: #475569; }
 
+            .field-hint {
+              color: #9a3412;
+              font-size: 0.78rem;
+              font-weight: 600;
+              line-height: 1.35;
+            }
+
             .form-control {
               padding: 0.75rem 1rem;
               border-radius: 10px;
@@ -163,6 +170,13 @@
             box-shadow: 0 4px 14px rgba(133, 77, 14, 0.35);
 
             &:hover { background: #713f12; }
+
+            &:disabled {
+              background: #e5e7eb;
+              color: #94a3b8;
+              box-shadow: none;
+              cursor: not-allowed;
+            }
           }
         }
       }

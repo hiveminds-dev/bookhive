@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from orm_models.book import BookStatus
 from orm_models.user import AccountStatus, UserRole
+from schemas.password_validation import validate_password_complexity
 
 
 class AuthorRegistrationRequest(BaseModel):
@@ -19,6 +20,11 @@ class AuthorRegistrationRequest(BaseModel):
     country: str = Field(min_length=2, max_length=100)
     preferred_language: str = Field(min_length=2, max_length=50)
     short_bio: str = Field(min_length=10, max_length=500)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        return validate_password_complexity(value)
 
 
 class AuthorRegistrationResponse(BaseModel):

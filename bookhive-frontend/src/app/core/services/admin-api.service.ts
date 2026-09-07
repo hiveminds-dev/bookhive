@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 
 export interface DashboardStats {
   total_books: number;
@@ -69,6 +69,13 @@ export interface PaginatedBookAdminResponse {
   has_next: boolean;
   has_prev: boolean;
 }
+
+type MaybeWrapped<T> = T | { data: T; message?: string };
+type PaginatedBookAdminResponseLike = Partial<PaginatedBookAdminResponse> & {
+  data?: AdminBookItem[] | Partial<PaginatedBookAdminResponse>;
+  books?: AdminBookItem[];
+  total_items?: number;
+};
 
 export interface AuthorStats {
   new_applications: number;
@@ -335,7 +342,9 @@ export class AdminApiService {
     if (params?.page_size) queryParts.push(`page_size=${params.page_size}`);
 
     const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-    return this.http.get<PaginatedBookAdminResponse>(`/api/admin/books${queryString}`);
+    return this.http
+      .get<MaybeWrapped<PaginatedBookAdminResponseLike>>(`/api/admin/books${queryString}`)
+      .pipe(map((response) => this.normalizePaginatedBooks(this.unwrapResponse(response))));
   }
 
   getBookById(bookId: number): Observable<AdminBookItem> {
@@ -476,5 +485,41 @@ export class AdminApiService {
 
   deleteCategory(categoryId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`/api/admin/categories/${categoryId}`);
+  }
+
+  private unwrapResponse<T>(response: MaybeWrapped<T>): T {
+    if (response && typeof response === 'object' && 'data' in response) {
+      return response.data;
+    }
+
+    return response as T;
+  }
+
+  private normalizePaginatedBooks(response: PaginatedBookAdminResponseLike): PaginatedBookAdminResponse {
+    const payload =
+      response?.data && !Array.isArray(response.data)
+        ? response.data
+        : response;
+    const items = Array.isArray(payload?.items)
+      ? payload.items
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.books)
+          ? response.books
+          : [];
+    const total = Number(payload?.total ?? response?.total_items ?? items.length);
+    const page = Number(payload?.page ?? 1);
+    const pageSize = Number(payload?.page_size ?? (items.length || 1));
+    const totalPages = Number(payload?.total_pages ?? (Math.ceil(total / pageSize) || 1));
+
+    return {
+      items,
+      total,
+      page,
+      page_size: pageSize,
+      total_pages: totalPages,
+      has_next: payload?.has_next ?? page < totalPages,
+      has_prev: payload?.has_prev ?? page > 1,
+    };
   }
 }

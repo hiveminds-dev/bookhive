@@ -74,6 +74,17 @@ describe('CategoriesComponent', () => {
     expect(component.filteredCategories[0].name).toBe('Philosophy');
   });
 
+  it('should render a delete action for each category', () => {
+    vi.spyOn(adminApi, 'getCategories').mockReturnValue(of(sampleCategories));
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    const deleteButtons = fixture.nativeElement.querySelectorAll('.btn-delete-category');
+
+    expect(deleteButtons.length).toBe(2);
+    expect(deleteButtons[0].getAttribute('aria-label')).toBe('Delete Philosophy');
+  });
+
   it('should create new category successfully', () => {
     vi.spyOn(adminApi, 'getCategories').mockReturnValue(of(sampleCategories));
     vi.spyOn(adminApi, 'createCategory').mockReturnValue(

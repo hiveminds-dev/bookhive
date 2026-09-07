@@ -65,6 +65,7 @@ export class BookManagementComponent implements OnInit {
   currentPage = 1;
   readonly pageSize = 6;
   isLoading = false;
+  loadError = '';
 
   books: ManagedBook[] = [];
 
@@ -74,6 +75,7 @@ export class BookManagementComponent implements OnInit {
 
   loadBooks(): void {
     this.isLoading = true;
+    this.loadError = '';
     this.bookService.getAuthorBooks().subscribe({
       next: (items) => {
         this.isLoading = false;
@@ -82,6 +84,8 @@ export class BookManagementComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
+        this.books = [];
+        this.loadError = 'Unable to load your books right now. Please try again.';
         this.toastService.warning('Failed to load your books list.', 'Notice');
         this.changeDetector.markForCheck();
       }
