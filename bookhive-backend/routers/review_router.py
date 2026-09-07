@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 from dependencies import DbSession, require_reader
 from orm_models.user import User
 from schemas.review import (
-    PublicReviewResponse,
     ReviewCreateRequest,
     ReviewListResultResponse,
     ReviewResultResponse,
