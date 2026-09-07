@@ -1,7 +1,12 @@
 import {
+  ChangeDetectorRef,
   Component,
   inject
 } from '@angular/core';
+
+import {
+  HttpErrorResponse
+} from '@angular/common/http';
 
 import {
   AbstractControl,
@@ -14,6 +19,11 @@ import {
 import {
   Router
 } from '@angular/router';
+
+import {
+  Auth
+} from '../../../../core/services/auth';
+import { extractErrorMessage } from '../../../../core/utils/error.utils';
 
 function passwordsMatchValidator(
   control: AbstractControl
@@ -56,6 +66,12 @@ export class ChangePassword {
   private readonly router =
     inject(Router);
 
+  private readonly auth =
+    inject(Auth);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
+
   showCurrentPassword = false;
 
   showNewPassword = false;
@@ -65,6 +81,8 @@ export class ChangePassword {
   isSaving = false;
 
   successMessage = '';
+
+  errorMessage = '';
 
   readonly passwordForm =
     this.formBuilder.nonNullable.group(
@@ -170,36 +188,39 @@ export class ChangePassword {
 
     this.isSaving = true;
     this.successMessage = '';
+    this.errorMessage = '';
 
-    const passwordData = {
-      currentPassword:
+    const currentPassword =
       this.passwordForm.controls
-        .currentPassword.value,
+        .currentPassword.value;
 
-      newPassword:
+    const newPassword =
       this.passwordForm.controls
-        .newPassword.value
-    };
+        .newPassword.value;
 
-    // connect backend api
-    console.log(
-      'Password data ready for backend:',
-      passwordData
-    );
+    this.auth.changePassword(currentPassword, newPassword).subscribe({
+      next: (response) => {
+        this.isSaving = false;
+        this.successMessage =
+          response?.message || 'Password changed successfully.';
+        this.errorMessage = '';
+        this.passwordForm.reset();
+        this.cdr.markForCheck();
 
-    setTimeout(() => {
-      this.isSaving = false;
-
-      this.successMessage =
-        'Password changed successfully.';
-
-      this.passwordForm.reset();
-
-      setTimeout(() => {
-        this.router.navigate([
-          '/author/profile'
-        ]);
-      }, 900);
-    }, 1000);
+        setTimeout(() => {
+          this.router.navigate([
+            '/author/profile'
+          ]);
+        }, 1200);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isSaving = false;
+        this.errorMessage = extractErrorMessage(
+          error,
+          'Failed to change password. Please verify your current password and try again.'
+        );
+        this.cdr.markForCheck();
+      }
+    });
   }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { ToastService } from '../../../core/services/toast.service';
+import { extractErrorMessage } from '../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-admin-profile',
@@ -101,7 +102,7 @@ export class AdminProfile implements OnInit {
         this.toastService.success('Profile details updated successfully in database!', 'Profile Updated');
       },
       error: (err) => {
-        const msg = err.error?.detail || 'Failed to update profile details.';
+        const msg = extractErrorMessage(err, 'Failed to update profile details.');
         this.toastService.error(msg, 'Update Error');
       }
     });
@@ -128,7 +129,7 @@ export class AdminProfile implements OnInit {
         this.toastService.success(`Verification code dispatched to ${this.email}.`, 'Code Sent');
       },
       error: (err) => {
-        const msg = err.error?.detail || 'Failed to request password verification code.';
+        const msg = extractErrorMessage(err, 'Failed to request password verification code.');
         this.toastService.error(msg, 'Verification Error');
       }
     });
@@ -153,7 +154,7 @@ export class AdminProfile implements OnInit {
         this.showConfirmPassword.set(false);
       },
       error: (err) => {
-        const msg = err.error?.detail || 'Invalid or expired verification code.';
+        const msg = extractErrorMessage(err, 'Invalid or expired verification code.');
         this.toastService.error(msg, 'Verification Error');
       }
     });

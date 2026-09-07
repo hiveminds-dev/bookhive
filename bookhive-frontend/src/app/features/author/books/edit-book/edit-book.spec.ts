@@ -127,6 +127,27 @@ describe('EditBookComponent', () => {
     expect(bookServiceMock.submitBook).not.toHaveBeenCalled();
   });
 
+  it('should reject ISBN values with invalid checksum', () => {
+    component.bookForm.patchValue({
+      isbn: '978-0-306-40615-8'
+    });
+    component.bookForm.get('isbn')?.markAsTouched();
+
+    expect(component.bookForm.get('isbn')?.hasError('isbn')).toBe(true);
+  });
+
+  it('should accept valid ISBN-10 and ISBN-13 values with hyphens', () => {
+    component.bookForm.patchValue({
+      isbn: '0-306-40615-2'
+    });
+    expect(component.bookForm.get('isbn')?.valid).toBe(true);
+
+    component.bookForm.patchValue({
+      isbn: '978-0-306-40615-7'
+    });
+    expect(component.bookForm.get('isbn')?.valid).toBe(true);
+  });
+
   it('should submit a complete book successfully with uploaded PDF and cover', () => {
     const dummyPdf = new File(['dummy pdf content'], 'book.pdf', { type: 'application/pdf' });
     const dummyCover = new File(['dummy cover content'], 'cover.jpg', { type: 'image/jpeg' });

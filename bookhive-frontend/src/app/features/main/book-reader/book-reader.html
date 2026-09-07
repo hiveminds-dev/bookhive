@@ -105,13 +105,15 @@
             (fullscreen)="openFullscreen()">
           </app-reader-toolbar>
 
-          @if (pdfViewerUrl) {
+          @if (rawPdfUrl) {
             <div class="reader-pdf-container">
-              <iframe
-                [src]="pdfViewerUrl"
-                class="reader-pdf-iframe"
-                title="Manuscript PDF Viewer">
-              </iframe>
+              <app-pdf-viewer
+                [src]="rawPdfUrl"
+                [page]="currentPage"
+                [zoom]="zoomLevel"
+                (pageChange)="onPdfPageChange($event)"
+                (totalPagesChange)="onPdfTotalPagesChange($event)">
+              </app-pdf-viewer>
             </div>
           } @else {
             <div class="reader-content-unavailable" role="status">

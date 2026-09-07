@@ -170,3 +170,10 @@ class PaginatedCatalogueResponse(BaseModel):
     current_page: int = Field(ge=1)
     page_size: int = Field(ge=1)
     items: list[CatalogueBookResponse]
+
+
+class PublicCatalogueStatisticsResponse(BaseModel):
+    total_books: int = Field(ge=0)
+    total_authors: int = Field(ge=0)
+    total_readers: int = Field(ge=0)
+    total_downloads: int = Field(ge=0)

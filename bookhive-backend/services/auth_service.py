@@ -76,6 +76,18 @@ class AuthService:
             AccountStatus.SUSPENDED,
             AccountStatus.INACTIVE,
         }
+        if user.role == UserRole.AUTHOR and user.account_status == AccountStatus.REJECTED:
+            rejection_logs = getattr(user, "author_rejection_logs", None) or []
+            latest_reason = (
+                getattr(rejection_logs[0], "reason", None)
+                if rejection_logs
+                else None
+            )
+            message = "Your author application was rejected."
+            if latest_reason:
+                message = f"{message} Reason: {latest_reason}"
+            raise AccountAccessError(message)
+
         if user.account_status in blocked_statuses:
             raise AccountAccessError("This account is not currently allowed to sign in")
 

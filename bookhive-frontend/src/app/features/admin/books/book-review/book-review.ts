@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AdminApiService, AdminBookItem } from '../../../../core/services/admin-api.service';
+import { PdfViewerComponent } from '../../../../shared/components/pdf-viewer/pdf-viewer';
 
 export interface BookDetailModel {
   id?: number;
@@ -47,7 +48,7 @@ export interface ReaderReviewItem {
 @Component({
   selector: 'app-book-review',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, FormsModule, DatePipe],
+  imports: [NgFor, NgIf, RouterLink, FormsModule, DatePipe, PdfViewerComponent],
   templateUrl: './book-review.html',
   styleUrl: './book-review.scss',
 })
@@ -184,7 +185,14 @@ export class BookReviewComponent implements OnInit {
   private updatePdfViewerUrl(): void {
     if (this.rawPdfUrl) {
       const page = this.currentPageSignal();
-      const fullUrl = `${this.rawPdfUrl}#page=${page}`;
+      const [baseUrl] = this.rawPdfUrl.split('#');
+      const fullUrl = `${baseUrl}#${new URLSearchParams({
+        page: String(page),
+        zoom: String(this.zoomLevelSignal()),
+        toolbar: '0',
+        navpanes: '0',
+        scrollbar: '0',
+      }).toString()}`;
       this.pdfViewerUrlSignal.set(this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl));
     } else {
       this.pdfViewerUrlSignal.set(null);
@@ -214,6 +222,41 @@ export class BookReviewComponent implements OnInit {
     this.updatePdfViewerUrl();
   }
 
+  onPdfPageChange(targetPage: number): void {
+    const total = this.totalPagesSignal();
+    let page = Number(targetPage) || 1;
+    if (page < 1) page = 1;
+    if (total && page > total) page = total;
+
+    if (page === this.currentPageSignal()) return;
+
+    this.currentPageSignal.set(page);
+
+    if (this.chaptersSignal().length > 0) {
+      this.chaptersSignal.update((chList) =>
+        chList.map((ch) => ({
+          ...ch,
+          active:
+            ch.page === page ||
+            (ch.page <= page &&
+              (ch === chList[chList.length - 1] || chList[chList.indexOf(ch) + 1].page > page)),
+        }))
+      );
+    }
+  }
+
+  onPdfTotalPagesChange(totalPages: number): void {
+    if (totalPages > 0) {
+      const current = this.totalPagesSignal();
+      if (!current || current <= 1 || (this.book && (!this.book.pages || this.book.pages === 'Not available'))) {
+        this.totalPagesSignal.set(totalPages);
+        if (this.book) {
+          this.book.pages = `${totalPages} pages`;
+        }
+      }
+    }
+  }
+
   nextPage(): void {
     if (this.currentPageSignal() < this.totalPagesSignal()) {
       this.goToPage(this.currentPageSignal() + 1);
@@ -229,12 +272,14 @@ export class BookReviewComponent implements OnInit {
   zoomIn(): void {
     if (this.zoomLevelSignal() < 250) {
       this.zoomLevelSignal.update((z) => z + 25);
+      this.updatePdfViewerUrl();
     }
   }
 
   zoomOut(): void {
     if (this.zoomLevelSignal() > 50) {
       this.zoomLevelSignal.update((z) => z - 25);
+      this.updatePdfViewerUrl();
     }
   }
 

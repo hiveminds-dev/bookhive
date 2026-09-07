@@ -8,9 +8,11 @@ import {
   signal,
 } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -21,6 +23,8 @@ import {
   LucideCamera,
   LucideCheckCircle,
   LucideEdit3,
+  LucideEye,
+  LucideEyeOff,
   LucideGlobe,
   LucideLock,
   LucideLogOut,
@@ -35,6 +39,7 @@ import {
 } from '@lucide/angular';
 
 import { Auth } from '../../../core/services/auth';
+import { extractErrorMessage } from '../../../core/utils/error.utils';
 import {
   UserProfile,
   UserProfileService,
@@ -43,6 +48,17 @@ import {
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const newPassword = control.get('newPassword')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+
+  if (!newPassword || !confirmPassword) {
+    return null;
+  }
+
+  return newPassword === confirmPassword ? null : { passwordMismatch: true };
+}
 
 @Component({
   selector: 'app-reader-profile',
@@ -62,6 +78,8 @@ const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
     LucideEdit3,
     LucideCamera,
     LucideLock,
+    LucideEye,
+    LucideEyeOff,
     LucideBookOpen,
     LucideLogOut,
     LucideX,
@@ -90,10 +108,19 @@ export class ReaderProfile implements OnInit {
   // Modals state
   readonly isEditModalOpen = signal<boolean>(false);
   readonly isAvatarModalOpen = signal<boolean>(false);
+  readonly isPasswordModalOpen = signal<boolean>(false);
   readonly isSaving = signal<boolean>(false);
+  readonly isSavingPassword = signal<boolean>(false);
   readonly isUploadingAvatar = signal<boolean>(false);
   readonly editFormError = signal<string | null>(null);
   readonly avatarFormError = signal<string | null>(null);
+  readonly passwordFormError = signal<string | null>(null);
+  readonly passwordFormSuccess = signal<string | null>(null);
+
+  // Password visibility
+  readonly showCurrentPassword = signal<boolean>(false);
+  readonly showNewPassword = signal<boolean>(false);
+  readonly showConfirmPassword = signal<boolean>(false);
 
   // Avatar upload state
   readonly selectedAvatarFile = signal<File | null>(null);
@@ -114,6 +141,22 @@ export class ReaderProfile implements OnInit {
     preferredLanguage: ['', [Validators.maxLength(50)]],
     shortBio: ['', [Validators.maxLength(500)]],
   });
+
+  readonly passwordForm: FormGroup = this.fb.group(
+    {
+      currentPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
+        ],
+      ],
+      confirmPassword: ['', [Validators.required]],
+    },
+    { validators: passwordsMatchValidator }
+  );
 
   readonly initials = computed(() => {
     const name = this.profile()?.full_name?.trim();
@@ -212,13 +255,10 @@ export class ReaderProfile implements OnInit {
         this.isSaving.set(false);
         if (err.status === 409) {
           this.editFormError.set('This username is already taken. Please choose another.');
-        } else if (err.status === 422 && err.error?.detail) {
-          const detail = Array.isArray(err.error.detail)
-            ? err.error.detail.map((d: { msg?: string }) => d.msg || '').join(', ')
-            : String(err.error.detail);
-          this.editFormError.set(`Validation error: ${detail}`);
         } else {
-          this.editFormError.set('An error occurred while saving your profile. Please try again.');
+          this.editFormError.set(
+            extractErrorMessage(err, 'An error occurred while saving your profile. Please try again.')
+          );
         }
         this.cdr.markForCheck();
       },
@@ -298,7 +338,7 @@ export class ReaderProfile implements OnInit {
       },
       error: (err) => {
         this.isUploadingAvatar.set(false);
-        const message = err.error?.detail || 'Failed to upload profile image. Please try again.';
+        const message = extractErrorMessage(err, 'Failed to upload profile image. Please try again.');
         this.avatarFormError.set(message);
         this.cdr.markForCheck();
       },
@@ -338,6 +378,74 @@ export class ReaderProfile implements OnInit {
   onAvatarError(): void {
     this.avatarLoadFailed.set(true);
     this.cdr.markForCheck();
+  }
+
+  openPasswordModal(): void {
+    this.passwordForm.reset();
+    this.passwordFormError.set(null);
+    this.passwordFormSuccess.set(null);
+    this.showCurrentPassword.set(false);
+    this.showNewPassword.set(false);
+    this.showConfirmPassword.set(false);
+    this.isPasswordModalOpen.set(true);
+  }
+
+  closePasswordModal(): void {
+    if (this.isSavingPassword()) return;
+    this.isPasswordModalOpen.set(false);
+    this.passwordForm.reset();
+    this.passwordFormError.set(null);
+    this.passwordFormSuccess.set(null);
+  }
+
+  toggleCurrentPasswordVisibility(): void {
+    this.showCurrentPassword.update((val) => !val);
+  }
+
+  toggleNewPasswordVisibility(): void {
+    this.showNewPassword.update((val) => !val);
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword.update((val) => !val);
+  }
+
+  onSubmitPassword(): void {
+    if (this.passwordForm.invalid || this.isSavingPassword()) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSavingPassword.set(true);
+    this.passwordFormError.set(null);
+    this.passwordFormSuccess.set(null);
+
+    const currentPassword = this.passwordForm.get('currentPassword')?.value;
+    const newPassword = this.passwordForm.get('newPassword')?.value;
+
+    this.auth.changePassword(currentPassword, newPassword).subscribe({
+      next: (res) => {
+        this.isSavingPassword.set(false);
+        this.passwordFormSuccess.set(res?.message || 'Password changed successfully.');
+        this.passwordForm.reset();
+        this.showTemporarySuccess('Password changed successfully.');
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+          this.closePasswordModal();
+        }, 1200);
+      },
+      error: (err) => {
+        this.isSavingPassword.set(false);
+        this.passwordFormError.set(
+          extractErrorMessage(
+            err,
+            'Failed to change password. Please verify your current password and try again.'
+          )
+        );
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   onLogout(): void {

@@ -1,0 +1,61 @@
+<div class="pdf-viewer-root">
+  @if (isLoading) {
+    <div class="pdf-state-container loading" role="status" aria-live="polite">
+      <div class="pdf-spinner"></div>
+      <p class="pdf-state-text">Loading manuscript...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="pdf-state-container error" role="alert">
+      <div class="pdf-state-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h3 class="pdf-error-title">Unable to Load PDF</h3>
+      <p class="pdf-state-text">{{ errorMessage }}</p>
+      @if (src) {
+        <button type="button" class="pdf-retry-btn" (click)="retryLoad()">Try Again</button>
+      }
+    </div>
+  } @else if (!src) {
+    <div class="pdf-state-container empty" role="status">
+      <div class="pdf-state-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
+          <path d="M14 2v6h6"/>
+        </svg>
+      </div>
+      <h3 class="pdf-error-title">No PDF Selected</h3>
+      <p class="pdf-state-text">No document file is attached to display.</p>
+    </div>
+  }
+
+  <div
+    #scrollContainer
+    class="pdf-scroll-viewport"
+    tabindex="0"
+    aria-label="PDF manuscript page viewer"
+    [class.hidden]="isLoading || !!errorMessage || !src"
+    (scroll)="onContainerScroll()">
+    <div class="pdf-pages-list">
+      @for (pageItem of pages; track pageItem.pageNumber) {
+        <div
+          class="pdf-page-container"
+          [attr.data-page-number]="pageItem.pageNumber"
+          [style.width.px]="getPageWidth()"
+          [style.height.px]="getPageHeight()"
+          [style.min-height.px]="getPageHeight()">
+          <canvas
+            [attr.data-page-number]="pageItem.pageNumber"
+            class="pdf-canvas">
+          </canvas>
+          <div class="pdf-page-watermark">
+            <span>Page {{ pageItem.pageNumber }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

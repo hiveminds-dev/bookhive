@@ -2,7 +2,13 @@ import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
+import {
+  of
+} from 'rxjs';
 
+import {
+  BookService
+} from '../../../../../core/services/book.service';
 import {
   Statistics
 } from './statistics';
@@ -16,10 +22,33 @@ describe(
     let fixture:
       ComponentFixture<Statistics>;
 
+    const bookServiceMock = {
+      getCatalogueStatistics: vi.fn().mockReturnValue(of({
+        total_books: 20,
+        total_authors: 13,
+        total_readers: 10,
+        total_downloads: 42,
+      })),
+    };
+
     beforeEach(async () => {
+      bookServiceMock.getCatalogueStatistics.mockClear();
+      bookServiceMock.getCatalogueStatistics.mockReturnValue(of({
+        total_books: 20,
+        total_authors: 13,
+        total_readers: 10,
+        total_downloads: 42,
+      }));
+
       await TestBed.configureTestingModule({
         imports: [
           Statistics
+        ],
+        providers: [
+          {
+            provide: BookService,
+            useValue: bookServiceMock
+          }
         ]
       }).compileComponents();
 
@@ -50,7 +79,38 @@ describe(
       () => {
         expect(
           component.statistics[0].value
-        ).toBe('12,800+');
+        ).toBe('20');
+      }
+    );
+
+    it(
+      'should load statistics from the public catalogue API',
+      () => {
+        expect(bookServiceMock.getCatalogueStatistics)
+          .toHaveBeenCalledOnce();
+        expect(component.statistics)
+          .toEqual([
+            {
+              id: 1,
+              value: '20',
+              label: 'Books'
+            },
+            {
+              id: 2,
+              value: '13',
+              label: 'Authors'
+            },
+            {
+              id: 3,
+              value: '10',
+              label: 'Readers'
+            },
+            {
+              id: 4,
+              value: '42',
+              label: 'Downloads'
+            }
+          ]);
       }
     );
   }

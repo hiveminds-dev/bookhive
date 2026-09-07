@@ -17,6 +17,7 @@ import {
 import {
   ToastService
 } from '../../../../core/services/toast.service';
+import { extractErrorMessage } from '../../../../core/utils/error.utils';
 
 import {
   PageHeaderComponent
@@ -262,7 +263,7 @@ export class BookManagementComponent implements OnInit {
         }
       },
       error: (err) => {
-        const msg = err.error?.detail || 'Failed to delete book.';
+        const msg = extractErrorMessage(err, 'Failed to delete book.');
         this.toastService.warning(msg, 'Error');
       }
     });

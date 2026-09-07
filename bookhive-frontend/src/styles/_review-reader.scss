@@ -7,6 +7,7 @@
   border-radius: 20px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
+  overscroll-behavior: contain;
 
   .reader-topbar {
     background: #ffffff;
@@ -122,24 +123,26 @@
       justify-content: center;
       overflow: hidden;
       background: #f8fafc;
+      overscroll-behavior: contain;
 
       .pdf-viewport-box {
         width: 100%;
         max-width: 960px;
-        height: 780px;
-        overflow: auto;
+        height: clamp(520px, calc(100vh - 270px), 800px);
+        overflow: hidden;
         background: #ffffff;
         border-radius: 16px;
         border: 1px solid #e2e8f0;
-        padding: 16px;
         display: flex;
         justify-content: center;
         box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.02);
-        cursor: grab;
-        user-select: none;
+        overscroll-behavior: contain;
 
-        &.is-dragging {
-          cursor: grabbing !important;
+        app-pdf-viewer {
+          width: 100%;
+          height: 100%;
+          display: block;
+          overscroll-behavior: contain;
         }
       }
 

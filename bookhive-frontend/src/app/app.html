@@ -1,1 +1,9 @@
+@if (showInitialLoader()) {
+  <app-loading label="Opening your library" />
+}
+
+@if (isNavigating()) {
+  <div class="route-progress" role="status" aria-label="Loading page"></div>
+}
+
 <router-outlet></router-outlet>

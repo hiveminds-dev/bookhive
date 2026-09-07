@@ -30,6 +30,8 @@ import {
 import {
   ToastService
 } from '../../../../core/services/toast.service';
+import { extractErrorMessage } from '../../../../core/utils/error.utils';
+import { isbnValidator } from '../../../../core/utils/isbn.utils';
 
 import {
   BookFormComponent
@@ -144,9 +146,7 @@ export class EditBookComponent implements OnInit {
 
     isbn: [
       '',
-      Validators.pattern(
-        /^(?:\d{10}|\d{13})$/
-      )
+      isbnValidator()
     ],
 
     tags: ['']
@@ -239,7 +239,7 @@ export class EditBookComponent implements OnInit {
         },
         error: (err) => {
           this.isSavingDraft = false;
-          this.errorMessage = err.error?.detail || 'Failed to update book draft.';
+          this.errorMessage = extractErrorMessage(err, 'Failed to update book draft.');
           this.toastService.warning(this.errorMessage, 'Error');
         }
       });
@@ -258,7 +258,7 @@ export class EditBookComponent implements OnInit {
         },
         error: (err) => {
           this.isSavingDraft = false;
-          this.errorMessage = err.error?.detail || 'Failed to save book draft.';
+          this.errorMessage = extractErrorMessage(err, 'Failed to save book draft.');
           this.toastService.warning(this.errorMessage, 'Error');
         }
       });
@@ -308,7 +308,7 @@ export class EditBookComponent implements OnInit {
         },
         error: (err) => {
           this.isSubmitting = false;
-          this.errorMessage = err.error?.detail || 'Failed to update book details before submission.';
+          this.errorMessage = extractErrorMessage(err, 'Failed to update book details before submission.');
           this.toastService.warning(this.errorMessage, 'Error');
         }
       });
@@ -327,7 +327,7 @@ export class EditBookComponent implements OnInit {
         },
         error: (err) => {
           this.isSubmitting = false;
-          this.errorMessage = err.error?.detail || 'Failed to create book.';
+          this.errorMessage = extractErrorMessage(err, 'Failed to create book.');
           this.toastService.warning(this.errorMessage, 'Error');
         }
       });
@@ -356,7 +356,7 @@ export class EditBookComponent implements OnInit {
           },
           error: (err) => {
             this.isSubmitting = false;
-            this.errorMessage = err.error?.detail || 'Failed to submit book for review.';
+            this.errorMessage = extractErrorMessage(err, 'Failed to submit book for review.');
             this.toastService.warning(this.errorMessage, 'Submission Failed');
           }
         });
@@ -398,7 +398,7 @@ export class EditBookComponent implements OnInit {
     } else {
       this.isSavingDraft = false;
     }
-    this.errorMessage = err.error?.detail || 'Failed to upload files.';
+    this.errorMessage = extractErrorMessage(err, 'Failed to upload files.');
     this.toastService.warning(this.errorMessage, 'Upload Error');
   }
 
@@ -423,7 +423,7 @@ export class EditBookComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.detail || 'Could not load book details.';
+        this.errorMessage = extractErrorMessage(err, 'Could not load book details.');
         this.toastService.warning(this.errorMessage, 'Error');
       }
     });

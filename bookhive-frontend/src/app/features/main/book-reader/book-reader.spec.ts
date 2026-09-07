@@ -235,4 +235,31 @@ describe('BookReaderComponent', () => {
 
     expect(component.currentPage).toBe(1);
   });
+
+  it('should sync page state when onPdfPageChange is triggered by PDF viewer scroll', () => {
+    component.currentPage = 1;
+    component.secondsRemaining = 10;
+    component.onPdfPageChange(5);
+    fixture.detectChanges();
+
+    expect(component.currentPage).toBe(5);
+    expect(component.secondsRemaining).toBe(component.secondsRequiredToReadPage);
+  });
+
+  it('should update total pages from PDF viewer if backend totalPages was missing', () => {
+    if (component.book) {
+      component.book.totalPages = null;
+    }
+    component.onPdfTotalPagesChange(45);
+    fixture.detectChanges();
+
+    expect(component.book?.totalPages).toBe(45);
+    expect(component.effectiveTotalPages).toBe(45);
+  });
+
+  it('should render app-pdf-viewer instead of iframe when book has PDF', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-pdf-viewer')).toBeTruthy();
+    expect(compiled.querySelector('iframe.reader-pdf-iframe')).toBeNull();
+  });
 });
