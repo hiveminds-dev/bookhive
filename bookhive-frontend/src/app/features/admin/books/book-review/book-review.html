@@ -230,19 +230,20 @@
       <!-- Center Manuscript Canvas -->
       <main class="manuscript-canvas">
         <div class="pdf-viewport-box">
-          <div class="pdf-scale-wrapper" [style.transform]="'scale(' + (zoomLevelSignal() / 100) + ')'">
-            <iframe *ngIf="pdfViewerUrlSignal()"
-                    [src]="pdfViewerUrlSignal()"
-                    class="pdf-manuscript-iframe"
-                    width="100%"
-                    height="760px"></iframe>
+          <app-pdf-viewer
+            *ngIf="rawPdfUrl"
+            [src]="rawPdfUrl"
+            [page]="currentPageSignal()"
+            [zoom]="zoomLevelSignal()"
+            (pageChange)="onPdfPageChange($event)"
+            (totalPagesChange)="onPdfTotalPagesChange($event)">
+          </app-pdf-viewer>
 
-            <div *ngIf="!pdfViewerUrlSignal()" class="manuscript-paper" style="padding: 3rem; text-align: center;">
-              <h2 class="chapter-title">No Manuscript PDF Available</h2>
-              <p class="lead-paragraph" style="color: #64748b; margin-top: 1rem;">
-                This book does not have an attached PDF manuscript file.
-              </p>
-            </div>
+          <div *ngIf="!rawPdfUrl" class="manuscript-paper" style="padding: 3rem; text-align: center;">
+            <h2 class="chapter-title">No Manuscript PDF Available</h2>
+            <p class="lead-paragraph" style="color: #64748b; margin-top: 1rem;">
+              This book does not have an attached PDF manuscript file.
+            </p>
           </div>
         </div>
       </main>

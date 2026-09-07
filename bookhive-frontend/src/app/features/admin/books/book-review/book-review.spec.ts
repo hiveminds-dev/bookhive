@@ -204,4 +204,40 @@ describe('BookReviewComponent', () => {
     component.cancelRequestChanges();
     expect(component.showChangesModal()).toBe(false);
   });
+
+  it('should update currentPageSignal and chapter active state on onPdfPageChange', () => {
+    vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
+    component.ngOnInit();
+    component.totalPagesSignal.set(10);
+    component.chaptersSignal.set([
+      { page: 1, title: 'Chapter 1', active: true },
+      { page: 5, title: 'Chapter 2', active: false },
+    ]);
+
+    component.onPdfPageChange(5);
+
+    expect(component.currentPageSignal()).toBe(5);
+    expect(component.chaptersSignal()[1].active).toBe(true);
+  });
+
+  it('should update totalPagesSignal on onPdfTotalPagesChange if not previously set', () => {
+    vi.spyOn(adminApi, 'getBookById').mockReturnValue(of({ ...sampleBook, page_count: null }));
+    component.ngOnInit();
+
+    component.onPdfTotalPagesChange(42);
+
+    expect(component.totalPagesSignal()).toBe(42);
+    expect(component.book?.pages).toBe('42 pages');
+  });
+
+  it('should render app-pdf-viewer in reader mode when rawPdfUrl is present', () => {
+    vi.spyOn(adminApi, 'getBookById').mockReturnValue(of(sampleBook));
+    component.ngOnInit();
+    component.switchMode('reader');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-pdf-viewer')).toBeTruthy();
+    expect(compiled.querySelector('iframe.pdf-manuscript-iframe')).toBeNull();
+  });
 });

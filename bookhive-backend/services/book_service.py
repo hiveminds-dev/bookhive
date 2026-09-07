@@ -5,9 +5,11 @@ import math
 from datetime import UTC, datetime
 
 from fastapi import UploadFile
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_models.book import Book, BookStatus
+from orm_models.user import User, UserRole
 from repositories.book_repository import BookRepository
 from repositories.review_repository import ReviewRepository
 from schemas.book import (
@@ -18,6 +20,7 @@ from schemas.book import (
     BookUpdateRequest,
     CatalogueBookResponse,
     PaginatedCatalogueResponse,
+    PublicCatalogueStatisticsResponse,
 )
 from schemas.review import PublicReviewResponse
 from utils.file_handler import (
@@ -159,6 +162,30 @@ class BookService:
                 )
                 for book in books
             ],
+        )
+
+    async def get_public_catalogue_statistics(
+        self,
+        session: AsyncSession,
+    ) -> PublicCatalogueStatisticsResponse:
+        total_books_res = await session.execute(
+            select(func.count(Book.id)).where(Book.status == BookStatus.PUBLISHED)
+        )
+        total_authors_res = await session.execute(
+            select(func.count(User.id)).where(User.role == UserRole.AUTHOR)
+        )
+        total_readers_res = await session.execute(
+            select(func.count(User.id)).where(User.role == UserRole.READER)
+        )
+        total_downloads_res = await session.execute(
+            select(func.sum(Book.download_count)).where(Book.status == BookStatus.PUBLISHED)
+        )
+
+        return PublicCatalogueStatisticsResponse(
+            total_books=total_books_res.scalar_one_or_none() or 0,
+            total_authors=total_authors_res.scalar_one_or_none() or 0,
+            total_readers=total_readers_res.scalar_one_or_none() or 0,
+            total_downloads=total_downloads_res.scalar_one_or_none() or 0,
         )
 
     async def get_public_book_details(

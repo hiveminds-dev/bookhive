@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { extractErrorMessage } from '../utils/error.utils';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -16,9 +17,13 @@ export class ToastService {
   private readonly toastsSignal = signal<ToastMessage[]>([]);
   readonly toasts = this.toastsSignal.asReadonly();
 
-  show(message: string, type: ToastType = 'info', title?: string): void {
+  show(message: string | unknown, type: ToastType = 'info', title?: string): void {
     const id = Math.random().toString(36).substring(2, 9);
-    const toast: ToastMessage = { id, type, message, title };
+    const safeMessage =
+      typeof message === 'string' && !message.includes('[object Object]')
+        ? message
+        : extractErrorMessage(message, 'An error occurred. Please try again.');
+    const toast: ToastMessage = { id, type, message: safeMessage, title };
 
     this.toastsSignal.update((current) => [...current, toast]);
 

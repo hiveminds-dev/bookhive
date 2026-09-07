@@ -13,6 +13,7 @@ def make_user(
     role=UserRole.READER,
     status=AccountStatus.ACTIVE,
     verified=True,
+    author_rejection_logs=None,
 ):
     return SimpleNamespace(
         id=7,
@@ -23,6 +24,7 @@ def make_user(
         role=role,
         account_status=status,
         email_verified=verified,
+        author_rejection_logs=author_rejection_logs or [],
     )
 
 
@@ -66,6 +68,22 @@ def test_pending_author_is_blocked_until_admin_approval():
         AuthService._validate_account_access(
             make_user(role=UserRole.AUTHOR, status=AccountStatus.PENDING),
         )
+
+
+def test_rejected_author_login_includes_latest_rejection_reason():
+    user = make_user(
+        role=UserRole.AUTHOR,
+        status=AccountStatus.REJECTED,
+        author_rejection_logs=[
+            SimpleNamespace(reason="Identity verification documents did not match."),
+        ],
+    )
+
+    with pytest.raises(AccountAccessError) as error:
+        AuthService._validate_account_access(user)
+
+    assert "author application was rejected" in str(error.value)
+    assert "Identity verification documents did not match." in str(error.value)
 
 
 def test_approved_author_can_login():

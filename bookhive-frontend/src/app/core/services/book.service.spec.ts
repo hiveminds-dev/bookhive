@@ -228,6 +228,24 @@ describe('BookService', () => {
     req.flush(mockCatalogue);
   });
 
+  it('should fetch public catalogue statistics', () => {
+    service.getCatalogueStatistics().subscribe((stats) => {
+      expect(stats.total_books).toBe(20);
+      expect(stats.total_authors).toBe(13);
+      expect(stats.total_readers).toBe(10);
+      expect(stats.total_downloads).toBe(42);
+    });
+
+    const req = httpTesting.expectOne('/api/catalogue/statistics');
+    expect(req.request.method).toBe('GET');
+    req.flush({
+      total_books: 20,
+      total_authors: 13,
+      total_readers: 10,
+      total_downloads: 42,
+    });
+  });
+
   it('should create a review', () => {
     service.createReview(10, { rating: 5, comment: 'Amazing' }).subscribe((rev) => {
       expect(rev.id).toBe(1);

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, map, Subscription, switchMap } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, map, Subscription, switchMap } from 'rxjs';
 
 import { BookService, PaginatedCatalogue } from '../../../core/services/book.service';
 import {
@@ -44,7 +44,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
   currentPage = 1;
   totalPages = 1;
   totalBooksCount = 0;
-  isLoading = false;
+  isLoading = true;
   hasError = false;
   errorMessage = '';
 
@@ -58,6 +58,7 @@ export class ExploreComponent implements OnInit, OnDestroy {
   };
 
   readonly skeletonCards = [1, 2, 3, 4, 5, 6];
+  readonly skeletonFilters = [1, 2, 3, 4, 5, 6, 7];
 
   books: Book[] = [];
 
@@ -105,13 +106,21 @@ export class ExploreComponent implements OnInit, OnDestroy {
           this.errorMessage = '';
           this.changeDetector.markForCheck();
 
-          return this.bookService.getCatalogue({
+          const request = this.bookService.getCatalogue({
             page,
             size: 12,
             search: search || undefined,
             category_id: categoryId,
             language: language || undefined,
           });
+
+          const skeletonDelay = this.isUnitTestEnvironment()
+            ? 0
+            : this.isSkeletonPreviewEnabled()
+              ? 5000
+              : 1200;
+
+          return skeletonDelay > 0 ? request.pipe(delay(skeletonDelay)) : request;
         })
       )
       .subscribe({
@@ -265,5 +274,13 @@ export class ExploreComponent implements OnInit, OnDestroy {
           (b.reviews ?? 0) - (a.reviews ?? 0)
         );
     }
+  }
+
+  private isSkeletonPreviewEnabled(): boolean {
+    return this.route.snapshot.queryParamMap.get('skeletonPreview') === '1';
+  }
+
+  private isUnitTestEnvironment(): boolean {
+    return navigator.userAgent.toLowerCase().includes('jsdom');
   }
 }

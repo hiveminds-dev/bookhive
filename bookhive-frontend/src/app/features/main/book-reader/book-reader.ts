@@ -28,6 +28,9 @@ import {
 import {
   ReaderToolbarComponent,
 } from './components/reader-toolbar/reader-toolbar';
+import {
+  PdfViewerComponent,
+} from '../../../shared/components/pdf-viewer/pdf-viewer';
 
 export interface ReaderBook {
   id: number;
@@ -50,6 +53,7 @@ export interface ReaderBook {
     ReaderToolbarComponent,
     ReaderSettingsComponent,
     PageNavigationComponent,
+    PdfViewerComponent,
   ],
   templateUrl: './book-reader.html',
   styleUrl: './book-reader.scss',
@@ -247,7 +251,27 @@ export class BookReaderComponent implements OnInit, OnDestroy {
 
     this.updatePdfViewerUrl();
     this.restartPageReadingTimer();
-    this.scrollReaderToTop();
+  }
+
+  onPdfPageChange(page: number): void {
+    if (page === this.currentPage || page < 1) return;
+    if (this.book?.totalPages && page > this.book.totalPages) return;
+
+    this.currentPage = page;
+    this.pageQualifiedAsRead = false;
+    this.restartPageReadingTimer();
+    this.changeDetector.markForCheck();
+  }
+
+  onPdfTotalPagesChange(totalPages: number): void {
+    if (totalPages > 0) {
+      if (!this.book?.totalPages || this.book.totalPages <= 0) {
+        if (this.book) {
+          this.book.totalPages = totalPages;
+        }
+      }
+      this.changeDetector.markForCheck();
+    }
   }
 
   zoomIn(): void {
@@ -319,8 +343,21 @@ export class BookReaderComponent implements OnInit, OnDestroy {
       this.pdfViewerUrl = null;
       return;
     }
-    const fullUrl = `${this.rawPdfUrl}#page=${this.currentPage}&zoom=${this.zoomLevel}`;
+    const fullUrl = this.buildPdfViewerUrl(this.currentPage, this.zoomLevel);
     this.pdfViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl);
+  }
+
+  private buildPdfViewerUrl(page: number, zoom: number): string {
+    const [baseUrl] = this.rawPdfUrl.split('#');
+    const params = new URLSearchParams({
+      page: String(page),
+      zoom: String(zoom),
+      toolbar: '0',
+      navpanes: '0',
+      scrollbar: '0',
+    });
+
+    return `${baseUrl}#${params.toString()}`;
   }
 
   private startPageReadingTimer(): void {

@@ -792,3 +792,99 @@
     }
   }
 }
+
+/* ========================================================================= */
+/* CHANGE PASSWORD MODAL SPECIFIC STYLES                                     */
+/* ========================================================================= */
+.modal-dialog.password-dialog {
+  max-width: 500px;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input.form-control {
+    padding-right: 42px;
+  }
+
+  .btn-eye-toggle {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color 0.15s ease;
+
+    .eye-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      color: #0f172a;
+    }
+  }
+}
+
+.form-success-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+
+  .alert-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #16a34a;
+  }
+}
+
+.password-hints-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+
+  .hint-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .hint-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.5;
+
+    li {
+      margin-bottom: 2px;
+    }
+  }
+}
+
+.required-star {
+  color: #dc2626;
+  margin-left: 2px;
+}

@@ -159,12 +159,14 @@
               <span>Change Photo</span>
             </button>
 
-            <a
-              routerLink="/forgot-password"
-              class="btn btn-secondary">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="change-password-btn"
+              (click)="openPasswordModal()">
               <svg lucideLock class="btn-icon" aria-hidden="true"></svg>
               <span>Change Password</span>
-            </a>
+            </button>
 
             <a
               routerLink="/explore"
@@ -549,6 +551,177 @@
             }
           </button>
         </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- CHANGE PASSWORD MODAL -->
+  <!-- ========================================================================= -->
+  @if (isPasswordModalOpen()) {
+    <div class="modal-backdrop" (click)="closePasswordModal()">
+      <div
+        class="modal-dialog password-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="password-modal-title"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h2 id="password-modal-title" class="modal-title">Change Password</h2>
+          <button
+            type="button"
+            class="modal-close-btn"
+            aria-label="Close password modal"
+            [disabled]="isSavingPassword()"
+            (click)="closePasswordModal()">
+            <svg lucideX class="close-icon" aria-hidden="true"></svg>
+          </button>
+        </div>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+          <div class="modal-body">
+
+            @if (passwordFormError()) {
+              <div class="form-error-alert" role="alert">
+                <svg lucideAlertCircle class="alert-icon" aria-hidden="true"></svg>
+                <span>{{ passwordFormError() }}</span>
+              </div>
+            }
+
+            @if (passwordFormSuccess()) {
+              <div class="form-success-alert" role="status">
+                <svg lucideCheckCircle class="alert-icon" aria-hidden="true"></svg>
+                <span>{{ passwordFormSuccess() }}</span>
+              </div>
+            }
+
+            <div class="form-group">
+              <label for="reader-curr-password" class="form-label">
+                Current Password <span class="required-star">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  id="reader-curr-password"
+                  [type]="showCurrentPassword() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="currentPassword"
+                  placeholder="Enter current password"
+                  autocomplete="current-password"
+                  [class.is-invalid]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" />
+                <button
+                  type="button"
+                  class="btn-eye-toggle"
+                  (click)="toggleCurrentPasswordVisibility()"
+                  [attr.aria-label]="showCurrentPassword() ? 'Hide password' : 'Show password'">
+                  @if (showCurrentPassword()) {
+                    <svg lucideEyeOff class="eye-icon" aria-hidden="true"></svg>
+                  } @else {
+                    <svg lucideEye class="eye-icon" aria-hidden="true"></svg>
+                  }
+                </button>
+              </div>
+              @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
+                <span class="field-error">Current password is required (minimum 8 characters).</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="reader-new-password" class="form-label">
+                New Password <span class="required-star">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  id="reader-new-password"
+                  [type]="showNewPassword() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="newPassword"
+                  placeholder="Enter new password"
+                  autocomplete="new-password"
+                  [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" />
+                <button
+                  type="button"
+                  class="btn-eye-toggle"
+                  (click)="toggleNewPasswordVisibility()"
+                  [attr.aria-label]="showNewPassword() ? 'Hide password' : 'Show password'">
+                  @if (showNewPassword()) {
+                    <svg lucideEyeOff class="eye-icon" aria-hidden="true"></svg>
+                  } @else {
+                    <svg lucideEye class="eye-icon" aria-hidden="true"></svg>
+                  }
+                </button>
+              </div>
+              @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+                <span class="field-error">Must be at least 8 characters with uppercase, lowercase, and a number.</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="reader-conf-password" class="form-label">
+                Confirm New Password <span class="required-star">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  id="reader-conf-password"
+                  [type]="showConfirmPassword() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm new password"
+                  autocomplete="new-password"
+                  [class.is-invalid]="(passwordForm.get('confirmPassword')?.invalid || passwordForm.hasError('passwordMismatch')) && passwordForm.get('confirmPassword')?.touched" />
+                <button
+                  type="button"
+                  class="btn-eye-toggle"
+                  (click)="toggleConfirmPasswordVisibility()"
+                  [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
+                  @if (showConfirmPassword()) {
+                    <svg lucideEyeOff class="eye-icon" aria-hidden="true"></svg>
+                  } @else {
+                    <svg lucideEye class="eye-icon" aria-hidden="true"></svg>
+                  }
+                </button>
+              </div>
+              @if (passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched) {
+                <span class="field-error">Passwords do not match.</span>
+              }
+            </div>
+
+            <div class="password-hints-box">
+              <span class="hint-title">Password Requirements:</span>
+              <ul class="hint-list">
+                <li>At least 8 characters long</li>
+                <li>At least one uppercase letter (A-Z)</li>
+                <li>At least one lowercase letter (a-z)</li>
+                <li>At least one number (0-9)</li>
+              </ul>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              [disabled]="isSavingPassword()"
+              (click)="closePasswordModal()">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="submit-password-btn"
+              [disabled]="passwordForm.invalid || isSavingPassword()">
+              @if (isSavingPassword()) {
+                <svg lucideRotateCw class="spinner-icon" aria-hidden="true"></svg>
+                <span>Updating...</span>
+              } @else {
+                <span>Update Password</span>
+              }
+            </button>
+          </div>
+        </form>
 
       </div>
     </div>

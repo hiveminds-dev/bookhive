@@ -121,6 +121,7 @@
 .reader-workspace {
   width: 100%;
   background: #f7f8f8;
+  overscroll-behavior: contain;
 
   &:fullscreen {
     overflow: auto;
@@ -149,6 +150,7 @@
     165px;
   align-items: start;
   gap: 24px;
+  overscroll-behavior: contain;
 }
 
 /* =========================================
@@ -170,6 +172,7 @@
   overflow: hidden;
   border-radius: 9px;
   background: #e9eaeb;
+  overscroll-behavior: contain;
 
   app-reader-toolbar {
     display: block;
@@ -178,11 +181,12 @@
 
   .reader-pdf-container {
     width: 100%;
-    height: 780px;
+    height: clamp(540px, calc(100vh - 245px), 820px);
     background: #ffffff;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    overscroll-behavior: contain;
   }
 
   .reader-pdf-iframe {

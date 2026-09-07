@@ -25,6 +25,7 @@ describe('ReaderProfile', () => {
     currentUser: ReturnType<typeof signal>;
     updateCurrentUserState: ReturnType<typeof vi.fn>;
     logout: ReturnType<typeof vi.fn>;
+    changePassword: ReturnType<typeof vi.fn>;
   };
   let router: Router;
 
@@ -65,6 +66,7 @@ describe('ReaderProfile', () => {
       }),
       updateCurrentUserState: vi.fn(),
       logout: vi.fn().mockReturnValue(of(undefined)),
+      changePassword: vi.fn().mockReturnValue(of({ message: 'Password changed successfully.' })),
     };
 
     await TestBed.configureTestingModule({
@@ -271,4 +273,101 @@ describe('ReaderProfile', () => {
     expect(authService.logout).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   });
+
+  it('should open and close the change password modal', () => {
+    expect(component.isPasswordModalOpen()).toBe(false);
+
+    component.openPasswordModal();
+    expect(component.isPasswordModalOpen()).toBe(true);
+
+    component.closePasswordModal();
+    expect(component.isPasswordModalOpen()).toBe(false);
+  });
+
+  it('should call authService.changePassword on valid submission and display success', () => {
+    component.openPasswordModal();
+    component.passwordForm.patchValue({
+      currentPassword: 'Password123!',
+      newPassword: 'NewPassword123!',
+      confirmPassword: 'NewPassword123!',
+    });
+
+    component.onSubmitPassword();
+
+    expect(authService.changePassword).toHaveBeenCalledWith('Password123!', 'NewPassword123!');
+    expect(component.passwordFormSuccess()).toBe('Password changed successfully.');
+    expect(component.passwordFormError()).toBeNull();
+  });
+
+  it('should display error message when authService.changePassword fails', () => {
+    authService.changePassword.mockReturnValue(
+      throwError(() => ({
+        error: { detail: 'Incorrect current password' },
+      }))
+    );
+
+    component.openPasswordModal();
+    component.passwordForm.patchValue({
+      currentPassword: 'WrongPassword!',
+      newPassword: 'NewPassword123!',
+      confirmPassword: 'NewPassword123!',
+    });
+
+    component.onSubmitPassword();
+
+    expect(authService.changePassword).toHaveBeenCalledWith('WrongPassword!', 'NewPassword123!');
+    expect(component.passwordFormError()).toBe('Incorrect current password');
+    expect(component.passwordFormSuccess()).toBeNull();
+  });
+
+  it('should extract validation messages without displaying [object Object] when changePassword returns 422', () => {
+    authService.changePassword.mockReturnValue(
+      throwError(() => ({
+        status: 422,
+        error: {
+          detail: [
+            { loc: ['body', 'new_password'], msg: 'Password must have at least 8 characters' },
+            { loc: ['body', 'new_password'], msg: 'Password must include an uppercase letter' },
+          ],
+        },
+      }))
+    );
+
+    component.openPasswordModal();
+    component.passwordForm.patchValue({
+      currentPassword: 'Current123!',
+      newPassword: 'NewPassword123!',
+      confirmPassword: 'NewPassword123!',
+    });
+
+    component.onSubmitPassword();
+
+    const error = component.passwordFormError();
+    expect(error).toBe('Password must have at least 8 characters. Password must include an uppercase letter');
+    expect(error).not.toContain('[object Object]');
+  });
+
+  it('should extract error message cleanly when saving profile fails with 422 detail array', () => {
+    userProfileService.updateMyProfile.mockReturnValue(
+      throwError(() => ({
+        status: 422,
+        error: {
+          detail: [{ loc: ['body', 'full_name'], msg: 'Name must not be blank' }],
+        },
+      }))
+    );
+
+    component.openEditModal();
+    component.editForm.patchValue({
+      fullName: 'Updated Name',
+      username: 'liamh',
+    });
+
+    component.onSaveProfile();
+
+    const error = component.editFormError();
+    expect(error).toBe('Name must not be blank');
+    expect(error).not.toContain('[object Object]');
+  });
 });
+

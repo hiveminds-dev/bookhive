@@ -5,7 +5,10 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from dependencies import DbSession
-from schemas.book import PaginatedCatalogueResponse
+from schemas.book import (
+    PaginatedCatalogueResponse,
+    PublicCatalogueStatisticsResponse,
+)
 from services.book_service import BookService
 
 router = APIRouter(prefix="/catalogue", tags=["Public Catalogue"])
@@ -35,3 +38,10 @@ async def get_published_books(
         category_id=category_id,
         language=language,
     )
+
+
+@router.get("/statistics", response_model=PublicCatalogueStatisticsResponse)
+async def get_public_catalogue_statistics(
+    session: DbSession,
+):
+    return await book_service.get_public_catalogue_statistics(session=session)

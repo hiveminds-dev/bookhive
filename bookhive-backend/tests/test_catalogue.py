@@ -103,3 +103,23 @@ async def test_catalogue_service_maps_items_and_pagination():
         category_id=None,
         language=None,
     )
+
+
+@pytest.mark.asyncio
+async def test_catalogue_service_returns_public_statistics():
+    service = BookService()
+    session = AsyncMock()
+    results = []
+    for value in [2, 3, 4, 25]:
+        result = MagicMock()
+        result.scalar_one_or_none.return_value = value
+        results.append(result)
+    session.execute.side_effect = results
+
+    stats = await service.get_public_catalogue_statistics(session)
+
+    assert stats.total_books == 2
+    assert stats.total_authors == 3
+    assert stats.total_readers == 4
+    assert stats.total_downloads == 25
+    assert session.execute.await_count == 4

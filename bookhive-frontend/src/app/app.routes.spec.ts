@@ -21,6 +21,7 @@ describe('App Routing Behavior', () => {
   };
   let mockBookService: {
     getCatalogue: ReturnType<typeof vi.fn>;
+    getCatalogueStatistics: ReturnType<typeof vi.fn>;
     getCategories: ReturnType<typeof vi.fn>;
     getBookDetails: ReturnType<typeof vi.fn>;
   };
@@ -37,6 +38,9 @@ describe('App Routing Behavior', () => {
     mockBookService = {
       getCatalogue: vi.fn().mockReturnValue(
         of({ total_items: 0, total_pages: 1, current_page: 1, page_size: 6, items: [] }),
+      ),
+      getCatalogueStatistics: vi.fn().mockReturnValue(
+        of({ total_books: 0, total_authors: 0, total_readers: 0, total_downloads: 0 }),
       ),
       getCategories: vi.fn().mockReturnValue(
         of({ total: 0, page: 1, page_size: 10, items: [] }),

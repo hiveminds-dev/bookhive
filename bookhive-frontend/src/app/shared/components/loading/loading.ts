@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-loading',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './loading.html',
   styleUrl: './loading.css',
 })
-export class Loading {}
+export class Loading {
+  readonly label = input('Loading BookHive');
+}

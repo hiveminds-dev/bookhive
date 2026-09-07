@@ -113,6 +113,13 @@ export interface CategoryItem {
   updated_at?: string;
 }
 
+export interface PublicCatalogueStatistics {
+  total_books: number;
+  total_authors: number;
+  total_readers: number;
+  total_downloads: number;
+}
+
 export interface CategoryListResponse {
   items: CategoryItem[];
   total: number;
@@ -232,6 +239,10 @@ export class BookService {
       .set('page_size', pageSize.toString());
 
     return this.http.get<CategoryListResponse>('/api/categories/', { params });
+  }
+
+  getCatalogueStatistics(): Observable<PublicCatalogueStatistics> {
+    return this.http.get<PublicCatalogueStatistics>('/api/catalogue/statistics');
   }
 
   createDraftBook(payload: BookCreatePayload): Observable<AuthorBookItem> {

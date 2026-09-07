@@ -1,1 +1,19 @@
-<p>loading works!</p>
+<div class="loading-backdrop" role="status" aria-live="polite">
+  <span class="loading-halo halo-one" aria-hidden="true"></span>
+  <span class="loading-halo halo-two" aria-hidden="true"></span>
+  <div class="loading-content">
+    <div class="loading-emblem" aria-hidden="true">
+      <span class="emblem-ring"></span>
+      <span class="emblem-ring inner"></span>
+      <img src="assets/bookhive-logo.png" alt="" class="loading-logo">
+    </div>
+    <span class="loading-title"><strong>Book</strong>Hive</span>
+    <span class="loading-text">{{ label() }}</span>
+    <span class="loading-bar" aria-hidden="true"></span>
+    <span class="loading-dots" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  </div>
+</div>

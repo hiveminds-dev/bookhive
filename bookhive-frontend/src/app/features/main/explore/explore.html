@@ -3,11 +3,26 @@
   <div class="explore-container">
 
     <aside class="filters-column">
-      <app-explore-filters
-        [search]="activeFilters.search"
-        [initialCategories]="categoryList"
-        (filtersChanged)="onFiltersChanged($event)">
-      </app-explore-filters>
+      @if (isLoading && categoryList.length === 0) {
+        <div class="filters-skeleton" aria-hidden="true">
+          <span class="filter-title shimmer"></span>
+          <span class="filter-reset shimmer"></span>
+          <span class="filter-label shimmer"></span>
+          <span class="filter-search shimmer"></span>
+          <span class="filter-label short shimmer"></span>
+          @for (item of skeletonFilters; track item) {
+            <span class="filter-option shimmer"></span>
+          }
+          <span class="filter-label short shimmer"></span>
+          <span class="filter-select shimmer"></span>
+        </div>
+      } @else {
+        <app-explore-filters
+          [search]="activeFilters.search"
+          [initialCategories]="categoryList"
+          (filtersChanged)="onFiltersChanged($event)">
+        </app-explore-filters>
+      }
     </aside>
 
     <section class="library-section">
@@ -79,13 +94,19 @@
 
           @for (skeleton of skeletonCards; track skeleton) {
             <article class="skeleton-card" aria-hidden="true">
-              <div class="skeleton-cover shimmer"></div>
+              <div class="skeleton-cover shimmer">
+                <span class="skeleton-badge"></span>
+                <span class="skeleton-book-mark"></span>
+                <span class="skeleton-book-ring"></span>
+              </div>
               <div class="skeleton-content">
                 <span class="skeleton-line line-small shimmer"></span>
                 <span class="skeleton-line line-large shimmer"></span>
                 <span class="skeleton-line line-medium shimmer"></span>
+                <span class="skeleton-meta shimmer"></span>
                 <span class="skeleton-line line-large shimmer"></span>
                 <span class="skeleton-line line-description shimmer"></span>
+                <span class="skeleton-actions shimmer"></span>
               </div>
             </article>
           }

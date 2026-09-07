@@ -60,7 +60,9 @@ class UserRepository:
 
     async def get_by_email(self, session: AsyncSession, email: str) -> User | None:
         result = await session.execute(
-            select(User).where(func.lower(User.email) == email.strip().lower())
+            select(User)
+            .options(selectinload(User.author_rejection_logs))
+            .where(func.lower(User.email) == email.strip().lower())
         )
 
         return result.scalar_one_or_none()
