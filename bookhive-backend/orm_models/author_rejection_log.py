@@ -38,12 +38,12 @@ class AuthorRejectionLog(Base):
     )
 
     # Relationships
-    author: Mapped["User"] = relationship(
+    author: Mapped[User] = relationship(
         "User",
         foreign_keys=[author_id],
         back_populates="author_rejection_logs",
     )
-    admin: Mapped["User | None"] = relationship(
+    admin: Mapped[User | None] = relationship(
         "User",
         foreign_keys=[admin_id],
         lazy="selectin",

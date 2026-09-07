@@ -13,8 +13,6 @@ from orm_models.user import AccountStatus, UserRole
 from schemas.admin_schemas import (
     AuthorDetailAdminResponse,
     BookAdminResponse,
-    CategoryAdminItem,
-    PlatformStatisticsResponse,
     ReaderDetailAdminResponse,
 )
 

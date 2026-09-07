@@ -154,6 +154,7 @@ async def test_is_email_available_normalization():
 @pytest.mark.asyncio
 async def test_check_email_endpoint_available(monkeypatch):
     from httpx import ASGITransport, AsyncClient
+
     from database import get_db_session
     from main import app
     from routers.auth_router import auth_service
@@ -176,6 +177,7 @@ async def test_check_email_endpoint_available(monkeypatch):
 @pytest.mark.asyncio
 async def test_check_email_endpoint_taken(monkeypatch):
     from httpx import ASGITransport, AsyncClient
+
     from database import get_db_session
     from main import app
     from routers.auth_router import auth_service
@@ -198,6 +200,7 @@ async def test_check_email_endpoint_taken(monkeypatch):
 @pytest.mark.asyncio
 async def test_check_email_endpoint_invalid_email_format():
     from httpx import ASGITransport, AsyncClient
+
     from database import get_db_session
     from main import app
 

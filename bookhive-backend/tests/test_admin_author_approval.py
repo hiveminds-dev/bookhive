@@ -1,6 +1,5 @@
 """Tests for admin author approval and rejection workflow."""
 
-from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 

@@ -28,7 +28,7 @@ class ReviewUpdateRequest(BaseModel):
     )
 
     @model_validator(mode="after")
-    def require_an_update(self) -> "ReviewUpdateRequest":
+    def require_an_update(self) -> ReviewUpdateRequest:
         if not self.model_fields_set:
             raise ValueError("At least one review field must be supplied")
         return self
