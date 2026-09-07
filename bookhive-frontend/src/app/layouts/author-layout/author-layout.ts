@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -7,6 +7,7 @@ import {
 } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../core/services/auth';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal';
 import {
   LucideLayoutDashboard,
   LucideBook,
@@ -30,6 +31,7 @@ import {
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
+    ConfirmationModalComponent,
     FormsModule,
     LucideLayoutDashboard,
     LucideBook,
@@ -57,6 +59,7 @@ export class AuthorLayoutComponent {
   profileMenuOpen = false;
   activeTopbarMenu: 'notifications' | 'quick' | null = null;
   avatarLoadFailed = false;
+  readonly showLogoutConfirmSignal = signal<boolean>(false);
 
   readonly notifications = [
     {
@@ -168,10 +171,19 @@ export class AuthorLayoutComponent {
     console.log('Author library search:', search);
   }
 
-  logout(): void {
+  promptLogout(): void {
     this.closeSidebar();
     this.closeProfileMenu();
     this.closeTopbarMenu();
+    this.showLogoutConfirmSignal.set(true);
+  }
+
+  cancelLogout(): void {
+    this.showLogoutConfirmSignal.set(false);
+  }
+
+  confirmLogout(): void {
+    this.showLogoutConfirmSignal.set(false);
 
     this.auth.logout().subscribe({
       next: () => this.router.navigate(['/login']),
