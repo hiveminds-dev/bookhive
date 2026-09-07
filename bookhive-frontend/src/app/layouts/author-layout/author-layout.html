@@ -128,7 +128,7 @@
       <button
         type="button"
         class="logout-button"
-        (click)="logout()">
+        (click)="promptLogout()">
 
         <span
           class="logout-icon"
@@ -308,7 +308,7 @@
 
             <button
               type="button"
-              (click)="logout()">
+              (click)="promptLogout()">
               Logout
             </button>
 
@@ -354,5 +354,16 @@
     </footer>
 
   </div>
+
+  @if (showLogoutConfirmSignal()) {
+    <app-confirmation-modal
+      title="Sign Out of BookHive?"
+      message="Are you sure you want to end your author session?"
+      confirmText="Sign Out"
+      type="warning"
+      (confirm)="confirmLogout()"
+      (cancel)="cancelLogout()"
+    />
+  }
 
 </div>
