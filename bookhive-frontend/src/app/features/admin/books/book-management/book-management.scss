@@ -64,6 +64,17 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 18px rgba(181, 142, 26, 0.4);
       }
+
+      &.is-coming-soon {
+        background-color: #b1835d;
+        box-shadow: 0 10px 20px rgba(133, 77, 14, 0.16);
+
+        &:hover {
+          background-color: #a87953;
+          transform: none;
+          box-shadow: 0 10px 20px rgba(133, 77, 14, 0.18);
+        }
+      }
     }
   }
 

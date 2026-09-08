@@ -220,6 +220,10 @@ export class BookManagement implements OnInit {
     this.toastService.info('All search filters reset.', 'Filters Reset');
   }
 
+  showAddBookComingSoon(): void {
+    this.toastService.info('Direct admin book creation is coming soon. Authors can still submit books through the author workflow.', 'Coming Soon');
+  }
+
   viewBook(book: AdminBookTableItem): void {
     void this.router.navigate(['/admin/books', book.id, 'review']);
   }

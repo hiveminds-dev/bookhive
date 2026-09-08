@@ -11,10 +11,15 @@
       <p>Oversee published literature, review manuscript requests, and inspect repository books.</p>
     </div>
     <div class="header-actions">
-      <a routerLink="/admin/books/upload" class="btn-primary">
+      <button
+        type="button"
+        class="btn-primary is-coming-soon"
+        title="Direct admin book creation is coming soon. Authors can still submit books through the author workflow."
+        (click)="showAddBookComingSoon()"
+      >
         <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
         Add New Book
-      </a>
+      </button>
     </div>
   </header>
 
